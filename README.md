@@ -25,7 +25,7 @@ pnpm build
 
 ## Environment Variables
 
-Copy `.env.example` to `.env.local` and fill in the values.
+Copy `.env.example` to `.env` and fill in the values.
 
 ### Better Auth
 

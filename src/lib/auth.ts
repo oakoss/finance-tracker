@@ -94,7 +94,9 @@ export const auth = betterAuth({
     window: 60,
     max: 100,
   },
-  trustedOrigins: env.TRUSTED_ORIGINS.split(',').map((origin) => origin.trim()),
+  trustedOrigins: env.TRUSTED_ORIGINS.split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean),
   experimental: {
     joins: true,
   },

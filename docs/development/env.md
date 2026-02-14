@@ -35,5 +35,5 @@ export const env = arkenv(
 - Use `?` in keys to mark optional variables.
 - Keep validation in `src/env.ts` to ensure both server and client env
   are checked consistently.
-- Use `pnpm with:env <command>` to load `.env.local` during scripts.
+- Use `pnpm with:env <command>` to load `.env` during scripts.
 - We do not encrypt `.env` files; production secrets are managed in Coolify.

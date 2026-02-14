@@ -5,7 +5,7 @@ See `docs/development/env.md` for validation details.
 
 ## Local development
 
-- Copy `.env.example` to `.env.local`.
+- Copy `.env.example` to `.env`.
 - Never commit real secrets.
 - Use `pnpm with:env <command>` when a script needs env vars.
 

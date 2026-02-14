@@ -159,24 +159,24 @@ function DemoDrizzle() {
                 <code className="px-2 py-1 rounded-sm bg-black/30 text-purple-300">
                   DATABASE_URL
                 </code>{' '}
-                in .env.local
+                in .env
               </li>
               <li>
                 Run:{' '}
                 <code className="px-2 py-1 rounded-sm bg-black/30 text-purple-300">
-                  npx drizzle-kit generate
+                  pnpm dlx drizzle-kit generate
                 </code>
               </li>
               <li>
                 Run:{' '}
                 <code className="px-2 py-1 rounded-sm bg-black/30 text-purple-300">
-                  npx drizzle-kit migrate
+                  pnpm dlx drizzle-kit migrate
                 </code>
               </li>
               <li>
                 Optional:{' '}
                 <code className="px-2 py-1 rounded-sm bg-black/30 text-purple-300">
-                  npx drizzle-kit studio
+                  pnpm dlx drizzle-kit studio
                 </code>
               </li>
             </ol>

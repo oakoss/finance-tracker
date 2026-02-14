@@ -140,7 +140,7 @@ pnpm schema:auth
 
 ## Environment Variables
 
-Copy `.env.example` to `.env.local`.
+Copy `.env.example` to `.env`.
 Key groups:
 
 - Better Auth: `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET`, `PASSWORD_MIN_LENGTH`, `TRUSTED_ORIGINS`

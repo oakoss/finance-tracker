@@ -12,7 +12,7 @@ pnpm dev
 
 ## Environment Setup
 
-1. Copy `.env.example` to `.env.local`.
+1. Copy `.env.example` to `.env`.
 2. Fill in all required values (Better Auth, DB, Brevo, OAuth).
 
 ## Database

@@ -4,7 +4,7 @@ Testing strategy and commands.
 
 ## Prerequisites
 
-- Copy `.env.example` to `.env.local` for local runs.
+- Copy `.env.example` to `.env` for local runs.
 
 ## Unit Tests
 

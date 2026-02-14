@@ -4,7 +4,7 @@ Project security notes and expectations.
 
 ## Secrets
 
-- Use `.env.local` for local development.
+- Use `.env` for local development.
 - Do not commit secrets.
 
 ## Auth
