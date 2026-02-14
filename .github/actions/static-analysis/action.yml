@@ -29,14 +29,25 @@ runs:
           fi
 
           git fetch origin "${{ inputs.base-ref }}" --depth=1
-          files=$(git diff --name-only "origin/${{ inputs.base-ref }}"...HEAD)
+
+          if ! files=$(git diff --name-only "origin/${{ inputs.base-ref }}"...HEAD); then
+            echo "docs_only=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
         else
           if [ -z "${{ inputs.before-sha }}" ]; then
             echo "docs_only=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          files=$(git diff --name-only "${{ inputs.before-sha }}" "${{ inputs.sha }}")
+          if ! git cat-file -e "${{ inputs.before-sha }}"^{commit} 2>/dev/null; then
+            git fetch origin "${{ inputs.before-sha }}" --depth=1
+          fi
+
+          if ! files=$(git diff --name-only "${{ inputs.before-sha }}" "${{ inputs.sha }}"); then
+            echo "docs_only=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
         fi
 
         if [ -z "$files" ]; then
