@@ -16,7 +16,7 @@ runs:
         cache: pnpm
 
     - name: Restore TypeScript incremental cache
-      uses: actions/cache@0c45773b623bea8c8d6d1c7d7d6505a8b2c0d2c9 # v4.2.1
+      uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
       with:
         path: node_modules/.cache/typescript/tsbuildinfo
         key: tsbuildinfo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'tsconfig.json') }}
@@ -24,7 +24,7 @@ runs:
           tsbuildinfo-${{ runner.os }}-
 
     - name: Restore ESLint cache
-      uses: actions/cache@0c45773b623bea8c8d6d1c7d7d6505a8b2c0d2c9 # v4.2.1
+      uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
       with:
         path: node_modules/.cache/eslint/.eslintcache
         key: eslintcache-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'eslint.config.js') }}
