@@ -1,0 +1,47 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests",
+    ":semanticCommits",
+    ":semanticCommitTypeAll(chore)"
+  ],
+  "automerge": true,
+  "branchPrefix": "chore/deps-",
+  "platformAutomerge": true,
+  "rangeStrategy": "bump",
+  "preserveSemverRanges": true,
+  "schedule": ["before 6am on the first day of the month"],
+  "timezone": "America/Chicago",
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    },
+    {
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "better-auth",
+        "drizzle-orm",
+        "pg",
+        "@tanstack/*"
+      ],
+      "automerge": false
+    },
+    {
+      "matchDepTypes": ["peerDependencies"],
+      "rangeStrategy": "widen"
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "labels": ["security"],
+    "schedule": ["at any time"]
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on the first day of the month"],
+    "labels": ["lockfile"]
+  }
+}

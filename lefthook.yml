@@ -1,0 +1,30 @@
+# lefthook.yml
+output:
+  - failure # Only show failed steps
+  - execution_out # Show command output for failures
+
+pre-commit:
+  parallel: true
+  commands:
+    typecheck:
+      glob: '*.{ts,tsx}'
+      run: pnpm typecheck --pretty false
+    lint:
+      glob: '*.{ts,tsx,js,jsx,cjs,mjs}'
+      exclude:
+        - '**/*.gen.ts'
+      run: pnpm eslint {staged_files} --max-warnings 0 --fix --cache --cache-location node_modules/.cache/eslint/.eslintcache
+      stage_fixed: true
+    lint-md:
+      glob: '*.md'
+      run: pnpm markdownlint-cli2 --fix {staged_files}
+      stage_fixed: true
+    format:
+      glob: '*.{ts,tsx,js,jsx,cjs,mjs,json,md,mdx}'
+      run: pnpm prettier -uwl {staged_files}
+      stage_fixed: true
+
+commit-msg:
+  commands:
+    commitlint:
+      run: pnpm commitlint --edit "$1"

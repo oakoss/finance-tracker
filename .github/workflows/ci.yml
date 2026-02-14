@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [main]
+  merge_group:
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Static analysis
+        uses: ./.github/actions/static-analysis
+        with:
+          event-name: ${{ github.event_name }}
+          base-ref: ${{ github.base_ref }}
+          before-sha: ${{ github.event.before }}
+          sha: ${{ github.sha }}
+
+  unit-tests:
+    if: false # Enable when unit tests are added
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Unit tests
+        run: pnpm test
+
+  e2e-tests:
+    if: false # Enable when E2E tests are added
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: E2E tests
+        run: pnpm test:e2e
+
+  ci-summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [static-analysis, unit-tests, e2e-tests]
+    steps:
+      - name: Summarize results
+        run: |
+          echo "## CI Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Job | Status | Required |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| --- | --- | --- |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Static analysis | \`${{ needs.static-analysis.result }}\` | ✅ Yes |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Unit tests | \`${{ needs.unit-tests.result }}\` | ✅ Yes |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| E2E tests | \`${{ needs.e2e-tests.result }}\` | ⚠️ No |" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          fail_if_bad() {
+            if [ "$2" = "failure" ] || [ "$2" = "cancelled" ]; then
+              echo "Job '$1' failed or was cancelled"
+              exit 1
+            fi
+          }
+
+          fail_if_bad "static-analysis" "${{ needs.static-analysis.result }}"
+
+          if [ "${{ needs.unit-tests.result }}" != "skipped" ]; then
+            fail_if_bad "unit-tests" "${{ needs.unit-tests.result }}"
+          fi
+
+          if [ "${{ needs.e2e-tests.result }}" = "success" ]; then
+            echo "✅ All jobs passed" >> "$GITHUB_STEP_SUMMARY"
+          elif [ "${{ needs.e2e-tests.result }}" = "failure" ]; then
+            echo "⚠️ E2E tests failed" >> "$GITHUB_STEP_SUMMARY"
+          elif [ "${{ needs.e2e-tests.result }}" = "cancelled" ]; then
+            echo "⚠️ E2E tests cancelled" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "ℹ️ E2E tests skipped" >> "$GITHUB_STEP_SUMMARY"
+          fi

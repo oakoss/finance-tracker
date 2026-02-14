@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:18.2
+    restart: unless-stopped
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    env_file:
+      - .env.local
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-finance_tracker}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-finance_tracker_password}
+      POSTGRES_DB: ${POSTGRES_DB:-finance_tracker_dev}
+      PGDATA: ${POSTGRES_DATA_DIR:-/var/lib/postgresql/data}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${POSTGRES_USER:-finance_tracker} -d ${POSTGRES_DB:-finance_tracker_dev}',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:

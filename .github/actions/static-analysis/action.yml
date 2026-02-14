@@ -1,0 +1,75 @@
+name: Static analysis
+description: Run formatting, linting, markdown lint, and typecheck.
+
+inputs:
+  event-name:
+    description: GitHub event name
+    required: true
+  base-ref:
+    description: Base ref for pull_request events
+    required: false
+  before-sha:
+    description: Before SHA for push events
+    required: false
+  sha:
+    description: Current SHA
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Detect docs-only changes
+      id: docs
+      shell: bash
+      run: |
+        if [ "${{ inputs.event-name }}" = "pull_request" ]; then
+          if [ -z "${{ inputs.base-ref }}" ]; then
+            echo "docs_only=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git fetch origin "${{ inputs.base-ref }}" --depth=1
+          files=$(git diff --name-only "origin/${{ inputs.base-ref }}"...HEAD)
+        else
+          if [ -z "${{ inputs.before-sha }}" ]; then
+            echo "docs_only=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          files=$(git diff --name-only "${{ inputs.before-sha }}" "${{ inputs.sha }}")
+        fi
+
+        if [ -z "$files" ]; then
+          echo "docs_only=false" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
+        docs_only=true
+        for file in $files; do
+          case "$file" in
+            docs/*|*.md)
+              ;;
+            *)
+              docs_only=false
+              break
+              ;;
+          esac
+        done
+
+        echo "docs_only=$docs_only" >> "$GITHUB_OUTPUT"
+
+    - name: Format check
+      if: steps.docs.outputs.docs_only != 'true'
+      shell: bash
+      run: pnpm format:check
+    - name: Lint
+      if: steps.docs.outputs.docs_only != 'true'
+      shell: bash
+      run: pnpm lint
+    - name: Markdown lint
+      shell: bash
+      run: pnpm lint:md
+    - name: Typecheck
+      if: steps.docs.outputs.docs_only != 'true'
+      shell: bash
+      run: pnpm typecheck

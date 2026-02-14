@@ -1,0 +1,19 @@
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Ignore node_modules
+node_modules/
+
+# Ignore build output
+dist/
+build/
+
+# Ignore log files
+*.log
+
+# Ignore Drizzle files
+drizzle/
+
+# Ignore generated files
+*.gen.ts
