@@ -15,11 +15,6 @@ updated = updated.replace(
   'import { relations, sql } from "drizzle-orm";',
 );
 
-updated = updated.replace(
-  'from "drizzle-orm/pg-core";',
-  'from "drizzle-orm/pg-core";',
-);
-
 updated = updated.replaceAll('pg_catalog.gen_random_uuid()', 'uuidv7()');
 
 if (updated === original) {
