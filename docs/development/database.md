@@ -15,15 +15,19 @@ intentional and ready.
 
 ## Notes
 
-- Avoid floats for money.
-- Use integer cents (recommended) or Postgres `numeric`.
-- Store timestamps in UTC using `timestamptz`.
-- Standard columns: `createdAt`, `updatedAt`, `deletedAt` (soft deletes).
-- Audit columns: `createdById`, `updatedById`, `deletedById` (nullable FK).
+Conventions for money, timestamps, and audit columns are defined in
+`docs/adr/0010-database-conventions.md`.
+
 - Use implicit column names (e.g., `uuid()`, `text()`, `timestamp()`); Drizzle `casing: 'snake_case'` handles naming.
 - Chain order: `primaryKey` → `notNull` → `unique` → `default` → `references` → `.$onUpdate`.
 - Use `timestamp({ withTimezone: true })` for time columns.
 - Place timestamp columns at the end of table definitions.
+
+## Indexing Guidance
+
+- Add composite indexes for hot query paths (ex: `transactions.account_id + posted_at`).
+- Use partial indexes for soft-delete filtering (ex: `deleted_at IS NULL`).
+- For search on large text fields, prefer Postgres GIN indexes with `to_tsvector`.
 
 ## Cascade Policy
 

@@ -8,10 +8,12 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import configPrettier from 'eslint-config-prettier';
 import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import importX from 'eslint-plugin-import-x';
+// @ts-ignore
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+// @ts-ignore
 import sortKeysPlus from 'eslint-plugin-sort-keys-plus';
 import unicorn from 'eslint-plugin-unicorn';
 import globals from 'globals';
@@ -28,6 +30,7 @@ export default defineConfig(
     'playwright-report',
     'test-results',
     'storybook-static',
+    '**/paraglide',
     '**/*.gen.ts',
   ]),
   {

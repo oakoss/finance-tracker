@@ -2,6 +2,8 @@
 
 SEO notes for the TanStack Start app.
 
+See `docs/adr/0006-deployment-coolify-cloudflare-tunnel.md` for canonical domain details.
+
 ## Meta tags
 
 - Use per-route meta when adding public pages.

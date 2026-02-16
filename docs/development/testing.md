@@ -2,6 +2,9 @@
 
 Testing strategy and commands.
 
+CI policy and automation decisions are defined in
+`docs/adr/0011-ci-and-renovate.md`.
+
 ## Prerequisites
 
 - Copy `.env.example` to `.env` for local runs.

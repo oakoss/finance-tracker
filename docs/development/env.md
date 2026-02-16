@@ -4,6 +4,9 @@ Environment variables are validated at runtime using ArkEnv (ArkType).
 The schema lives in `src/env.ts` and reads from both `process.env` and
 `import.meta.env`.
 
+Deployment assumptions for env values are documented in
+`docs/adr/0006-deployment-coolify-cloudflare-tunnel.md`.
+
 ## Validation
 
 ```ts

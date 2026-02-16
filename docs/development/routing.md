@@ -2,6 +2,8 @@
 
 Routing conventions for TanStack Router file-based routes.
 
+See `docs/adr/0001-tanstack-start.md` for framework choice.
+
 ## Conventions
 
 - Flat routes for simple pages (e.g., `login.tsx`).

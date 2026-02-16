@@ -31,3 +31,10 @@ Use `docs/adr/template.md` for new ADRs.
 - `docs/adr/0009-better-auth-policy.md`
 - `docs/adr/0010-database-conventions.md`
 - `docs/adr/0011-ci-and-renovate.md`
+- `docs/adr/0012-finance-data-model.md`
+- `docs/adr/0013-csv-first-import.md`
+- `docs/adr/0014-dashboard-charts-recharts.md`
+- `docs/adr/0015-audit-logging.md`
+- `docs/adr/0016-user-preferences-table.md`
+- `docs/adr/0017-locale-storage.md`
+- `docs/adr/0018-i18n-paraglide.md`

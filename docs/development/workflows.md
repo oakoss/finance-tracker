@@ -2,6 +2,9 @@
 
 This document summarizes GitHub Actions workflows and conventions.
 
+For the rationale and policy decisions, see
+`docs/adr/0011-ci-and-renovate.md`.
+
 ## Conventions
 
 - Pin action SHAs (with version comments).

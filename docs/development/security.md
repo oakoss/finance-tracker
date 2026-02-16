@@ -9,9 +9,7 @@ Project security notes and expectations.
 
 ## Auth
 
-- Trusted origins are enforced via `TRUSTED_ORIGINS`.
-- Rate limiting is enabled in production.
-- OAuth tokens are encrypted at rest in production.
+See `docs/adr/0009-better-auth-policy.md` for auth security policy details.
 
 ## Content Security Policy
 

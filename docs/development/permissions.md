@@ -2,6 +2,8 @@
 
 Planned permissions model for post-MVP features.
 
+See `docs/adr/0004-better-auth.md` for auth platform choice.
+
 ## Household as Organization
 
 - Treat a household as an organization.

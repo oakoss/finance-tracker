@@ -35,6 +35,10 @@ This document captures code style, conventions, and structure expectations.
 - `react/jsx-sort-props` is enforced.
 - `react-hooks/exhaustive-deps` is off; be intentional with deps.
 
+## UI
+
+- Toast usage: see `docs/development/toasts.md`.
+
 ## Error Handling
 
 - Prefer explicit `throw new Error(...)`.

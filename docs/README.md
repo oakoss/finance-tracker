@@ -19,6 +19,8 @@ Project documentation organized by area.
 - `docs/development/timezones.md`
 - `docs/development/permissions.md`
 - `docs/development/routing.md`
+- `docs/development/i18n.md`
+- `docs/development/toasts.md`
 
 ## Architecture
 

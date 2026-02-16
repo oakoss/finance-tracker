@@ -2,6 +2,11 @@
 
 Better Auth is the authentication system for this app.
 
+See:
+
+- `docs/adr/0004-better-auth.md` for the library choice.
+- `docs/adr/0009-better-auth-policy.md` for policy defaults.
+
 ## Key Files
 
 - `src/lib/auth.ts`
@@ -11,18 +16,12 @@ Better Auth is the authentication system for this app.
 
 ## Features
 
-- Email + password with required verification
-- Password reset
-- OAuth: GitHub + Google
-- Account linking (email + OAuth)
-- Change email + delete user flows
+Auth features and policy decisions are defined in
+`docs/adr/0009-better-auth-policy.md`.
 
 ## Security Notes
 
-- `TRUSTED_ORIGINS` is required to validate CSRF + redirects.
-- Rate limiting is enabled in production (60s window, 100 requests).
-- OAuth tokens are encrypted at rest in production.
-- Cloudflare IP header: `cf-connecting-ip`.
+Security expectations are documented in `docs/development/security.md`.
 
 ## Schema Generation
 

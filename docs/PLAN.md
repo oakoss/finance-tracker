@@ -13,6 +13,8 @@ Supporting docs:
 - `docs/development/database.md`
 - `docs/development/security.md`
 - `docs/development/testing.md`
+- `docs/development/i18n.md`
+- `docs/development/toasts.md`
 
 ## Stack (Current Direction)
 
@@ -70,6 +72,8 @@ Important for auth:
 - Transactions: add/edit/delete; list with filters (date range, account, category)
 - Dashboard: current month income/expense totals; category breakdown
 
+Note: Finance schema lives in `src/modules/finance/` for MVP speed. Split into feature modules after MVP stabilizes.
+
 ## Suggested Initial Data Model (High-Level)
 
 - Users
@@ -102,6 +106,13 @@ Later:
 - `docs/adr/0009-better-auth-policy.md`
 - `docs/adr/0010-database-conventions.md`
 - `docs/adr/0011-ci-and-renovate.md`
+- `docs/adr/0012-finance-data-model.md`
+- `docs/adr/0013-csv-first-import.md`
+- `docs/adr/0014-dashboard-charts-recharts.md`
+- `docs/adr/0015-audit-logging.md`
+- `docs/adr/0016-user-preferences-table.md`
+- `docs/adr/0017-locale-storage.md`
+- `docs/adr/0018-i18n-paraglide.md`
 
 ## Next Implementation Steps
 

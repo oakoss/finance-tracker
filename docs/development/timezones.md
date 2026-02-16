@@ -2,9 +2,11 @@
 
 Timezone handling for server and client rendering.
 
+See `docs/adr/0016-user-preferences-table.md` for where preferences live.
+
 ## Recommended approach
 
-- Store the user's preferred timezone in their profile.
+- Store the user's preferred timezone in `user_preferences`.
 - Default to the browser timezone on first login.
 - Use the stored timezone for server-side rendering and reports.
 

@@ -1,0 +1,14 @@
+{
+  "app.title": "Finance Tracker",
+  "nav.dashboard": "Dashboard",
+  "nav.accounts": "Accounts",
+  "nav.transactions": "Transactions",
+  "nav.import": "Import",
+  "nav.settings": "Settings",
+  "actions.save": "Save",
+  "actions.cancel": "Cancel",
+  "actions.delete": "Delete",
+  "actions.edit": "Edit",
+  "actions.create": "Create",
+  "empty.state": "Nothing here yet."
+}

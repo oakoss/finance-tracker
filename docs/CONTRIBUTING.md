@@ -13,7 +13,7 @@ pnpm dev
 ## Environment Setup
 
 1. Copy `.env.example` to `.env`.
-2. Fill in all required values (Better Auth, DB, Brevo, OAuth).
+2. Fill in required values. See `docs/development/env.md` for details.
 
 ## Database
 
@@ -21,7 +21,8 @@ pnpm dev
 pnpm docker:up
 ```
 
-Generate Better Auth schema after auth config changes:
+Generate Better Auth schema after auth config changes (see
+`docs/development/auth.md`):
 
 ```bash
 pnpm schema:auth
@@ -52,17 +53,12 @@ pnpm build
 
 ## Auth Notes
 
-- Better Auth config lives in `src/lib/auth.ts`.
-- Email templates live in `src/modules/auth/emails`.
-- Brevo delivery is handled in `src/lib/email.ts`.
+See `docs/development/auth.md` for auth configuration and files.
 
 ## Conventions
 
-- Keep auth-related code in `src/modules/auth`.
-- Run `pnpm lint:md` after docs updates.
-- Avoid editing generated Better Auth schema manually.
-- CI runs static analysis for all PRs with docs-only optimization.
-- Avoid barrel files; prefer direct imports from module paths.
+See `docs/development/code-standards.md` for detailed conventions.
+See `docs/development/workflows.md` for CI details.
 
 ## Git Workflow
 
