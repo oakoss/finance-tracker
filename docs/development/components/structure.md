@@ -7,6 +7,8 @@ This doc covers composition patterns and data-attribute conventions.
 - Prefer small, composable pieces over monolithic components.
 - Use compound components for multi-part UI.
 - Keep layout scaffolding in blocks, not `ui` components.
+- For tables, extract reusable controls (header, pagination, view options) only
+  after they are reused.
 
 ### Compound example (structure only)
 
