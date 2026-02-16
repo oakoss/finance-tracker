@@ -2,9 +2,9 @@
 
 import { Menu as MenuPrimitive } from '@base-ui/react/menu';
 import { Menubar as MenubarPrimitive } from '@base-ui/react/menubar';
-import { CheckIcon } from 'lucide-react';
 import * as React from 'react';
 
+import { Icons } from '@/components/icons';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -131,7 +131,7 @@ function MenubarCheckboxItem({
     >
       <span className="left-3 size-4 [&_svg:not([class*='size-'])]:size-4 pointer-events-none absolute flex items-center justify-center">
         <MenuPrimitive.CheckboxItemIndicator>
-          <CheckIcon />
+          <Icons.Check />
         </MenuPrimitive.CheckboxItemIndicator>
       </span>
       {children}
@@ -165,7 +165,7 @@ function MenubarRadioItem({
     >
       <span className="left-3 size-4 [&_svg:not([class*='size-'])]:size-4 pointer-events-none absolute flex items-center justify-center">
         <MenuPrimitive.RadioItemIndicator>
-          <CheckIcon />
+          <Icons.Check />
         </MenuPrimitive.RadioItemIndicator>
       </span>
       {children}
