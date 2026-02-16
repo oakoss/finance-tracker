@@ -22,6 +22,14 @@ Project documentation organized by area.
 - `docs/development/i18n.md`
 - `docs/development/toasts.md`
 - `docs/development/cookies.md`
+- `docs/development/components/README.md`
+- `docs/development/components/structure.md`
+- `docs/development/components/behavior.md`
+- `docs/development/components/implementation.md`
+- `docs/development/components/tanstack.md`
+- `docs/development/components/examples/form.md`
+- `docs/development/styling.md`
+- `docs/development/design-tokens.md`
 
 ## Architecture
 
