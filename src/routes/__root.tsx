@@ -1,8 +1,8 @@
 import { TanStackDevtools } from '@tanstack/react-devtools';
 import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router';
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
 import Header from '@/components/header';
+import { devtoolsPlugins } from '@/lib/devtools';
 import { getLocale } from '@/paraglide/runtime';
 import globalsCss from '@/styles/globals.css?url';
 
@@ -43,12 +43,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           config={{
             position: 'bottom-right',
           }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
+          plugins={devtoolsPlugins}
         />
         <Scripts />
       </body>
