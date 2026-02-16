@@ -1,24 +1,19 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
+@import '@fontsource/geist-sans';
+@import '@fontsource/geist-mono';
 
 @custom-variant dark (&:is(.dark *));
 
-body {
-  @apply m-0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family:
-    source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-}
-
 :root {
+  --base-font-sans:
+    'Geist Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
+  --base-font-mono:
+    'Geist Mono', 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
@@ -90,6 +85,8 @@ code {
 }
 
 @theme inline {
+  --font-sans: var(--base-font-sans);
+  --font-mono: var(--base-font-mono);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -136,6 +133,12 @@ code {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply m-0 bg-background text-foreground;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  code {
+    font-family: var(--font-mono);
   }
 }

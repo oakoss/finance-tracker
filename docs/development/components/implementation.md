@@ -40,3 +40,9 @@ Use `mergeProps` to safely combine handlers and classes.
 
 - `event.preventBaseUIHandler()` stops Base UI default handlers.
 - Prefer component props first; use the escape hatch only when necessary.
+
+## Typography component
+
+- Prefer `Typography` for consistent text styles.
+- Use `variant` to select styles and `as` to override the element.
+- Helpers like `TypographyH1` are preferred for simple cases.

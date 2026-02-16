@@ -31,6 +31,7 @@ truth for structure, behavior, and integration with Base UI and TanStack.
 - Implementation (types + Base UI render patterns): `docs/development/components/implementation.md`
 - TanStack integrations: `docs/development/components/tanstack.md`
 - Form examples: `docs/development/components/examples/form.md`
+- Typography examples: `docs/development/components/examples/typography.md`
 
 ## Global styling and tokens
 
