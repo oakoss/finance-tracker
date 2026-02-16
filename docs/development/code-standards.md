@@ -39,6 +39,10 @@ This document captures code style, conventions, and structure expectations.
 
 - Toast usage: see `docs/development/toasts.md`.
 
+## Web Platform
+
+- Cookie handling: see `docs/development/cookies.md`.
+
 ## Error Handling
 
 - Prefer explicit `throw new Error(...)`.

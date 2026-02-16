@@ -21,6 +21,7 @@ Project documentation organized by area.
 - `docs/development/routing.md`
 - `docs/development/i18n.md`
 - `docs/development/toasts.md`
+- `docs/development/cookies.md`
 
 ## Architecture
 

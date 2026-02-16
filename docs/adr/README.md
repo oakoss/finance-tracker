@@ -38,3 +38,4 @@ Use `docs/adr/template.md` for new ADRs.
 - `docs/adr/0016-user-preferences-table.md`
 - `docs/adr/0017-locale-storage.md`
 - `docs/adr/0018-i18n-paraglide.md`
+- `docs/adr/0019-cookie-management.md`
