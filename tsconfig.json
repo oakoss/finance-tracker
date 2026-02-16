@@ -27,6 +27,7 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
+    "src/paraglide/**/*.js",
     "eslint.config.js",
     "prettier.config.js",
     "vite.config.ts"

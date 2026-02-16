@@ -83,4 +83,4 @@ runs:
     - name: Typecheck
       if: steps.docs.outputs.docs_only != 'true'
       shell: bash
-      run: pnpm typecheck
+      run: pnpm paraglide:compile && pnpm typecheck
