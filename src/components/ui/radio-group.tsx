@@ -30,7 +30,7 @@ function RadioGroupItem({ className, ...props }: RadioPrimitive.Root.Props) {
         className="group-aria-invalid/radio-group-item:text-destructive flex size-4 items-center justify-center text-white"
         data-slot="radio-group-indicator"
       >
-        <Icons.Circle className="absolute top-1/2 left-1/2 size-2 -translate-1/2  fill-current" />
+        <Icons.Circle className="absolute top-1/2 left-1/2 size-2 -translate-1/2 fill-current" />
       </RadioPrimitive.Indicator>
     </RadioPrimitive.Root>
   );

@@ -192,6 +192,7 @@ export default defineConfig(
       'better-tailwindcss': betterTailwindcss,
     },
     rules: {
+      ...betterTailwindcss.configs.recommended.rules,
       'better-tailwindcss/enforce-consistent-class-order': 'off',
       'better-tailwindcss/enforce-consistent-important-position': 'off',
       'better-tailwindcss/enforce-consistent-line-wrapping': 'off',
@@ -200,11 +201,14 @@ export default defineConfig(
       'better-tailwindcss/no-contradicting-classes': 'off',
       'better-tailwindcss/no-deprecated-classes': 'warn',
       'better-tailwindcss/no-duplicate-classes': 'warn',
+      'better-tailwindcss/no-unknown-classes': 'off',
       'better-tailwindcss/no-unregistered-classes': 'off',
     },
     settings: {
       'better-tailwindcss': {
         entryPoint: 'src/styles/globals.css',
+        rootFontSize: 16,
+        tsconfig: './tsconfig.json',
       },
     },
   },

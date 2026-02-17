@@ -7,7 +7,7 @@ export default function BetterAuthHeader() {
 
   if (isPending) {
     return (
-      <div className="size-8  bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
+      <div className="size-8 bg-neutral-100 dark:bg-neutral-800 animate-pulse" />
     );
   }
 
@@ -15,9 +15,9 @@ export default function BetterAuthHeader() {
     return (
       <div className="flex items-center gap-2">
         {session.user.image ? (
-          <img alt="" className="size-8 " src={session.user.image} />
+          <img alt="" className="size-8" src={session.user.image} />
         ) : (
-          <div className="size-8  bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
+          <div className="size-8 bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
             <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400">
               {session.user.name
                 ? session.user.name.charAt(0).toUpperCase()

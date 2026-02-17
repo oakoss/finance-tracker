@@ -13,7 +13,7 @@ function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError('');
     setLoading(true);
@@ -88,7 +88,7 @@ function LoginPage() {
         >
           {loading ? (
             <span className="flex items-center justify-center gap-2">
-              <span className="size-4  animate-spin rounded-full border-2 border-neutral-400 border-t-white" />
+              <span className="size-4 animate-spin rounded-full border-2 border-neutral-400 border-t-white" />
               <span>Please wait</span>
             </span>
           ) : (

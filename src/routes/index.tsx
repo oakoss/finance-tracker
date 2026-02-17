@@ -14,42 +14,42 @@ function App() {
   const features = [
     {
       key: 'server-functions',
-      icon: <Zap className="size-12  text-cyan-400" />,
+      icon: <Zap className="size-12 text-cyan-400" />,
       title: 'Powerful Server Functions',
       description:
         'Write server-side code that seamlessly integrates with your client components. Type-safe, secure, and simple.',
     },
     {
       key: 'ssr',
-      icon: <Server className="size-12  text-cyan-400" />,
+      icon: <Server className="size-12 text-cyan-400" />,
       title: 'Flexible Server Side Rendering',
       description:
         'Full-document SSR, streaming, and progressive enhancement out of the box. Control exactly what renders where.',
     },
     {
       key: 'api-routes',
-      icon: <RouteIcon className="size-12  text-cyan-400" />,
+      icon: <RouteIcon className="size-12 text-cyan-400" />,
       title: 'API Routes',
       description:
         'Build type-safe API endpoints alongside your application. No separate backend needed.',
     },
     {
       key: 'typed',
-      icon: <Shield className="size-12  text-cyan-400" />,
+      icon: <Shield className="size-12 text-cyan-400" />,
       title: 'Strongly Typed Everything',
       description:
         'End-to-end type safety from server to client. Catch errors before they reach production.',
     },
     {
       key: 'streaming',
-      icon: <Waves className="size-12  text-cyan-400" />,
+      icon: <Waves className="size-12 text-cyan-400" />,
       title: 'Full Streaming Support',
       description:
         'Stream data from server to client progressively. Perfect for AI applications and real-time updates.',
     },
     {
       key: 'modern',
-      icon: <Sparkles className="size-12  text-cyan-400" />,
+      icon: <Sparkles className="size-12 text-cyan-400" />,
       title: 'Next Generation Ready',
       description:
         'Built from the ground up for modern web applications. Deploy anywhere JavaScript runs.',
@@ -57,19 +57,19 @@ function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900">
       <section className="relative py-20 px-6 text-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10"></div>
+        <div className="absolute inset-0 bg-linear-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10"></div>
         <div className="relative max-w-5xl mx-auto">
           <div className="flex items-center justify-center gap-6 mb-6">
             <img
               alt="TanStack Logo"
-              className="size-24  md:size-32 "
+              className="size-24 md:size-32"
               src="/tanstack-circle-logo.png"
             />
-            <h1 className="text-6xl md:text-7xl font-black text-white [letter-spacing:-0.08em]">
+            <h1 className="text-6xl md:text-7xl font-black text-white tracking-[-0.08em]">
               <span className="text-gray-300">TANSTACK</span>{' '}
-              <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
                 START
               </span>
             </h1>

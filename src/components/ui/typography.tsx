@@ -17,7 +17,7 @@ const typographyVariants = cva('', {
       lead: 'text-muted-foreground text-xl',
       list: 'my-6 ml-6 list-disc [&>li]:mt-2',
       muted: 'text-muted-foreground text-sm',
-      p: 'leading-7 [&:not(:first-child)]:mt-6',
+      p: 'leading-7 not-first:mt-6',
       small: 'text-sm leading-none font-medium',
     },
   },

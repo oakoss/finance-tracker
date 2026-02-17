@@ -41,7 +41,7 @@ export function NavUser({
               <AvatarImage alt={user.name} src={user.avatar} />
               <AvatarFallback className="rounded-lg">CN</AvatarFallback>
             </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight">
+            <div className="grid flex-1 text-left text-sm/tight">
               <span className="truncate font-medium">{user.name}</span>
               <span className="text-foreground/70 truncate text-xs">
                 {user.email}
@@ -62,7 +62,7 @@ export function NavUser({
                     <AvatarImage alt={user.name} src={user.avatar} />
                     <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                   </Avatar>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
+                  <div className="grid flex-1 text-left text-sm/tight">
                     <span className="truncate font-medium">{user.name}</span>
                     <span className="text-muted-foreground truncate text-xs">
                       {user.email}

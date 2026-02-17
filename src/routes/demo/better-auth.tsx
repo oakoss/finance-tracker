@@ -19,7 +19,7 @@ function BetterAuthDemo() {
   if (isPending) {
     return (
       <div className="flex items-center justify-center py-10">
-        <div className="size-5  animate-spin rounded-full border-2 border-neutral-200 border-t-neutral-900 dark:border-neutral-800 dark:border-t-neutral-100" />
+        <div className="size-5 animate-spin rounded-full border-2 border-neutral-200 border-t-neutral-900 dark:border-neutral-800 dark:border-t-neutral-100" />
       </div>
     );
   }
@@ -39,9 +39,9 @@ function BetterAuthDemo() {
 
           <div className="flex items-center gap-3">
             {session.user.image ? (
-              <img alt="" className="size-10 " src={session.user.image} />
+              <img alt="" className="size-10" src={session.user.image} />
             ) : (
-              <div className="size-10  bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center">
+              <div className="size-10 bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center">
                 <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
                   {session.user.name
                     ? session.user.name.charAt(0).toUpperCase()
@@ -84,7 +84,7 @@ function BetterAuthDemo() {
     );
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -192,7 +192,7 @@ function BetterAuthDemo() {
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
-                <span className="size-4  animate-spin rounded-full border-2 border-neutral-400 border-t-white dark:border-neutral-600 dark:border-t-neutral-900" />
+                <span className="size-4 animate-spin rounded-full border-2 border-neutral-400 border-t-white dark:border-neutral-600 dark:border-t-neutral-900" />
                 <span>Please wait</span>
               </span>
             ) : isSignUp ? (

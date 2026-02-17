@@ -153,7 +153,7 @@ function NavigationMenuIndicator({
       data-slot="navigation-menu-indicator"
       {...props}
     >
-      <div className="bg-border rounded-tl-sm shadow-md relative top-[60%] size-2  rotate-45" />
+      <div className="bg-border rounded-tl-sm shadow-md relative top-[60%] size-2 rotate-45" />
     </NavigationMenuPrimitive.Icon>
   );
 }

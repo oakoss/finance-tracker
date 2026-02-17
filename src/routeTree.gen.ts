@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoDrizzleRouteImport } from './routes/demo/drizzle'
+import { Route as DemoDashboardRouteImport } from './routes/demo/dashboard'
 import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
 import { Route as AuthSignupRouteImport } from './routes/_auth/signup'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
@@ -31,6 +32,11 @@ const IndexRoute = IndexRouteImport.update({
 const DemoDrizzleRoute = DemoDrizzleRouteImport.update({
   id: '/demo/drizzle',
   path: '/demo/drizzle',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoDashboardRoute = DemoDashboardRouteImport.update({
+  id: '/demo/dashboard',
+  path: '/demo/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoBetterAuthRoute = DemoBetterAuthRouteImport.update({
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/sign-up': typeof AuthSignUpRoute
   '/signup': typeof AuthSignupRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
+  '/demo/dashboard': typeof DemoDashboardRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/sign-up': typeof AuthSignUpRoute
   '/signup': typeof AuthSignupRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
+  '/demo/dashboard': typeof DemoDashboardRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/_auth/signup': typeof AuthSignupRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
+  '/demo/dashboard': typeof DemoDashboardRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/signup'
     | '/demo/better-auth'
+    | '/demo/dashboard'
     | '/demo/drizzle'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/signup'
     | '/demo/better-auth'
+    | '/demo/dashboard'
     | '/demo/drizzle'
     | '/api/auth/$'
   id:
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '/_auth/sign-up'
     | '/_auth/signup'
     | '/demo/better-auth'
+    | '/demo/dashboard'
     | '/demo/drizzle'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
@@ -134,6 +146,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   DemoBetterAuthRoute: typeof DemoBetterAuthRoute
+  DemoDashboardRoute: typeof DemoDashboardRoute
   DemoDrizzleRoute: typeof DemoDrizzleRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
@@ -159,6 +172,13 @@ declare module '@tanstack/react-router' {
       path: '/demo/drizzle'
       fullPath: '/demo/drizzle'
       preLoaderRoute: typeof DemoDrizzleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo/dashboard': {
+      id: '/demo/dashboard'
+      path: '/demo/dashboard'
+      fullPath: '/demo/dashboard'
+      preLoaderRoute: typeof DemoDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/better-auth': {
@@ -228,6 +248,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRouteRoute: AuthRouteRouteWithChildren,
   DemoBetterAuthRoute: DemoBetterAuthRoute,
+  DemoDashboardRoute: DemoDashboardRoute,
   DemoDrizzleRoute: DemoDrizzleRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }

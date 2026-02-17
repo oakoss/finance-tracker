@@ -185,7 +185,7 @@ function ChartTooltipContent({
               <div
                 key={item.dataKey}
                 className={cn(
-                  '[&>svg]:text-muted-foreground flex w-full flex-wrap items-stretch gap-2 [&>svg]:size-2.5 ',
+                  '[&>svg]:text-muted-foreground flex w-full flex-wrap items-stretch gap-2 [&>svg]:size-2.5',
                   indicator === 'dot' && 'items-center',
                 )}
               >
@@ -199,10 +199,10 @@ function ChartTooltipContent({
                       !hideIndicator && (
                         <div
                           className={cn(
-                            'shrink-0 rounded-[2px] border-(--color-border) bg-(--color-bg)',
+                            'shrink-0 rounded-[2px] border-border bg-(--color-bg)',
                             {
                               'my-0.5': nestLabel && indicator === 'dashed',
-                              'size-2.5 ': indicator === 'dot',
+                              'size-2.5': indicator === 'dot',
                               'w-0 border-[1.5px] border-dashed bg-transparent':
                                 indicator === 'dashed',
                               'w-1': indicator === 'line',
@@ -282,14 +282,14 @@ function ChartLegendContent({
             <div
               key={item.value}
               className={cn(
-                '[&>svg]:text-muted-foreground flex items-center gap-1.5 [&>svg]:size-3 ',
+                '[&>svg]:text-muted-foreground flex items-center gap-1.5 [&>svg]:size-3',
               )}
             >
               {itemConfig?.icon && !hideIcon ? (
                 <itemConfig.icon />
               ) : (
                 <div
-                  className="size-2  shrink-0 rounded-[2px]"
+                  className="size-2 shrink-0 rounded-[2px]"
                   style={{
                     backgroundColor: item.color,
                   }}

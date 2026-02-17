@@ -31,7 +31,7 @@ function DemoDrizzle() {
   const router = useRouter();
   const loadedTodos = Route.useLoaderData();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
     const title = formData.get('title') as string;
@@ -77,7 +77,7 @@ function DemoDrizzle() {
             <div className="relative bg-linear-to-br from-indigo-600 to-purple-600 p-3 rounded-lg">
               <img
                 alt="Drizzle Logo"
-                className="size-8  transform group-hover:scale-110 transition-transform duration-300"
+                className="size-8 transform group-hover:scale-110 transition-transform duration-300"
                 src="/drizzle.svg"
               />
             </div>
