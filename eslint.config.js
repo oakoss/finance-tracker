@@ -137,6 +137,7 @@ export default defineConfig(
       '@eslint-react/no-context-provider': 'off',
       '@eslint-react/no-nested-component-definitions': 'off',
       'react-hooks/exhaustive-deps': 'off',
+      'react-hooks/incompatible-library': 'off',
       'react/jsx-no-bind': 'off',
       'react/jsx-no-constructed-context-values': 'off',
       'react/jsx-no-useless-fragment': 'off',

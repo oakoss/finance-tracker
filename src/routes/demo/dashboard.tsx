@@ -1,13 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router';
 import type { CSSProperties } from 'react';
 
-import { ChartAreaInteractive } from '@/components/chart-area-interactive';
-import { DataTable, schema } from '@/components/data-table';
 import { AppSidebar } from '@/components/layouts/app-sidebar';
-import { SectionCards } from '@/components/section-cards';
 import { SiteHeader } from '@/components/site/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { dashboardTableData } from '@/data/dashboard-table-data';
+import { ChartAreaInteractive } from '@/modules/demo/components/chart-area-interactive';
+import { DataTable } from '@/modules/demo/components/data-table';
+import { SectionCards } from '@/modules/demo/components/section-cards';
+import { dashboardTableData } from '@/modules/demo/data/dashboard-table-data';
+import { schema } from '@/modules/demo/data/data-table-schema';
 
 export const Route = createFileRoute('/demo/dashboard')({
   component: DemoDashboard,
@@ -18,7 +19,7 @@ const headerStyles = {
 } as CSSProperties;
 
 function DemoDashboard() {
-  const tableData = schema.array().parse(dashboardTableData);
+  const tableData = schema.array().assert(dashboardTableData);
 
   return (
     <SidebarProvider style={headerStyles}>

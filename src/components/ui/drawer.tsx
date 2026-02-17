@@ -1,14 +1,25 @@
 'use client';
 
+import { DrawerPreview as DrawerPrimitive } from '@base-ui/react/drawer';
 import * as React from 'react';
-import { Drawer as DrawerPrimitive } from 'vaul';
 
 import { cn } from '@/lib/utils';
 
 function Drawer({
+  direction,
   ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Root>) {
-  return <DrawerPrimitive.Root data-slot="drawer" {...props} />;
+}: React.ComponentProps<typeof DrawerPrimitive.Root> & {
+  direction?: 'bottom' | 'left' | 'right' | 'top';
+}) {
+  const swipeDirection =
+    direction === 'bottom' ? 'down' : direction === 'top' ? 'up' : direction;
+  return (
+    <DrawerPrimitive.Root
+      data-slot="drawer"
+      swipeDirection={swipeDirection}
+      {...props}
+    />
+  );
 }
 
 function DrawerTrigger({
@@ -32,9 +43,9 @@ function DrawerClose({
 function DrawerOverlay({
   className,
   ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Overlay>) {
+}: React.ComponentProps<typeof DrawerPrimitive.Backdrop>) {
   return (
-    <DrawerPrimitive.Overlay
+    <DrawerPrimitive.Backdrop
       className={cn(
         'data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 bg-black/80 supports-backdrop-filter:backdrop-blur-xs fixed inset-0 z-50',
         className,
@@ -53,17 +64,27 @@ function DrawerContent({
   return (
     <DrawerPortal data-slot="drawer-portal">
       <DrawerOverlay />
-      <DrawerPrimitive.Content
-        className={cn(
-          'before:bg-background before:border-border flex h-auto flex-col bg-transparent p-4 text-sm before:absolute before:inset-2 before:-z-10 before:rounded-4xl before:border data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[80vh] data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0 data-[vaul-drawer-direction=left]:w-3/4 data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[80vh] data-[vaul-drawer-direction=left]:sm:max-w-sm data-[vaul-drawer-direction=right]:sm:max-w-sm group/drawer-content fixed z-50',
-          className,
-        )}
-        data-slot="drawer-content"
-        {...props}
+      <DrawerPrimitive.Viewport
+        className="fixed inset-0 z-50"
+        data-slot="drawer-viewport"
       >
-        <div className="bg-muted mt-4 h-1.5 w-25 rounded-full mx-auto hidden shrink-0 group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
-        {children}
-      </DrawerPrimitive.Content>
+        <DrawerPrimitive.Popup
+          className={cn(
+            'before:bg-background before:border-border flex h-auto flex-col bg-transparent p-4 before:absolute before:inset-2 before:-z-10 before:rounded-4xl before:border data-[swipe-direction=down]:inset-x-0 data-[swipe-direction=down]:bottom-0 data-[swipe-direction=down]:mt-24 data-[swipe-direction=down]:max-h-[80vh] data-[swipe-direction=left]:inset-y-0 data-[swipe-direction=left]:left-0 data-[swipe-direction=left]:w-3/4 data-[swipe-direction=right]:inset-y-0 data-[swipe-direction=right]:right-0 data-[swipe-direction=right]:w-3/4 data-[swipe-direction=up]:inset-x-0 data-[swipe-direction=up]:top-0 data-[swipe-direction=up]:mb-24 data-[swipe-direction=up]:max-h-[80vh] data-[swipe-direction=left]:sm:max-w-sm data-[swipe-direction=right]:sm:max-w-sm group/drawer-popup fixed z-50',
+            className,
+          )}
+          data-slot="drawer-popup"
+        >
+          <div className="bg-muted mt-4 h-1.5 w-25 rounded-full mx-auto hidden shrink-0 group-data-[swipe-direction=down]/drawer-popup:block" />
+          <DrawerPrimitive.Content
+            className="flex flex-col text-sm"
+            data-slot="drawer-content"
+            {...props}
+          >
+            {children}
+          </DrawerPrimitive.Content>
+        </DrawerPrimitive.Popup>
+      </DrawerPrimitive.Viewport>
     </DrawerPortal>
   );
 }
@@ -72,7 +93,7 @@ function DrawerHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'gap-0.5 p-4 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-center group-data-[vaul-drawer-direction=top]/drawer-content:text-center md:gap-1.5 md:text-left flex flex-col',
+        'gap-0.5 p-4 group-data-[swipe-direction=down]/drawer-popup:text-center group-data-[swipe-direction=up]/drawer-popup:text-center md:gap-1.5 md:text-left flex flex-col',
         className,
       )}
       data-slot="drawer-header"
