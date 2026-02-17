@@ -23,15 +23,23 @@ export const auth = betterAuth({
     requireEmailVerification: true,
     minPasswordLength: env.PASSWORD_MIN_LENGTH,
     resetPasswordTokenExpiresIn: 60 * 60 * 2,
-    sendResetPassword: async ({ user, url }) =>
-      sendResetPasswordEmail({ user, url }),
+    sendResetPassword: async ({ user, url }, request) =>
+      sendResetPasswordEmail({
+        cookie: request?.headers.get('cookie') ?? null,
+        user,
+        url,
+      }),
     revokeSessionsOnPasswordReset: true,
   },
   emailVerification: {
     sendOnSignUp: true,
     sendOnSignIn: true,
-    sendVerificationEmail: async ({ user, url }) =>
-      sendVerificationEmail({ user, url }),
+    sendVerificationEmail: async ({ user, url }, request) =>
+      sendVerificationEmail({
+        cookie: request?.headers.get('cookie') ?? null,
+        user,
+        url,
+      }),
   },
   socialProviders: {
     github: {
@@ -63,10 +71,12 @@ export const auth = betterAuth({
   user: {
     changeEmail: {
       enabled: true,
-      sendChangeEmailConfirmation: async ({ url, user }) =>
+      sendChangeEmailConfirmation: async ({ url, user }, request) =>
         sendVerificationEmail({
+          cookie: request?.headers.get('cookie') ?? null,
           url,
           user: {
+            id: user.id,
             email: user.email,
             name: user.name,
           },
@@ -74,10 +84,12 @@ export const auth = betterAuth({
     },
     deleteUser: {
       enabled: true,
-      sendDeleteAccountVerification: async ({ url, user }) =>
+      sendDeleteAccountVerification: async ({ url, user }, request) =>
         sendVerificationEmail({
+          cookie: request?.headers.get('cookie') ?? null,
           url,
           user: {
+            id: user.id,
             email: user.email,
             name: user.name,
           },

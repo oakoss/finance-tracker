@@ -14,18 +14,20 @@ export function ResetPasswordEmail({ name, url }: ResetPasswordEmailProps) {
 
   return (
     <BaseEmail preview={preview}>
-      <Text className="text-2xl font-semibold text-text">Reset password</Text>
-      <Text className="mt-4 text-base text-muted">
+      <Text className="text-lg font-semibold tracking-tight text-foreground">
+        Reset password
+      </Text>
+      <Text className="mt-4 text-base/relaxed text-muted-foreground">
         {name ? `Hi ${name},` : 'Hi,'} we received a request to reset your
         {` ${appConfig.name}`} password.
       </Text>
       <Button
-        className="mt-6 inline-block rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-slate-900"
+        className="mt-6 inline-block rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
         href={url}
       >
         Reset password
       </Button>
-      <Text className="mt-6 text-xs text-muted">
+      <Text className="mt-6 text-xs text-muted-foreground">
         Or paste this link into your browser: {url}
       </Text>
     </BaseEmail>
