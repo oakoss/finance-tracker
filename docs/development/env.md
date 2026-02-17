@@ -40,3 +40,4 @@ export const env = arkenv(
   are checked consistently.
 - Use `pnpm with:env <command>` to load `.env` during scripts.
 - We do not encrypt `.env` files; production secrets are managed in Coolify.
+- Email configuration and templates: `docs/development/emails.md`.

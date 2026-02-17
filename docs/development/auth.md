@@ -6,6 +6,7 @@ See:
 
 - `docs/adr/0004-better-auth.md` for the library choice.
 - `docs/adr/0009-better-auth-policy.md` for policy defaults.
+- `docs/development/emails.md` for email templates and styling.
 
 ## Key Files
 

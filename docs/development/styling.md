@@ -29,3 +29,20 @@ className={cn(
 
 - Keep CVA definitions outside component bodies.
 - Avoid inline styles unless token-driven.
+
+## Tailwind setup
+
+- Tailwind v4 uses the CSS-based config entry at `src/styles/globals.css`.
+- `eslint-plugin-better-tailwindcss` is configured with:
+  - `entryPoint: src/styles/globals.css`
+  - `tsconfig: ./tsconfig.json`
+  - `rootFontSize: 16`
+- Linting is based on the recommended better-tailwindcss rules with overrides;
+  it catches deprecated or duplicate utilities and enforces shorthand classes
+  (warn). See `eslint.config.js` for the authoritative list of rules.
+
+## Design tokens
+
+- Global tokens live in `src/styles/globals.css` under `:root` and `.dark`.
+- Status tokens (`success`, `info`, `warning`, `destructive`, `invert`) are defined as OKLCH values.
+- The `@theme inline` section mirrors the same tokens for Tailwind usage.

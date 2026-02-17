@@ -15,6 +15,7 @@ Supporting docs:
 - `docs/development/testing.md`
 - `docs/development/i18n.md`
 - `docs/development/toasts.md`
+- `docs/development/uploads.md`
 
 ## Stack (Current Direction)
 
@@ -124,3 +125,6 @@ Later:
 5. Add deployment artifacts (at least documentation; optionally a Dockerfile)
 6. Create GitHub repo and enable Actions + Advanced Security + Renovate
 7. Enable CodeQL workflow once Advanced Security is enabled
+8. Add upload job schemas + migrations
+9. Build upload UI patterns (Table Upload + Compact Upload)
+10. Add upload server functions and status polling

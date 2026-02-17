@@ -14,6 +14,8 @@ Project documentation organized by area.
 - `docs/development/testing.md`
 - `docs/development/secrets.md`
 - `docs/development/env.md`
+- `docs/development/emails.md`
+- `docs/development/uploads.md`
 - `docs/development/updates.md`
 - `docs/development/seo.md`
 - `docs/development/timezones.md`
