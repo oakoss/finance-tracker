@@ -28,7 +28,7 @@ function DialogOverlay({
   return (
     <DialogPrimitive.Backdrop
       className={cn(
-        'data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 bg-black/80 duration-100 supports-backdrop-filter:backdrop-blur-xs fixed inset-0 isolate z-50',
+        'data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 bg-black/10 duration-100 supports-backdrop-filter:backdrop-blur-xs fixed inset-0 isolate z-50',
         className,
       )}
       data-slot="dialog-overlay"
@@ -50,7 +50,7 @@ function DialogContent({
       <DialogOverlay />
       <DialogPrimitive.Popup
         className={cn(
-          'bg-background data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 ring-foreground/5 grid max-w-[calc(100%-2rem)] gap-6 rounded-4xl p-6 text-sm ring-1 duration-100 sm:max-w-md fixed top-1/2 left-1/2 z-50 w-full -translate-1/2 outline-none',
+          'bg-background data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 ring-foreground/10 grid max-w-[calc(100%-2rem)] gap-4 rounded-xl p-4 text-sm ring-1 duration-100 sm:max-w-sm fixed top-1/2 left-1/2 z-50 w-full -translate-1/2 outline-none',
           className,
         )}
         data-slot="dialog-content"
@@ -62,7 +62,7 @@ function DialogContent({
             data-slot="dialog-close"
             render={
               <Button
-                className="absolute top-4 right-4"
+                className="absolute top-2 right-2"
                 size="icon-sm"
                 variant="ghost"
               />
@@ -98,7 +98,7 @@ function DialogFooter({
   return (
     <div
       className={cn(
-        'flex flex-col-reverse gap-2 sm:flex-row sm:justify-end',
+        'bg-muted/50 -mx-4 -mb-4 rounded-b-xl border-t p-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end',
         className,
       )}
       data-slot="dialog-footer"

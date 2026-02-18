@@ -47,7 +47,7 @@ function DrawerOverlay({
   return (
     <DrawerPrimitive.Backdrop
       className={cn(
-        'data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 bg-black/80 supports-backdrop-filter:backdrop-blur-xs fixed inset-0 z-50',
+        'data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 bg-black/10 supports-backdrop-filter:backdrop-blur-xs fixed inset-0 z-50',
         className,
       )}
       data-slot="drawer-overlay"
@@ -70,12 +70,12 @@ function DrawerContent({
       >
         <DrawerPrimitive.Popup
           className={cn(
-            'before:bg-background before:border-border flex h-auto flex-col bg-transparent p-4 before:absolute before:inset-2 before:-z-10 before:rounded-4xl before:border data-[swipe-direction=down]:inset-x-0 data-[swipe-direction=down]:bottom-0 data-[swipe-direction=down]:mt-24 data-[swipe-direction=down]:max-h-[80vh] data-[swipe-direction=left]:inset-y-0 data-[swipe-direction=left]:left-0 data-[swipe-direction=left]:w-3/4 data-[swipe-direction=right]:inset-y-0 data-[swipe-direction=right]:right-0 data-[swipe-direction=right]:w-3/4 data-[swipe-direction=up]:inset-x-0 data-[swipe-direction=up]:top-0 data-[swipe-direction=up]:mb-24 data-[swipe-direction=up]:max-h-[80vh] data-[swipe-direction=left]:sm:max-w-sm data-[swipe-direction=right]:sm:max-w-sm group/drawer-popup fixed z-50',
+            'before:bg-background before:border-border flex h-auto flex-col bg-transparent p-4 before:absolute before:inset-2 before:-z-10 before:rounded-lg before:border data-[swipe-direction=down]:inset-x-0 data-[swipe-direction=down]:bottom-0 data-[swipe-direction=down]:mt-24 data-[swipe-direction=down]:max-h-[80vh] data-[swipe-direction=left]:inset-y-0 data-[swipe-direction=left]:start-0 data-[swipe-direction=left]:w-3/4 data-[swipe-direction=right]:inset-y-0 data-[swipe-direction=right]:end-0 data-[swipe-direction=right]:w-3/4 data-[swipe-direction=up]:inset-x-0 data-[swipe-direction=up]:top-0 data-[swipe-direction=up]:mb-24 data-[swipe-direction=up]:max-h-[80vh] data-[swipe-direction=left]:sm:max-w-sm data-[swipe-direction=right]:sm:max-w-sm group/drawer-popup fixed z-50',
             className,
           )}
           data-slot="drawer-popup"
         >
-          <div className="bg-muted mt-4 h-1.5 w-25 rounded-full mx-auto hidden shrink-0 group-data-[swipe-direction=down]/drawer-popup:block" />
+          <div className="bg-muted mt-4 h-1 w-25 rounded-full mx-auto hidden shrink-0 group-data-[swipe-direction=down]/drawer-popup:block" />
           <DrawerPrimitive.Content
             className="flex flex-col text-sm"
             data-slot="drawer-content"
@@ -93,7 +93,7 @@ function DrawerHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'gap-0.5 p-4 group-data-[swipe-direction=down]/drawer-popup:text-center group-data-[swipe-direction=up]/drawer-popup:text-center md:gap-1.5 md:text-left flex flex-col',
+        'gap-0.5 p-4 group-data-[swipe-direction=down]/drawer-popup:text-center group-data-[swipe-direction=up]/drawer-popup:text-center md:gap-0.5 md:text-start flex flex-col',
         className,
       )}
       data-slot="drawer-header"

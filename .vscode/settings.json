@@ -21,6 +21,8 @@
   },
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.preferences.autoImportFileExcludePatterns": [
+    "@base-ui/react",
+    "@react-email/components",
     "^lucide-react/dist/lucide-react.suffixed$",
     "radix-ui",
     "react-day-picker",

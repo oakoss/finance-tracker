@@ -1,24 +1,13 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
-@import '@fontsource/geist-sans';
-@import '@fontsource/geist-mono';
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Fonts */
-  --base-font-sans:
-    'Geist Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
-    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
-    'Helvetica Neue', sans-serif;
-  --base-font-mono:
-    'Geist Mono', 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono',
-    'Courier New', monospace;
-
-  /* Surface + UI tokens */
-  --background: oklch(1 0 0);
-  --popover: oklch(1 0 0);
+  /* UI tokens */
   --primary: oklch(0.21 0.006 285.885);
   --secondary: oklch(0.967 0.001 286.375);
   --muted: oklch(0.967 0.001 286.375);
@@ -27,15 +16,21 @@
   --input: oklch(0.92 0.004 286.32);
   --ring: oklch(0.705 0.015 286.067);
 
-  /* Foregrounds */
-  --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-  --popover-foreground: oklch(0.141 0.005 285.823);
+  /* UI tokens foregrounds */
   --primary-foreground: oklch(0.985 0 0);
   --secondary-foreground: oklch(0.21 0.006 285.885);
   --muted-foreground: oklch(0.552 0.016 285.938);
   --accent-foreground: oklch(0.21 0.006 285.885);
+
+  /* Surface */
+  --background: oklch(1 0 0);
+  --card: oklch(1 0 0);
+  --popover: oklch(1 0 0);
+
+  /* Surface foregrounds */
+  --foreground: oklch(0.141 0.005 285.823);
+  --card-foreground: oklch(0.141 0.005 285.823);
+  --popover-foreground: oklch(0.141 0.005 285.823);
 
   /* Charts */
   --chart-1: oklch(0.646 0.222 41.116);
@@ -54,6 +49,7 @@
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.705 0.015 286.067);
 
+  /* Sidebar foregrounds */
   --sidebar-foreground: oklch(0.141 0.005 285.823);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
@@ -72,9 +68,7 @@
 }
 
 .dark {
-  /* Surface + UI tokens */
-  --background: oklch(0.141 0.005 285.823);
-  --popover: oklch(0.21 0.006 285.885);
+  /* UI tokens */
   --primary: oklch(0.92 0.004 286.32);
   --secondary: oklch(0.274 0.006 286.033);
   --muted: oklch(0.274 0.006 286.033);
@@ -83,15 +77,21 @@
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.552 0.016 285.938);
 
-  /* Foregrounds */
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.985 0 0);
-  --popover-foreground: oklch(0.985 0 0);
+  /* UI tokens foregrounds */
   --primary-foreground: oklch(0.21 0.006 285.885);
   --secondary-foreground: oklch(0.985 0 0);
   --muted-foreground: oklch(0.705 0.015 286.067);
   --accent-foreground: oklch(0.985 0 0);
+
+  /* Surface */
+  --background: oklch(0.141 0.005 285.823);
+  --card: oklch(0.21 0.006 285.885);
+  --popover: oklch(0.21 0.006 285.885);
+
+  /* Surface foregrounds */
+  --foreground: oklch(0.985 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover-foreground: oklch(0.985 0 0);
 
   /* Charts */
   --chart-1: oklch(0.488 0.243 264.376);
@@ -107,32 +107,37 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.552 0.016 285.938);
 
+  /* Sidebar foregrounds */
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
 
   /* Status */
   --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
   --success: oklch(0.696 0.17 162.48);
-  --success-foreground: oklch(0.596 0.145 163.225);
   --info: oklch(0.606 0.25 292.717);
-  --info-foreground: oklch(0.541 0.281 293.009);
   --warning: oklch(0.795 0.184 86.047);
-  --warning-foreground: oklch(0.681 0.162 75.834);
   --invert: oklch(0.37 0.013 285.805);
+
+  /* Status foregrounds */
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --success-foreground: oklch(0.596 0.145 163.225);
+  --info-foreground: oklch(0.541 0.281 293.009);
+  --warning-foreground: oklch(0.681 0.162 75.834);
   --invert-foreground: oklch(0.985 0 0);
 }
 
 @theme inline {
   /* Fonts */
-  --font-sans: var(--base-font-sans);
-  --font-mono: var(--base-font-mono);
+  --font-sans:
+    'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
+  --font-mono:
+    'Geist Mono Variable', 'SFMono-Regular', Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
 
-  /* Surface + UI tokens */
-  --color-background: var(--background);
-  --color-card: var(--card);
-  --color-popover: var(--popover);
+  /* UI tokens */
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
   --color-muted: var(--muted);
@@ -141,14 +146,21 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* Foregrounds */
-  --color-foreground: var(--foreground);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover-foreground: var(--popover-foreground);
+  /* UI tokens foregrounds */
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent-foreground: var(--accent-foreground);
+
+  /* Surface */
+  --color-background: var(--background);
+  --color-card: var(--card);
+  --color-popover: var(--popover);
+
+  /* Surface foregrounds */
+  --color-foreground: var(--foreground);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover-foreground: var(--popover-foreground);
 
   /* Charts */
   --color-chart-1: var(--chart-1);
@@ -173,21 +185,24 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
+  /* Sidebar foregrounds */
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
 
   /* Status */
   --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-invert-foreground: var(--invert-foreground);
-  --color-invert: var(--invert);
-  --color-warning-foreground: var(--warning-foreground);
-  --color-warning: var(--warning);
-  --color-info-foreground: var(--info-foreground);
   --color-info: var(--info);
-  --color-success-foreground: var(--success-foreground);
+  --color-invert: var(--invert);
   --color-success: var(--success);
+  --color-warning: var(--warning);
+
+  /* Status foregrounds */
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-info-foreground: var(--info-foreground);
+  --color-invert-foreground: var(--invert-foreground);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning-foreground: var(--warning-foreground);
 }
 
 @layer base {
@@ -196,6 +211,7 @@
   }
   html {
     font-size: 16px;
+    @apply font-sans;
   }
   body {
     @apply m-0 bg-background text-foreground;

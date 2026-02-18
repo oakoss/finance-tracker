@@ -5,13 +5,13 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const badgeVariants = cva(
-  'relative inline-flex w-fit shrink-0 items-center justify-center whitespace-nowrap rounded-4xl border border-transparent font-medium outline-none transition-all has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive overflow-hidden group/badge [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*=size-])]:size-3',
+  'rounded-4xl border border-transparent font-medium transition-all has-data-[icon=inline-end]:pe-1.5 has-data-[icon=inline-start]:ps-1.5 [&>svg]:size-3! inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive overflow-hidden group/badge',
   {
     variants: {
       variant: {
         default: 'bg-primary text-primary-foreground [a]:hover:bg-primary/80',
         destructive:
-          'border-destructive/30 bg-destructive/4 text-destructive [a]:hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40',
+          'bg-destructive/10 [a]:hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 text-destructive dark:bg-destructive/20',
         'destructive-light':
           'bg-destructive/10 border-none text-destructive-foreground dark:bg-destructive/20',
         'destructive-outline':
@@ -30,7 +30,7 @@ const badgeVariants = cva(
           'bg-background border-border text-invert-foreground dark:bg-input/30',
         link: 'text-primary underline-offset-4 hover:underline',
         outline:
-          'border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground bg-input/30',
+          'border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground',
         'primary-light':
           'bg-primary/10 border-none text-primary dark:bg-primary/20',
         'primary-outline':
@@ -79,7 +79,7 @@ function Badge({
     defaultTagName: 'span',
     props: mergeProps<'span'>(
       {
-        className: cn(badgeVariants({ className, size, variant })),
+        className: cn(badgeVariants({ size, variant }), className),
       },
       props,
     ),
