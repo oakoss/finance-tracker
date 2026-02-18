@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router';
 
+import { ModeToggle } from '@/components/mode-toggle';
 import BetterAuthHeader from '@/integrations/better-auth/header-user';
 
 export default function Header() {
@@ -28,7 +29,10 @@ export default function Header() {
             </Link>
           </nav>
         </div>
-        <BetterAuthHeader />
+        <div className="flex items-center gap-4">
+          <ModeToggle />
+          <BetterAuthHeader />
+        </div>
       </div>
     </header>
   );

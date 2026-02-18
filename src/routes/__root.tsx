@@ -1,5 +1,6 @@
 import { TanStackDevtools } from '@tanstack/react-devtools';
 import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router';
+import { ThemeProvider } from 'next-themes';
 
 import Header from '@/components/header';
 import { devtoolsPlugins } from '@/lib/devtools';
@@ -32,20 +33,30 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang={getLocale()}>
+    <html suppressHydrationWarning lang={getLocale()}>
       <head>
         <HeadContent />
       </head>
       <body>
-        <Header />
-        {children}
-        <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-          }}
-          plugins={devtoolsPlugins}
-        />
-        <Scripts />
+        <ThemeProvider
+          disableTransitionOnChange
+          enableSystem
+          attribute="class"
+          defaultTheme="system"
+        >
+          <Header />
+          {/* Main content wrapper */}
+          <main id="root-content">{children}</main>
+          {/* Portal root for overlays */}
+          <div id="portal-root"></div>
+          <TanStackDevtools
+            config={{
+              position: 'bottom-right',
+            }}
+            plugins={devtoolsPlugins}
+          />
+          <Scripts />
+        </ThemeProvider>
       </body>
     </html>
   );
