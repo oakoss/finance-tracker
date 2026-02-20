@@ -1,4 +1,4 @@
-import { TransactionalEmailsApi } from '@getbrevo/brevo';
+import { BrevoClient } from '@getbrevo/brevo';
 
 import { env } from '@/env';
 
@@ -15,8 +15,7 @@ type SendEmailOptions = {
   replyTo?: EmailRecipient;
 };
 
-const brevoClient = new TransactionalEmailsApi();
-brevoClient.setApiKey(0, env.BREVO_API_KEY);
+const brevo = new BrevoClient({ apiKey: env.BREVO_API_KEY });
 
 const defaultSender = {
   email: env.EMAIL_FROM,
@@ -24,15 +23,13 @@ const defaultSender = {
 };
 
 const defaultReplyTo = env.EMAIL_REPLY_TO
-  ? {
-      email: env.EMAIL_REPLY_TO,
-    }
+  ? { email: env.EMAIL_REPLY_TO }
   : undefined;
 
 export async function sendEmail(options: SendEmailOptions) {
   const { subject, html, text, to, replyTo } = options;
 
-  await brevoClient.sendTransacEmail({
+  await brevo.transactionalEmails.sendTransacEmail({
     sender: defaultSender,
     to,
     subject,
