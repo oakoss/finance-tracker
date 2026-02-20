@@ -43,6 +43,8 @@ pnpm typecheck
 
 ```bash
 pnpm test
+pnpm test:watch
+pnpm test:coverage
 ```
 
 Run a single test (Vitest):
@@ -57,9 +59,11 @@ Run a single file:
 pnpm test -- path/to/file.test.ts
 ```
 
-E2E tests are scaffolded in CI but not configured yet.
+Vitest config: `vitest.config.ts` (separate from `vite.config.ts`).
+Test setup: `test/setup.ts`.
+Vitest globals are enabled (`describe`, `it`, `expect` — no imports needed).
 
-Plan: add unit and E2E tests; keep commands in `package.json` in sync with CI.
+E2E tests are scaffolded in CI but not configured yet.
 
 ### Database
 
@@ -140,13 +144,26 @@ pnpm schema:auth
 
 ## Environment Variables
 
-Copy `.env.example` to `.env`.
-Key groups:
+Local dev uses 1Password Environments (mounts `.env` automatically).
+Alternatively, copy `.env.example` to `.env` for dummy values.
 
-- Better Auth: `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET`, `PASSWORD_MIN_LENGTH`, `TRUSTED_ORIGINS`
-- DB: `DATABASE_URL`
-- Brevo: `BREVO_API_KEY`, `EMAIL_FROM`, `EMAIL_FROM_NAME`, `EMAIL_REPLY_TO`
+Env schema + validation: `src/configs/env.ts` (lazy proxy, validates on first access).
+Client env typing: `src/vite-env.d.ts` (augments `import.meta.env`).
+
+Env files are loaded via dotenvx `flow` convention in config files
+(`vite.config.ts`, `vitest.config.ts`, `drizzle.config.ts`).
+Scripts without a config file use `pnpm with:env` (`start`, `schema:auth:generate`).
+
+Set `SKIP_ENV_VALIDATION=true` to bypass validation in CI builds.
+
+Key groups (see `.env.example` for full list):
+
+- Auth: `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET`, `PASSWORD_MIN_LENGTH`, `TRUSTED_ORIGINS`
 - OAuth: `GITHUB_CLIENT_ID/SECRET`, `GOOGLE_CLIENT_ID/SECRET`
+- DB: `DATABASE_URL`
+- Email: `BREVO_API_KEY`, `EMAIL_FROM`, `EMAIL_FROM_NAME`, `EMAIL_REPLY_TO`
+- Logging: `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_SERVICE_NAME`, `LOG_HASH_SECRET`
+- Client: `VITE_APP_TITLE`, `VITE_CLIENT_LOGGING_ENABLED`, `VITE_CLIENT_LOG_LEVEL`
 
 ## CI / Workflows
 
