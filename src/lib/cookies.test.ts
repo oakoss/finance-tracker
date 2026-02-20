@@ -62,6 +62,17 @@ describe('setServerCookie', () => {
     expect(cookies.get('existing')).toBe('keep');
     expect(cookies.get('added')).toBe('val');
   });
+
+  it('applies custom options', () => {
+    const cookies = setServerCookie('', 'token', 'abc', {
+      path: '/api',
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: 86_400,
+    });
+    expect(cookies.get('token')).toBe('abc');
+  });
 });
 
 describe('serializeServerCookie', () => {

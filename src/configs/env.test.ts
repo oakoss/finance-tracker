@@ -91,6 +91,20 @@ describe('env lazy proxy', () => {
       }),
     );
   });
+
+  it('propagates validation errors through the proxy', async () => {
+    const arkenv = await import('arkenv');
+    const mockedArkenv = arkenv.default as unknown as MockInstance;
+    mockedArkenv.mockImplementation(() => {
+      throw new Error('Validation failed: DATABASE_URL is required');
+    });
+
+    const { env } = await import('@/configs/env');
+
+    expect(() => env.DATABASE_URL).toThrow(
+      'Validation failed: DATABASE_URL is required',
+    );
+  });
 });
 
 describe('Env schema export', () => {

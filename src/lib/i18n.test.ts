@@ -18,10 +18,16 @@ vi.mock('@/paraglide/runtime', () => ({
   getLocale: vi.fn(() => 'en-US'),
 }));
 
-// Widen mock type to accept any locale string (Paraglide types constrain to available locales)
-const mockedGetLocale = vi.mocked(getLocale) as unknown as ReturnType<
+// Widen to accept arbitrary locale strings (Paraglide constrains to available locales)
+const mockedGetLocale = getLocale as unknown as ReturnType<
   typeof vi.fn<() => string>
 >;
+
+// restoreMocks resets vi.fn(() => 'en-US') to return undefined (not the factory
+// default), so we must explicitly set the default before each test.
+beforeEach(() => {
+  mockedGetLocale.mockReturnValue('en-US');
+});
 
 describe('i18n constants', () => {
   it('has expected defaults', () => {
@@ -67,7 +73,6 @@ describe('formatCurrency', () => {
     const result = formatCurrency({ amountCents: 100_000, currency: 'JPY' });
     // JPY has no decimal places
     expect(result).toContain('1,000');
-    mockedGetLocale.mockReturnValue('en-US');
   });
 });
 
