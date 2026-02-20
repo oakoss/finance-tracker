@@ -8,39 +8,7 @@ import { createOTLPDrain } from 'evlog/otlp';
 import { createDrainPipeline } from 'evlog/pipeline';
 import type { NitroApp } from 'nitro/types';
 
-/**
- * Keys that must never be forwarded to the drain (last-line-of-defense).
- * Sanitization at the source is the primary strategy; this is a safety net.
- */
-const SENSITIVE_KEYS = new Set([
-  'apikey',
-  'api_key',
-  'authorization',
-  'cookie',
-  'password',
-  'secret',
-  'token',
-]);
-
-const sanitizeEvent = (
-  obj: Record<string, unknown>,
-): Record<string, unknown> => {
-  const result: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(obj)) {
-    if (SENSITIVE_KEYS.has(key.toLowerCase())) {
-      result[key] = '[REDACTED]';
-    } else if (
-      value !== null &&
-      typeof value === 'object' &&
-      !Array.isArray(value)
-    ) {
-      result[key] = sanitizeEvent(value as Record<string, unknown>);
-    } else {
-      result[key] = value;
-    }
-  }
-  return result;
-};
+import { sanitizeEvent } from './sanitize';
 
 const enrichers = [
   createUserAgentEnricher(),
