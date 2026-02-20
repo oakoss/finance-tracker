@@ -1,6 +1,6 @@
 import { BrevoClient } from '@getbrevo/brevo';
 
-import { env } from '@/env';
+import { env } from '@/configs/env';
 
 type EmailRecipient = {
   email: string;

@@ -2,7 +2,7 @@
 
 import type { ImportMetaEnvAugmented as ArkenvImportMetaEnvAugmented } from '@arkenv/vite-plugin';
 
-import type { Env } from '../vite.config';
+import type { Env } from '@/configs/env';
 
 type ImportMetaEnvAugmented = ArkenvImportMetaEnvAugmented<typeof Env>;
 

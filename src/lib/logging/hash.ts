@@ -1,6 +1,6 @@
 import { createHmac } from 'node:crypto';
 
-import { env } from '@/env';
+import { env } from '@/configs/env';
 
 /**
  * Hashes an ID using HMAC-SHA256 with LOG_HASH_SECRET.

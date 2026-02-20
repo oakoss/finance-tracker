@@ -3,8 +3,8 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { tanstackStartCookies } from 'better-auth/tanstack-start';
 
 import { appConfig } from '@/configs/app';
+import { env } from '@/configs/env';
 import { db } from '@/db';
-import { env } from '@/env';
 import {
   sendResetPasswordEmail,
   sendVerificationEmail,

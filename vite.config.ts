@@ -1,4 +1,5 @@
 import arkenvVitePlugin from '@arkenv/vite-plugin';
+import { config } from '@dotenvx/dotenvx';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import tailwindcss from '@tailwindcss/vite';
 import { devtools } from '@tanstack/devtools-vite';
@@ -9,15 +10,16 @@ import { nitro } from 'nitro/vite';
 import { defineConfig } from 'vite';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 
-import { Env } from './src/env';
+import { Env } from './src/configs/env';
 
-export { Env } from './src/env';
+// Auto-load .env files using dotenv-flow convention
+config({ convention: 'flow', quiet: true });
 
-const IS_PRODUCTION = process.env.OTEL_RESOURCE_ATTRIBUTES?.includes(
+const isProduction = process.env.OTEL_RESOURCE_ATTRIBUTES?.includes(
   'deployment.environment=production',
 );
 
-const config = defineConfig({
+export default defineConfig({
   nitro: {
     plugins: ['./src/lib/logging/drain.ts'],
     modules: [
@@ -38,10 +40,10 @@ const config = defineConfig({
         sampling: {
           rates: {
             // debug off in production
-            debug: IS_PRODUCTION ? 0 : 100,
+            debug: isProduction ? 0 : 100,
             error: 100,
             // 10% info sampling in production; always kept in development
-            info: IS_PRODUCTION ? 10 : 100,
+            info: isProduction ? 10 : 100,
             warn: 100,
           },
           // Always keep error responses (4xx/5xx) and slow requests
@@ -72,5 +74,3 @@ const config = defineConfig({
     port: 3000,
   },
 });
-
-export default config;
