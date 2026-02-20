@@ -82,6 +82,7 @@
     "universal-cookie": "^8.0.1"
   },
   "devDependencies": {
+    "@arkenv/vite-plugin": "^0.0.30",
     "@commitlint/config-conventional": "^20.4.1",
     "@dotenvx/dotenvx": "^1.52.0",
     "@eslint-react/eslint-plugin": "^2.13.0",
