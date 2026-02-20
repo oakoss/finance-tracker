@@ -1,7 +1,5 @@
 // @vitest-environment node
 
-import { describe, expect, it } from 'vitest';
-
 import { hashId } from './hash';
 
 describe('hashId', () => {
