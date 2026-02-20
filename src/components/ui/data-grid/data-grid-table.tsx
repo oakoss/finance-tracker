@@ -460,7 +460,7 @@ function DataGridTableRowSelect<TData>({ row }: { row: Row<TData> }) {
     <>
       <div
         className={cn(
-          'bg-primary absolute start-0 inset-y-0 hidden w-0.5',
+          'bg-primary absolute inset-s-0 inset-y-0 hidden w-0.5',
           row.getIsSelected() && 'block',
         )}
       ></div>
