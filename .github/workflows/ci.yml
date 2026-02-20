@@ -51,6 +51,8 @@ jobs:
         uses: ./.github/actions/setup
       - name: Create env file
         run: cp .env.example .env
+      - name: Compile paraglide
+        run: pnpm paraglide:compile
       - name: Unit tests
         run: pnpm test:coverage
       - name: Coverage report
