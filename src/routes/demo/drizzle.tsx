@@ -4,13 +4,19 @@ import { desc } from 'drizzle-orm';
 
 import { db } from '@/db/index';
 import { todos } from '@/db/schema';
+import { clientLog } from '@/lib/logging/client-logger';
+import { createError, log } from '@/lib/logging/evlog';
 
 const getTodos = createServerFn({
   method: 'GET',
 }).handler(async () => {
-  return await db.query.todos.findMany({
+  const result = await db.query.todos.findMany({
     orderBy: [desc(todos.createdAt)],
   });
+
+  log.info({ action: 'todo.list', outcome: { count: result.length } });
+
+  return result;
 });
 
 const createTodo = createServerFn({
@@ -18,8 +24,19 @@ const createTodo = createServerFn({
 })
   .inputValidator((data: { title: string }) => data)
   .handler(async ({ data }) => {
-    await db.insert(todos).values({ title: data.title });
-    return { success: true };
+    try {
+      await db.insert(todos).values({ title: data.title });
+      log.info({ action: 'todo.create', outcome: { success: true } });
+      return { success: true };
+    } catch (error) {
+      throw createError({
+        message: 'Failed to create todo.',
+        status: 500,
+        why: error instanceof Error ? error.message : String(error),
+        fix: 'Check the database connection and try again.',
+        cause: error instanceof Error ? error : new Error(String(error)),
+      });
+    }
   });
 
 export const Route = createFileRoute('/demo/drizzle')({
@@ -43,8 +60,7 @@ function DemoDrizzle() {
       void router.invalidate();
       (e.target as HTMLFormElement).reset();
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to create todo:', error);
+      clientLog.error({ action: 'todo.create', error: String(error) });
     }
   };
 

@@ -15,8 +15,16 @@ export const Env = type({
   GOOGLE_CLIENT_SECRET: 'string > 0',
   PASSWORD_MIN_LENGTH: '6 <= number.integer <= 128',
   TRUSTED_ORIGINS: 'string > 0',
+  // Logging (evlog + SigNoz via OTLP) — optional; if unset, logs go to stdout only
+  'OTEL_EXPORTER_OTLP_ENDPOINT?': 'string.url',
+  'OTEL_SERVICE_NAME?': 'string > 0',
+  'OTEL_RESOURCE_ATTRIBUTES?': 'string > 0',
+  // Min 32-char secret for HMAC-SHA256 ID hashing in audit logs
+  LOG_HASH_SECRET: "string >= 32 = 'dev-placeholder-secret-do-not-use-in-prod'",
   // Client-side vars (VITE_* prefix — available in browser via import.meta.env)
   'VITE_APP_TITLE?': 'string > 0',
+  VITE_CLIENT_LOGGING_ENABLED: "'true' | 'false' = 'false'",
+  VITE_CLIENT_LOG_LEVEL: "'debug' | 'info' | 'warn' | 'error' = 'warn'",
 });
 
 export const env = arkenv(Env, {

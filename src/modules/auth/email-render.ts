@@ -1,8 +1,7 @@
 import { render } from '@react-email/render';
 import { type ReactElement } from 'react';
 
-import { errorIds } from '@/lib/error-ids';
-import { logError } from '@/lib/logger';
+import { createError } from '@/lib/logging/evlog';
 import { baseLocale, getLocale, setLocale } from '@/paraglide/runtime';
 
 export type EmailLocale = ReturnType<typeof getLocale>;
@@ -23,20 +22,13 @@ export async function renderEmail(
     try {
       await setLocale(nextLocale, { reload: false });
     } catch (error) {
-      const setError =
-        error instanceof Error
-          ? error
-          : new Error('Failed to set email locale.', { cause: error });
-      logError({
-        context: {
-          nextLocale,
-          previousLocale: resolvedPreviousLocale,
-        },
-        error: setError,
-        errorId: errorIds.authEmailLocaleSetFailed,
-        message: 'Failed to set email locale before rendering.',
+      throw createError({
+        message: 'Failed to set email locale.',
+        status: 500,
+        why: `Could not switch locale from "${resolvedPreviousLocale}" to "${nextLocale}".`,
+        fix: 'Check that the locale is supported and paraglide is configured correctly.',
+        cause: error instanceof Error ? error : new Error(String(error)),
       });
-      throw setError;
     }
   }
 
@@ -48,20 +40,12 @@ export async function renderEmail(
     const text = await render(element, { plainText: true });
     renderResult = { html, text };
   } catch (error) {
-    const componentName =
-      typeof element.type === 'string' ? element.type : element.type?.name;
-    renderError =
-      error instanceof Error
-        ? error
-        : new Error('Email render failed.', { cause: error });
-    logError({
-      context: {
-        component: componentName ?? 'unknown',
-        locale: nextLocale,
-      },
-      error: renderError,
-      errorId: errorIds.authEmailRenderFailed,
-      message: 'Failed to render auth email.',
+    renderError = createError({
+      message: 'Email render failed.',
+      status: 500,
+      why: 'The React Email component threw during rendering.',
+      fix: 'Check the email template for runtime errors or missing props.',
+      cause: error instanceof Error ? error : new Error(String(error)),
     });
   }
 
@@ -69,22 +53,21 @@ export async function renderEmail(
     try {
       await setLocale(resolvedPreviousLocale, { reload: false });
     } catch (error) {
-      const resetError =
-        error instanceof Error
-          ? error
-          : new Error('Failed to reset email locale.', { cause: error });
-      logError({
-        context: {
-          nextLocale,
-          previousLocale: resolvedPreviousLocale,
-        },
-        error: resetError,
-        errorId: errorIds.authEmailLocaleResetFailed,
+      const resetError = createError({
         message: 'Failed to reset email locale.',
+        status: 500,
+        why: `Could not restore locale to "${resolvedPreviousLocale}" after rendering.`,
+        fix: 'Check paraglide locale configuration.',
+        cause: error instanceof Error ? error : new Error(String(error)),
       });
       if (renderError) {
-        throw new Error('Email render failed and locale reset failed.', {
-          cause: [renderError, resetError],
+        throw createError({
+          message: 'Email render failed and locale reset failed.',
+          status: 500,
+          why: 'Both the render and the locale reset threw errors.',
+          cause: new Error('Compound failure', {
+            cause: [renderError, resetError],
+          }),
         });
       }
       throw resetError;
@@ -96,16 +79,12 @@ export async function renderEmail(
   }
 
   if (!renderResult) {
-    const fallbackError = new Error('Email render failed with no result.');
-    logError({
-      context: {
-        locale: nextLocale,
-      },
-      error: fallbackError,
-      errorId: errorIds.authEmailRenderFailed,
-      message: 'Email render returned no result without throwing.',
+    throw createError({
+      message: 'Email render returned no result.',
+      status: 500,
+      why: 'Render completed without throwing but produced no output.',
+      fix: 'Check the email template returns valid JSX.',
     });
-    throw fallbackError;
   }
 
   return renderResult;
