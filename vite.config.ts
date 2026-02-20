@@ -15,11 +15,12 @@ import { Env } from './src/configs/env';
 // Auto-load .env files using dotenv-flow convention
 config({ convention: 'flow', quiet: true });
 
-const isProduction = process.env.OTEL_RESOURCE_ATTRIBUTES?.includes(
-  'deployment.environment=production',
-);
+const isProduction = process.env.NODE_ENV === 'production';
 
 export default defineConfig({
+  build: {
+    target: 'es2023',
+  },
   nitro: {
     plugins: ['./src/lib/logging/drain.ts'],
     modules: [
