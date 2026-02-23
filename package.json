@@ -95,6 +95,7 @@
     "@tanstack/eslint-plugin-query": "^5.91.4",
     "@tanstack/eslint-plugin-router": "^1.161.4",
     "@tanstack/react-devtools": "^0.9.6",
+    "@tanstack/react-form-devtools": "^0.2.16",
     "@tanstack/react-query-devtools": "^5.91.3",
     "@tanstack/react-router-devtools": "^1.162.6",
     "@testing-library/dom": "^10.4.1",
