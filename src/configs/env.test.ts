@@ -2,12 +2,11 @@
 
 import { type MockInstance, vi } from 'vitest';
 
-// Mock arkenv — we don't want real validation in unit tests
+// Mock arkenv — we don't want real validation in unit tests.
+// As of arkenv v0.10, `type` is a named export from the main entry point
+// (the `arkenv/arktype` subpath was removed).
 vi.mock('arkenv', () => ({
   default: vi.fn(),
-}));
-
-vi.mock('arkenv/arktype', () => ({
   type: vi.fn((schema: Record<string, string>) => schema),
 }));
 
