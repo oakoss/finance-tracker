@@ -1,5 +1,4 @@
-import arkenv from 'arkenv';
-import { type } from 'arkenv/arktype';
+import arkenv, { type } from 'arkenv';
 
 export const Env = type({
   BETTER_AUTH_URL: 'string.url',
