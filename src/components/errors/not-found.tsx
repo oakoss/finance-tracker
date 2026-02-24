@@ -1,7 +1,5 @@
-import { Link } from '@tanstack/react-router';
-
 import { Icons } from '@/components/icons';
-import { Button } from '@/components/ui/button';
+import { RouterButton } from '@/components/ui/button';
 import {
   TypographyH1,
   TypographyMuted,
@@ -22,7 +20,7 @@ function NotFound() {
         </TypographyP>
         <TypographyMuted>HTTP 404</TypographyMuted>
       </div>
-      <Button render={<Link to="/" />}>Go home</Button>
+      <RouterButton to="/">Go home</RouterButton>
     </div>
   );
 }

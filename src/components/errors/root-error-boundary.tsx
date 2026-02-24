@@ -1,7 +1,7 @@
-import { type ErrorComponentProps, Link } from '@tanstack/react-router';
+import { type ErrorComponentProps } from '@tanstack/react-router';
 
 import { Icons } from '@/components/icons';
-import { Button } from '@/components/ui/button';
+import { Button, RouterButton } from '@/components/ui/button';
 import {
   TypographyH1,
   TypographyMuted,
@@ -32,7 +32,7 @@ function RootErrorBoundary({ error, reset }: ErrorComponentProps) {
         >
           Try again
         </Button>
-        <Button render={<Link to="/" />}>Go home</Button>
+        <RouterButton to="/">Go home</RouterButton>
       </div>
     </div>
   );
