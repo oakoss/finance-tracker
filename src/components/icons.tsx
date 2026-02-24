@@ -1,6 +1,7 @@
 import {
   ArrowDownIcon,
   ArrowLeftIcon,
+  ArrowLeftRightIcon,
   ArrowLeftToLineIcon,
   ArrowRightIcon,
   ArrowRightToLineIcon,
@@ -60,12 +61,15 @@ import {
   ShareIcon,
   StarIcon,
   SunIcon,
+  TagIcon,
   Trash2Icon,
   TrendingDownIcon,
   TrendingUpIcon,
   TriangleAlertIcon,
+  UploadIcon,
   UserIcon,
   UsersIcon,
+  WalletIcon,
   XIcon,
 } from 'lucide-react';
 
@@ -74,6 +78,7 @@ type IconComponent = typeof SunIcon;
 const Icons = {
   ArrowDown: ArrowDownIcon,
   ArrowLeft: ArrowLeftIcon,
+  ArrowLeftRight: ArrowLeftRightIcon,
   ArrowLeftToLine: ArrowLeftToLineIcon,
   ArrowRight: ArrowRightIcon,
   ArrowRightToLine: ArrowRightToLineIcon,
@@ -133,12 +138,15 @@ const Icons = {
   Share: ShareIcon,
   Star: StarIcon,
   Sun: SunIcon,
+  Tag: TagIcon,
   Trash2: Trash2Icon,
   TrendingDown: TrendingDownIcon,
   TrendingUp: TrendingUpIcon,
   TriangleAlert: TriangleAlertIcon,
+  Upload: UploadIcon,
   User: UserIcon,
   Users: UsersIcon,
+  Wallet: WalletIcon,
   X: XIcon,
 } as const;
 

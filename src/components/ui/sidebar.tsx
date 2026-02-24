@@ -2,6 +2,7 @@
 
 import { mergeProps } from '@base-ui/react/merge-props';
 import { useRender } from '@base-ui/react/use-render';
+import { createLink } from '@tanstack/react-router';
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 
@@ -698,7 +699,10 @@ function SidebarMenuSubButton({
   });
 }
 
+const RouterSidebarMenuButton = createLink(SidebarMenuButton);
+
 export {
+  RouterSidebarMenuButton,
   Sidebar,
   SidebarContent,
   SidebarFooter,

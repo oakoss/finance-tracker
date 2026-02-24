@@ -2,13 +2,11 @@
 
 import type { LinkProps } from '@tanstack/react-router';
 
-import { Icons } from '@/components/icons';
-import { Button } from '@/components/ui/button';
 import {
+  RouterSidebarMenuButton,
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 
@@ -16,40 +14,25 @@ export function NavMain({
   items,
 }: {
   items: {
+    icon?: React.ReactNode;
     title: string;
     url: NonNullable<LinkProps['to']>;
-    icon?: React.ReactNode;
   }[];
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupContent className="flex flex-col gap-2">
-        <SidebarMenu>
-          <SidebarMenuItem className="flex items-center gap-2">
-            <SidebarMenuButton
-              className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
-              tooltip="Quick Create"
-            >
-              <Icons.Plus />
-              <span>Quick Create</span>
-            </SidebarMenuButton>
-            <Button
-              className="size-8 group-data-[collapsible=icon]:opacity-0"
-              size="icon"
-              variant="outline"
-            >
-              <Icons.Mail />
-              <span className="sr-only">Inbox</span>
-            </Button>
-          </SidebarMenuItem>
-        </SidebarMenu>
+      <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton tooltip={item.title}>
+              <RouterSidebarMenuButton
+                activeProps={{ isActive: true }}
+                to={item.url}
+                tooltip={item.title}
+              >
                 {item.icon}
                 <span>{item.title}</span>
-              </SidebarMenuButton>
+              </RouterSidebarMenuButton>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>

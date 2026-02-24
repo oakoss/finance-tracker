@@ -1,13 +1,16 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 
+import { RouterLink } from '@/components/ui/link';
 import { authClient } from '@/lib/auth-client';
+import { clientLog } from '@/lib/logging/client-logger';
 
 export const Route = createFileRoute('/_auth/signup')({
   component: SignupPage,
 });
 
 function SignupPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -28,9 +31,18 @@ function SignupPage() {
 
       if (result.error) {
         setError(result.error.message ?? 'Sign up failed');
+      } else {
+        void navigate({ to: '/dashboard' });
       }
-    } catch {
-      setError('An unexpected error occurred');
+    } catch (error) {
+      clientLog.error({
+        action: 'auth.signup',
+        error: error instanceof Error ? error.message : String(error),
+        outcome: { success: false },
+      });
+      setError(
+        'An unexpected error occurred. Please check your connection and try again.',
+      );
     } finally {
       setLoading(false);
     }
@@ -41,7 +53,7 @@ function SignupPage() {
       <h1 className="text-lg font-semibold leading-none tracking-tight">
         Create an account
       </h1>
-      <p className="text-sm text-neutral-500 mt-2 mb-6">
+      <p className="text-sm text-muted-foreground mt-2 mb-6">
         Enter your information to create an account
       </p>
 
@@ -52,7 +64,7 @@ function SignupPage() {
           </label>
           <input
             required
-            className="flex h-9 w-full border border-neutral-300 bg-transparent px-3 text-sm focus:outline-none focus:border-neutral-900 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-9 w-full border border-input bg-transparent px-3 text-sm focus:outline-none focus:border-foreground disabled:cursor-not-allowed disabled:opacity-50"
             id="name"
             type="text"
             value={name}
@@ -66,7 +78,7 @@ function SignupPage() {
           </label>
           <input
             required
-            className="flex h-9 w-full border border-neutral-300 bg-transparent px-3 text-sm focus:outline-none focus:border-neutral-900 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-9 w-full border border-input bg-transparent px-3 text-sm focus:outline-none focus:border-foreground disabled:cursor-not-allowed disabled:opacity-50"
             id="email"
             type="email"
             value={email}
@@ -83,7 +95,7 @@ function SignupPage() {
           </label>
           <input
             required
-            className="flex h-9 w-full border border-neutral-300 bg-transparent px-3 text-sm focus:outline-none focus:border-neutral-900 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-9 w-full border border-input bg-transparent px-3 text-sm focus:outline-none focus:border-foreground disabled:cursor-not-allowed disabled:opacity-50"
             id="password"
             type="password"
             value={password}
@@ -92,19 +104,19 @@ function SignupPage() {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 p-3">
-            <p className="text-sm text-red-600">{error}</p>
+          <div className="bg-destructive/10 border border-destructive/20 p-3">
+            <p className="text-sm text-destructive">{error}</p>
           </div>
         )}
 
         <button
-          className="w-full h-9 px-4 text-sm font-medium text-white bg-neutral-900 hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full h-9 px-4 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={loading}
           type="submit"
         >
           {loading ? (
             <span className="flex items-center justify-center gap-2">
-              <span className="size-4 animate-spin rounded-full border-2 border-neutral-400 border-t-white" />
+              <span className="size-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
               <span>Please wait</span>
             </span>
           ) : (
@@ -113,11 +125,8 @@ function SignupPage() {
         </button>
       </form>
 
-      <p className="mt-4 text-center text-sm text-neutral-500">
-        Already have an account?{' '}
-        <Link className="text-neutral-900 hover:underline" to="/login">
-          Sign in
-        </Link>
+      <p className="mt-4 text-center text-sm text-muted-foreground">
+        Already have an account? <RouterLink to="/login">Sign in</RouterLink>
       </p>
     </div>
   );

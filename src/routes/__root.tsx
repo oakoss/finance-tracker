@@ -1,63 +1,100 @@
 import { TanStackDevtools } from '@tanstack/react-devtools';
-import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router';
+import type { QueryClient } from '@tanstack/react-query';
+import {
+  createRootRouteWithContext,
+  type ErrorComponentProps,
+  HeadContent,
+  Outlet,
+  Scripts,
+} from '@tanstack/react-router';
 import { ThemeProvider } from 'next-themes';
 
-import Header from '@/components/header';
+import { NotFound } from '@/components/errors/not-found';
+import { RootErrorBoundary } from '@/components/errors/root-error-boundary';
+import { DefaultShell } from '@/components/layouts/shells/default-shell';
+import { appConfig } from '@/configs/app';
 import { devtoolsPlugins } from '@/lib/devtools';
 import { getLocale } from '@/paraglide/runtime';
 import globalsCss from '@/styles/globals.css?url';
 
-export const Route = createRootRoute({
+type RouterContext = {
+  queryClient: QueryClient;
+};
+
+export const Route = createRootRouteWithContext<RouterContext>()({
+  component: RootComponent,
+  errorComponent: RootError,
   head: () => ({
+    links: [
+      {
+        href: globalsCss,
+        rel: 'stylesheet',
+      },
+    ],
     meta: [
       {
         charSet: 'utf8',
       },
       {
-        name: 'viewport',
         content: 'width=device-width, initial-scale=1',
+        name: 'viewport',
       },
       {
-        title: 'TanStack Start Starter',
-      },
-    ],
-    links: [
-      {
-        rel: 'stylesheet',
-        href: globalsCss,
+        title: appConfig.name,
       },
     ],
   }),
-  shellComponent: RootDocument,
+  notFoundComponent: RootNotFound,
+  shellComponent: RootShell,
 });
 
-function RootDocument({ children }: { children: React.ReactNode }) {
+function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html suppressHydrationWarning lang={getLocale()}>
       <head>
         <HeadContent />
       </head>
       <body>
-        <ThemeProvider
-          disableTransitionOnChange
-          enableSystem
-          attribute="class"
-          defaultTheme="system"
-        >
-          <Header />
-          {/* Main content wrapper */}
-          <main id="root-content">{children}</main>
-          {/* Portal root for overlays */}
-          <div id="portal-root"></div>
-          <TanStackDevtools
-            config={{
-              position: 'bottom-right',
-            }}
-            plugins={devtoolsPlugins}
-          />
-          <Scripts />
-        </ThemeProvider>
+        {children}
+        <Scripts />
       </body>
     </html>
+  );
+}
+
+function RootNotFound() {
+  return (
+    <DefaultShell>
+      <NotFound />
+    </DefaultShell>
+  );
+}
+
+function RootError(props: ErrorComponentProps) {
+  return (
+    <DefaultShell>
+      <RootErrorBoundary {...props} />
+    </DefaultShell>
+  );
+}
+
+function RootComponent() {
+  return (
+    <ThemeProvider
+      disableTransitionOnChange
+      enableSystem
+      attribute="class"
+      defaultTheme="system"
+    >
+      <div className="isolate">
+        <Outlet />
+      </div>
+      <TanStackDevtools
+        config={{
+          position: 'bottom-right',
+        }}
+        plugins={devtoolsPlugins}
+      />
+    </ThemeProvider>
   );
 }

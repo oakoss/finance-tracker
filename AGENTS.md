@@ -169,6 +169,7 @@ pnpm schema:auth
 - React 19, strict TS.
 - `react/jsx-sort-props` is enabled.
 - `react-hooks/exhaustive-deps` is off; be intentional with deps.
+- Use `function` declarations for components, arrow functions (`const handler = () => {}`) for event handlers. This creates a visual distinction when scanning code.
 
 ### Error Handling
 
@@ -240,8 +241,8 @@ TanStack Start (React 19) full-stack app with SSR, file-based routing, and Nitro
 ### Boot Sequence
 
 1. `src/server.ts` — Server entry; wraps the Nitro handler in Paraglide i18n middleware
-2. `src/router.tsx` — Creates the TanStack Router with the auto-generated `routeTree`, global error boundary, and not-found component
-3. `src/routes/__root.tsx` — Root HTML shell; renders `<Header />`, `ThemeProvider` (next-themes), portal root, and devtools panels
+2. `src/router.tsx` — Creates the TanStack Router with `QueryClient`, `setupRouterSsrQueryIntegration`, error boundary, and not-found component
+3. `src/routes/__root.tsx` — `shellComponent` renders bare HTML document (`<html>`, `<head>`, `<body>`, `<Scripts>`); `component` renders `ThemeProvider`, `<Outlet />` (wrapped in `isolation: isolate` stacking context for Base UI portals), and devtools. Uses `createRootRouteWithContext<{ queryClient: QueryClient }>()` for typed router context
 
 ### Route Conventions
 
@@ -292,14 +293,14 @@ export const Route = createFileRoute('/path')({
 - `createError()` from `@/lib/logging/evlog` for structured errors (`message`, `status`, `why`, `fix`, `cause`).
 - Log with `log.info()` using `action`/`outcome` structure.
 - Route `loader` for SSR data fetching. Client-side mutation: call server function, then `void router.invalidate()`.
-- TanStack Query is installed for client-side fetching but most routes use loaders directly.
+- TanStack Query is wired via `setupRouterSsrQueryIntegration` from `@tanstack/react-router-ssr-query` (handles dehydration, hydration, and `QueryClientProvider` wrapping). Use `context.queryClient.ensureQueryData()` in loaders for pre-populated cache, `useQuery()`/`useMutation()` in components.
 - `@tanstack/react-form` is used for forms with ArkType validation.
 
 ### Module Organization
 
 `src/modules/` contains domain-specific code:
 
-- **auth** — Better Auth middleware, generated schema (do not edit), relations, email templates (React Email), email rendering/sending service
+- **auth** — Better Auth middleware, generated schema (do not edit), relations, email templates (React Email), email rendering/sending service, server functions in `api/` (e.g., `get-session.ts`)
 - **finance** — Core domain schema (accounts, transactions, categories, payees, imports, debt strategies, promotions, recurring rules, etc.) and relations
 - **todos** — Minimal example module
 
@@ -324,7 +325,13 @@ See `docs/development/database.md` for full examples and schema derivation patte
 
 ### Auth Guard
 
-Auth is not global — `authMiddleware` from `src/modules/auth/middleware.ts` is applied at the `_app/` layout route level. All authenticated routes live under `_app/` and inherit the guard automatically — do not apply `authMiddleware` per-route. Public routes live under `_auth/` (login, signup, reset password) or `_public/`.
+Auth is not global — protection is applied at the `_app/` layout route level via `beforeLoad`, which calls `getSession()` server function, redirects unauthenticated users to `/login` with `?redirect=` search param, and passes `session` to route context. The `redirect` search param is validated as a safe relative path before use.
+
+All authenticated routes live under `_app/` and inherit the guard automatically. Child routes access the session via `Route.useRouteContext()`. Public routes live under `_auth/` (login, signup, reset password) or `_public/`.
+
+The `_auth/` layout includes a reverse guard — authenticated users are redirected to `/dashboard` to prevent accessing login/signup while signed in. The reverse guard is resilient to auth infrastructure failures (falls through to show the auth page).
+
+The `authMiddleware` (`src/modules/auth/middleware.ts`) is available for server functions that need session context via middleware chaining. It passes session via `next({ context: { session } })` and gracefully handles infrastructure failures by defaulting to `session: null`.
 
 ### Logging (evlog)
 
@@ -355,6 +362,27 @@ Cookie-first (`APP_LOCALE`) → browser preference → `en-US` fallback. Locale-
 
 Styling pattern: CVA (class-variance-authority) for variant definitions + `cn()` from `@/lib/utils` for merging Tailwind classes.
 
+### App Layout System
+
+Composable layout components live in `src/components/layouts/`:
+
+**Building blocks** (`layouts/app/`):
+
+- `app-header.tsx` — Header with sidebar trigger + children slot for page title/breadcrumbs/actions
+- `app-sidebar.tsx` — Sidebar with finance navigation (Dashboard, Accounts, Transactions, Categories, Imports, Settings). Accepts optional `user` prop for session data
+
+**Shell compositions** (`layouts/shells/`):
+
+- `sidebar-shell.tsx` — `SidebarProvider` + `AppSidebar` + `SidebarInset`. Used by `_app/` layout. Accepts optional `user` prop
+- `default-shell.tsx` — Session-aware header (app name + conditional sign-in/sign-out + theme toggle) + content area. For `_public/` and `_auth/` routes
+
+Route layout files compose these shells:
+
+- `_app/route.tsx` — Uses `SidebarShell` with `AppHeader` + `<Outlet />`, passes session user to sidebar
+- `_auth/route.tsx` — `DefaultShell` with centered card layout for login/signup
+
+**Module API convention:** Server functions (`createServerFn`) live in `src/modules/{module}/api/`. Import from there rather than defining inline in route files. Example: `src/modules/auth/api/get-session.ts`.
+
 ### Validation
 
 ArkType is used everywhere: env validation (`arkenv`), DB schema validation (`drizzle-arktype`), and runtime validation. Not Zod.
@@ -371,6 +399,7 @@ Hooks in `src/hooks/`:
 
 - `useFileUpload()` — File management with drag-and-drop, validation (maxSize, accept, maxFiles), preview generation, duplicate detection, and error handling. Returns `[state, actions]`.
 - `useIsMobile()` — Responsive breakpoint hook (768px). Returns `boolean`.
+- `useSignOut()` — Sign-out with navigation to `/login`. Handles errors by navigating regardless. Used by `NavUser` and `DefaultShell`.
 
 ### Key Config Files
 

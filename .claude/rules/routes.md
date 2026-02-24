@@ -7,8 +7,8 @@ paths:
 
 ## Layout route convention
 
-- `_app/` — Authenticated routes. `authMiddleware` is applied at this layout level — child routes do not need to add it individually.
-- `_auth/` — Public auth pages (login, signup, reset password). No auth guard.
+- `_app/` — Authenticated routes. Auth guard via `beforeLoad` + `getSession()` — child routes inherit protection automatically.
+- `_auth/` — Public auth pages (login, signup, reset password). Reverse guard redirects authenticated users to `/dashboard`.
 - `_public/` — Other public routes. No auth guard.
 
-New authenticated routes go under `_app/`. Do not apply `authMiddleware` per-route.
+New authenticated routes go under `_app/`. The `authMiddleware` is available for server functions that need session context via middleware chaining, but is not applied at the route level.

@@ -1,11 +1,11 @@
-import { Link, type LinkProps } from '@tanstack/react-router';
+import type { LinkProps } from '@tanstack/react-router';
 import * as React from 'react';
 
 import {
+  RouterSidebarMenuButton,
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 
@@ -14,9 +14,9 @@ export function NavSecondary({
   ...props
 }: {
   items: {
+    icon: React.ReactNode;
     title: string;
     url: LinkProps['to'];
-    icon: React.ReactNode;
   }[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (
@@ -25,10 +25,13 @@ export function NavSecondary({
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton render={<Link to={item.url} />}>
+              <RouterSidebarMenuButton
+                activeProps={{ isActive: true }}
+                to={item.url}
+              >
                 {item.icon}
                 <span>{item.title}</span>
-              </SidebarMenuButton>
+              </RouterSidebarMenuButton>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>

@@ -68,7 +68,7 @@ function RouteComponent() {
 ## Route Grouping
 
 - `_public` for public marketing pages (landing, about, etc.).
-- `_auth` for sign-up, sign-in, and auth reset flows.
+- `_auth` for sign-up, sign-in, and auth reset flows. Includes a reverse guard that redirects authenticated users to `/dashboard`.
 - `_app` for authenticated routes.
 - Add `_app/route.tsx` with auth middleware to protect authed routes.
 
