@@ -23,11 +23,11 @@ export async function renderEmail(
       await setLocale(nextLocale, { reload: false });
     } catch (error) {
       throw createError({
+        cause: error instanceof Error ? error : new Error(String(error)),
+        fix: 'Check that the locale is supported and paraglide is configured correctly.',
         message: 'Failed to set email locale.',
         status: 500,
         why: `Could not switch locale from "${resolvedPreviousLocale}" to "${nextLocale}".`,
-        fix: 'Check that the locale is supported and paraglide is configured correctly.',
-        cause: error instanceof Error ? error : new Error(String(error)),
       });
     }
   }
@@ -41,11 +41,11 @@ export async function renderEmail(
     renderResult = { html, text };
   } catch (error) {
     renderError = createError({
+      cause: error instanceof Error ? error : new Error(String(error)),
+      fix: 'Check the email template for runtime errors or missing props.',
       message: 'Email render failed.',
       status: 500,
       why: 'The React Email component threw during rendering.',
-      fix: 'Check the email template for runtime errors or missing props.',
-      cause: error instanceof Error ? error : new Error(String(error)),
     });
   }
 
@@ -54,20 +54,20 @@ export async function renderEmail(
       await setLocale(resolvedPreviousLocale, { reload: false });
     } catch (error) {
       const resetError = createError({
+        cause: error instanceof Error ? error : new Error(String(error)),
+        fix: 'Check paraglide locale configuration.',
         message: 'Failed to reset email locale.',
         status: 500,
         why: `Could not restore locale to "${resolvedPreviousLocale}" after rendering.`,
-        fix: 'Check paraglide locale configuration.',
-        cause: error instanceof Error ? error : new Error(String(error)),
       });
       if (renderError) {
         throw createError({
-          message: 'Email render failed and locale reset failed.',
-          status: 500,
-          why: 'Both the render and the locale reset threw errors.',
           cause: new Error('Compound failure', {
             cause: [renderError, resetError],
           }),
+          message: 'Email render failed and locale reset failed.',
+          status: 500,
+          why: 'Both the render and the locale reset threw errors.',
         });
       }
       throw resetError;
@@ -80,10 +80,10 @@ export async function renderEmail(
 
   if (!renderResult) {
     throw createError({
+      fix: 'Check the email template returns valid JSX.',
       message: 'Email render returned no result.',
       status: 500,
       why: 'Render completed without throwing but produced no output.',
-      fix: 'Check the email template returns valid JSX.',
     });
   }
 

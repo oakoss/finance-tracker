@@ -8,37 +8,37 @@ describe('sanitizeEvent', () => {
   });
 
   it('preserves non-sensitive keys', () => {
-    const input = { action: 'login', userId: '123', level: 'info' };
+    const input = { action: 'login', level: 'info', userId: '123' };
     expect(sanitizeEvent(input)).toEqual(input);
   });
 
   it('redacts top-level sensitive keys', () => {
     const result = sanitizeEvent({
-      password: 'hunter2',
-      token: 'abc123',
-      secret: 'shhh',
       name: 'visible',
+      password: 'hunter2',
+      secret: 'shhh',
+      token: 'abc123',
     });
     expect(result).toEqual({
-      password: '[REDACTED]',
-      token: '[REDACTED]',
-      secret: '[REDACTED]',
       name: 'visible',
+      password: '[REDACTED]',
+      secret: '[REDACTED]',
+      token: '[REDACTED]',
     });
   });
 
   it('matches sensitive keys case-insensitively', () => {
     const result = sanitizeEvent({
+      API_KEY: 'key456',
+      ApiKey: 'key123',
       Authorization: 'Bearer xxx',
       COOKIE: 'session=abc',
-      ApiKey: 'key123',
-      API_KEY: 'key456',
     });
     expect(result).toEqual({
+      API_KEY: '[REDACTED]',
+      ApiKey: '[REDACTED]',
       Authorization: '[REDACTED]',
       COOKIE: '[REDACTED]',
-      ApiKey: '[REDACTED]',
-      API_KEY: '[REDACTED]',
     });
   });
 
@@ -65,8 +65,8 @@ describe('sanitizeEvent', () => {
 
   it('preserves primitive value types', () => {
     const input = {
-      count: 42,
       active: true,
+      count: 42,
       label: 'hello',
       missing: undefined,
     };

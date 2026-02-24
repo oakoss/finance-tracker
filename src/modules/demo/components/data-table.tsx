@@ -282,7 +282,6 @@ const columns: ColumnDef<DataTableRow>[] = [
     },
   },
   {
-    id: 'actions',
     cell: () => (
       <Button
         className="text-muted-foreground flex size-8"
@@ -296,6 +295,7 @@ const columns: ColumnDef<DataTableRow>[] = [
     enableHiding: false,
     enableSorting: false,
     header: () => null,
+    id: 'actions',
     size: 56,
   },
 ];

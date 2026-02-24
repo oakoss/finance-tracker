@@ -30,11 +30,11 @@ export async function sendEmail(options: SendEmailOptions) {
   const { subject, html, text, to, replyTo } = options;
 
   await brevo.transactionalEmails.sendTransacEmail({
-    sender: defaultSender,
-    to,
-    subject,
     htmlContent: html,
-    textContent: text,
     replyTo: replyTo ?? defaultReplyTo,
+    sender: defaultSender,
+    subject,
+    textContent: text,
+    to,
   });
 }

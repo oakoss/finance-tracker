@@ -1,6 +1,6 @@
 export const errorIds = {
-  authEmailLocaleSetFailed: 'auth.email.locale.set.failed',
   authEmailLocaleResetFailed: 'auth.email.locale.reset.failed',
+  authEmailLocaleSetFailed: 'auth.email.locale.set.failed',
   authEmailRenderFailed: 'auth.email.render.failed',
 } as const;
 

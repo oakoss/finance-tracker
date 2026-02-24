@@ -46,12 +46,6 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
       size: 50,
       intervalMs: 5000,
     },
-    retry: {
-      maxAttempts: 3,
-      backoff: 'exponential',
-      initialDelayMs: 1000,
-      maxDelayMs: 30_000,
-    },
     maxBufferSize: 1000,
     onDropped: (events, error) => {
       // eslint-disable-next-line no-console
@@ -59,6 +53,12 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
         `[evlog] dropped ${events.length} event(s) after retries exhausted`,
         error,
       );
+    },
+    retry: {
+      backoff: 'exponential',
+      initialDelayMs: 1000,
+      maxAttempts: 3,
+      maxDelayMs: 30_000,
     },
   });
 

@@ -93,8 +93,8 @@ function BetterAuthDemo() {
       if (isSignUp) {
         const result = await authClient.signUp.email({
           email,
-          password,
           name,
+          password,
         });
         if (result.error) {
           setError(result.error.message ?? 'Sign up failed');

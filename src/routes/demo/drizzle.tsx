@@ -30,11 +30,11 @@ const createTodo = createServerFn({
       return { success: true };
     } catch (error) {
       throw createError({
+        cause: error instanceof Error ? error : new Error(String(error)),
+        fix: 'Check the database connection and try again.',
         message: 'Failed to create todo.',
         status: 500,
         why: error instanceof Error ? error.message : String(error),
-        fix: 'Check the database connection and try again.',
-        cause: error instanceof Error ? error : new Error(String(error)),
       });
     }
   });

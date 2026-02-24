@@ -12,24 +12,10 @@ export default mergeConfig(
   }),
   defineConfig({
     test: {
-      globals: true,
-      environment: 'jsdom',
-      environmentOptions: {
-        jsdom: {
-          url: 'http://localhost:3000',
-        },
-      },
-      setupFiles: ['./test/setup.ts'],
-      include: ['src/**/*.{test,spec}.{ts,tsx}'],
       // Automatically clear/restore mocks between tests to prevent pollution
       clearMocks: true,
-      restoreMocks: true,
+
       coverage: {
-        provider: 'v8',
-        reporter: ['text', 'json', 'json-summary', 'html', 'lcov'],
-        reportsDirectory: './coverage',
-        reportOnFailure: true,
-        include: ['src/lib/**', 'src/configs/**', 'src/hooks/**'],
         exclude: [
           'src/**/*.{test,spec}.{ts,tsx}',
           'src/**/*.d.ts',
@@ -44,11 +30,30 @@ export default mergeConfig(
           // Nitro plugin — needs integration test
           'src/lib/logging/drain.ts',
         ],
+        include: ['src/lib/**', 'src/configs/**', 'src/hooks/**'],
+        provider: 'v8',
+        reporter: ['text', 'json', 'json-summary', 'html', 'lcov'],
+        reportOnFailure: true,
+        reportsDirectory: './coverage',
       },
+
+      environment: 'jsdom',
+
+      environmentOptions: {
+        jsdom: {
+          url: 'http://localhost:3000',
+        },
+      },
+
+      globals: true,
+
+      include: ['src/**/*.{test,spec}.{ts,tsx}'],
+      restoreMocks: true,
+      setupFiles: ['./test/setup.ts'],
       // Enable type-level testing with expectTypeOf / assertType
       typecheck: {
-        enabled: true,
         checker: 'tsc',
+        enabled: true,
         include: ['src/**/*.test-d.ts'],
         tsconfig: './tsconfig.json',
       },

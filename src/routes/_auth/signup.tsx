@@ -22,8 +22,8 @@ function SignupPage() {
     try {
       const result = await authClient.signUp.email({
         email,
-        password,
         name,
+        password,
       });
 
       if (result.error) {

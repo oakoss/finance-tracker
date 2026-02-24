@@ -47,6 +47,7 @@ export default defineConfig(
       // @ts-expect-error -- types are missing
       'import-x': importX,
       'simple-import-sort': simpleImportSort,
+      'sort-keys-plus': sortKeysPlus,
     },
     rules: {
       eqeqeq: 'error',
@@ -57,6 +58,14 @@ export default defineConfig(
       'no-console': 'warn',
       'simple-import-sort/exports': 'error',
       'simple-import-sort/imports': 'error',
+      'sort-keys-plus/sort-keys': [
+        'error',
+        'asc',
+        {
+          caseSensitive: false,
+          minKeys: 3,
+        },
+      ],
       'unicorn/filename-case': [
         'error',
         {
@@ -164,27 +173,6 @@ export default defineConfig(
         },
       },
       react: { version: 'detect' },
-    },
-  },
-  {
-    files: [
-      'eslint.config.js',
-      'vite.config.ts',
-      '**/*.stories.tsx',
-      'src/components/**/*.{ts,tsx}',
-    ],
-    plugins: {
-      'sort-keys-plus': sortKeysPlus,
-    },
-    rules: {
-      'sort-keys-plus/sort-keys': [
-        'error',
-        'asc',
-        {
-          caseSensitive: false,
-          minKeys: 3,
-        },
-      ],
     },
   },
   {

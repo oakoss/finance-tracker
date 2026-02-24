@@ -67,8 +67,8 @@ describe('clientLog', () => {
     it('does not call log methods when VITE_CLIENT_LOGGING_ENABLED is false and not DEV', async () => {
       const clientLog = await importClientLogger({
         DEV: false,
-        VITE_CLIENT_LOGGING_ENABLED: 'false',
         VITE_CLIENT_LOG_LEVEL: 'warn',
+        VITE_CLIENT_LOGGING_ENABLED: 'false',
       });
 
       clientLog.debug({ message: 'test' });
@@ -85,8 +85,8 @@ describe('clientLog', () => {
     it('does not call initLogger when disabled', async () => {
       const clientLog = await importClientLogger({
         DEV: false,
-        VITE_CLIENT_LOGGING_ENABLED: 'false',
         VITE_CLIENT_LOG_LEVEL: 'warn',
+        VITE_CLIENT_LOGGING_ENABLED: 'false',
       });
 
       clientLog.info({ message: 'test' });

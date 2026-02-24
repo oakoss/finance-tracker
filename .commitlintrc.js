@@ -4,11 +4,11 @@ export default defineConfig({
   extends: ['@commitlint/config-conventional'],
   prompt: {
     alias: {
-      docs: 'docs: update docs',
-      db: 'chore(db): update schema',
-      env: 'chore(env): update env validation',
-      deps: 'chore(deps): bump dependencies',
       ci: 'ci: update workflows',
+      db: 'chore(db): update schema',
+      deps: 'chore(deps): bump dependencies',
+      docs: 'docs: update docs',
+      env: 'chore(env): update env validation',
     },
     allowCustomScopes: false,
     allowEmptyScopes: true,

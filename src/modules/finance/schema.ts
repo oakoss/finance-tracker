@@ -106,33 +106,33 @@ export const transactionDirectionEnum = pgEnum('transaction_direction', [
 ]);
 
 const auditFields = {
-  createdById: uuid().references(() => users.id, { onDelete: 'set null' }),
-  updatedById: uuid().references(() => users.id, { onDelete: 'set null' }),
-  deletedById: uuid().references(() => users.id, { onDelete: 'set null' }),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  createdById: uuid().references(() => users.id, { onDelete: 'set null' }),
+  deletedAt: timestamp({ withTimezone: true }),
+  deletedById: uuid().references(() => users.id, { onDelete: 'set null' }),
   updatedAt: timestamp({ withTimezone: true })
     .notNull()
     .defaultNow()
     .$onUpdate(() => new Date()),
-  deletedAt: timestamp({ withTimezone: true }),
+  updatedById: uuid().references(() => users.id, { onDelete: 'set null' }),
 };
 
 export const creditCardCatalog = pgTable(
   'credit_card_catalog',
   {
+    annualFeeCents: integer(),
+    balanceTransferFeeBps: integer(),
+    cashAdvanceAprBps: integer(),
+    defaultAprBps: integer(),
+    foreignTransactionFeeBps: integer(),
     id: uuid()
       .primaryKey()
       .default(sql`uuidv7()`),
     issuer: text().notNull(),
     name: text().notNull(),
     network: text(),
-    defaultAprBps: integer(),
-    cashAdvanceAprBps: integer(),
-    balanceTransferFeeBps: integer(),
-    foreignTransactionFeeBps: integer(),
-    annualFeeCents: integer(),
-    rewardsType: text(),
     promoNotes: text(),
+    rewardsType: text(),
     ...auditFields,
   },
   (table) => [
@@ -146,24 +146,24 @@ export const creditCardCatalog = pgTable(
 export const ledgerAccounts = pgTable(
   'ledger_accounts',
   {
-    id: uuid()
-      .primaryKey()
-      .default(sql`uuidv7()`),
-    userId: uuid()
-      .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
+    accountNumberMask: text(),
+    closedAt: timestamp({ withTimezone: true }),
     creditCardCatalogId: uuid().references(() => creditCardCatalog.id, {
       onDelete: 'set null',
     }),
+    currency: text().notNull(),
+    id: uuid()
+      .primaryKey()
+      .default(sql`uuidv7()`),
+    institution: text(),
     name: text().notNull(),
-    type: accountTypeEnum().notNull(),
+    openedAt: timestamp({ withTimezone: true }),
     ownerType: accountOwnerTypeEnum().notNull().default('personal'),
     status: accountStatusEnum().notNull().default('active'),
-    institution: text(),
-    currency: text().notNull(),
-    accountNumberMask: text(),
-    openedAt: timestamp({ withTimezone: true }),
-    closedAt: timestamp({ withTimezone: true }),
+    type: accountTypeEnum().notNull(),
+    userId: uuid()
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
     ...auditFields,
   },
   (table) => [
@@ -173,30 +173,30 @@ export const ledgerAccounts = pgTable(
 );
 
 export const accountTerms = pgTable('account_terms', {
-  id: uuid()
-    .primaryKey()
-    .default(sql`uuidv7()`),
   accountId: uuid()
     .notNull()
     .references(() => ledgerAccounts.id, { onDelete: 'cascade' }),
   aprBps: integer(),
+  dueDay: integer(),
+  id: uuid()
+    .primaryKey()
+    .default(sql`uuidv7()`),
   minPaymentType: text(),
   minPaymentValue: integer(),
   statementDay: integer(),
-  dueDay: integer(),
   ...auditFields,
 });
 
 export const accountBalanceSnapshots = pgTable(
   'account_balance_snapshots',
   {
-    id: uuid()
-      .primaryKey()
-      .default(sql`uuidv7()`),
     accountId: uuid()
       .notNull()
       .references(() => ledgerAccounts.id, { onDelete: 'cascade' }),
     balanceCents: integer().notNull(),
+    id: uuid()
+      .primaryKey()
+      .default(sql`uuidv7()`),
     recordedAt: timestamp({ withTimezone: true }).notNull(),
     source: text().notNull(),
     ...auditFields,
@@ -212,12 +212,12 @@ export const categories = pgTable(
     id: uuid()
       .primaryKey()
       .default(sql`uuidv7()`),
+    name: text().notNull(),
+    parentId: uuid(),
+    type: categoryTypeEnum().notNull(),
     userId: uuid()
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    name: text().notNull(),
-    type: categoryTypeEnum().notNull(),
-    parentId: uuid(),
     ...auditFields,
   },
   (table) => [
@@ -236,11 +236,11 @@ export const payees = pgTable(
     id: uuid()
       .primaryKey()
       .default(sql`uuidv7()`),
+    name: text().notNull(),
+    normalizedName: text(),
     userId: uuid()
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    name: text().notNull(),
-    normalizedName: text(),
     ...auditFields,
   },
   (table) => [
@@ -252,13 +252,13 @@ export const payees = pgTable(
 export const payeeAliases = pgTable(
   'payee_aliases',
   {
+    alias: text().notNull(),
     id: uuid()
       .primaryKey()
       .default(sql`uuidv7()`),
     payeeId: uuid()
       .notNull()
       .references(() => payees.id, { onDelete: 'cascade' }),
-    alias: text().notNull(),
     ...auditFields,
   },
   (table) => [
@@ -273,10 +273,10 @@ export const tags = pgTable(
     id: uuid()
       .primaryKey()
       .default(sql`uuidv7()`),
+    name: text().notNull(),
     userId: uuid()
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    name: text().notNull(),
     ...auditFields,
   },
   (table) => [
@@ -288,21 +288,21 @@ export const tags = pgTable(
 export const transfers = pgTable(
   'transfers',
   {
-    id: uuid()
-      .primaryKey()
-      .default(sql`uuidv7()`),
-    userId: uuid()
-      .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
+    amountCents: integer().notNull(),
     fromAccountId: uuid()
       .notNull()
       .references(() => ledgerAccounts.id, { onDelete: 'cascade' }),
+    id: uuid()
+      .primaryKey()
+      .default(sql`uuidv7()`),
+    memo: text(),
     toAccountId: uuid()
       .notNull()
       .references(() => ledgerAccounts.id, { onDelete: 'cascade' }),
     transferAt: timestamp({ withTimezone: true }).notNull(),
-    amountCents: integer().notNull(),
-    memo: text(),
+    userId: uuid()
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
     ...auditFields,
   },
   (table) => [
@@ -315,29 +315,29 @@ export const transfers = pgTable(
 export const transactions = pgTable(
   'transactions',
   {
-    id: uuid()
-      .primaryKey()
-      .default(sql`uuidv7()`),
     accountId: uuid()
       .notNull()
       .references(() => ledgerAccounts.id, { onDelete: 'cascade' }),
+    amountCents: integer().notNull(),
+    balanceCents: integer(),
     categoryId: uuid().references(() => categories.id, {
       onDelete: 'set null',
     }),
-    payeeId: uuid().references(() => payees.id, { onDelete: 'set null' }),
-    transferId: uuid().references(() => transfers.id, { onDelete: 'set null' }),
-    postedAt: timestamp({ withTimezone: true }).notNull(),
-    transactionAt: timestamp({ withTimezone: true }).notNull(),
-    amountCents: integer().notNull(),
-    balanceCents: integer(),
     currency: text(),
-    direction: transactionDirectionEnum(),
     description: text().notNull(),
-    payeeNameRaw: text(),
-    memo: text(),
-    pending: boolean().notNull().default(false),
+    direction: transactionDirectionEnum(),
     externalId: text(),
     fingerprint: text(),
+    id: uuid()
+      .primaryKey()
+      .default(sql`uuidv7()`),
+    memo: text(),
+    payeeId: uuid().references(() => payees.id, { onDelete: 'set null' }),
+    payeeNameRaw: text(),
+    pending: boolean().notNull().default(false),
+    postedAt: timestamp({ withTimezone: true }).notNull(),
+    transactionAt: timestamp({ withTimezone: true }).notNull(),
+    transferId: uuid().references(() => transfers.id, { onDelete: 'set null' }),
     ...auditFields,
   },
   (table) => [
@@ -377,12 +377,12 @@ export const transactionTags = pgTable(
     id: uuid()
       .primaryKey()
       .default(sql`uuidv7()`),
-    transactionId: uuid()
-      .notNull()
-      .references(() => transactions.id, { onDelete: 'cascade' }),
     tagId: uuid()
       .notNull()
       .references(() => tags.id, { onDelete: 'cascade' }),
+    transactionId: uuid()
+      .notNull()
+      .references(() => transactions.id, { onDelete: 'cascade' }),
     ...auditFields,
   },
   (table) => [
@@ -398,19 +398,19 @@ export const transactionTags = pgTable(
 export const imports = pgTable(
   'imports',
   {
+    fileHash: text(),
+    fileName: text(),
+    finishedAt: timestamp({ withTimezone: true }),
     id: uuid()
       .primaryKey()
       .default(sql`uuidv7()`),
+    importedAt: timestamp({ withTimezone: true }).defaultNow(),
+    source: importSourceEnum().notNull(),
+    startedAt: timestamp({ withTimezone: true }),
+    status: importStatusEnum().notNull().default('pending'),
     userId: uuid()
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    source: importSourceEnum().notNull(),
-    status: importStatusEnum().notNull().default('pending'),
-    fileName: text(),
-    fileHash: text(),
-    startedAt: timestamp({ withTimezone: true }),
-    finishedAt: timestamp({ withTimezone: true }),
-    importedAt: timestamp({ withTimezone: true }).defaultNow(),
     ...auditFields,
   },
   (table) => [index('imports_user_id_idx').on(table.userId)],
@@ -425,13 +425,13 @@ export const importRows = pgTable(
     importId: uuid()
       .notNull()
       .references(() => imports.id, { onDelete: 'cascade' }),
+    normalizedData: jsonb(),
+    rawData: jsonb().notNull(),
+    rowIndex: integer().notNull(),
+    status: importRowStatusEnum().notNull().default('mapped'),
     transactionId: uuid().references(() => transactions.id, {
       onDelete: 'set null',
     }),
-    rowIndex: integer().notNull(),
-    rawData: jsonb().notNull(),
-    normalizedData: jsonb(),
-    status: importRowStatusEnum().notNull().default('mapped'),
     ...auditFields,
   },
   (table) => [
@@ -443,18 +443,18 @@ export const importRows = pgTable(
 export const promotions = pgTable(
   'promotions',
   {
-    id: uuid()
-      .primaryKey()
-      .default(sql`uuidv7()`),
     accountId: uuid()
       .notNull()
       .references(() => ledgerAccounts.id, { onDelete: 'cascade' }),
-    promoType: promoTypeEnum().notNull(),
-    startDate: timestamp({ withTimezone: true }).notNull(),
+    description: text(),
     endDate: timestamp({ withTimezone: true }).notNull(),
+    id: uuid()
+      .primaryKey()
+      .default(sql`uuidv7()`),
     promoAprBps: integer().notNull(),
     promoLimitCents: integer(),
-    description: text(),
+    promoType: promoTypeEnum().notNull(),
+    startDate: timestamp({ withTimezone: true }).notNull(),
     ...auditFields,
   },
   (table) => [index('promotions_account_id_idx').on(table.accountId)],
@@ -463,16 +463,16 @@ export const promotions = pgTable(
 export const promoBuckets = pgTable(
   'promo_buckets',
   {
+    closedAt: timestamp({ withTimezone: true }),
     id: uuid()
       .primaryKey()
       .default(sql`uuidv7()`),
+    name: text().notNull(),
+    openedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    principalCents: integer().notNull(),
     promotionId: uuid()
       .notNull()
       .references(() => promotions.id, { onDelete: 'cascade' }),
-    name: text().notNull(),
-    principalCents: integer().notNull(),
-    openedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
-    closedAt: timestamp({ withTimezone: true }),
     ...auditFields,
   },
   (table) => [index('promo_buckets_promotion_id_idx').on(table.promotionId)],
@@ -481,6 +481,7 @@ export const promoBuckets = pgTable(
 export const promoBucketTransactions = pgTable(
   'promo_bucket_transactions',
   {
+    amountCents: integer().notNull(),
     id: uuid()
       .primaryKey()
       .default(sql`uuidv7()`),
@@ -490,7 +491,6 @@ export const promoBucketTransactions = pgTable(
     transactionId: uuid()
       .notNull()
       .references(() => transactions.id, { onDelete: 'cascade' }),
-    amountCents: integer().notNull(),
     ...auditFields,
   },
   (table) => [
@@ -511,11 +511,11 @@ export const debtStrategies = pgTable(
     id: uuid()
       .primaryKey()
       .default(sql`uuidv7()`),
+    name: text().notNull(),
+    strategyType: debtStrategyTypeEnum().notNull(),
     userId: uuid()
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    name: text().notNull(),
-    strategyType: debtStrategyTypeEnum().notNull(),
     ...auditFields,
   },
   (table) => [index('debt_strategies_user_id_idx').on(table.userId)],
@@ -524,17 +524,17 @@ export const debtStrategies = pgTable(
 export const debtStrategyOrder = pgTable(
   'debt_strategy_order',
   {
-    id: uuid()
-      .primaryKey()
-      .default(sql`uuidv7()`),
-    strategyId: uuid()
-      .notNull()
-      .references(() => debtStrategies.id, { onDelete: 'cascade' }),
     accountId: uuid()
       .notNull()
       .references(() => ledgerAccounts.id, { onDelete: 'cascade' }),
-    rank: integer().notNull(),
+    id: uuid()
+      .primaryKey()
+      .default(sql`uuidv7()`),
     overrideAprBps: integer(),
+    rank: integer().notNull(),
+    strategyId: uuid()
+      .notNull()
+      .references(() => debtStrategies.id, { onDelete: 'cascade' }),
     ...auditFields,
   },
   (table) => [
@@ -553,54 +553,54 @@ export const debtStrategyRuns = pgTable(
     id: uuid()
       .primaryKey()
       .default(sql`uuidv7()`),
+    resultData: jsonb().notNull(),
+    runAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    snapshotData: jsonb().notNull(),
     strategyId: uuid()
       .notNull()
       .references(() => debtStrategies.id, { onDelete: 'cascade' }),
-    runAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
-    snapshotData: jsonb().notNull(),
-    resultData: jsonb().notNull(),
     ...auditFields,
   },
   (table) => [index('debt_strategy_runs_strategy_id_idx').on(table.strategyId)],
 );
 
 export const userPreferences = pgTable('user_preferences', {
-  userId: uuid()
-    .primaryKey()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  defaultCurrency: text().notNull().default('USD'),
-  locale: text().notNull().default('en-US'),
-  timeZone: text().notNull().default('UTC'),
-  dateFormat: text(),
-  numberFormat: text(),
-  onboardingCompletedAt: timestamp({ withTimezone: true }),
   activeDebtStrategyId: uuid().references(() => debtStrategies.id, {
     onDelete: 'set null',
   }),
+  dateFormat: text(),
+  defaultCurrency: text().notNull().default('USD'),
+  locale: text().notNull().default('en-US'),
+  numberFormat: text(),
+  onboardingCompletedAt: timestamp({ withTimezone: true }),
+  timeZone: text().notNull().default('UTC'),
+  userId: uuid()
+    .primaryKey()
+    .references(() => users.id, { onDelete: 'cascade' }),
   ...auditFields,
 });
 
 export const recurringRules = pgTable(
   'recurring_rules',
   {
-    id: uuid()
-      .primaryKey()
-      .default(sql`uuidv7()`),
-    userId: uuid()
-      .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
     accountId: uuid().references(() => ledgerAccounts.id, {
       onDelete: 'set null',
     }),
+    amountCents: integer(),
     categoryId: uuid().references(() => categories.id, {
       onDelete: 'set null',
     }),
-    payeeId: uuid().references(() => payees.id, { onDelete: 'set null' }),
-    name: text().notNull(),
     description: text(),
+    id: uuid()
+      .primaryKey()
+      .default(sql`uuidv7()`),
     interval: recurrenceIntervalEnum().notNull(),
-    amountCents: integer(),
+    name: text().notNull(),
     nextRunAt: timestamp({ withTimezone: true }),
+    payeeId: uuid().references(() => payees.id, { onDelete: 'set null' }),
+    userId: uuid()
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
     ...auditFields,
   },
   (table) => [index('recurring_rules_user_id_idx').on(table.userId)],
@@ -609,20 +609,20 @@ export const recurringRules = pgTable(
 export const merchantRules = pgTable(
   'merchant_rules',
   {
-    id: uuid()
-      .primaryKey()
-      .default(sql`uuidv7()`),
-    userId: uuid()
-      .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
-    matchType: merchantMatchTypeEnum().notNull(),
-    matchValue: text().notNull(),
-    payeeId: uuid().references(() => payees.id, { onDelete: 'set null' }),
     categoryId: uuid().references(() => categories.id, {
       onDelete: 'set null',
     }),
-    priority: integer().notNull().default(0),
+    id: uuid()
+      .primaryKey()
+      .default(sql`uuidv7()`),
     isActive: boolean().notNull().default(true),
+    matchType: merchantMatchTypeEnum().notNull(),
+    matchValue: text().notNull(),
+    payeeId: uuid().references(() => payees.id, { onDelete: 'set null' }),
+    priority: integer().notNull().default(0),
+    userId: uuid()
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
     ...auditFields,
   },
   (table) => [
@@ -635,22 +635,22 @@ export const merchantRules = pgTable(
 export const statements = pgTable(
   'statements',
   {
-    id: uuid()
-      .primaryKey()
-      .default(sql`uuidv7()`),
-    userId: uuid()
-      .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
     accountId: uuid()
       .notNull()
       .references(() => ledgerAccounts.id, { onDelete: 'cascade' }),
-    source: statementSourceEnum().notNull(),
-    fileName: text(),
     fileHash: text(),
-    periodStart: timestamp({ withTimezone: true }).notNull(),
+    fileName: text(),
+    id: uuid()
+      .primaryKey()
+      .default(sql`uuidv7()`),
     periodEnd: timestamp({ withTimezone: true }).notNull(),
+    periodStart: timestamp({ withTimezone: true }).notNull(),
+    source: statementSourceEnum().notNull(),
     statementDate: timestamp({ withTimezone: true }),
     uploadedAt: timestamp({ withTimezone: true }).defaultNow(),
+    userId: uuid()
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
     ...auditFields,
   },
   (table) => [
@@ -662,23 +662,23 @@ export const statements = pgTable(
 export const attachments = pgTable(
   'attachments',
   {
+    fileName: text().notNull(),
     id: uuid()
       .primaryKey()
       .default(sql`uuidv7()`),
-    userId: uuid()
-      .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
-    transactionId: uuid().references(() => transactions.id, {
-      onDelete: 'set null',
-    }),
+    mimeType: text().notNull(),
+    sizeBytes: integer().notNull(),
     statementId: uuid().references(() => statements.id, {
       onDelete: 'set null',
     }),
-    fileName: text().notNull(),
     storageKey: text().notNull(),
-    mimeType: text().notNull(),
-    sizeBytes: integer().notNull(),
+    transactionId: uuid().references(() => transactions.id, {
+      onDelete: 'set null',
+    }),
     uploadedAt: timestamp({ withTimezone: true }).defaultNow(),
+    userId: uuid()
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
     ...auditFields,
   },
   (table) => [
@@ -691,16 +691,16 @@ export const attachments = pgTable(
 export const auditLogs = pgTable(
   'audit_logs',
   {
+    action: auditActionEnum().notNull(),
+    actorId: uuid().references(() => users.id, { onDelete: 'set null' }),
+    afterData: jsonb(),
+    beforeData: jsonb(),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     id: uuid()
       .primaryKey()
       .default(sql`uuidv7()`),
-    actorId: uuid().references(() => users.id, { onDelete: 'set null' }),
-    action: auditActionEnum().notNull(),
-    tableName: text().notNull(),
     recordId: uuid().notNull(),
-    beforeData: jsonb(),
-    afterData: jsonb(),
-    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    tableName: text().notNull(),
   },
   (table) => [
     index('audit_logs_actor_id_idx').on(table.actorId),

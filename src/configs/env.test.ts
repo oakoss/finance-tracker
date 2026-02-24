@@ -84,8 +84,8 @@ describe('env lazy proxy', () => {
     expect(mockedArkenv).toHaveBeenCalledWith(
       expect.anything(), // the Env schema
       expect.objectContaining({
-        env: process.env,
         coerce: true,
+        env: process.env,
         onUndeclaredKey: 'delete',
       }),
     );

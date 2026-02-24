@@ -2,9 +2,9 @@
 
 /** @type {import('prettier').Config} */
 const config = {
+  plugins: ['prettier-plugin-packagejson'],
   singleQuote: true,
   trailingComma: 'all',
-  plugins: ['prettier-plugin-packagejson'],
 };
 
 export default config;

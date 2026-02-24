@@ -76,10 +76,10 @@ export const formatDate = (params: {
   const timeZone = params.timeZone ?? defaultTimeZone;
   const value = params.value;
   const formatter = getDateFormatter(locale, {
+    day: '2-digit',
+    month: 'short',
     timeZone,
     year: 'numeric',
-    month: 'short',
-    day: '2-digit',
   });
   return formatter.format(value);
 };
@@ -93,12 +93,12 @@ export const formatDateTime = (params: {
   const timeZone = params.timeZone ?? defaultTimeZone;
   const value = params.value;
   const formatter = getDateFormatter(locale, {
-    timeZone,
-    year: 'numeric',
-    month: 'short',
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
+    month: 'short',
+    timeZone,
+    year: 'numeric',
   });
   return formatter.format(value);
 };
@@ -112,9 +112,9 @@ export const formatMonthYear = (params: {
   const timeZone = params.timeZone ?? defaultTimeZone;
   const value = params.value;
   const formatter = getDateFormatter(locale, {
+    month: 'long',
     timeZone,
     year: 'numeric',
-    month: 'long',
   });
   return formatter.format(value);
 };

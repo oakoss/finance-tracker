@@ -11,35 +11,66 @@ import {
 } from '@/modules/auth/email-service';
 
 export const auth = betterAuth({
+  account: {
+    accountLinking: {
+      allowDifferentEmails: false,
+      allowUnlinkingAll: false,
+      enabled: true,
+      trustedProviders: ['email-password', 'google', 'github'],
+    },
+    encryptOAuthTokens: process.env.NODE_ENV === 'production',
+  },
+  advanced: {
+    ipAddress: {
+      ipAddressHeaders: ['cf-connecting-ip'],
+    },
+    database: {
+      generateId: 'uuid',
+    },
+  },
   appName: appConfig.name,
   baseURL: env.BETTER_AUTH_URL,
-  secret: env.BETTER_AUTH_SECRET,
   database: drizzleAdapter(db, {
     provider: 'pg',
     usePlural: true,
   }),
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true,
     minPasswordLength: env.PASSWORD_MIN_LENGTH,
+    requireEmailVerification: true,
     resetPasswordTokenExpiresIn: 60 * 60 * 2,
+    revokeSessionsOnPasswordReset: true,
     sendResetPassword: async ({ user, url }, request) =>
       sendResetPasswordEmail({
         cookie: request?.headers.get('cookie') ?? null,
-        user,
         url,
+        user,
       }),
-    revokeSessionsOnPasswordReset: true,
   },
   emailVerification: {
-    sendOnSignUp: true,
     sendOnSignIn: true,
+    sendOnSignUp: true,
     sendVerificationEmail: async ({ user, url }, request) =>
       sendVerificationEmail({
         cookie: request?.headers.get('cookie') ?? null,
-        user,
         url,
+        user,
       }),
+  },
+  experimental: {
+    joins: true,
+  },
+  plugins: [tanstackStartCookies()],
+  rateLimit: {
+    enabled: process.env.NODE_ENV === 'production',
+    max: 100,
+    window: 60,
+  },
+  secret: env.BETTER_AUTH_SECRET,
+  session: {
+    expiresIn: 60 * 60 * 24 * 7,
+    freshAge: 60 * 60 * 24,
+    updateAge: 60 * 60 * 24,
   },
   socialProviders: {
     github: {
@@ -59,15 +90,9 @@ export const auth = betterAuth({
       }),
     },
   },
-  account: {
-    accountLinking: {
-      enabled: true,
-      trustedProviders: ['email-password', 'google', 'github'],
-      allowDifferentEmails: false,
-      allowUnlinkingAll: false,
-    },
-    encryptOAuthTokens: process.env.NODE_ENV === 'production',
-  },
+  trustedOrigins: env.TRUSTED_ORIGINS.split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean),
   user: {
     changeEmail: {
       enabled: true,
@@ -76,8 +101,8 @@ export const auth = betterAuth({
           cookie: request?.headers.get('cookie') ?? null,
           url,
           user: {
-            id: user.id,
             email: user.email,
+            id: user.id,
             name: user.name,
           },
         }),
@@ -89,38 +114,13 @@ export const auth = betterAuth({
           cookie: request?.headers.get('cookie') ?? null,
           url,
           user: {
-            id: user.id,
             email: user.email,
+            id: user.id,
             name: user.name,
           },
         }),
     },
   },
-  session: {
-    expiresIn: 60 * 60 * 24 * 7,
-    freshAge: 60 * 60 * 24,
-    updateAge: 60 * 60 * 24,
-  },
-  rateLimit: {
-    enabled: process.env.NODE_ENV === 'production',
-    window: 60,
-    max: 100,
-  },
-  trustedOrigins: env.TRUSTED_ORIGINS.split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean),
-  experimental: {
-    joins: true,
-  },
-  advanced: {
-    ipAddress: {
-      ipAddressHeaders: ['cf-connecting-ip'],
-    },
-    database: {
-      generateId: 'uuid',
-    },
-  },
-  plugins: [tanstackStartCookies()],
 });
 
 export type Auth = typeof auth;

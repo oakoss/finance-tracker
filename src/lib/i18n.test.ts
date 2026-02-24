@@ -61,8 +61,8 @@ describe('formatCurrency', () => {
   it('respects explicit locale override', () => {
     const result = formatCurrency({
       amountCents: 1000,
-      locale: 'de-DE',
       currency: 'EUR',
+      locale: 'de-DE',
     });
     // German locale uses comma as decimal separator
     expect(result).toContain('10,00');

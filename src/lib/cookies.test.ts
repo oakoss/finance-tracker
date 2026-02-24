@@ -65,11 +65,11 @@ describe('setServerCookie', () => {
 
   it('applies custom options', () => {
     const cookies = setServerCookie('', 'token', 'abc', {
-      path: '/api',
       httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
       maxAge: 86_400,
+      path: '/api',
+      sameSite: 'strict',
+      secure: true,
     });
     expect(cookies.get('token')).toBe('abc');
   });
@@ -90,8 +90,8 @@ describe('serializeServerCookie', () => {
   it('includes httpOnly and secure options', () => {
     const result = serializeServerCookie('token', 'secret', {
       httpOnly: true,
-      secure: true,
       sameSite: 'strict',
+      secure: true,
     });
     const cookie = result[0];
     expect(cookie).toContain('HttpOnly');

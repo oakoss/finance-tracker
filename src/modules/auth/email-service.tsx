@@ -59,10 +59,10 @@ export async function sendVerificationEmail(params: {
   );
 
   await sendEmail({
-    to: [{ email: params.user.email, name: recipientName }],
-    subject: 'Verify your email',
     html,
+    subject: 'Verify your email',
     text,
+    to: [{ email: params.user.email, name: recipientName }],
   });
 }
 
@@ -86,9 +86,9 @@ export async function sendResetPasswordEmail(params: {
   );
 
   await sendEmail({
-    to: [{ email: params.user.email, name: recipientName }],
-    subject: 'Reset your password',
     html,
+    subject: 'Reset your password',
     text,
+    to: [{ email: params.user.email, name: recipientName }],
   });
 }

@@ -9,25 +9,25 @@ import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { users } from '@/modules/auth/schema';
 
 export const todos = pgTable('todos', {
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  createdById: uuid().references(() => users.id, {
+    onDelete: 'set null',
+  }),
+  deletedAt: timestamp({ withTimezone: true }),
+  deletedById: uuid().references(() => users.id, {
+    onDelete: 'set null',
+  }),
   id: uuid()
     .primaryKey()
     .default(sql`uuidv7()`),
   title: text().notNull(),
-  createdById: uuid().references(() => users.id, {
-    onDelete: 'set null',
-  }),
-  updatedById: uuid().references(() => users.id, {
-    onDelete: 'set null',
-  }),
-  deletedById: uuid().references(() => users.id, {
-    onDelete: 'set null',
-  }),
-  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp({ withTimezone: true })
     .notNull()
     .defaultNow()
     .$onUpdate(() => new Date()),
-  deletedAt: timestamp({ withTimezone: true }),
+  updatedById: uuid().references(() => users.id, {
+    onDelete: 'set null',
+  }),
 });
 
 export const todosSelectSchema = createSelectSchema(todos);
