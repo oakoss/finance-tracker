@@ -169,6 +169,9 @@ export const ledgerAccounts = pgTable(
   (table) => [
     index('ledger_accounts_user_id_idx').on(table.userId),
     index('ledger_accounts_type_idx').on(table.type),
+    index('ledger_accounts_user_active_idx')
+      .on(table.userId)
+      .where(sql`${table.deletedAt} is null`),
   ],
 );
 
@@ -223,6 +226,9 @@ export const categories = pgTable(
   (table) => [
     index('categories_user_id_idx').on(table.userId),
     uniqueIndex('categories_user_name_idx').on(table.userId, table.name),
+    index('categories_user_active_idx')
+      .on(table.userId)
+      .where(sql`${table.deletedAt} is null`),
     foreignKey({
       columns: [table.parentId],
       foreignColumns: [table.id],
@@ -246,6 +252,9 @@ export const payees = pgTable(
   (table) => [
     index('payees_user_id_idx').on(table.userId),
     uniqueIndex('payees_user_name_idx').on(table.userId, table.name),
+    index('payees_user_active_idx')
+      .on(table.userId)
+      .where(sql`${table.deletedAt} is null`),
   ],
 );
 
@@ -282,6 +291,9 @@ export const tags = pgTable(
   (table) => [
     index('tags_user_id_idx').on(table.userId),
     uniqueIndex('tags_user_name_idx').on(table.userId, table.name),
+    index('tags_user_active_idx')
+      .on(table.userId)
+      .where(sql`${table.deletedAt} is null`),
   ],
 );
 
@@ -398,6 +410,9 @@ export const transactionTags = pgTable(
 export const imports = pgTable(
   'imports',
   {
+    accountId: uuid()
+      .notNull()
+      .references(() => ledgerAccounts.id, { onDelete: 'cascade' }),
     fileHash: text(),
     fileName: text(),
     finishedAt: timestamp({ withTimezone: true }),
@@ -413,7 +428,10 @@ export const imports = pgTable(
       .references(() => users.id, { onDelete: 'cascade' }),
     ...auditFields,
   },
-  (table) => [index('imports_user_id_idx').on(table.userId)],
+  (table) => [
+    index('imports_user_id_idx').on(table.userId),
+    index('imports_account_id_idx').on(table.accountId),
+  ],
 );
 
 export const importRows = pgTable(

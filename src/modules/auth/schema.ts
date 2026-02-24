@@ -9,15 +9,15 @@ import {
 } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  email: text('email').notNull().unique(),
-  emailVerified: boolean('email_verified').default(false).notNull(),
-  id: uuid('id')
+  createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
+  email: text().notNull().unique(),
+  emailVerified: boolean().default(false).notNull(),
+  id: uuid()
     .default(sql`uuidv7()`)
     .primaryKey(),
-  image: text('image'),
-  name: text('name').notNull(),
-  updatedAt: timestamp('updated_at')
+  image: text(),
+  name: text().notNull(),
+  updatedAt: timestamp({ withTimezone: true })
     .defaultNow()
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
@@ -26,18 +26,18 @@ export const users = pgTable('users', {
 export const sessions = pgTable(
   'sessions',
   {
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-    expiresAt: timestamp('expires_at').notNull(),
-    id: uuid('id')
+    createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
+    expiresAt: timestamp({ withTimezone: true }).notNull(),
+    id: uuid()
       .default(sql`uuidv7()`)
       .primaryKey(),
-    ipAddress: text('ip_address'),
-    token: text('token').notNull().unique(),
-    updatedAt: timestamp('updated_at')
+    ipAddress: text(),
+    token: text().notNull().unique(),
+    updatedAt: timestamp({ withTimezone: true })
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
-    userAgent: text('user_agent'),
-    userId: uuid('user_id')
+    userAgent: text(),
+    userId: uuid()
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
   },
@@ -47,23 +47,23 @@ export const sessions = pgTable(
 export const accounts = pgTable(
   'accounts',
   {
-    accessToken: text('access_token'),
-    accessTokenExpiresAt: timestamp('access_token_expires_at'),
-    accountId: text('account_id').notNull(),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-    id: uuid('id')
+    accessToken: text(),
+    accessTokenExpiresAt: timestamp({ withTimezone: true }),
+    accountId: text().notNull(),
+    createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
+    id: uuid()
       .default(sql`uuidv7()`)
       .primaryKey(),
-    idToken: text('id_token'),
-    password: text('password'),
-    providerId: text('provider_id').notNull(),
-    refreshToken: text('refresh_token'),
-    refreshTokenExpiresAt: timestamp('refresh_token_expires_at'),
-    scope: text('scope'),
-    updatedAt: timestamp('updated_at')
+    idToken: text(),
+    password: text(),
+    providerId: text().notNull(),
+    refreshToken: text(),
+    refreshTokenExpiresAt: timestamp({ withTimezone: true }),
+    scope: text(),
+    updatedAt: timestamp({ withTimezone: true })
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
-    userId: uuid('user_id')
+    userId: uuid()
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
   },
@@ -73,17 +73,17 @@ export const accounts = pgTable(
 export const verifications = pgTable(
   'verifications',
   {
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-    expiresAt: timestamp('expires_at').notNull(),
-    id: uuid('id')
+    createdAt: timestamp({ withTimezone: true }).defaultNow().notNull(),
+    expiresAt: timestamp({ withTimezone: true }).notNull(),
+    id: uuid()
       .default(sql`uuidv7()`)
       .primaryKey(),
-    identifier: text('identifier').notNull(),
-    updatedAt: timestamp('updated_at')
+    identifier: text().notNull(),
+    updatedAt: timestamp({ withTimezone: true })
       .defaultNow()
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
-    value: text('value').notNull(),
+    value: text().notNull(),
   },
   (table) => [index('verifications_identifier_idx').on(table.identifier)],
 );
