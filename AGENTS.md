@@ -297,16 +297,16 @@ export const Route = createFileRoute('/path')({
 - `@tanstack/react-form` is used for forms with ArkType validation.
 - `@tanstack/react-pacer` for debounce, throttle, rate limiting, and async queuing (e.g., upload queues with retry).
 
-### URL-Driven UI State
+### State Management Hierarchy
 
-Prefer TanStack Router search params over client state for any UI state that should survive refresh, be shareable, or work with browser back/forward:
+Use the right tool for each kind of state. In priority order:
 
-- **Filters, pagination, sorting** — `validateSearch` with ArkType schema on the route, `Route.useSearch()` in components.
-- **Modal state** — `?modal=create-account` or `?edit=<id>` to open modals. Browser back closes them.
-- **Active tabs** — `?tab=details` instead of `useState`.
-- **Debounce URL updates** — Use `@tanstack/react-pacer`'s `useDebouncedCallback` to smooth out search param writes from text inputs.
-
-Only use `useState` for truly ephemeral state: form input values (TanStack Form), hover/focus, animations.
+1. **URL search params** (TanStack Router) — Filters, pagination, sorting, modal open/close, active tabs. Anything that should survive refresh, be shareable, or work with back/forward. Define with `validateSearch` + ArkType, read via `Route.useSearch()`. Debounce text input → URL writes with `@tanstack/react-pacer`'s `useDebouncedCallback`.
+2. **Server state** (TanStack Query) — Remote data fetching, caching, mutations, optimistic updates. Use `useQuery()`/`useMutation()` in components, `context.queryClient.ensureQueryData()` in loaders.
+3. **Global client state** (Zustand) — Client-only state that spans multiple routes/components and doesn't belong in the URL. Stores live in `src/stores/`. Use the double-parentheses `create<T>()(...)` pattern with TypeScript. Prefer slices over monolithic stores.
+4. **Form state** (TanStack Form) — All form input values, validation, and submission state. Do not use `useState` for form fields.
+5. **Local component state** (`useState`, `useReducer`) — Ephemeral state scoped to a single component: hover/focus, animations, loading spinners, UI toggles.
+6. **Context/Provider** — Dependency injection and config that doesn't fit the above. Avoid using context for frequently changing state (causes re-renders of all consumers). Theme is handled by `next-themes` (not context directly).
 
 ### Module Organization
 
