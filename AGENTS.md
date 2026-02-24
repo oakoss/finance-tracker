@@ -108,7 +108,7 @@ pnpm schema:auth
 
 - Commitlint enforces conventional commit format: `type(scope): subject`.
 - The `commit-msg` hook rejects non-conforming messages.
-- Allowed scopes: `auth`, `ci`, `config`, `db`, `deps`, `docs`, `email`, `env`, `infra`, `routes`, `scripts`, `tests`, `todos`, `tooling`, `ui`.
+- Allowed scopes: `auth`, `ci`, `config`, `db`, `deps`, `docs`, `email`, `env`, `finance`, `i18n`, `infra`, `logging`, `routes`, `scripts`, `tests`, `todos`, `tooling`, `ui`.
 - Scope is optional (empty allowed), but custom scopes outside this list are not.
 - Header max 200 characters.
 
