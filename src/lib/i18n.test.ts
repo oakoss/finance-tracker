@@ -10,8 +10,11 @@ import {
   formatCurrency,
   formatDate,
   formatDateTime,
+  formatDateTimeFull,
   formatMonthYear,
   formatNumber,
+  formatRelativeTime,
+  getUserTimeZone,
 } from './i18n';
 
 vi.mock('@/paraglide/runtime', () => ({
@@ -152,6 +155,27 @@ describe('formatDateTime', () => {
   });
 });
 
+describe('formatDateTimeFull', () => {
+  const date = new Date('2025-06-15T14:30:45Z');
+
+  it('includes seconds', () => {
+    const result = formatDateTimeFull({ value: date });
+    expect(result).toContain('45');
+    expect(result).toContain('2:30');
+    expect(result).toContain('PM');
+  });
+
+  it('respects timezone', () => {
+    const result = formatDateTimeFull({
+      value: date,
+      timeZone: 'America/New_York',
+    });
+    expect(result).toContain('10:30');
+    expect(result).toContain('45');
+    expect(result).toContain('AM');
+  });
+});
+
 describe('formatMonthYear', () => {
   const date = new Date('2025-12-15T12:00:00Z');
 
@@ -174,6 +198,72 @@ describe('formatMonthYear', () => {
     });
     expect(result).toContain('December');
     expect(result).toContain('2025');
+  });
+});
+
+describe('formatRelativeTime', () => {
+  const now = new Date('2026-02-24T12:00:00Z');
+
+  it('formats seconds ago', () => {
+    const value = new Date('2026-02-24T11:59:30Z');
+    const result = formatRelativeTime({ now, value });
+    expect(result).toContain('30 seconds ago');
+  });
+
+  it('formats minutes ago', () => {
+    const value = new Date('2026-02-24T11:55:00Z');
+    const result = formatRelativeTime({ now, value });
+    expect(result).toContain('5 minutes ago');
+  });
+
+  it('formats hours ago', () => {
+    const value = new Date('2026-02-24T09:00:00Z');
+    const result = formatRelativeTime({ now, value });
+    expect(result).toContain('3 hours ago');
+  });
+
+  it('formats days ago', () => {
+    const value = new Date('2026-02-22T12:00:00Z');
+    const result = formatRelativeTime({ now, value });
+    expect(result).toContain('2 days ago');
+  });
+
+  it('formats months ago', () => {
+    const value = new Date('2025-12-24T12:00:00Z');
+    const result = formatRelativeTime({ now, value });
+    expect(result).toContain('2 months ago');
+  });
+
+  it('formats years ago', () => {
+    const value = new Date('2024-02-24T12:00:00Z');
+    const result = formatRelativeTime({ now, value });
+    expect(result).toContain('2 years ago');
+  });
+
+  it('formats future times', () => {
+    const value = new Date('2026-02-24T15:00:00Z');
+    const result = formatRelativeTime({ now, value });
+    expect(result).toContain('in 3 hours');
+  });
+
+  it('handles just now', () => {
+    const result = formatRelativeTime({ now, value: now });
+    expect(result).toContain('now');
+  });
+
+  it('respects locale', () => {
+    const value = new Date('2026-02-24T09:00:00Z');
+    const result = formatRelativeTime({ locale: 'de-DE', now, value });
+    expect(result).toContain('3');
+    expect(result).toContain('Stunden');
+  });
+});
+
+describe('getUserTimeZone', () => {
+  it('returns a valid IANA timezone string', () => {
+    const tz = getUserTimeZone();
+    expect(typeof tz).toBe('string');
+    expect(tz.length).toBeGreaterThan(0);
   });
 });
 
