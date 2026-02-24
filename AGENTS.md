@@ -345,6 +345,17 @@ Hooks in `src/hooks/`:
 - `components.json` — shadcn/ui config pointing to `src/components/ui/`
 - `lefthook.yml` — Git hooks: `pre-commit` (parallel: typecheck, lint, lint-md, format) and `commit-msg` (commitlint). Auto-fixes staged files via `stage_fixed: true`
 
+## Task Tracking (Trekker)
+
+- This project uses Trekker for local task tracking. The `.trekker/` directory is gitignored.
+- If `.trekker/` doesn't exist, run `trekker init` to create it.
+- Use the `trekker` skill (`/trekker`) for full command reference and workflow guidance.
+- Use `--toon` flag on all trekker commands to reduce token usage.
+- Before starting work, run `trekker ready` to find unblocked tasks.
+- Set tasks to `in_progress` before working, `completed` when done.
+- Add a summary comment before completing a task.
+- Search before creating to avoid duplicates: `trekker search "keyword"`.
+
 ## Notes
 
 - Canonical domain: `finance.oakoss.dev` (.com redirects to .dev).
