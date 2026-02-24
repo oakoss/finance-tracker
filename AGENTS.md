@@ -181,10 +181,92 @@ concurrency:
 
 See `docs/development/workflows.md` for details.
 
-## Cursor / Copilot Rules
+## Architecture Overview
 
-- No `.cursorrules` or `.cursor/rules/*` found.
-- No `.github/copilot-instructions.md` found.
+TanStack Start (React 19) full-stack app with SSR, file-based routing, and Nitro v3 as the server runtime. PostgreSQL via Drizzle ORM. Better Auth for authentication. Tailwind CSS v4 with an extended shadcn/ui component library.
+
+### Boot Sequence
+
+1. `src/server.ts` — Server entry; wraps the Nitro handler in Paraglide i18n middleware
+2. `src/router.tsx` — Creates the TanStack Router with the auto-generated `routeTree`, global error boundary, and not-found component
+3. `src/routes/__root.tsx` — Root HTML shell; renders `<Header />`, `ThemeProvider` (next-themes), portal root, and devtools panels
+
+### Route Conventions
+
+Routes live in `src/routes/` using TanStack Router file-based conventions. The route tree is auto-generated at `src/routeTree.gen.ts`.
+
+- `_auth/` — Pathless layout route (underscore prefix = invisible URL segment) wrapping auth pages in a centered card
+- `api/auth/$.ts` — Splat route handing all `/api/auth/*` to Better Auth's handler
+- `demo/` — Demo/example routes (dashboard, drizzle CRUD, auth flow)
+
+### Data Flow Pattern
+
+Server functions are the primary data access layer:
+
+```ts
+const getData = createServerFn({ method: 'GET' }).handler(async () => {
+  return await db.query.table.findMany();
+});
+
+export const Route = createFileRoute('/path')({
+  loader: async () => await getData(),
+});
+```
+
+Route `loader` for SSR data fetching. TanStack Query is installed and configured for client-side fetching but most routes currently use loaders directly.
+
+### Module Organization
+
+`src/modules/` contains domain-specific code:
+
+- **auth** — Better Auth middleware, generated schema (do not edit), email templates (React Email), email rendering/sending service
+- **finance** — Core domain schema (accounts, transactions, categories, payees, imports, debt strategies, promotions, recurring rules, etc.)
+- **todos** — Minimal example module
+
+Each module owns its Drizzle schema. All schemas are re-exported through `src/db/schema.ts` (the aggregator).
+
+### Database Conventions
+
+- All monetary values are stored as **integer cents** (`amountCents`, `balanceCents`)
+- All finance tables use an `auditFields` mixin: `createdById`, `updatedById`, `deletedById`, `createdAt`, `updatedAt`, `deletedAt` (soft-delete pattern)
+- UUIDv7 primary keys throughout
+- Column casing normalized to `snake_case` via Drizzle config
+- ArkType validation schemas are auto-generated from every table via `drizzle-arktype` (`createSelectSchema`, `createInsertSchema`, `createUpdateSchema`)
+
+### Auth Guard
+
+Auth is not global — `authMiddleware` from `src/modules/auth/middleware.ts` is applied per-route. It checks the session server-side and redirects to `/login` if unauthenticated.
+
+### Logging (evlog)
+
+Server-side: `log.info/warn/error()` from `@/lib/logging/evlog`. Creates request-scoped wide events via the evlog Nitro module. Events drain to SigNoz via OTLP with batching, retry, and buffer capping (configured in `src/lib/logging/drain.ts`).
+
+Client-side: `clientLog` from `@/lib/logging/client-logger.ts`. Controlled by `VITE_CLIENT_LOGGING_ENABLED` and `VITE_CLIENT_LOG_LEVEL`.
+
+User IDs in logs are HMAC-hashed via `hashId()` from `src/lib/logging/hash.ts`. Sensitive fields are recursively redacted by `src/lib/logging/sanitize.ts`.
+
+### i18n (Paraglide)
+
+Cookie-first (`APP_LOCALE`) → browser preference → `en-US` fallback. Locale-aware formatting utilities in `src/lib/i18n.ts` (`formatCurrency`, `formatNumber`, `formatDate`, etc.). Monetary display always divides cents by 100.
+
+### UI Components
+
+`src/components/ui/` — Extended shadcn/ui library. Notable additions beyond standard primitives:
+
+- **DataGrid** (`data-grid/`) — Full TanStack Table wrapper with sorting, filtering, column visibility, resizable columns, DnD rows, pagination, skeleton loading. Uses context-based composition.
+- **Advanced inputs** — autocomplete, combobox (cmdk), phone input, date-selector, number-field, input-otp
+- **Layout** — sidebar (collapsible), resizable panels, sortable (dnd-kit)
+
+### Validation
+
+ArkType is used everywhere: env validation (`arkenv`), DB schema validation (`drizzle-arktype`), and runtime validation. Not Zod.
+
+### Key Config Files
+
+- `vite.config.ts` — Plugin chain: devtools → tsconfig paths → arkenv → tailwindcss → tanstackStart → nitro → react → paraglide. Also configures Nitro modules (evlog) and plugins (drain).
+- `drizzle.config.ts` — Points at `src/db/schema.ts` aggregator, snake_case, migrations in `./drizzle/`
+- `components.json` — shadcn/ui config pointing to `src/components/ui/`
+- `lefthook.yml` — Git hooks for lint, format-check, typecheck on pre-commit/pre-push
 
 ## Notes
 
