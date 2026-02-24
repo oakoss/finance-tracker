@@ -30,3 +30,7 @@ todos.json
 !.vscode/settings.json
 !.vscode/extensions.json
 .trekker/
+
+# AI tooling
+.claude/plans/
+.claude/settings.local.json
