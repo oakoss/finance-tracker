@@ -31,6 +31,8 @@ jobs:
           fetch-depth: 2
       - name: Setup
         uses: ./.github/actions/setup
+        with:
+          save-caches: 'true'
       - name: Static analysis
         uses: ./.github/actions/static-analysis
         with:

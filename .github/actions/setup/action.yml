@@ -1,6 +1,12 @@
 name: Setup Node and pnpm
 description: Install Node from .nvmrc and pnpm from package.json, with pnpm cache.
 
+inputs:
+  save-caches:
+    description: Whether to save TS/ESLint caches (use "true" for static-analysis only)
+    required: false
+    default: 'false'
+
 runs:
   using: composite
   steps:
@@ -16,6 +22,16 @@ runs:
         cache: pnpm
 
     - name: Restore TypeScript incremental cache
+      if: inputs.save-caches != 'true'
+      uses: actions/cache/restore@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
+      with:
+        path: node_modules/.cache/typescript/tsbuildinfo
+        key: tsbuildinfo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'tsconfig.json') }}
+        restore-keys: |
+          tsbuildinfo-${{ runner.os }}-
+
+    - name: Save TypeScript incremental cache
+      if: inputs.save-caches == 'true'
       uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
       with:
         path: node_modules/.cache/typescript/tsbuildinfo
@@ -24,6 +40,16 @@ runs:
           tsbuildinfo-${{ runner.os }}-
 
     - name: Restore ESLint cache
+      if: inputs.save-caches != 'true'
+      uses: actions/cache/restore@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
+      with:
+        path: node_modules/.cache/eslint/.eslintcache
+        key: eslintcache-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'eslint.config.js') }}
+        restore-keys: |
+          eslintcache-${{ runner.os }}-
+
+    - name: Save ESLint cache
+      if: inputs.save-caches == 'true'
       uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
       with:
         path: node_modules/.cache/eslint/.eslintcache
