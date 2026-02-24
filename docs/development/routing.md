@@ -72,6 +72,16 @@ function RouteComponent() {
 - `_app` for authenticated routes.
 - Add `_app/route.tsx` with auth middleware to protect authed routes.
 
+## URL-Driven UI State
+
+Prefer search params over client state for any UI state that should survive refresh or be shareable:
+
+- **Filters, pagination, sorting** — define with `validateSearch` + ArkType, read via `Route.useSearch()`.
+- **Modal state** — `?modal=create-account` or `?edit=<id>`. Browser back closes the modal.
+- **Active tabs** — `?tab=details` instead of `useState`.
+
+Only use `useState` for ephemeral state (form inputs, hover/focus, animations).
+
 ## Dynamic Segments
 
 - Use `$param` for path params (e.g., `users/$userId.tsx`).

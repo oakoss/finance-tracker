@@ -295,6 +295,18 @@ export const Route = createFileRoute('/path')({
 - Route `loader` for SSR data fetching. Client-side mutation: call server function, then `void router.invalidate()`.
 - TanStack Query is wired via `setupRouterSsrQueryIntegration` from `@tanstack/react-router-ssr-query` (handles dehydration, hydration, and `QueryClientProvider` wrapping). Use `context.queryClient.ensureQueryData()` in loaders for pre-populated cache, `useQuery()`/`useMutation()` in components.
 - `@tanstack/react-form` is used for forms with ArkType validation.
+- `@tanstack/react-pacer` for debounce, throttle, rate limiting, and async queuing (e.g., upload queues with retry).
+
+### URL-Driven UI State
+
+Prefer TanStack Router search params over client state for any UI state that should survive refresh, be shareable, or work with browser back/forward:
+
+- **Filters, pagination, sorting** — `validateSearch` with ArkType schema on the route, `Route.useSearch()` in components.
+- **Modal state** — `?modal=create-account` or `?edit=<id>` to open modals. Browser back closes them.
+- **Active tabs** — `?tab=details` instead of `useState`.
+- **Debounce URL updates** — Use `@tanstack/react-pacer`'s `useDebouncedCallback` to smooth out search param writes from text inputs.
+
+Only use `useState` for truly ephemeral state: form input values (TanStack Form), hover/focus, animations.
 
 ### Module Organization
 
@@ -357,6 +369,8 @@ Cookie-first (`APP_LOCALE`) → browser preference → `en-US` fallback. Locale-
 - **InputGroup** (`input-group.tsx`) — Composition-based input wrapper: `InputGroup`, `InputGroupAddon` (4-direction alignment), `InputGroupButton`, `InputGroupText`, `InputGroupInput`.
 - **Filters** (`filters.tsx`) — Full context-based filter UI with 28 operators, field types (select/multiselect/text/custom), validation, keyboard nav, search highlighting. Use `createFilter()` / `createFilterGroup()` — do not rebuild.
 - **DataGrid** (`data-grid/`) — Full TanStack Table wrapper with sorting, filtering, column visibility, resizable columns, DnD rows, pagination, skeleton loading. Uses context-based composition.
+- **Timestamp** (`timestamp.tsx`) — Date display with hover tooltip showing UTC, local timezone, relative time, and ISO value. Each row is click-to-copy. Uses `formatDateTimeFull` and `formatRelativeTime` from `@/lib/i18n`.
+- **RouterLink** (`link.tsx`) — Type-safe link with CVA variants and external link support.
 - **Advanced inputs** — autocomplete, combobox (cmdk), phone input, date-selector, number-field, input-otp
 - **Layout** — sidebar (collapsible), resizable panels, sortable (dnd-kit)
 
@@ -397,8 +411,10 @@ Utilities in `src/lib/`:
 
 Hooks in `src/hooks/`:
 
+- `useCopyToClipboard({ timeout? })` — Clipboard write with auto-resetting `copied` boolean. Returns `{ copied, copy }`.
 - `useFileUpload()` — File management with drag-and-drop, validation (maxSize, accept, maxFiles), preview generation, duplicate detection, and error handling. Returns `[state, actions]`.
 - `useIsMobile()` — Responsive breakpoint hook (768px). Returns `boolean`.
+- `useNetwork()` — Online/offline detection via `useSyncExternalStore`. Returns `{ online }`. SSR-safe.
 - `useSignOut()` — Sign-out with navigation to `/login`. Handles errors by navigating regardless. Used by `NavUser` and `DefaultShell`.
 
 ### Key Config Files
