@@ -40,7 +40,7 @@ pnpm paraglide:compile  # must run before typecheck/tests (generates JS that TS 
 pnpm typecheck
 ```
 
-### Tests
+### Tests (Unit)
 
 ```bash
 pnpm test
@@ -67,7 +67,19 @@ Tests needing Node-only APIs (e.g., `crypto`) should add `// @vitest-environment
 
 Coverage is collected for `src/lib/**`, `src/configs/**`, and `src/hooks/**`. Auth, email, Nitro plugins, routes, and components are excluded (need E2E).
 
-E2E tests are scaffolded in CI but not configured yet. See `docs/development/testing.md` for full details.
+### Tests (E2E)
+
+```bash
+pnpm test:e2e          # run all E2E tests headless
+pnpm test:e2e:ui       # open Playwright UI mode for debugging
+pnpm test:e2e --grep @smoke  # run only smoke-tagged tests
+```
+
+Playwright config: `playwright.config.ts`. Tests live in `e2e/`. Separate tsconfig at `e2e/tsconfig.json`.
+Playwright auto-starts `pnpm dev` on port 3000 when running tests.
+Use role/label/text selectors (`getByRole`, `getByLabel`, `getByText`) over CSS selectors.
+
+See `docs/development/testing.md` for full details.
 
 ### Database
 
@@ -343,6 +355,7 @@ Hooks in `src/hooks/`:
 - `vite.config.ts` — Plugin chain: devtools → tsconfig paths → arkenv → tailwindcss → tanstackStart → nitro → react → paraglide. Also configures Nitro modules (evlog) and plugins (drain).
 - `drizzle.config.ts` — Points at `src/db/schema.ts` aggregator, snake_case, migrations in `./drizzle/`
 - `components.json` — shadcn/ui config pointing to `src/components/ui/`
+- `playwright.config.ts` — E2E test config: Chromium, dev server on port 3000, timeouts, reporters, artifacts
 - `lefthook.yml` — Git hooks: `pre-commit` (parallel: typecheck, lint, lint-md, format) and `commit-msg` (commitlint). Auto-fixes staged files via `stage_fixed: true`
 
 ## Task Tracking (Trekker)

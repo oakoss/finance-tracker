@@ -10,6 +10,7 @@ import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import importX from 'eslint-plugin-import-x';
 // @ts-ignore
 import jsxA11y from 'eslint-plugin-jsx-a11y';
+import playwright from 'eslint-plugin-playwright';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
@@ -26,6 +27,7 @@ export default defineConfig(
     '.nitro',
     '.output',
     '.tanstack',
+    'blob-report',
     'coverage',
     'playwright-report',
     'test-results',
@@ -199,6 +201,13 @@ export default defineConfig(
         rootFontSize: 16,
         tsconfig: './tsconfig.json',
       },
+    },
+  },
+  {
+    extends: [playwright.configs['flat/recommended']],
+    files: ['e2e/**/*'],
+    rules: {
+      'playwright/no-standalone-expect': 'error',
     },
   },
   {
