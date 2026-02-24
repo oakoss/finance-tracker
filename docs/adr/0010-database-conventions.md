@@ -19,6 +19,12 @@ We need consistent schema conventions across modules for auditing, soft deletes,
 - `timestamp without time zone` (risk of inconsistent time handling).
 - Hard deletes only (no audit trail).
 
+## Relations Organization
+
+- Each module defines Drizzle relations in `src/modules/{module}/relations.ts`.
+- Drizzle requires exactly one `relations()` call per table across the entire schema.
+- Cross-module relations (e.g., `usersRelations` spanning auth, finance, and todos) are consolidated in the owning module's relation file (`auth/relations.ts` for users).
+
 ## Consequences
 
 - Positive: Consistent auditing and time handling across modules.

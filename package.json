@@ -25,7 +25,7 @@
     "lint:md:fix": "markdownlint-cli2 --fix '**/*.md'",
     "paraglide:compile": "pnpm exec paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
     "preview": "vite preview",
-    "schema:auth": "pnpm schema:auth:generate && pnpm schema:auth:postprocess",
+    "schema:auth": "pnpm schema:auth:generate && pnpm schema:auth:postprocess && eslint --fix src/modules/auth/schema.ts && prettier --write src/modules/auth/schema.ts",
     "schema:auth:generate": "pnpm with:env pnpm dlx @better-auth/cli generate --config src/lib/auth.ts --output src/modules/auth/schema.ts --yes",
     "schema:auth:postprocess": "tsx scripts/postprocess-auth-schema.ts",
     "start": "pnpm with:env node .output/server/index.mjs",

@@ -1,0 +1,60 @@
+import { relations } from 'drizzle-orm';
+
+import {
+  accounts,
+  sessions,
+  users,
+  verifications,
+} from '@/modules/auth/schema';
+import {
+  attachments,
+  categories,
+  debtStrategies,
+  imports,
+  ledgerAccounts,
+  merchantRules,
+  payees,
+  recurringRules,
+  statements,
+  tags,
+  transfers,
+  userPreferences,
+} from '@/modules/finance/schema';
+import { todos } from '@/modules/todos/schema';
+
+// usersRelations spans auth, finance, and todos modules.
+// Drizzle requires exactly one relations() call per table,
+// so all user relations are consolidated here.
+export const usersRelations = relations(users, ({ many, one }) => ({
+  accounts: many(accounts),
+  attachments: many(attachments),
+  categories: many(categories),
+  debtStrategies: many(debtStrategies),
+  imports: many(imports),
+  ledgerAccounts: many(ledgerAccounts),
+  merchantRules: many(merchantRules),
+  payees: many(payees),
+  preferences: one(userPreferences),
+  recurringRules: many(recurringRules),
+  sessions: many(sessions),
+  statements: many(statements),
+  tags: many(tags),
+  todos: many(todos),
+  transfers: many(transfers),
+}));
+
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
+    references: [users.id],
+  }),
+}));
+
+export const accountsRelations = relations(accounts, ({ one }) => ({
+  user: one(users, {
+    fields: [accounts.userId],
+    references: [users.id],
+  }),
+}));
+
+export const verificationsRelations = relations(verifications, () => ({}));

@@ -91,4 +91,19 @@ export const exampleUpdatePayloadSchema = createUpdateSchema(example);
 For deeper ArkType usage and advanced schema composition, see
 `docs/development/arktype.md`.
 
-- Schema aggregator: `src/db/schema.ts`.
+- Schema aggregator: `src/db/schema.ts` (re-exports all module schemas and relations).
+
+## Relations
+
+Each module defines its Drizzle relations in `src/modules/{module}/relations.ts`:
+
+- `src/modules/auth/relations.ts` — `usersRelations`, `sessionsRelations`, `accountsRelations`, `verificationsRelations`
+- `src/modules/finance/relations.ts` — all finance table relations
+- `src/modules/todos/relations.ts` — `todosRelations`
+
+Drizzle requires exactly one `relations()` call per table. Since `users` has
+relationships to tables in auth, finance, and todos, `usersRelations` is
+consolidated in `auth/relations.ts`.
+
+When adding a new table with a `userId` FK, add the corresponding `many()` entry
+to `usersRelations` in `src/modules/auth/relations.ts`.
