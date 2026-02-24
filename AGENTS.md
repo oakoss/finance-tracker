@@ -9,7 +9,7 @@ This document helps agentic coding tools work effectively in this repo.
 - Node version: use `.nvmrc` (fnm recommended).
 - Framework: TanStack Start (React).
 - TypeScript: strict mode enabled (`tsconfig.json`).
-- Paths alias: `@/*` -> `src/*`.
+- Paths alias: `@/*` -> `src/*`, `~test/*` -> `test/*`.
 
 ## Commands
 
@@ -67,6 +67,23 @@ Tests needing Node-only APIs (e.g., `crypto`) should add `// @vitest-environment
 
 Coverage is collected for `src/lib/**`, `src/configs/**`, and `src/hooks/**`. Auth, email, Nitro plugins, routes, and components are excluded (need E2E).
 
+### Test Factories
+
+Factory functions live in `test/factories/`. Import directly from module paths (e.g., `~test/factories/user.factory`).
+
+- `createX(overrides?)` — returns a plain object (unit tests, no DB needed)
+- `insertX(db, overrides?)` — inserts into DB and returns the record via `.returning()`
+
+Always pass the `db` instance as a parameter (never import the singleton).
+
+Available factories: `User`, `LedgerAccount`, `Category`, `Payee`, `Tag`, `Transaction`, `Transfer`.
+
+Scenario builders in `test/scenarios/` compose multiple factories:
+
+- `createFullTransaction(db)` — user + account + category + payee + transaction
+- `createMultiAccountUser(db)` — user with checking, savings, and credit card accounts
+- `createMonthlySpending(db)` — user + account + 5 categories + 3 payees + 30 transactions
+
 ### Tests (E2E)
 
 ```bash
@@ -90,6 +107,9 @@ pnpm docker:reset
 pnpm db:generate
 pnpm db:migrate
 pnpm db:push
+pnpm db:seed              # seed with 'standard' profile (or: minimal, stress)
+pnpm db:seed minimal      # single full-transaction chain
+pnpm db:seed stress       # standard + 9 additional monthly-spending sets
 pnpm db:studio
 ```
 

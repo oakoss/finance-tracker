@@ -20,7 +20,8 @@
     "tsBuildInfoFile": "node_modules/.cache/typescript/tsbuildinfo",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "~test/*": ["./test/*"]
     }
   },
   "include": [

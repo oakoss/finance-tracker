@@ -47,7 +47,10 @@ export default mergeConfig(
 
       globals: true,
 
-      include: ['src/**/*.{test,spec}.{ts,tsx}'],
+      include: [
+        'src/**/*.{test,spec}.{ts,tsx}',
+        'test/**/*.{test,spec}.{ts,tsx}',
+      ],
       restoreMocks: true,
       setupFiles: ['./test/setup.ts'],
       // Enable type-level testing with expectTypeOf / assertType
