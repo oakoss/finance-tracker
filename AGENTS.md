@@ -80,6 +80,15 @@ See [Definition of Done](docs/development/definition-of-done.md).
 | Components                | [components/](docs/development/components/)               |
 | Styling                   | [styling.md](docs/development/styling.md)                 |
 | Cookies                   | [cookies.md](docs/development/cookies.md)                 |
+| SVG                       | [svg.md](docs/development/svg.md)                         |
+
+## Plan Mode
+
+- Make plans extremely concise. Sacrifice grammar for concision.
+- Follow the plan loop: **Plan** -> **Execute** -> **Test** -> **Commit**.
+- Plan before writing code. Discuss strategy, align on approach, then
+  execute.
+- At the end of each plan, list unresolved questions to answer, if any.
 
 ## Task Tracking (Trekker)
 

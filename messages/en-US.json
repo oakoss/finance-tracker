@@ -10,5 +10,6 @@
   "actions.delete": "Delete",
   "actions.edit": "Edit",
   "actions.create": "Create",
-  "empty.state": "Nothing here yet."
+  "empty.state": "Nothing here yet.",
+  "landing.description": "Track spending, manage budgets, and take control of your finances."
 }

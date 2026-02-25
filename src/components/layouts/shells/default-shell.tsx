@@ -1,3 +1,4 @@
+import { Logo } from '@/components/logo';
 import { ModeToggle } from '@/components/mode-toggle';
 import { Button } from '@/components/ui/button';
 import { RouterLink } from '@/components/ui/link';
@@ -12,7 +13,13 @@ export function DefaultShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-screen flex-col">
       <header className="border-b">
         <div className="flex h-14 w-full items-center justify-between px-4 lg:px-6">
-          <RouterLink size="lg" to="/" variant="subtle">
+          <RouterLink
+            className="flex items-center gap-2"
+            size="lg"
+            to="/"
+            variant="subtle"
+          >
+            <Logo className="size-5" />
             {appConfig.name}
           </RouterLink>
           <div className="flex items-center gap-4">

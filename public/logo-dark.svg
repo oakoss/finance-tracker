@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24" fill="none" stroke="#8fb4d0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img">
+  <title>Finance Tracker</title>
+  <line x1="12" y1="2" x2="12" y2="22"/>
+  <line x1="8" y1="22" x2="16" y2="22"/>
+  <line x1="3" y1="6" x2="21" y2="6"/>
+  <polygon points="12,2 10,6 14,6" fill="#8fb4d0" stroke="none"/>
+  <path d="M3 6 L2 12 A4.5 2 0 0 0 11 12 L10 6"/>
+  <path d="M14 6 L13 12 A4.5 2 0 0 0 22 12 L21 6"/>
+</svg>

@@ -1,4 +1,5 @@
 import { Icons } from '@/components/icons';
+import { Logo } from '@/components/logo';
 import { NavMain } from '@/components/nav/nav-main';
 import { NavSecondary } from '@/components/nav/nav-secondary';
 import { NavUser } from '@/components/nav/nav-user';
@@ -68,7 +69,7 @@ export function AppSidebar({
               className="data-[slot=sidebar-menu-button]:p-1.5!"
               to="/dashboard"
             >
-              <Icons.Wallet className="size-5!" />
+              <Logo className="size-5!" />
               <span className="text-base font-semibold">{appConfig.name}</span>
             </RouterSidebarMenuButton>
           </SidebarMenuItem>

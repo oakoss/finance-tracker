@@ -30,6 +30,26 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         href: globalsCss,
         rel: 'stylesheet',
       },
+      {
+        href: '/logo.svg',
+        media: '(prefers-color-scheme: light)',
+        rel: 'icon',
+        type: 'image/svg+xml',
+      },
+      {
+        href: '/logo-dark.svg',
+        media: '(prefers-color-scheme: dark)',
+        rel: 'icon',
+        type: 'image/svg+xml',
+      },
+      {
+        href: '/logo192.png',
+        rel: 'apple-touch-icon',
+      },
+      {
+        href: '/manifest.json',
+        rel: 'manifest',
+      },
     ],
     meta: [
       {
