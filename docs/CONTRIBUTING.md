@@ -7,6 +7,8 @@ Thanks for contributing to the Finance Tracker app! This guide covers local setu
 ```bash
 pnpm install
 pnpm docker:up
+pnpm db:generate && pnpm db:migrate
+pnpm paraglide:compile
 pnpm dev
 ```
 
@@ -41,6 +43,7 @@ pnpm db:migrate
 pnpm lint
 pnpm format
 pnpm lint:md
+pnpm paraglide:compile  # must run before typecheck
 pnpm typecheck
 pnpm build
 ```

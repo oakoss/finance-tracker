@@ -51,7 +51,11 @@ build time).
 `@arkenv/vite-plugin` in `vite.config.ts`. TypeScript types for
 `import.meta.env` are augmented in `src/vite-env.d.ts`.
 
-## Local development
+## Secrets management
+
+Never commit real secrets. No encrypted `.env` files are checked in.
+
+### Local development
 
 Local env is managed via
 [1Password Environments](https://developer.1password.com/docs/environments),
@@ -59,9 +63,10 @@ which mounts a virtual `.env` file at the project root. No plaintext
 secrets on disk.
 
 Alternatively, copy `.env.example` to `.env` for a working set of dummy
-values.
+values. Use `pnpm with:env <command>` when a script needs env vars
+outside a config file.
 
-## CI
+### CI
 
 CI copies `.env.example` to `.env` before running tests:
 
@@ -72,11 +77,11 @@ CI copies `.env.example` to `.env` before running tests:
 
 `.env.example` contains valid dummy values that pass ArkEnv validation.
 
-## Production (Coolify)
+### Production (Coolify)
 
 Set env vars directly in the Coolify UI. The lazy proxy in
 `src/configs/env.ts` validates at server startup. No `.env` files are
-used in production.
+used in production. Keep `BETTER_AUTH_SECRET` unique per environment.
 
 ## Adding a new variable
 
@@ -94,6 +99,22 @@ When E2E tests require real secrets in CI, consider using
 `dotenvx encrypt` to commit encrypted `.env.ci` files to the repo. Only
 one GitHub secret (`DOTENV_PRIVATE_KEY_CI`) would be needed to decrypt
 at runtime. See [dotenvx encryption docs](https://dotenvx.com/docs/encryption).
+
+## Docker Compose variables
+
+These variables in `.env.example` configure the local Postgres container
+(`pnpm docker:up`). They are not validated by the app and are only used
+by `docker-compose.yml`:
+
+| Variable            | Default                    |
+| ------------------- | -------------------------- |
+| `POSTGRES_USER`     | `finance_tracker`          |
+| `POSTGRES_PASSWORD` | `finance_tracker_password` |
+| `POSTGRES_DB`       | `finance_tracker_dev`      |
+| `POSTGRES_PORT`     | `5432`                     |
+| `POSTGRES_DATA_DIR` | `/var/lib/postgresql/data` |
+
+`DATABASE_URL` in the app connects to this container using these values.
 
 ## Notes
 

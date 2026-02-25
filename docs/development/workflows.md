@@ -32,7 +32,8 @@ concurrency:
 
 - Runs static analysis via `.github/actions/static-analysis`.
 - Docs-only changes run `format:check` + `lint:md` only.
-- Unit/E2E jobs are scaffolded but disabled.
+- Unit tests run on every PR (required to pass).
+- E2E tests run on every PR (not required to pass).
 
 ## CodeQL (`.github/workflows/codeql.yml`)
 
@@ -44,3 +45,17 @@ concurrency:
 
 - Runs only when dependency files change.
 - Fails on high severity.
+
+## Git Hooks (Lefthook)
+
+Local git hooks are managed by [Lefthook](https://github.com/evilmartians/lefthook)
+via `lefthook.yml`:
+
+- **`pre-commit`** (runs in parallel):
+  - `pnpm typecheck`
+  - `pnpm lint` (with `stage_fixed: true` for auto-fix)
+  - `pnpm lint:md` (with `stage_fixed: true`)
+  - `pnpm format` (with `stage_fixed: true`)
+- **`commit-msg`**: commitlint validates conventional commit format.
+
+`stage_fixed: true` re-stages auto-fixed files automatically.

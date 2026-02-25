@@ -39,3 +39,4 @@ Use `docs/adr/template.md` for new ADRs.
 - `docs/adr/0017-locale-storage.md`
 - `docs/adr/0018-i18n-paraglide.md`
 - `docs/adr/0019-cookie-management.md`
+- `docs/adr/0020-logging-evlog-signoz.md`

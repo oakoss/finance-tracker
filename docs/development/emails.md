@@ -79,7 +79,7 @@ If you add new tokens for email, extend the `colors` (or `fontFamily`) in `BaseE
 ## Localization (Paraglide)
 
 - Email templates can use Paraglide messages directly.
-- Use the `renderEmail` helper in `src/modules/auth/email-render.ts` to render
+- Use the `renderEmail` helper in `src/modules/auth/emails/email-render.ts` to render
   localized HTML + plain text and restore the previous locale.
 - Pass an optional `locale` when sending emails (e.g.
   `sendVerificationEmail({ user, url, locale })`).

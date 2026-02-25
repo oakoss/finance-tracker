@@ -95,15 +95,15 @@ For deeper ArkType usage and advanced schema composition, see
 
 ## Relations
 
-Each module defines its Drizzle relations in `src/modules/{module}/relations.ts`:
+Each module defines its Drizzle relations in `src/modules/{module}/db/relations.ts`:
 
-- `src/modules/auth/relations.ts` — `usersRelations`, `sessionsRelations`, `accountsRelations`, `verificationsRelations`
-- `src/modules/finance/relations.ts` — all finance table relations
-- `src/modules/todos/relations.ts` — `todosRelations`
+- `src/modules/auth/db/relations.ts` — `usersRelations`, `sessionsRelations`, `accountsRelations`, `verificationsRelations`
+- `src/modules/finance/db/relations.ts` — all finance table relations
+- `src/modules/todos/db/relations.ts` — `todosRelations`
 
 Drizzle requires exactly one `relations()` call per table. Since `users` has
 relationships to tables in auth, finance, and todos, `usersRelations` is
-consolidated in `auth/relations.ts`.
+consolidated in `auth/db/relations.ts`.
 
 When adding a new table with a `userId` FK, add the corresponding `many()` entry
-to `usersRelations` in `src/modules/auth/relations.ts`.
+to `usersRelations` in `src/modules/auth/db/relations.ts`.

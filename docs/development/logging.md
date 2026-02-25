@@ -11,6 +11,7 @@ See `docs/adr/0020-logging-evlog-signoz.md` for the architectural decision.
 | `src/lib/logging/evlog.ts`         | Main entry point — re-exports `log`, `useLogger`, `createError`, `parseError` |
 | `src/lib/logging/drain.ts`         | Nitro plugin — OTLP drain, enrichers, sanitization, pipeline                  |
 | `src/lib/logging/hash.ts`          | HMAC-SHA256 ID hashing for audit logs                                         |
+| `src/lib/logging/sanitize.ts`      | Allowlist-based field sanitizer for PII removal before drain                  |
 | `src/lib/logging/client-logger.ts` | Client-side logger with env-based enable/level control                        |
 | `vite.config.ts` (`nitro.modules`) | evlog Nitro v3 module registration, sampling, route exclusions                |
 
@@ -99,7 +100,7 @@ All server events should include these fields where available:
 | `user.role`          | `string` | optional                                       |
 | `outcome.status`     | `number` | HTTP status — set automatically                |
 | `outcome.durationMs` | `number` | set automatically                              |
-| `outcome.errorId`    | `string` | from `error-ids.ts` if applicable              |
+| `outcome.errorId`    | `string` | structured error identifier, if applicable     |
 | `audit.entity`       | `string` | auditable entity name e.g. `transaction`       |
 | `audit.entityIdHash` | `string` | hashed entity ID                               |
 | `audit.operation`    | `string` | `create`, `update`, `delete`                   |

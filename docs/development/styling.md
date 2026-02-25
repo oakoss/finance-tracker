@@ -1,12 +1,12 @@
 # Styling Guide
 
-Global styling guidance for this repo.
+Styling patterns and conventions for the finance tracker.
 
 ## Principles
 
 - Base styles first, variants second, state third, overrides last.
-- Prefer tokens and CSS variables over hard-coded values.
-- Use `cn` for class composition.
+- Use design tokens and CSS variables over hard-coded values.
+- Use `cn()` from `@/lib/utils` for class composition.
 
 ## Class order
 
@@ -23,12 +23,10 @@ className={cn(
 
 - Multiple variants or sizes.
 - Shared variant logic across components.
-- You need typed variants.
+- Typed variants are needed.
 
-## Notes
-
-- Keep CVA definitions outside component bodies.
-- Avoid inline styles unless token-driven.
+Keep CVA definitions outside component bodies. Avoid inline styles
+unless token-driven.
 
 ## Tailwind setup
 
@@ -37,12 +35,34 @@ className={cn(
   - `entryPoint: src/styles/globals.css`
   - `tsconfig: ./tsconfig.json`
   - `rootFontSize: 16`
-- Linting is based on the recommended better-tailwindcss rules with overrides;
-  it catches deprecated or duplicate utilities and enforces shorthand classes
-  (warn). See `eslint.config.js` for the authoritative list of rules.
+- Linting catches deprecated or duplicate utilities and enforces
+  shorthand classes (warn). See `eslint.config.js` for the full list.
 
 ## Design tokens
 
-- Global tokens live in `src/styles/globals.css` under `:root` and `.dark`.
-- Status tokens (`success`, `info`, `warning`, `destructive`, `invert`) are defined as OKLCH values.
-- The `@theme inline` section mirrors the same tokens for Tailwind usage.
+Global tokens live in `src/styles/globals.css` under `:root` and
+`.dark`.
+
+### Token layers
+
+- **Base tokens**: raw values (`--background`, `--primary`)
+- **Semantic tokens**: intent-based aliases (`--color-background`)
+- **Status tokens**: `success`, `info`, `warning`, `destructive`,
+  `invert` (defined as OKLCH values)
+
+The `@theme inline` section mirrors the same tokens for Tailwind usage:
+
+```css
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+}
+```
+
+### Rules
+
+- Components should use semantic tokens, not raw values.
+- Avoid hard-coded colors in `ui` components.
+- Keep tokens theme-friendly (light/dark/future brand themes).

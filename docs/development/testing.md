@@ -45,6 +45,31 @@ plugins, and TanStack Router — none of which should run during unit
 tests. A separate `vitest.config.ts` that only includes path aliases and
 React keeps tests fast and avoids Nitro side effects.
 
+## Test Factories
+
+Factory functions live in `test/factories/`. Import directly from
+module paths (e.g., `~test/factories/user.factory`).
+
+- `createX(overrides?)` -- returns a plain object (unit tests, no DB
+  needed).
+- `insertX(db, overrides?)` -- inserts into DB and returns the record
+  via `.returning()`.
+
+Always pass the `db` instance as a parameter (never import the
+singleton).
+
+Available factories: `User`, `LedgerAccount`, `Category`, `Payee`,
+`Tag`, `Transaction`, `Transfer`.
+
+Scenario builders in `test/scenarios/` compose multiple factories:
+
+- `createFullTransaction(db)` -- user + account + category + payee +
+  transaction
+- `createMultiAccountUser(db)` -- user with checking, savings, and
+  credit card accounts
+- `createMonthlySpending(db)` -- user + account + 5 categories +
+  3 payees + 30 transactions
+
 ## Unit tests
 
 Unit tests cover pure functions and utilities that don't require a
@@ -66,7 +91,6 @@ full exclude list.
 | `src/lib/logging/hash.ts` | Deterministic HMAC output, different secrets produce different hashes. Already has tests.                                                                              |
 | `src/lib/cookies.ts`      | `serializeServerCookie` output format, `createServerCookies` parsing, `appendSetCookieHeaders` appending.                                                              |
 | `src/lib/utils.ts`        | `cn` class merging (tailwind-merge + clsx).                                                                                                                            |
-| `src/lib/error-ids.ts`    | Type-level tests (`test-d.ts`) to verify `ErrorId` union stays in sync with `errorIds`.                                                                                |
 
 ### Vitest environments
 
@@ -134,10 +158,71 @@ test.describe('feature', { tag: '@smoke' }, () => {
 });
 ```
 
+### Structured steps with `test.step()`
+
+`test.step()` breaks tests into named phases. Steps appear as
+collapsible sections in Playwright's HTML report, so failures are quick
+to locate:
+
+```ts
+test('user creates a new account', async ({ page }) => {
+  await test.step('navigate to accounts page', async () => {
+    await page.goto('/accounts');
+    await expect(page.getByRole('heading', { name: 'Accounts' })).toBeVisible();
+  });
+
+  await test.step('open create dialog', async () => {
+    await page.getByRole('button', { name: 'Add Account' }).click();
+    await expect(page.getByRole('dialog')).toBeVisible();
+  });
+
+  await test.step('fill account details and submit', async () => {
+    await page.getByLabel('Account Name').fill('Chase Sapphire');
+    await page.getByRole('button', { name: 'Create' }).click();
+  });
+
+  await test.step('verify account appears in list', async () => {
+    await expect(page.getByText('Chase Sapphire')).toBeVisible();
+  });
+});
+```
+
+Steps can be nested. Prefer 3-5 steps per test for readability.
+
+### Custom fixtures
+
+Playwright fixtures handle repeated setup like authentication and test
+data. When needed, create `e2e/fixtures.ts`:
+
+```ts
+import { test as base } from '@playwright/test';
+
+type Fixtures = {
+  authenticatedPage: Page;
+};
+
+export const test = base.extend<Fixtures>({
+  authenticatedPage: async ({ page }, use) => {
+    // Perform login once, reuse across tests
+    await page.goto('/login');
+    await page.getByLabel('Email').fill('test@example.com');
+    await page.getByLabel('Password').fill('password123');
+    await page.getByRole('button', { name: 'Sign in' }).click();
+    await page.waitForURL('/dashboard');
+    await use(page);
+  },
+});
+
+export { expect } from '@playwright/test';
+```
+
+Import `test` from `e2e/fixtures` instead of `@playwright/test` in
+tests that need fixtures.
+
 ### What needs E2E testing
 
-These areas require a running app, database, or browser and are
-explicitly excluded from unit test coverage:
+These areas require a running app, database, or browser. They are
+excluded from unit test coverage:
 
 - **Auth flows**: sign-up, sign-in, OAuth redirects, session handling,
   email verification (`src/lib/auth.ts`, `src/lib/auth-client.ts`).
@@ -153,6 +238,24 @@ explicitly excluded from unit test coverage:
   server endpoint).
 - **Components**: interactive behavior requiring DOM events and state
   (`src/components/**`).
+
+### Per-feature test expectations
+
+Every feature should include at minimum:
+
+| Layer                 | What                                         | When                                    |
+| --------------------- | -------------------------------------------- | --------------------------------------- |
+| Server function tests | Validate inputs, business logic, error cases | TDD — write before implementation       |
+| Unit tests            | Complex hooks, validators, formatters        | Write alongside or after implementation |
+| E2E test              | Happy-path user flow with `test.step()`      | Write after feature is functional       |
+
+**TDD for server functions**: Write the test first, then implement the
+server function to pass it. The API contract is defined before the
+implementation.
+
+**Test-after for UI**: Components and pages are tested via E2E after
+the feature works. Unit-test complex client logic (hooks, validators)
+but skip unit tests for simple rendering.
 
 ### Future considerations
 
@@ -192,5 +295,5 @@ npx playwright merge-reports --reporter html ./blob-report
 
 ### Coverage thresholds
 
-No thresholds are enforced yet. Focus on meaningful coverage of pure
-logic first — thresholds can be added once there's a stable baseline.
+No thresholds yet. Cover pure logic first; add thresholds once
+there's a stable baseline.

@@ -33,7 +33,6 @@ truth for structure, behavior, and integration with Base UI and TanStack.
 - Form examples: `docs/development/components/examples/form.md`
 - Typography examples: `docs/development/components/examples/typography.md`
 
-## Global styling and tokens
+## Styling and tokens
 
-- Styling: `docs/development/styling.md`
-- Design tokens: `docs/development/design-tokens.md`
+- Styling and design tokens: `docs/development/styling.md`

@@ -7,8 +7,6 @@ TanStack Start server functions when wiring forms to the backend.
 ## Basic form (ArkType + mutation)
 
 ```tsx
-'use client';
-
 import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { type } from 'arktype';
@@ -121,8 +119,6 @@ export function BasicFormExample() {
 ## Conditional inputs
 
 ```tsx
-'use client';
-
 import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { type } from 'arktype';
@@ -311,8 +307,6 @@ export function ConditionalFormExample() {
 ## Multi-step wizard
 
 ```tsx
-'use client';
-
 import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { type } from 'arktype';
@@ -527,8 +521,6 @@ export function WizardFormExample() {
 ## Field-level validators (sync + async)
 
 ```tsx
-'use client';
-
 import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { type } from 'arktype';

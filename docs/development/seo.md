@@ -1,15 +1,72 @@
 # SEO
 
-SEO notes for the TanStack Start app.
+SEO configuration for the TanStack Start app.
 
-See `docs/adr/0006-deployment-coolify-cloudflare-tunnel.md` for canonical domain details.
+See `docs/adr/0006-deployment-coolify-cloudflare-tunnel.md` for the
+canonical domain (`finance.oakoss.dev`).
 
-## Meta tags
+## Current state
 
-- Use per-route meta when adding public pages.
-- Keep titles and descriptions consistent with the canonical domain.
+The root route (`src/routes/__root.tsx`) sets global meta via `head()`:
 
-## Robots & Sitemap
+```ts
+head: () => ({
+  links: [{ href: globalsCss, rel: 'stylesheet' }],
+  meta: [
+    { charSet: 'utf8' },
+    { content: 'width=device-width, initial-scale=1', name: 'viewport' },
+    { title: appConfig.name },
+  ],
+}),
+```
 
-- Plan to add `robots.txt` and `sitemap.xml` endpoints when public pages exist.
-- Only include public pages in the sitemap.
+`<HeadContent />` renders these tags inside `<head>`.
+
+No per-route `head()` overrides exist yet. Child routes inherit the root
+title.
+
+## Per-route meta
+
+Add `head()` to any `createFileRoute` call to set page-specific titles
+and descriptions:
+
+```ts
+export const Route = createFileRoute('/_app/accounts')({
+  head: () => ({
+    meta: [
+      { title: 'Accounts | Finance Tracker' },
+      { content: 'Manage your financial accounts', name: 'description' },
+    ],
+  }),
+});
+```
+
+## Robots
+
+`public/robots.txt` currently allows all crawlers:
+
+```text
+User-agent: *
+Disallow:
+```
+
+Authenticated routes (`/_app/*`) are not exposed to crawlers because
+they require login; no explicit `Disallow` is needed.
+
+## Sitemap
+
+No sitemap generation exists yet. Add `sitemap.xml` as a Nitro route
+when public pages ship. Only include public routes.
+
+## Manifest
+
+`public/manifest.json` exists but still contains TanStack boilerplate
+values. Update the `name`, `short_name`, and icons when the brand
+identity is finalized (TREK-72). Link it from the root `head()`.
+
+## Planned work
+
+- Add Open Graph and Twitter card meta to public pages
+- Set canonical URLs on public routes
+- Update manifest with real app name and icons
+- Generate a sitemap for public pages
