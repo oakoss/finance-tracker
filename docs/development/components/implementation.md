@@ -14,7 +14,16 @@ export type CardProps = React.ComponentProps<'div'> & {
 };
 ```
 
-Avoid prop name collisions with DOM attributes (`title`, `color`, `size`).
+Avoid prop names that collide with **problematic** DOM attributes.
+Common examples (not exhaustive):
+
+- **`title`** -- renders a browser tooltip on any element. Never use.
+- **`color`** -- legacy HTML attribute still recognized by browsers. Avoid.
+- **`hidden`** -- hides the element. Never use as a custom prop.
+
+`size` is safe for CVA variants — it is the standard prop name in
+shadcn/ui. Always destructure custom props before spreading `...props`
+so they don't leak to the DOM.
 
 ## Base UI render pattern
 
