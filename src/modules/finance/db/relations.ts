@@ -1,6 +1,6 @@
 import { relations } from 'drizzle-orm';
 
-import { users } from '@/modules/auth/schema';
+import { users } from '@/modules/auth/db/schema';
 import {
   accountBalanceSnapshots,
   accountTerms,
@@ -27,7 +27,7 @@ import {
   transactionTags,
   transfers,
   userPreferences,
-} from '@/modules/finance/schema';
+} from '@/modules/finance/db/schema';
 
 export const creditCardCatalogRelations = relations(
   creditCardCatalog,

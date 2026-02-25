@@ -18,7 +18,7 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 
-import { users } from '@/modules/auth/schema';
+import { users } from '@/modules/auth/db/schema';
 
 export const accountOwnerTypeEnum = pgEnum('account_owner_type', [
   'personal',

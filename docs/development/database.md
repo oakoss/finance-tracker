@@ -49,7 +49,7 @@ import {
   createUpdateSchema,
 } from 'drizzle-arktype';
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
-import { users } from '@/modules/auth/schema';
+import { users } from '@/modules/auth/db/schema';
 
 export const example = pgTable('example', {
   id: uuid().primaryKey(),

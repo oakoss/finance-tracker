@@ -3,12 +3,12 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { createServerCookies } from '@/lib/cookies';
 import { sendEmail } from '@/lib/email';
-import { userPreferences } from '@/modules/finance/schema';
+import { userPreferences } from '@/modules/finance/db/schema';
 import { isLocale } from '@/paraglide/runtime';
 
 import { type EmailLocale, renderEmail } from './email-render';
-import { ResetPasswordEmail } from './emails/reset-password-email';
-import { VerificationEmail } from './emails/verification-email';
+import { ResetPasswordEmail } from './reset-password-email';
+import { VerificationEmail } from './verification-email';
 
 type EmailPerson = {
   id?: string | null;

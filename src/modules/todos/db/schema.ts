@@ -6,7 +6,7 @@ import {
 import { sql } from 'drizzle-orm';
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
-import { users } from '@/modules/auth/schema';
+import { users } from '@/modules/auth/db/schema';
 
 export const todos = pgTable('todos', {
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),

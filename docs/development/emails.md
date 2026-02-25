@@ -105,8 +105,8 @@ render helper so you get HTML + plain text and consistent locale handling:
 import { Text } from '@react-email/components';
 
 import { sendEmail } from '@/lib/email';
-import type { EmailLocale } from '@/modules/auth/email-render';
-import { renderEmail } from '@/modules/auth/email-render';
+import type { EmailLocale } from '@/modules/auth/emails/email-render';
+import { renderEmail } from '@/modules/auth/emails/email-render';
 import { BaseEmail } from '@/modules/auth/emails/base-email';
 
 function BillingSummaryEmail({ url }: { url: string }) {

@@ -1,6 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 
-const schemaPath = new URL('../src/modules/auth/schema.ts', import.meta.url);
+const schemaPath = new URL('../src/modules/auth/db/schema.ts', import.meta.url);
 
 const original = await readFile(schemaPath, 'utf8');
 let updated = original;

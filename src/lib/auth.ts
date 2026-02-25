@@ -8,7 +8,7 @@ import { db } from '@/db';
 import {
   sendResetPasswordEmail,
   sendVerificationEmail,
-} from '@/modules/auth/email-service';
+} from '@/modules/auth/emails/email-service';
 
 export const auth = betterAuth({
   account: {
