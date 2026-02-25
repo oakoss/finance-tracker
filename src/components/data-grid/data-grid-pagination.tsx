@@ -2,9 +2,9 @@
 
 import React, { type ReactNode } from 'react';
 
+import { useDataGrid } from '@/components/data-grid/data-grid';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
-import { useDataGrid } from '@/components/ui/data-grid/data-grid';
 import {
   Select,
   SelectContent,

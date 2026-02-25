@@ -1,6 +1,6 @@
-import { ChevronDownIcon } from 'lucide-react';
 import * as React from 'react';
 
+import { Icons } from '@/components/icons';
 import { cn } from '@/lib/utils';
 
 type NativeSelectProps = Omit<React.ComponentProps<'select'>, 'size'> & {
@@ -27,7 +27,7 @@ function NativeSelect({
         data-slot="native-select"
         {...props}
       />
-      <ChevronDownIcon
+      <Icons.ChevronDown
         aria-hidden="true"
         className="text-muted-foreground top-1/2 right-2.5 size-4 -translate-y-1/2 pointer-events-none absolute select-none"
         data-slot="native-select-icon"

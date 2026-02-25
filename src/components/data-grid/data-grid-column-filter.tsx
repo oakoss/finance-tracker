@@ -1,7 +1,7 @@
 import { type Column } from '@tanstack/react-table';
-import { CheckIcon, CirclePlusIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
+import { Icons } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -44,7 +44,7 @@ function DataGridColumnFilter<TData, TValue extends string>({
       <PopoverTrigger
         render={
           <Button size="sm" variant="outline">
-            <CirclePlusIcon className="size-4" />
+            <Icons.CirclePlus className="size-4" />
             {title}
             {selectedValues.size > 0 ? (
               <>
@@ -128,7 +128,7 @@ function DataGridColumnFilter<TData, TValue extends string>({
                           : 'opacity-50 [&_svg]:invisible',
                       )}
                     >
-                      <CheckIcon className="size-4" />
+                      <Icons.Check className="size-4" />
                     </div>
                     {option.icon ? (
                       <option.icon className="text-muted-foreground mr-2 size-4" />

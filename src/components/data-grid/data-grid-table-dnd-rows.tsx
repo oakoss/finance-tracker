@@ -32,9 +32,7 @@ import {
   useRef,
 } from 'react';
 
-import { Icons } from '@/components/icons';
-import { Button } from '@/components/ui/button';
-import { useDataGrid } from '@/components/ui/data-grid/data-grid';
+import { useDataGrid } from '@/components/data-grid/data-grid';
 import {
   DataGridTableBase,
   DataGridTableBody,
@@ -48,7 +46,9 @@ import {
   DataGridTableHeadRowCell,
   DataGridTableHeadRowCellResize,
   DataGridTableRowSpacer,
-} from '@/components/ui/data-grid/data-grid-table';
+} from '@/components/data-grid/data-grid-table';
+import { Icons } from '@/components/icons';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 // Context to share sortable listeners from row to handle

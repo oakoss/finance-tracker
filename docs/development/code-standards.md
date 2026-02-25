@@ -20,6 +20,9 @@ Code style, conventions, and structure expectations.
 ## Naming and Structure
 
 - Filenames must be **kebab-case** (`unicorn/filename-case`).
+- **No redundant prefixes** -- when files live in a descriptive folder,
+  don't repeat the folder name. Use `filters/context.tsx`, not
+  `filters/filter-context.tsx`.
 - Modules live under `src/modules/*`.
 - Shared config lives under `src/configs/*`.
 - DB schema aggregator: `src/db/schema.ts` (re-exports all module

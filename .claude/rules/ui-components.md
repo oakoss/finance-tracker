@@ -1,6 +1,8 @@
 ---
 paths:
   - src/components/ui/**/*
+  - src/components/data-grid/**/*
+  - src/components/filters/**/*
 ---
 
 # UI Component Rules
@@ -45,10 +47,11 @@ Components use `data-slot` attributes for semantic CSS targeting:
 
 ## Filters system
 
-A full filter UI in `filters.tsx` (~2000 LOC). Do not rebuild — use it:
+A full filter UI in `src/components/filters/` (split across 10 files). Do not rebuild — use it:
 
-- Context-based: `FilterContext` provides i18n, variant, size config.
+- Context-based: `FilterContext` provides variant, size config.
 - Field types: `select`, `multiselect`, `text`, `custom`, `separator`.
 - 28 predefined operators (is, contains, between, empty, etc.).
 - Custom validation (regex or function) and custom rendering per field.
-- Helpers: `createFilter()`, `createFilterGroup()`, `DEFAULT_I18N`, `DEFAULT_OPERATORS`.
+- Helpers: `createFilter()`, `createFilterGroup()`, `createOperators()`, `formatOperator()`.
+- Import from `@/components/filters` (main component) or individual modules.

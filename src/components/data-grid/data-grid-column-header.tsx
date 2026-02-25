@@ -3,12 +3,12 @@
 import { type Column } from '@tanstack/react-table';
 import { type HTMLAttributes, memo, type ReactNode, useMemo } from 'react';
 
-import { Icons } from '@/components/icons';
-import { Button } from '@/components/ui/button';
 import {
   type DataGridColumnMeta,
   useDataGrid,
-} from '@/components/ui/data-grid/data-grid';
+} from '@/components/data-grid/data-grid';
+import { Icons } from '@/components/icons';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,

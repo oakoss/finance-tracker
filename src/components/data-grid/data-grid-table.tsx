@@ -9,8 +9,8 @@ import {
 import { cva } from 'class-variance-authority';
 import { type CSSProperties, Fragment, type ReactNode, useMemo } from 'react';
 
+import { useDataGrid } from '@/components/data-grid/data-grid';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useDataGrid } from '@/components/ui/data-grid/data-grid';
 import { cn } from '@/lib/utils';
 
 const headerCellSpacingVariants = cva('', {

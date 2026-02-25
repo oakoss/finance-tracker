@@ -1,7 +1,7 @@
 import { type Column, type Table } from '@tanstack/react-table';
 import { type ReactElement } from 'react';
 
-import { type DataGridColumnMeta } from '@/components/ui/data-grid/data-grid';
+import { type DataGridColumnMeta } from '@/components/data-grid/data-grid';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
