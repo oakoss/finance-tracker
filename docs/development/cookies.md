@@ -5,6 +5,18 @@ for `Set-Cookie` serialization.
 
 See `docs/adr/0019-cookie-management.md` for the decision.
 
+## Storage Policy
+
+Cookies are the **only** browser persistence mechanism we use. Do not use
+`localStorage` or `sessionStorage` — they are not SSR-safe and add unnecessary
+complexity. IndexedDB is reserved for future offline support via TanStack DB.
+
+| Storage   | Use                                                        |
+| --------- | ---------------------------------------------------------- |
+| Cookies   | Persistent UI state (sidebar, theme, locale)               |
+| Memory    | Everything else (Query cache, form state, component state) |
+| IndexedDB | Reserved for future offline mode (via `@tanstack/db`)      |
+
 ## Client Usage
 
 ```ts

@@ -80,7 +80,9 @@ Prefer search params over client state for any UI state that should survive refr
 - **Modal state** — `?modal=create-account` or `?edit=<id>`. Browser back closes the modal.
 - **Active tabs** — `?tab=details` instead of `useState`.
 
-Only use `useState` for ephemeral state (form inputs, hover/focus, animations).
+Only use `useState` for ephemeral state (hover/focus, animations). Form inputs are handled by TanStack Form.
+
+Debounce text input writes to search params with `@tanstack/react-pacer`'s `useDebouncedCallback` to avoid URL thrashing on every keystroke.
 
 ## Dynamic Segments
 

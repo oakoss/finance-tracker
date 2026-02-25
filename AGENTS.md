@@ -308,6 +308,27 @@ Use the right tool for each kind of state. In priority order:
 5. **Local component state** (`useState`, `useReducer`) — Ephemeral state scoped to a single component: hover/focus, animations, loading spinners, UI toggles.
 6. **Context/Provider** — Dependency injection and config that doesn't fit the above. Avoid using context for frequently changing state (causes re-renders of all consumers). Theme is handled by `next-themes` (not context directly).
 
+### Storage Convention
+
+Where to persist client-side state:
+
+1. **Cookies** — Persistent UI state that must be SSR-safe (sidebar collapsed, theme, locale). Use `createClientCookies()` / `createServerCookies()` from `@/lib/cookies`. Zustand persist middleware should target cookies when SSR matters.
+2. **Memory** — Everything else (Query cache, form state, component state, Zustand stores without persistence). Default choice.
+3. **IndexedDB** — Reserved for future large-data needs (offline mode, large import previews). Will be managed via TanStack DB (`@tanstack/db`) when offline support is added — do not use raw IndexedDB directly.
+
+**Do not use `localStorage` or `sessionStorage`.** Cookies cover SSR-safe persistence; memory covers the rest. localStorage/sessionStorage are not SSR-safe and add unnecessary complexity.
+
+### Rate Limiting & Async Queuing
+
+`@tanstack/react-pacer` provides client-side rate control utilities:
+
+- **`useDebouncedCallback`** — Debounce text input writes to URL search params (filters, search fields). Prevents thrashing the URL on every keystroke.
+- **`useThrottledCallback`** — Throttle high-frequency events (scroll, resize, drag).
+- **`useRateLimitedCallback`** — Rate limit API calls (e.g., autocomplete suggestions).
+- **`useAsyncQueuer`** — Queue async operations with concurrency control, retry with exponential backoff, and pause/resume. Use for file upload queues (CSV imports).
+
+Pacer is for client-side flow control. Do not use it for server-side rate limiting.
+
 ### Module Organization
 
 `src/modules/` contains domain-specific code:
@@ -411,11 +432,12 @@ Utilities in `src/lib/`:
 
 Hooks in `src/hooks/`:
 
+- `useBroadcastChannel<T>(name, { onMessage? })` — Cross-tab communication via BroadcastChannel API. Returns `{ postMessage, isSupported }`. SSR-safe. Used for cross-tab sign-out sync.
 - `useCopyToClipboard({ timeout? })` — Clipboard write with auto-resetting `copied` boolean. Returns `{ copied, copy }`.
 - `useFileUpload()` — File management with drag-and-drop, validation (maxSize, accept, maxFiles), preview generation, duplicate detection, and error handling. Returns `[state, actions]`.
 - `useIsMobile()` — Responsive breakpoint hook (768px). Returns `boolean`.
 - `useNetwork()` — Online/offline detection via `useSyncExternalStore`. Returns `{ online }`. SSR-safe.
-- `useSignOut()` — Sign-out with navigation to `/login`. Handles errors by navigating regardless. Used by `NavUser` and `DefaultShell`.
+- `useSignOut()` — Sign-out with cross-tab broadcast. Calls `authClient.signOut()`, broadcasts `'sign-out'` on the `auth` BroadcastChannel, and navigates to `/login`. Other tabs listening on the same channel redirect automatically. Used by `NavUser` and `DefaultShell`.
 
 ### Key Config Files
 
