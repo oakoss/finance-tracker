@@ -11,7 +11,7 @@
     "defaultMode": "plan",
     "deny": []
   },
-  "plansDirectory": "./.claude/plans",
+  "plansDirectory": ".claude/plans",
   "sandbox": {
     "autoAllowBashIfSandboxed": false,
     "enabled": false

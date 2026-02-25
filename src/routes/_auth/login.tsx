@@ -38,7 +38,7 @@ function LoginPage() {
         const to =
           redirect && redirect.startsWith('/') && !redirect.startsWith('//')
             ? redirect
-            : '/';
+            : '/dashboard';
         void navigate({ to });
       }
     } catch (error) {

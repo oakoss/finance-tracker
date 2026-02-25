@@ -6,7 +6,6 @@ import {
 } from '@tanstack/react-router';
 
 import { DefaultShell } from '@/components/layouts/shells/default-shell';
-import { clientLog } from '@/lib/logging/client-logger';
 import { getSession } from '@/modules/auth/api/get-session';
 
 export const Route = createFileRoute('/_auth')({
@@ -19,11 +18,8 @@ export const Route = createFileRoute('/_auth')({
       }
     } catch (error) {
       if (isRedirect(error)) throw error;
-      clientLog.error({
-        action: 'auth.reverseGuard',
-        error: error instanceof Error ? error.message : String(error),
-        outcome: { success: false },
-      });
+      // Auth infrastructure failures fall through to show the auth page.
+      // getSession() already logs the error server-side via evlog.
     }
   },
   component: AuthLayout,

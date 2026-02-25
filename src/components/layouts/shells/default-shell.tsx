@@ -2,11 +2,11 @@ import { ModeToggle } from '@/components/mode-toggle';
 import { Button } from '@/components/ui/button';
 import { RouterLink } from '@/components/ui/link';
 import { appConfig } from '@/configs/app';
-import { useSignOut } from '@/hooks/use-sign-out';
 import { authClient } from '@/lib/auth-client';
+import { useSignOut } from '@/modules/auth/hooks/use-sign-out';
 
 export function DefaultShell({ children }: { children: React.ReactNode }) {
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -16,7 +16,9 @@ export function DefaultShell({ children }: { children: React.ReactNode }) {
             {appConfig.name}
           </RouterLink>
           <div className="flex items-center gap-4">
-            {session?.user ? (
+            {isPending ? (
+              <span className="h-5 w-20 animate-pulse rounded-sm bg-muted" />
+            ) : session?.user ? (
               <DefaultShellUserNav name={session.user.name} />
             ) : (
               <>

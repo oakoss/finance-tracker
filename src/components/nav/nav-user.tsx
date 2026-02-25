@@ -17,16 +17,17 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { useSignOut } from '@/hooks/use-sign-out';
+import { useSignOut } from '@/modules/auth/hooks/use-sign-out';
 
 function getInitials(name: string): string {
-  return name
+  const initials = name
     .split(' ')
     .filter(Boolean)
     .map((part) => part[0])
     .join('')
     .toUpperCase()
     .slice(0, 2);
+  return initials || '?';
 }
 
 export function NavUser({

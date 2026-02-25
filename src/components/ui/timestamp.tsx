@@ -25,8 +25,12 @@ function Timestamp({ className, value }: TimestampProps) {
     () => (value instanceof Date ? value : new Date(value)),
     [value],
   );
-
   const userTimeZone = useMemo(() => getUserTimeZone(), []);
+
+  if (Number.isNaN(date.getTime())) {
+    return <span className={className}>--</span>;
+  }
+
   const showLocalTime = userTimeZone !== 'UTC';
 
   const utc = formatDateTimeFull({ timeZone: 'UTC', value: date });
