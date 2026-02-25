@@ -27,7 +27,6 @@ export const Env = type({
 
   TRUSTED_ORIGINS: 'string > 0',
   // Client-side vars (VITE_* prefix — available in browser via import.meta.env)
-  VITE_APP_TITLE: "string > 0 = 'Finance Tracker'",
   VITE_CLIENT_LOG_LEVEL: "'debug' | 'info' | 'warn' | 'error' = 'warn'",
   VITE_CLIENT_LOGGING_ENABLED: "'true' | 'false' = 'false'",
 });
