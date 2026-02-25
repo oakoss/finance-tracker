@@ -1,7 +1,7 @@
-import { type Column, type Table } from '@tanstack/react-table';
+import { type Table } from '@tanstack/react-table';
 import { type ReactElement } from 'react';
 
-import { type DataGridColumnMeta } from '@/components/data-grid/data-grid';
+import { getColumnMeta } from '@/components/data-grid';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -10,6 +10,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { m } from '@/paraglide/messages';
 
 function DataGridColumnVisibility<TData>({
   table,
@@ -18,17 +19,13 @@ function DataGridColumnVisibility<TData>({
   table: Table<TData>;
   trigger: ReactElement<Record<string, unknown>>;
 }) {
-  function getColumnMeta(column: Column<TData, unknown>) {
-    return column.columnDef.meta as DataGridColumnMeta<TData> | undefined;
-  }
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger render={trigger} />
       <DropdownMenuContent align="end" className="min-w-37.5">
         <DropdownMenuGroup>
           <DropdownMenuLabel className="font-medium">
-            Toggle Columns
+            {m['dataGrid.visibility.toggleColumns']()}
           </DropdownMenuLabel>
           {table
             .getAllColumns()

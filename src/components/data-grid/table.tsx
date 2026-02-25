@@ -9,9 +9,11 @@ import {
 import { cva } from 'class-variance-authority';
 import { type CSSProperties, Fragment, type ReactNode, useMemo } from 'react';
 
-import { useDataGrid } from '@/components/data-grid/data-grid';
+import { useDataGrid } from '@/components/data-grid';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/utils';
+import { m } from '@/paraglide/messages';
 
 const headerCellSpacingVariants = cva('', {
   variants: {
@@ -324,7 +326,7 @@ function DataGridTableBodyRow<TData>({
   );
 }
 
-function DataGridTableBodyRowExpandded<TData>({ row }: { row: Row<TData> }) {
+function DataGridTableBodyRowExpanded<TData>({ row }: { row: Row<TData> }) {
   const { props, table } = useDataGrid();
 
   return (
@@ -416,7 +418,7 @@ function DataGridTableEmpty() {
         className="text-muted-foreground text-sm py-6 text-center"
         colSpan={totalColumns}
       >
-        {props.emptyMessage ?? 'No data available'}
+        {props.emptyMessage ?? m['dataGrid.table.noData']()}
       </td>
     </tr>
   );
@@ -428,28 +430,8 @@ function DataGridTableLoader() {
   return (
     <div className="absolute top-1/2 left-1/2 -translate-1/2">
       <div className="text-muted-foreground bg-card rounded-2xl text-sm flex items-center gap-2 border px-4 py-2 leading-none font-medium">
-        <svg
-          className="text-muted-foreground -ml-1 size-5 animate-spin"
-          fill="none"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <title>Loading</title>
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="3"
-          ></circle>
-          <path
-            className="opacity-75"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            fill="currentColor"
-          ></path>
-        </svg>
-        {props.loadingMessage ?? 'Loading...'}
+        <Spinner className="-ml-1 size-5" />
+        {props.loadingMessage ?? m['dataGrid.table.loading']()}
       </div>
     </div>
   );
@@ -465,7 +447,7 @@ function DataGridTableRowSelect<TData>({ row }: { row: Row<TData> }) {
         )}
       ></div>
       <Checkbox
-        aria-label="Select row"
+        aria-label={m['dataGrid.table.selectRow']()}
         checked={row.getIsSelected()}
         className="align-[inherit]"
         onCheckedChange={(value) => row.toggleSelected(!!value)}
@@ -482,7 +464,7 @@ function DataGridTableRowSelectAll() {
 
   return (
     <Checkbox
-      aria-label="Select all"
+      aria-label={m['dataGrid.table.selectAll']()}
       checked={isAllSelected}
       className="align-[inherit]"
       disabled={[isLoading, recordCount === 0].some(Boolean)}
@@ -563,29 +545,9 @@ function DataGridTable<TData>() {
           // Show spinner loading immediately
           <tr>
             <td className="p-8" colSpan={table.getVisibleFlatColumns().length}>
-              <div className="flex items-center justify-center">
-                <svg
-                  className="text-muted-foreground mr-3 -ml-1 size-5 animate-spin"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <title>Loading</title>
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    fill="currentColor"
-                  ></path>
-                </svg>
-                {props.loadingMessage ?? 'Loading...'}
+              <div className="flex items-center justify-center gap-3">
+                <Spinner className="-ml-1 size-5" />
+                {props.loadingMessage ?? m['dataGrid.table.loading']()}
               </div>
             </td>
           </tr>
@@ -607,7 +569,7 @@ function DataGridTable<TData>() {
                   })}
                 </DataGridTableBodyRow>
                 {row.getIsExpanded() && (
-                  <DataGridTableBodyRowExpandded row={row} />
+                  <DataGridTableBodyRowExpanded row={row} />
                 )}
               </Fragment>
             );
@@ -626,7 +588,7 @@ export {
   DataGridTableBody,
   DataGridTableBodyRow,
   DataGridTableBodyRowCell,
-  DataGridTableBodyRowExpandded,
+  DataGridTableBodyRowExpanded,
   DataGridTableBodyRowSkeleton,
   DataGridTableBodyRowSkeletonCell,
   DataGridTableEmpty,

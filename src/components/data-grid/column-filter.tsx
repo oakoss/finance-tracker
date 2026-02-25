@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import { m } from '@/paraglide/messages';
 
 type DataGridColumnFilterProps<TData, TValue extends string> = {
   column?: Column<TData, TValue>;
@@ -61,7 +62,9 @@ function DataGridColumnFilter<TData, TValue extends string>({
                       className="rounded-sm px-1 font-normal"
                       variant="secondary"
                     >
-                      {selectedValues.size} selected
+                      {m['dataGrid.filter.selectedCount']({
+                        count: selectedValues.size.toString(),
+                      })}
                     </Badge>
                   ) : (
                     options
@@ -94,7 +97,7 @@ function DataGridColumnFilter<TData, TValue extends string>({
         <div className="max-h-75 overflow-y-auto">
           {filteredOptions.length === 0 ? (
             <div className="text-muted-foreground py-6 text-center text-sm">
-              No results found.
+              {m['dataGrid.filter.noResults']()}
             </div>
           ) : (
             <div className="p-1">
@@ -153,7 +156,7 @@ function DataGridColumnFilter<TData, TValue extends string>({
                   type="button"
                   onClick={() => column?.setFilterValue(undefined)}
                 >
-                  Clear filters
+                  {m['dataGrid.filter.clearFilters']()}
                 </button>
               </div>
             </>

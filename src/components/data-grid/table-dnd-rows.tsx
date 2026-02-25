@@ -32,7 +32,7 @@ import {
   useRef,
 } from 'react';
 
-import { useDataGrid } from '@/components/data-grid/data-grid';
+import { useDataGrid } from '@/components/data-grid';
 import {
   DataGridTableBase,
   DataGridTableBody,
@@ -46,7 +46,7 @@ import {
   DataGridTableHeadRowCell,
   DataGridTableHeadRowCellResize,
   DataGridTableRowSpacer,
-} from '@/components/data-grid/data-grid-table';
+} from '@/components/data-grid/table';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';

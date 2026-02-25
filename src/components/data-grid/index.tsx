@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  type Column,
   type ColumnFiltersState,
   type RowData,
   type SortingState,
@@ -214,4 +215,14 @@ function DataGridContainer({
   );
 }
 
-export { DataGrid, DataGridContainer, DataGridProvider, useDataGrid };
+function getColumnMeta<TData, TValue>(column: Column<TData, TValue>) {
+  return column.columnDef.meta as DataGridColumnMeta<TData> | undefined;
+}
+
+export {
+  DataGrid,
+  DataGridContainer,
+  DataGridProvider,
+  getColumnMeta,
+  useDataGrid,
+};

@@ -15,18 +15,18 @@ import * as React from 'react';
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 import { toast } from 'sonner';
 
-import { DataGrid, DataGridContainer } from '@/components/data-grid/data-grid';
-import { DataGridColumnHeader } from '@/components/data-grid/data-grid-column-header';
-import { DataGridColumnVisibility } from '@/components/data-grid/data-grid-column-visibility';
-import { DataGridPagination } from '@/components/data-grid/data-grid-pagination';
+import { DataGrid, DataGridContainer } from '@/components/data-grid';
+import { DataGridColumnHeader } from '@/components/data-grid/column-header';
+import { DataGridColumnVisibility } from '@/components/data-grid/column-visibility';
+import { DataGridPagination } from '@/components/data-grid/pagination';
 import {
   DataGridTableRowSelect,
   DataGridTableRowSelectAll,
-} from '@/components/data-grid/data-grid-table';
+} from '@/components/data-grid/table';
 import {
   DataGridTableDndRowHandle,
   DataGridTableDndRows,
-} from '@/components/data-grid/data-grid-table-dnd-rows';
+} from '@/components/data-grid/table-dnd-rows';
 import { Icons } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

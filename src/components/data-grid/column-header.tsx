@@ -3,10 +3,7 @@
 import { type Column } from '@tanstack/react-table';
 import { type HTMLAttributes, memo, type ReactNode, useMemo } from 'react';
 
-import {
-  type DataGridColumnMeta,
-  useDataGrid,
-} from '@/components/data-grid/data-grid';
+import { getColumnMeta, useDataGrid } from '@/components/data-grid';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { m } from '@/paraglide/messages';
 
 function renderIcon(icon: React.ReactNode) {
   if (!icon) {
@@ -30,10 +28,6 @@ function renderIcon(icon: React.ReactNode) {
   }
 
   return <span className="inline-flex">{icon}</span>;
-}
-
-function getColumnMeta<TData, TValue>(column: Column<TData, TValue>) {
-  return column.columnDef.meta as DataGridColumnMeta<TData> | undefined;
 }
 
 type DataGridColumnHeaderProps<TData, TValue> = {
@@ -140,7 +134,7 @@ function DataGridColumnHeaderInner<TData, TValue>({
           }}
         >
           <Icons.ArrowUp className="size-3.5!" />
-          <span className="grow">Asc</span>
+          <span className="grow">{m['dataGrid.column.asc']()}</span>
           {isSorted === 'asc' && (
             <Icons.Check className="text-primary size-4 opacity-100!" />
           )}
@@ -157,7 +151,7 @@ function DataGridColumnHeaderInner<TData, TValue>({
           }}
         >
           <Icons.ArrowDown className="size-3.5!" />
-          <span className="grow">Desc</span>
+          <span className="grow">{m['dataGrid.column.desc']()}</span>
           {isSorted === 'desc' && (
             <Icons.Check className="text-primary size-4 opacity-100!" />
           )}
@@ -177,7 +171,7 @@ function DataGridColumnHeaderInner<TData, TValue>({
           onClick={() => column.pin(isPinned === 'left' ? false : 'left')}
         >
           <Icons.ArrowLeftToLine aria-hidden="true" className="size-3.5!" />
-          <span className="grow">Pin to left</span>
+          <span className="grow">{m['dataGrid.column.pinToLeft']()}</span>
           {isPinned === 'left' && (
             <Icons.Check className="text-primary size-4 opacity-100!" />
           )}
@@ -187,7 +181,7 @@ function DataGridColumnHeaderInner<TData, TValue>({
           onClick={() => column.pin(isPinned === 'right' ? false : 'right')}
         >
           <Icons.ArrowRightToLine aria-hidden="true" className="size-3.5!" />
-          <span className="grow">Pin to right</span>
+          <span className="grow">{m['dataGrid.column.pinToRight']()}</span>
           {isPinned === 'right' && (
             <Icons.Check className="text-primary size-4 opacity-100!" />
           )}
@@ -215,7 +209,7 @@ function DataGridColumnHeaderInner<TData, TValue>({
           }}
         >
           <Icons.ArrowLeft aria-hidden="true" className="size-3.5!" />
-          <span>Move to Left</span>
+          <span>{m['dataGrid.column.moveToLeft']()}</span>
         </DropdownMenuItem>,
         <DropdownMenuItem
           key="move-right"
@@ -230,7 +224,7 @@ function DataGridColumnHeaderInner<TData, TValue>({
           }}
         >
           <Icons.ArrowRight aria-hidden="true" className="size-3.5!" />
-          <span>Move to Right</span>
+          <span>{m['dataGrid.column.moveToRight']()}</span>
         </DropdownMenuItem>,
       );
       hasPreviousSection = true;
@@ -245,7 +239,7 @@ function DataGridColumnHeaderInner<TData, TValue>({
         <DropdownMenuSub key="visibility">
           <DropdownMenuSubTrigger>
             <Icons.Settings2 className="size-3.5!" />
-            <span>Columns</span>
+            <span>{m['dataGrid.column.columns']()}</span>
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent side="right">
             {table
@@ -317,10 +311,10 @@ function DataGridColumnHeaderInner<TData, TValue>({
         </DropdownMenu>
         {showUnpinButton ? (
           <Button
-            aria-label={`Unpin ${title} column`}
+            aria-label={m['dataGrid.column.unpinColumn']({ title })}
             className="-me-1 size-7 rounded-md"
             size="icon-sm"
-            title={`Unpin ${title} column`}
+            title={m['dataGrid.column.unpinColumn']({ title })}
             variant="ghost"
             onClick={() => column.pin(false)}
           >

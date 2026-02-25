@@ -55,3 +55,14 @@ A full filter UI in `src/components/filters/` (split across 10 files). Do not re
 - Custom validation (regex or function) and custom rendering per field.
 - Helpers: `createFilter()`, `createFilterGroup()`, `createOperators()`, `formatOperator()`.
 - Import from `@/components/filters` (main component) or individual modules.
+
+## Data grid system
+
+A composable data grid in `src/components/data-grid/` (8 files). Do not rebuild — use it:
+
+- Context-based: `DataGridContext` provides table instance, props, loading state.
+- Composed table: `DataGridTable` assembles head/body/rows; DnD variants for columns and rows.
+- Column header: sorting, pinning, moving, visibility controls via dropdown menu.
+- Pagination: page size selector, page buttons, ellipsis grouping.
+- Helpers: `getColumnMeta()`, `DataGridContainer`.
+- Import from `@/components/data-grid` (context/provider/types) or individual modules.

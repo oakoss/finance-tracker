@@ -26,13 +26,13 @@ import {
 } from '@tanstack/react-table';
 import { type CSSProperties, Fragment, useId, useMemo, useRef } from 'react';
 
-import { useDataGrid } from '@/components/data-grid/data-grid';
+import { useDataGrid } from '@/components/data-grid';
 import {
   DataGridTableBase,
   DataGridTableBody,
   DataGridTableBodyRow,
   DataGridTableBodyRowCell,
-  DataGridTableBodyRowExpandded,
+  DataGridTableBodyRowExpanded,
   DataGridTableBodyRowSkeleton,
   DataGridTableBodyRowSkeletonCell,
   DataGridTableEmpty,
@@ -41,9 +41,10 @@ import {
   DataGridTableHeadRowCell,
   DataGridTableHeadRowCellResize,
   DataGridTableRowSpacer,
-} from '@/components/data-grid/data-grid-table';
+} from '@/components/data-grid/table';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
+import { m } from '@/paraglide/messages';
 
 function DataGridTableDndHeader<TData>({
   header,
@@ -93,7 +94,7 @@ function DataGridTableDndHeader<TData>({
             variant="ghost"
             {...attributes}
             {...listeners}
-            aria-label="Drag to reorder"
+            aria-label={m['dataGrid.column.dragToReorder']()}
           >
             <Icons.GripVertical
               aria-hidden="true"
@@ -253,7 +254,7 @@ function DataGridTableDnd<TData>({
                         })}
                     </DataGridTableBodyRow>
                     {row.getIsExpanded() && (
-                      <DataGridTableBodyRowExpandded row={row} />
+                      <DataGridTableBodyRowExpanded row={row} />
                     )}
                   </Fragment>
                 );
