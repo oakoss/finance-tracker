@@ -8,3 +8,5 @@ export const db = drizzle(env.DATABASE_URL, {
   schema,
   casing: 'snake_case',
 });
+
+export type Db = typeof db;
