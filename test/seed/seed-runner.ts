@@ -1,4 +1,4 @@
-/* eslint-disable no-console, unicorn/no-process-exit, unicorn/prefer-top-level-await */
+/* eslint-disable unicorn/no-process-exit */
 import { faker } from '@faker-js/faker';
 import { drizzle } from 'drizzle-orm/node-postgres';
 

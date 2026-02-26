@@ -13,25 +13,27 @@ PostgreSQL/Drizzle, Better Auth, Tailwind CSS v4/shadcn.
 
 ## Commands
 
-| Task             | Command                                        |
-| ---------------- | ---------------------------------------------- |
-| Dev server       | `pnpm dev`                                     |
-| Build            | `pnpm build`                                   |
-| Lint             | `pnpm lint`                                    |
-| Format           | `pnpm format`                                  |
-| Markdown lint    | `pnpm lint:md`                                 |
-| Typecheck        | `pnpm paraglide:compile && pnpm typecheck`     |
-| Unit tests       | `pnpm test`                                    |
-| E2E tests        | `pnpm test:e2e`                                |
-| DB migrate       | `pnpm db:migrate`                              |
-| DB seed          | `pnpm db:seed` (profiles: `minimal`, `stress`) |
-| DB start         | `pnpm docker:up`                               |
-| DB logs          | `pnpm docker:logs`                             |
-| DB reset         | `pnpm docker:reset`                            |
-| DB introspect    | `pnpm db:pull`                                 |
-| Auth schema      | `pnpm schema:auth`                             |
-| Production start | `pnpm start`                                   |
-| Clean all        | `pnpm clean`                                   |
+| Task              | Command                                        |
+| ----------------- | ---------------------------------------------- |
+| Dev server        | `pnpm dev`                                     |
+| Build             | `pnpm build`                                   |
+| Lint              | `pnpm lint`                                    |
+| Format            | `pnpm format`                                  |
+| Markdown lint     | `pnpm lint:md`                                 |
+| Typecheck         | `pnpm paraglide:compile && pnpm typecheck`     |
+| All tests         | `pnpm test`                                    |
+| Unit tests        | `pnpm test:unit`                               |
+| Integration tests | `pnpm test:integration`                        |
+| E2E tests         | `pnpm test:e2e`                                |
+| DB migrate        | `pnpm db:migrate`                              |
+| DB seed           | `pnpm db:seed` (profiles: `minimal`, `stress`) |
+| DB start          | `pnpm docker:up`                               |
+| DB logs           | `pnpm docker:logs`                             |
+| DB reset          | `pnpm docker:reset`                            |
+| DB introspect     | `pnpm db:pull`                                 |
+| Auth schema       | `pnpm schema:auth`                             |
+| Production start  | `pnpm start`                                   |
+| Clean all         | `pnpm clean`                                   |
 
 ## Rules That Cause Failures
 

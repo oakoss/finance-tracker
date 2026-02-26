@@ -220,9 +220,12 @@ export default defineConfig(
       '**/*.test.*',
       '**/*.spec.*',
       'e2e/**/*',
+      'test/**/*',
     ],
     rules: {
+      '@typescript-eslint/no-empty-function': 'off',
       'no-console': 'off',
+      'unicorn/prefer-top-level-await': 'off',
     },
   },
   configPrettier,

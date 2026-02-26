@@ -1,0 +1,13 @@
+name: Prepare test environment
+description: Create .env from example and compile Paraglide messages.
+
+runs:
+  using: composite
+  steps:
+    - name: Create env file
+      shell: bash
+      run: cp .env.example .env
+
+    - name: Compile paraglide
+      shell: bash
+      run: pnpm paraglide:compile

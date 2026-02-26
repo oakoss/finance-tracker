@@ -13,9 +13,11 @@ CI policy and automation decisions are defined in
 ## Commands
 
 ```bash
-pnpm test            # run all unit tests once
+pnpm test            # run all tests (unit + integration)
+pnpm test:unit       # unit tests only (no DB required)
+pnpm test:integration # integration tests only (requires Postgres)
 pnpm test:watch      # run in watch mode
-pnpm test:coverage   # run with coverage report
+pnpm test:coverage   # unit coverage report
 ```
 
 Run a single test file:
@@ -32,8 +34,10 @@ pnpm test -- -t "test name"
 
 ## Configuration
 
-- **Vitest config**: `vitest.config.ts` (separate from `vite.config.ts`
-  to avoid loading Nitro/TanStack Start).
+- **Vitest config**: `vitest.config.ts` (unit tests, separate from
+  `vite.config.ts` to avoid loading Nitro/TanStack Start).
+- **Vitest projects**: `test.projects` in `vitest.config.ts` (unit +
+  integration).
 - **Test setup**: `test/setup.ts` (cleanup, jest-dom matchers).
 - **Globals**: `describe`, `it`, `expect` are available without imports.
 - **Env loading**: dotenvx `flow` convention loads `.env` automatically.
@@ -101,9 +105,57 @@ Most tests use `jsdom` (the default). Tests that need Node-only APIs
 // @vitest-environment node
 ```
 
-If tests with different environments become common, consider using
-[Vitest projects](https://vitest.dev/guide/workspace) in a single
-config to avoid per-file annotations.
+The `unit` and `integration` projects already use different environments
+(`jsdom` and `node`). For unit tests that need Node-only APIs within the
+jsdom project, add a `// @vitest-environment node` file-level comment.
+
+## Integration tests
+
+Integration tests run `insertX` factories and scenario builders against
+a real Postgres database. They require Docker Compose to be running
+(`pnpm docker:up`).
+
+### How it works
+
+1. **`test/global-setup.ts`** creates a `finance_tracker_test` database
+   (idempotent) via raw `pg.Client`, rewrites `process.env.DATABASE_URL`
+   to point at it, runs Drizzle migrations, and resets all schema tables
+   once for a clean baseline.
+2. **`test/integration-setup.ts`** exports a `test` fixture via
+   `test.extend` that provides a `db` wrapped in a transaction
+   (`BEGIN`/`ROLLBACK`) with per-test `SAVEPOINT`s.
+3. Tests use `*.integration.test.ts` suffix and are picked up by the
+   `integration` project in `vitest.config.ts`.
+4. Integration tests run in parallel (`pool: 'forks'`) — each file
+   gets its own connection and transaction, so no cross-file conflicts.
+
+### Writing integration tests
+
+Uses `test.extend` fixtures for composable, type-safe DB access:
+
+```ts
+import { expect } from 'vitest';
+
+import { insertUser } from '~test/factories/user.factory';
+import { test } from '~test/integration-setup';
+
+test('inserts a user', async ({ db }) => {
+  const user = await insertUser(db);
+  expect(user.id).toBeDefined();
+});
+```
+
+The `db` fixture is test-scoped. Each file opens one connection inside
+a `BEGIN`/`ROLLBACK`, and each test gets its own `SAVEPOINT`.
+
+### Key files
+
+| File                        | Purpose                                                   |
+| --------------------------- | --------------------------------------------------------- |
+| `test/db.ts`                | `createTestDb()` — single-connection drizzle instance     |
+| `test/global-setup.ts`      | Creates test DB, runs migrations, resets schema tables    |
+| `test/integration-setup.ts` | `test.extend` fixture — transaction rollback + savepoints |
+| `vitest.config.ts`          | `test.projects` with `unit` and `integration`             |
 
 ## E2E tests
 
@@ -266,7 +318,7 @@ but skip unit tests for simple rendering.
 
 ## CI integration
 
-Both test jobs run in `.github/workflows/ci.yml`.
+Test jobs run in `.github/workflows/ci.yml`.
 
 ### Unit tests (`unit-tests`)
 
@@ -276,6 +328,13 @@ Both test jobs run in `.github/workflows/ci.yml`.
 3. Posts a coverage summary via
    [vitest-coverage-report-action](https://github.com/davelosert/vitest-coverage-report-action)
    as a PR comment and step summary.
+
+### Integration tests (`integration-tests`)
+
+1. Starts a `postgres:18-alpine` service container.
+2. Copies `.env.example` to `.env`.
+3. Runs `pnpm test:integration` — `globalSetup` creates the test DB
+   and migrates it.
 
 ### E2E tests (`e2e-tests`)
 

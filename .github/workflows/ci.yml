@@ -51,15 +51,42 @@ jobs:
           fetch-depth: 1
       - name: Setup
         uses: ./.github/actions/setup
-      - name: Create env file
-        run: cp .env.example .env
-      - name: Compile paraglide
-        run: pnpm paraglide:compile
+      - name: Prepare test environment
+        uses: ./.github/actions/test-prepare
       - name: Unit tests
         run: pnpm test:coverage
       - name: Coverage report
         if: always()
         uses: davelosert/vitest-coverage-report-action@v2
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: finance_tracker
+          POSTGRES_PASSWORD: finance_tracker_password
+          POSTGRES_DB: finance_tracker_dev
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U finance_tracker"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Prepare test environment
+        uses: ./.github/actions/test-prepare
+      - name: Integration tests
+        run: pnpm test:integration
 
   e2e-tests:
     runs-on: ubuntu-latest
@@ -71,10 +98,8 @@ jobs:
           fetch-depth: 1
       - name: Setup
         uses: ./.github/actions/setup
-      - name: Create env file
-        run: cp .env.example .env
-      - name: Compile paraglide
-        run: pnpm paraglide:compile
+      - name: Prepare test environment
+        uses: ./.github/actions/test-prepare
       - name: Cache Playwright browsers
         uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
         with:
@@ -96,7 +121,7 @@ jobs:
     name: CI Summary
     runs-on: ubuntu-latest
     if: always()
-    needs: [static-analysis, unit-tests, e2e-tests]
+    needs: [static-analysis, unit-tests, integration-tests, e2e-tests]
     steps:
       - name: Summarize results
         run: |
@@ -106,6 +131,7 @@ jobs:
           echo "| --- | --- | --- |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Static analysis | \`${{ needs.static-analysis.result }}\` | ✅ Yes |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Unit tests | \`${{ needs.unit-tests.result }}\` | ✅ Yes |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Integration tests | \`${{ needs.integration-tests.result }}\` | ✅ Yes |" >> "$GITHUB_STEP_SUMMARY"
           echo "| E2E tests | \`${{ needs.e2e-tests.result }}\` | ⚠️ No |" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
 
@@ -120,6 +146,10 @@ jobs:
 
           if [ "${{ needs.unit-tests.result }}" != "skipped" ]; then
             fail_if_bad "unit-tests" "${{ needs.unit-tests.result }}"
+          fi
+
+          if [ "${{ needs.integration-tests.result }}" != "skipped" ]; then
+            fail_if_bad "integration-tests" "${{ needs.integration-tests.result }}"
           fi
 
           if [ "${{ needs.e2e-tests.result }}" = "success" ]; then
