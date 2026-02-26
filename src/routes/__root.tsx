@@ -1,3 +1,5 @@
+import '@/configs/arktype';
+
 import { TanStackDevtools } from '@tanstack/react-devtools';
 import type { QueryClient } from '@tanstack/react-query';
 import {
@@ -12,6 +14,7 @@ import { ThemeProvider } from 'next-themes';
 import { NotFound } from '@/components/errors/not-found';
 import { RootErrorBoundary } from '@/components/errors/root-error-boundary';
 import { DefaultShell } from '@/components/layouts/shells/default-shell';
+import { Toaster } from '@/components/ui/sonner';
 import { appConfig } from '@/configs/app';
 import { devtoolsPlugins } from '@/lib/devtools';
 import { getLocale } from '@/paraglide/runtime';
@@ -109,6 +112,7 @@ function RootComponent() {
       <div className="isolate">
         <Outlet />
       </div>
+      <Toaster />
       <TanStackDevtools
         config={{
           position: 'bottom-right',

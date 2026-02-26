@@ -155,10 +155,10 @@ log.set({
 
 ## Client logging
 
-Client logging is disabled in production by default. Enable with env vars:
+Client logging is controlled by `VITE_CLIENT_LOG_LEVEL` (default: `warn`).
+All levels always delegate to evlog; sampling rates determine which emit.
 
 ```bash
-VITE_CLIENT_LOGGING_ENABLED=true
 VITE_CLIENT_LOG_LEVEL=warn   # debug | info | warn | error
 ```
 
@@ -194,7 +194,6 @@ Requests with status ≥ 400 or duration > 3000ms are always kept regardless of 
 | `OTEL_SERVICE_NAME`           | prod     | Service name in SigNoz (e.g. `finance-tracker`)                                                                      |
 | `OTEL_RESOURCE_ATTRIBUTES`    | prod     | e.g. `deployment.environment=production`                                                                             |
 | `LOG_HASH_SECRET`             | both     | Min 32-char secret for HMAC ID hashing. Use separate values per environment. Generate with `openssl rand -base64 32` |
-| `VITE_CLIENT_LOGGING_ENABLED` | optional | Enable client logging in production                                                                                  |
 | `VITE_CLIENT_LOG_LEVEL`       | optional | Min client log level (default: `warn`)                                                                               |
 
 If `OTEL_EXPORTER_OTLP_ENDPOINT` is unset, logs go to stdout only (pretty in dev, JSON in prod).

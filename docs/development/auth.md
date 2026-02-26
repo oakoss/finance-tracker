@@ -26,8 +26,8 @@ Auth is not global -- protection is applied at the `_app/` layout
 route level via `beforeLoad`:
 
 1. Calls `getSession()` server function.
-2. Redirects unauthenticated users to `/login` with
-   `?redirect=location.href`. On login, the value is checked to start
+2. Redirects unauthenticated users to `/sign-in` with
+   `?redirect=location.href`. On sign-in, the value is checked to start
    with `/` but not `//` before navigating (same-origin only).
 3. Passes `session` to route context.
 

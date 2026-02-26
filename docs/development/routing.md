@@ -6,7 +6,7 @@ See `docs/adr/0001-tanstack-start.md` for framework choice.
 
 ## Conventions
 
-- Flat routes for simple pages (e.g., `login.tsx`).
+- Flat routes for simple pages (e.g., `sign-in.tsx`).
 - Use `route.tsx` for layout routes inside a folder.
 - Use `_route-name` for pathless grouping routes that should not appear in the URL.
 - Route files can include both the `Route` definition and the page component.

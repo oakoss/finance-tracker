@@ -1,4 +1,4 @@
-import { Logo } from '@/components/logo';
+import { Icons } from '@/components/icons';
 import { ModeToggle } from '@/components/mode-toggle';
 import { Button } from '@/components/ui/button';
 import { RouterLink } from '@/components/ui/link';
@@ -17,9 +17,9 @@ export function DefaultShell({ children }: { children: React.ReactNode }) {
             className="flex items-center gap-2"
             size="lg"
             to="/"
-            variant="subtle"
+            variant="brand"
           >
-            <Logo className="size-5" />
+            <Icons.Logo className="size-5" />
             {appConfig.name}
           </RouterLink>
           <div className="flex items-center gap-4">
@@ -29,8 +29,12 @@ export function DefaultShell({ children }: { children: React.ReactNode }) {
               <DefaultShellUserNav name={session.user.name} />
             ) : (
               <>
-                <RouterLink to="/login">Sign in</RouterLink>
-                <RouterLink to="/signup">Sign up</RouterLink>
+                <RouterLink to="/sign-in" variant="nav">
+                  Sign in
+                </RouterLink>
+                <RouterLink to="/sign-up" variant="nav">
+                  Sign up
+                </RouterLink>
               </>
             )}
             <ModeToggle />

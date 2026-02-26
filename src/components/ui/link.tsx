@@ -23,6 +23,7 @@ const linkVariants = cva(
         sm: 'text-xs',
       },
       variant: {
+        brand: 'text-foreground',
         default:
           'text-primary underline-offset-4 hover:underline focus-visible:underline data-[status=active]:underline',
         destructive:

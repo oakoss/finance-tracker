@@ -36,6 +36,18 @@ vi.mock('@/lib/logging/client-logger', () => ({
   },
 }));
 
+const mockToastWarning = vi.fn();
+
+vi.mock('sonner', () => ({
+  toast: {
+    warning: (...args: unknown[]) => mockToastWarning(...args),
+  },
+}));
+
+vi.mock('@/paraglide/messages', () => ({
+  m: new Proxy({}, { get: (_target, key: string) => () => key }),
+}));
+
 let onMessageHandler: ((data: string) => void) | null = null;
 
 describe('useSignOut', () => {
@@ -43,6 +55,7 @@ describe('useSignOut', () => {
     mockNavigate.mockClear();
     mockPostMessage.mockClear().mockReturnValue(true);
     mockSignOut.mockClear().mockResolvedValue({});
+    mockToastWarning.mockClear();
     onMessageHandler = null;
   });
 
@@ -51,7 +64,7 @@ describe('useSignOut', () => {
     expect(typeof result.current).toBe('function');
   });
 
-  it('calls authClient.signOut and navigates to /login on success', async () => {
+  it('calls authClient.signOut and navigates to /sign-in on success', async () => {
     const { result } = renderHook(() => useSignOut());
 
     await act(async () => {
@@ -63,7 +76,7 @@ describe('useSignOut', () => {
     });
 
     expect(mockSignOut).toHaveBeenCalled();
-    expect(mockNavigate).toHaveBeenCalledWith({ to: '/login' });
+    expect(mockNavigate).toHaveBeenCalledWith({ to: '/sign-in' });
   });
 
   it('broadcasts sign-out message on success', async () => {
@@ -79,7 +92,7 @@ describe('useSignOut', () => {
     expect(mockPostMessage).toHaveBeenCalledWith('sign-out');
   });
 
-  it('navigates to /login even when signOut API fails', async () => {
+  it('navigates to /sign-in even when signOut API fails', async () => {
     mockSignOut.mockRejectedValue(new Error('Network error'));
 
     const { result } = renderHook(() => useSignOut());
@@ -91,7 +104,7 @@ describe('useSignOut', () => {
       });
     });
 
-    expect(mockNavigate).toHaveBeenCalledWith({ to: '/login' });
+    expect(mockNavigate).toHaveBeenCalledWith({ to: '/sign-in' });
   });
 
   it('logs error when signOut API fails', async () => {
@@ -109,6 +122,23 @@ describe('useSignOut', () => {
 
     expect(clientLog.error).toHaveBeenCalledWith(
       expect.objectContaining({ action: 'auth.signOut' }),
+    );
+  });
+
+  it('shows toast warning when signOut API fails', async () => {
+    mockSignOut.mockRejectedValue(new Error('Network error'));
+
+    const { result } = renderHook(() => useSignOut());
+
+    await act(async () => {
+      result.current();
+      await vi.waitFor(() => {
+        expect(mockToastWarning).toHaveBeenCalled();
+      });
+    });
+
+    expect(mockToastWarning).toHaveBeenCalledWith(
+      'auth.error.signOutIncomplete',
     );
   });
 
@@ -130,14 +160,14 @@ describe('useSignOut', () => {
     );
   });
 
-  it('navigates to /login when receiving sign-out from another tab', () => {
+  it('navigates to /sign-in when receiving sign-out from another tab', () => {
     renderHook(() => useSignOut());
 
     act(() => {
       onMessageHandler?.('sign-out');
     });
 
-    expect(mockNavigate).toHaveBeenCalledWith({ to: '/login' });
+    expect(mockNavigate).toHaveBeenCalledWith({ to: '/sign-in' });
   });
 
   it('ignores non-sign-out messages from broadcast channel', () => {

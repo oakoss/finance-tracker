@@ -2,6 +2,7 @@ import { Button as ButtonPrimitive } from '@base-ui/react/button';
 import { createLink } from '@tanstack/react-router';
 import { cva, type VariantProps } from 'class-variance-authority';
 
+import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
@@ -41,20 +42,34 @@ const buttonVariants = cva(
   },
 );
 
-type ButtonProps = ButtonPrimitive.Props & VariantProps<typeof buttonVariants>;
+type ButtonProps = ButtonPrimitive.Props &
+  VariantProps<typeof buttonVariants> & {
+    loading?: boolean;
+  };
 
 function Button({
   className,
   variant = 'default',
   size = 'default',
+  loading,
+  disabled,
+  children,
   ...props
 }: ButtonProps) {
   return (
     <ButtonPrimitive
-      className={cn(buttonVariants({ className, size, variant }))}
+      className={cn(
+        buttonVariants({ className, size, variant }),
+        loading && '[&>svg:not([role=status])]:hidden',
+      )}
+      data-loading={loading === true ? true : undefined}
       data-slot="button"
+      disabled={disabled === true || loading === true}
       {...props}
-    />
+    >
+      {loading ? <Spinner /> : null}
+      {children}
+    </ButtonPrimitive>
   );
 }
 

@@ -23,12 +23,9 @@ export const Env = type({
 
   'OTEL_SERVICE_NAME?': 'string > 0',
 
-  PASSWORD_MIN_LENGTH: '6 <= number.integer <= 128 = 8',
-
   TRUSTED_ORIGINS: 'string > 0',
   // Client-side vars (VITE_* prefix — available in browser via import.meta.env)
   VITE_CLIENT_LOG_LEVEL: "'debug' | 'info' | 'warn' | 'error' = 'warn'",
-  VITE_CLIENT_LOGGING_ENABLED: "'true' | 'false' = 'false'",
 });
 
 type ValidatedEnv = typeof Env.infer;

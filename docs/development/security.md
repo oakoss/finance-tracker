@@ -12,7 +12,7 @@ settings (configured in `src/lib/auth.ts`):
 
 ### Password policy
 
-- Minimum length: `PASSWORD_MIN_LENGTH` env var (default 8, range 6-128)
+- Minimum length: 8 characters (configured in `appConfig.passwordMinLength`)
 - Email verification required before login
 - Password reset tokens expire after 2 hours
 - All sessions are revoked on password reset

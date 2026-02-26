@@ -204,7 +204,7 @@ type Fixtures = {
 export const test = base.extend<Fixtures>({
   authenticatedPage: async ({ page }, use) => {
     // Perform login once, reuse across tests
-    await page.goto('/login');
+    await page.goto('/sign-in');
     await page.getByLabel('Email').fill('test@example.com');
     await page.getByLabel('Password').fill('password123');
     await page.getByRole('button', { name: 'Sign in' }).click();

@@ -31,7 +31,7 @@ Copy `.env.example` to `.env` and fill in the values.
 
 - `BETTER_AUTH_URL` (prod: `https://finance.oakoss.dev`, local: `http://localhost:3000`)
 - `BETTER_AUTH_SECRET` (min 32 chars)
-- `PASSWORD_MIN_LENGTH` (dev: `8`, prod: `12`)
+- Password minimum length: 8 characters (configured in `appConfig.passwordMinLength`)
 
 ### Database
 
