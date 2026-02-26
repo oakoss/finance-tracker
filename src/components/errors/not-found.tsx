@@ -1,10 +1,5 @@
 import { Icons } from '@/components/icons';
 import { RouterButton } from '@/components/ui/button';
-import {
-  TypographyH1,
-  TypographyMuted,
-  TypographyP,
-} from '@/components/ui/typography';
 
 function NotFound() {
   return (
@@ -13,12 +8,14 @@ function NotFound() {
         <Icons.Search className="size-5" />
       </div>
       <div className="max-w-md space-y-3">
-        <TypographyH1>Page not found</TypographyH1>
-        <TypographyP>
+        <h1 className="text-4xl font-extrabold tracking-tight text-balance">
+          Page not found
+        </h1>
+        <p className="leading-7">
           We couldn&#39;t find the page you&#39;re looking for. Check the URL or
           head back home.
-        </TypographyP>
-        <TypographyMuted>HTTP 404</TypographyMuted>
+        </p>
+        <p className="text-sm text-muted-foreground">HTTP 404</p>
       </div>
       <RouterButton to="/">Go home</RouterButton>
     </div>

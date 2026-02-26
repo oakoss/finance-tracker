@@ -2,11 +2,6 @@ import { type ErrorComponentProps } from '@tanstack/react-router';
 
 import { Icons } from '@/components/icons';
 import { Button, RouterButton } from '@/components/ui/button';
-import {
-  TypographyH1,
-  TypographyMuted,
-  TypographyP,
-} from '@/components/ui/typography';
 
 function RootErrorBoundary({ error, reset }: ErrorComponentProps) {
   const message =
@@ -18,9 +13,13 @@ function RootErrorBoundary({ error, reset }: ErrorComponentProps) {
         <Icons.TriangleAlert className="size-5" />
       </div>
       <div className="max-w-md space-y-3">
-        <TypographyH1>Something went wrong</TypographyH1>
-        <TypographyP>{message}</TypographyP>
-        <TypographyMuted>Try again or return home.</TypographyMuted>
+        <h1 className="text-4xl font-extrabold tracking-tight text-balance">
+          Something went wrong
+        </h1>
+        <p className="leading-7">{message}</p>
+        <p className="text-sm text-muted-foreground">
+          Try again or return home.
+        </p>
       </div>
       <div className="flex flex-wrap items-center justify-center gap-3">
         <Button

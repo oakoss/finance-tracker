@@ -10,6 +10,8 @@ PostgreSQL/Drizzle, Better Auth, Tailwind CSS v4/shadcn.
 - **Validation**: ArkType everywhere (not Zod).
 - **UI style**: shadcn/ui `base-nova` (Base UI, not Radix). Use
   `render` prop / `mergeProps`, not `asChild`. Icons: Lucide.
+- **Typography**: Tailwind classes directly on semantic elements. See
+  [styling.md](docs/development/styling.md).
 
 ## Commands
 

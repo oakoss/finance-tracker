@@ -50,8 +50,7 @@ Use `mergeProps` to safely combine handlers and classes.
 - `event.preventBaseUIHandler()` stops Base UI default handlers.
 - Prefer component props first; use the escape hatch only when necessary.
 
-## Typography component
+## Typography
 
-- Prefer `Typography` for consistent text styles.
-- Use `variant` to select styles and `as` to override the element.
-- Helpers like `TypographyH1` are preferred for simple cases.
+Use Tailwind classes directly on semantic HTML elements. See
+[styling.md](../styling.md) for the class convention table.

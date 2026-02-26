@@ -66,3 +66,23 @@ The `@theme inline` section mirrors the same tokens for Tailwind usage:
 - Components should use semantic tokens, not raw values.
 - Avoid hard-coded colors in `ui` components.
 - Keep tokens theme-friendly (light/dark/future brand themes).
+
+## Typography
+
+Use Tailwind classes directly on semantic HTML elements. No wrapper
+component.
+
+| Role              | Element              | Classes                                               |
+| ----------------- | -------------------- | ----------------------------------------------------- |
+| Display heading   | `<h1>`               | `text-4xl font-extrabold tracking-tight text-balance` |
+| Page heading      | `<h1>`               | `text-2xl font-semibold tracking-tight`               |
+| Section heading   | `<h2>`               | `text-xl font-semibold tracking-tight`                |
+| Sub-heading       | `<h3>`               | `text-lg font-semibold tracking-tight`                |
+| Body              | `<p>`                | `leading-7`                                           |
+| Muted / caption   | `<p>`                | `text-sm text-muted-foreground`                       |
+| Small / label     | `<legend>`, `<span>` | `text-sm font-medium leading-none`                    |
+| Financial numbers | `<span>`             | `font-mono tabular-nums`                              |
+
+Inside UI sub-components (`CardTitle`, `DialogTitle`, `TableCell`,
+`Empty`), rely on the component's built-in text styling rather than
+applying these classes manually.

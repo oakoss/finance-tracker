@@ -31,7 +31,7 @@ How we build components in this repo.
 - TanStack integrations: `docs/development/components/tanstack.md`
 - Confirm destructive dialog: `docs/development/components/examples/confirm-destructive-dialog.md`
 - Form examples: `docs/development/components/examples/form.md`
-- Typography examples: `docs/development/components/examples/typography.md`
+- Typography conventions: `docs/development/styling.md` (Typography section)
 
 ## Styling and tokens
 
