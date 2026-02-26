@@ -8,8 +8,7 @@ See `docs/adr/0019-cookie-management.md` for the decision.
 ## Storage Policy
 
 Cookies are the **only** browser persistence mechanism we use. Do not use
-`localStorage` or `sessionStorage` — they are not SSR-safe and add unnecessary
-complexity. IndexedDB is reserved for future offline support via TanStack DB.
+`localStorage` or `sessionStorage` — they are not SSR-safe and we have no use case for them. IndexedDB is reserved for future offline support via TanStack DB.
 
 | Storage   | Use                                                        |
 | --------- | ---------------------------------------------------------- |

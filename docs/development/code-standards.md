@@ -42,8 +42,7 @@ Code style, conventions, and structure expectations.
 - `react/jsx-sort-props` is enforced.
 - `react-hooks/exhaustive-deps` is off; be intentional with deps.
 - Use `function` declarations for components, arrow functions
-  (`const handler = () => {}`) for event handlers. The visual
-  distinction makes scanning code faster.
+  (`const handler = () => {}`) for event handlers.
 
 ## Error Handling
 

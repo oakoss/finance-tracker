@@ -1,7 +1,7 @@
 # Data Compliance
 
-GDPR-compliant data handling. GDPR is the strictest consumer data
-regulation; meeting it covers other jurisdictions.
+GDPR-aligned data handling. We target GDPR as the baseline; it covers
+most other jurisdictions.
 
 ## Soft Delete
 

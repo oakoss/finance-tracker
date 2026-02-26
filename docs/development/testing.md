@@ -54,9 +54,9 @@ React keeps tests fast and avoids Nitro side effects.
 Factory functions live in `test/factories/`. Import directly from
 module paths (e.g., `~test/factories/user.factory`).
 
-- `createX(overrides?)` -- returns a plain object (unit tests, no DB
+- `createX(overrides?)`: returns a plain object (unit tests, no DB
   needed).
-- `insertX(db, overrides?)` -- inserts into DB and returns the record
+- `insertX(db, overrides?)`: inserts into DB and returns the record
   via `.returning()`.
 
 Always pass the `db` instance as a parameter (never import the
@@ -67,11 +67,11 @@ Available factories: `User`, `LedgerAccount`, `Category`, `Payee`,
 
 Scenario builders in `test/scenarios/` compose multiple factories:
 
-- `createFullTransaction(db)` -- user + account + category + payee +
+- `createFullTransaction(db)`: user + account + category + payee +
   transaction
-- `createMultiAccountUser(db)` -- user with checking, savings, and
+- `createMultiAccountUser(db)`: user with checking, savings, and
   credit card accounts
-- `createMonthlySpending(db)` -- user + account + 5 categories +
+- `createMonthlySpending(db)`: user + account + 5 categories +
   3 payees + 30 transactions
 
 ## Unit tests

@@ -1,7 +1,6 @@
 # Components Golden Rule
 
-This guide defines how we build components in this repo. It is the source of
-truth for structure, behavior, and integration with Base UI and TanStack.
+How we build components in this repo.
 
 ## Ownership rules
 

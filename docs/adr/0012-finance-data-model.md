@@ -5,7 +5,7 @@ Status: Accepted
 
 ## Context
 
-We need a flexible, future-ready data model that supports manual entry, CSV imports, credit card promos, and debt payoff strategies while keeping MVP complexity manageable.
+We need a data model that supports manual entry, CSV imports, credit card promos, and debt payoff strategies while keeping MVP complexity manageable.
 
 ## Decision
 

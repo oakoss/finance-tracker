@@ -58,25 +58,25 @@ Key patterns:
 
 In priority order:
 
-1. **URL search params** (TanStack Router) -- Filters, pagination,
+1. **URL search params** (TanStack Router): Filters, pagination,
    sorting, modal open/close, active tabs. State that should survive
    refresh, be shareable, or work with back/forward. Define with
    `validateSearch` + ArkType, read via `Route.useSearch()`. Debounce
    text input writes with `useDebouncedCallback` from
    `@tanstack/react-pacer`.
-2. **Server state** (TanStack Query) -- Remote data fetching, caching,
+2. **Server state** (TanStack Query): Remote data fetching, caching,
    mutations, optimistic updates. Use `useQuery()`/`useMutation()` in
    components, `context.queryClient.ensureQueryData()` in loaders.
-3. **Global client state** (Zustand) -- Client-only state that spans
+3. **Global client state** (Zustand): Client-only state that spans
    multiple routes and does not belong in the URL. Stores live in
    `src/stores/`. Use `create<T>()(...)` (double-parentheses pattern).
    Prefer slices over monolithic stores.
-4. **Form state** (TanStack Form) -- All form input values, validation,
+4. **Form state** (TanStack Form): All form input values, validation,
    and submission. Do not use `useState` for form fields.
-5. **Local component state** (`useState`, `useReducer`) -- Ephemeral
+5. **Local component state** (`useState`, `useReducer`): Ephemeral
    state scoped to a single component: hover/focus, animations, loading
    spinners, UI toggles.
-6. **Context/Provider** -- Dependency injection and config only.
+6. **Context/Provider**: Dependency injection and config only.
    Frequently changing state in context re-renders all consumers.
    Theme is handled by `next-themes`.
 
@@ -84,13 +84,13 @@ In priority order:
 
 Where to persist client-side state:
 
-1. **Cookies** -- SSR-safe persistence (sidebar collapsed, theme,
+1. **Cookies**: SSR-safe persistence (sidebar collapsed, theme,
    locale). Use `createClientCookies()` / `createServerCookies()` from
    `@/lib/cookies`. Zustand persist middleware should target cookies when
    SSR matters.
-2. **Memory** -- Everything else (Query cache, form state, component
+2. **Memory**: Everything else (Query cache, form state, component
    state, Zustand stores without persistence). Default choice.
-3. **IndexedDB** -- Reserved for future large-data needs (offline mode).
+3. **IndexedDB**: Reserved for future large-data needs (offline mode).
    Will be managed via TanStack DB when added.
 
 **Do not use `localStorage` or `sessionStorage`.** Cookies cover
@@ -100,12 +100,12 @@ SSR-safe persistence; memory covers the rest.
 
 `src/modules/` contains domain-specific code:
 
-- **auth** -- `api/` (server functions), `db/` (generated schema -- do
+- **auth**: `api/` (server functions), `db/` (generated schema, do
   not edit, relations), `emails/` (React Email templates, rendering,
   sending), `hooks/` (e.g., `use-sign-out.ts`), `middleware.ts`
-- **finance** -- `db/` (schema, relations) for accounts, transactions,
+- **finance**: `db/` (schema, relations) for accounts, transactions,
   categories, payees, imports, debt strategies, promotions, etc.
-- **todos** -- `db/` (schema, relations) -- minimal example module
+- **todos**: `db/` (schema, relations), minimal example module
 
 Each module owns its Drizzle schema and relations in `{module}/db/`.
 All are re-exported through `src/db/schema.ts` (the aggregator).

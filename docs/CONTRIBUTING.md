@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for contributing to the Finance Tracker app! This guide covers local setup, workflow, and project conventions.
+Local setup, workflow, and project conventions.
 
 ## Quick Start
 

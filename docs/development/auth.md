@@ -22,7 +22,7 @@ Auth features and policy decisions are defined in
 
 ## Auth Guard
 
-Auth is not global -- protection is applied at the `_app/` layout
+Auth is not global; protection is applied at the `_app/` layout
 route level via `beforeLoad`:
 
 1. Calls `getSession()` server function.
@@ -34,9 +34,9 @@ route level via `beforeLoad`:
 All authenticated routes live under `_app/` and inherit the guard.
 Child routes access the session via `Route.useRouteContext()`.
 
-The `_auth/` layout includes a **reverse guard** -- authenticated
-users are redirected to `/dashboard`. Resilient to auth infrastructure
-failures (falls through to show the auth page).
+The `_auth/` layout includes a **reverse guard**: authenticated
+users are redirected to `/dashboard`. The guard is resilient to auth
+infrastructure failures and falls through to show the auth page.
 
 ## Auth Middleware
 

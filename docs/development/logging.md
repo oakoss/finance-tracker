@@ -1,6 +1,6 @@
 # Logging
 
-Logging uses [evlog](https://evlog.dev) with a wide-event model — one structured log per request, accumulated throughout the request lifecycle and emitted at the end. Logs are sent to [SigNoz](https://signoz.io) via OTLP.
+Logging uses [evlog](https://evlog.dev) with a wide-event model: one structured log per request, accumulated throughout the request lifecycle and emitted at the end. Logs are sent to [SigNoz](https://signoz.io) via OTLP.
 
 See `docs/adr/0020-logging-evlog-signoz.md` for the architectural decision.
 

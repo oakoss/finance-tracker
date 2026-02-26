@@ -4,7 +4,7 @@ Conventions for SVG icons, logos, and favicons.
 
 ## React icon components
 
-Inline SVG in React for full CSS control and zero network requests.
+Inline SVGs in React components for CSS control and no extra network requests.
 
 ```tsx
 export function Logo({ className = 'size-6' }: { className?: string }) {
