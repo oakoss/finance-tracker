@@ -33,6 +33,8 @@
   "auth.social.continueWithGitHub": "Continue with GitHub",
   "auth.social.continueWithGoogle": "Continue with Google",
   "common.loading": "Loading",
+  "confirm.typePhrasePrefix": "Type",
+  "confirm.typePhraseSuffix": "to confirm",
   "dataGrid.column.asc": "Asc",
   "dataGrid.column.columns": "Columns",
   "dataGrid.column.desc": "Desc",

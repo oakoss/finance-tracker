@@ -30,6 +30,7 @@ truth for structure, behavior, and integration with Base UI and TanStack.
 - Behavior (state + accessibility): `docs/development/components/behavior.md`
 - Implementation (types + Base UI render patterns): `docs/development/components/implementation.md`
 - TanStack integrations: `docs/development/components/tanstack.md`
+- Confirm destructive dialog: `docs/development/components/examples/confirm-destructive-dialog.md`
 - Form examples: `docs/development/components/examples/form.md`
 - Typography examples: `docs/development/components/examples/typography.md`
 
