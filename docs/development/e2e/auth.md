@@ -15,7 +15,7 @@ files contain cookies and session tokens that must not be committed.
 **`e2e/setup/auth.setup.ts`**: runs once before authenticated tests:
 
 ```ts
-import { test as setup } from '@playwright/test';
+import { expect, test as setup } from '@playwright/test';
 
 import { waitForHydration } from '~e2e/fixtures';
 
@@ -29,8 +29,8 @@ setup('authenticate', async ({ page }) => {
     .getByLabel('Password', { exact: true })
     .fill(process.env.E2E_USER_PASSWORD ?? 'E2ePassword1!');
   await page.getByRole('button', { name: 'Sign in' }).click();
-  // Includes try/catch with diagnostic messages — see actual file
-  await page.waitForURL('/dashboard');
+  await expect(page).toHaveURL('/dashboard', { timeout: 15_000 });
+  await expect(page.getByRole('heading', { name: /welcome/i })).toBeVisible();
   await page.context().storageState({ path: 'playwright/.auth/user.json' });
 });
 ```
