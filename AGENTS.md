@@ -76,6 +76,7 @@ See [Definition of Done](docs/development/definition-of-done.md).
 | Architecture and patterns | [architecture.md](docs/development/architecture.md)       |
 | Code standards            | [code-standards.md](docs/development/code-standards.md)   |
 | Testing                   | [testing.md](docs/development/testing.md)                 |
+| E2E testing               | [e2e/](docs/development/e2e/)                             |
 | Database                  | [database.md](docs/development/database.md)               |
 | Routing                   | [routing.md](docs/development/routing.md)                 |
 | Auth                      | [auth.md](docs/development/auth.md)                       |

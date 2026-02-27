@@ -1,8 +1,9 @@
 ---
 paths:
-  - '**/*.test.ts'
-  - '**/*.test.tsx'
+  - src/**/*.test.ts
+  - src/**/*.test.tsx
   - test/**/*
+  - vitest.config.ts
 ---
 
 # Testing Rules
@@ -20,4 +21,5 @@ Coverage is collected for `src/lib/**`, `src/configs/**`, and `src/hooks/**`. Au
 
 Focus on pure functions and utilities: i18n formatting, env validation, hash determinism, cookie serialization, class merging (`cn`), error ID types.
 
-See `docs/development/testing.md` for the full coverage scope and E2E plan.
+See `docs/development/testing.md` for coverage scope and
+`docs/development/e2e/` for E2E patterns.
