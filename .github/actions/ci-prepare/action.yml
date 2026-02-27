@@ -1,4 +1,4 @@
-name: Prepare test environment
+name: Prepare CI environment
 description: Create .env from example and compile Paraglide messages.
 
 runs:

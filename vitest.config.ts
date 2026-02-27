@@ -41,7 +41,10 @@ export default defineConfig({
               url: 'http://localhost:3000',
             },
           },
-          exclude: ['test/**/*.integration.test.{ts,tsx}'],
+          exclude: [
+            'src/**/*.integration.test.{ts,tsx}',
+            'test/**/*.integration.test.{ts,tsx}',
+          ],
           globals: true,
           include: [
             'src/**/*.{test,spec}.{ts,tsx}',

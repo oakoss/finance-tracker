@@ -33,6 +33,8 @@ jobs:
         uses: ./.github/actions/setup
         with:
           save-caches: 'true'
+      - name: Prepare CI environment
+        uses: ./.github/actions/ci-prepare
       - name: Static analysis
         uses: ./.github/actions/static-analysis
         with:
@@ -51,8 +53,8 @@ jobs:
           fetch-depth: 1
       - name: Setup
         uses: ./.github/actions/setup
-      - name: Prepare test environment
-        uses: ./.github/actions/test-prepare
+      - name: Prepare CI environment
+        uses: ./.github/actions/ci-prepare
       - name: Unit tests
         run: pnpm test:coverage
       - name: Coverage report
@@ -83,14 +85,28 @@ jobs:
           fetch-depth: 1
       - name: Setup
         uses: ./.github/actions/setup
-      - name: Prepare test environment
-        uses: ./.github/actions/test-prepare
+      - name: Prepare CI environment
+        uses: ./.github/actions/ci-prepare
       - name: Integration tests
         run: pnpm test:integration
 
   e2e-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: finance_tracker
+          POSTGRES_PASSWORD: finance_tracker_password
+          POSTGRES_DB: finance_tracker_dev
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U finance_tracker"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -98,8 +114,10 @@ jobs:
           fetch-depth: 1
       - name: Setup
         uses: ./.github/actions/setup
-      - name: Prepare test environment
-        uses: ./.github/actions/test-prepare
+      - name: Prepare CI environment
+        uses: ./.github/actions/ci-prepare
+      - name: Migrate and seed database
+        run: pnpm db:migrate && pnpm db:seed -- e2e
       - name: Cache Playwright browsers
         uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
         with:
