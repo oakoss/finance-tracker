@@ -15,29 +15,38 @@
  * - Sanitizes sensitive fields before sending.
  *
  * Usage in server functions:
- * - TanStack Start server functions do NOT have access to the raw H3 event,
- *   so `useLogger(event)` cannot be used inside `createServerFn` handlers.
+ * - TanStack Start server functions do NOT have access to the raw H3 event.
  * - `log.set()` does NOT exist on the standalone `log` object.
  * - Use `log.info()`, `log.warn()`, `log.error()`, `log.debug()` with a full
  *   context object in one call. The Nitro module accumulates these into the
  *   request-scoped wide event automatically.
  *
  * @example
+ * // Server function
  * import { createError, log } from '@/lib/logging/evlog'
  * import { hashId } from '@/lib/logging/hash'
+ * import { isExpectedError, toError } from '@/lib/validation'
  *
- * export const createTransaction = createServerFn().handler(async ({ data }) => {
- *   try {
- *     const result = await db.insert(transactions).values(data)
- *     log.info({ action: 'txn.create', user: { idHash: hashId(userId) }, outcome: { id: result.id } })
- *     return result
- *   } catch (error) {
- *     throw createError({ message: 'Failed to create transaction.', status: 500, why: error.message })
- *   }
- * })
+ * export const createTransaction = createServerFn()
+ *   .middleware([authMiddleware])
+ *   .handler(async ({ context, data }) => {
+ *     const userId = requireUserId(context)
+ *     try {
+ *       const result = await db.insert(transactions).values(data)
+ *       log.info({ action: 'txn.create', outcome: { idHash: hashId(result.id) }, user: { idHash: hashId(userId) } })
+ *       return result
+ *     } catch (error) {
+ *       if (isExpectedError(error)) throw error
+ *       log.error({ action: 'txn.create', error: toError(error).message, user: { idHash: hashId(userId) } })
+ *       throw createError({ cause: toError(error), fix: 'Try again.', message: 'Failed.', status: 500 })
+ *     }
+ *   })
  *
- * Usage in Nitro server routes (if any are added directly):
- * - `useLogger(event)` works and gives request-scoped `log.set()` accumulation.
+ * @example
+ * // Client hook
+ * import { parseError } from '@/lib/logging/evlog'
+ *
+ * const parsed = parseError(error)
+ * toast.error('Failed', { description: parsed.fix ?? parsed.why })
  */
-export { createError, createRequestLogger, log, parseError } from 'evlog';
-export { useLogger } from 'evlog/nitro/v3';
+export { createError, log, parseError } from 'evlog';

@@ -1,5 +1,6 @@
 import { relations } from 'drizzle-orm';
 
+import { ledgerAccounts } from '@/modules/accounts/db/schema';
 import {
   accounts,
   sessions,
@@ -11,7 +12,6 @@ import {
   categories,
   debtStrategies,
   imports,
-  ledgerAccounts,
   merchantRules,
   payees,
   recurringRules,

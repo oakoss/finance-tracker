@@ -6,14 +6,14 @@ See `docs/adr/0020-logging-evlog-signoz.md` for the architectural decision.
 
 ## Files
 
-| File                               | Purpose                                                                       |
-| ---------------------------------- | ----------------------------------------------------------------------------- |
-| `src/lib/logging/evlog.ts`         | Main entry point — re-exports `log`, `useLogger`, `createError`, `parseError` |
-| `src/lib/logging/drain.ts`         | Nitro plugin — OTLP drain, enrichers, sanitization, pipeline                  |
-| `src/lib/logging/hash.ts`          | HMAC-SHA256 ID hashing for audit logs                                         |
-| `src/lib/logging/sanitize.ts`      | Allowlist-based field sanitizer for PII removal before drain                  |
-| `src/lib/logging/client-logger.ts` | Client-side logger with env-based enable/level control                        |
-| `vite.config.ts` (`nitro.modules`) | evlog Nitro v3 module registration, sampling, route exclusions                |
+| File                               | Purpose                                                         |
+| ---------------------------------- | --------------------------------------------------------------- |
+| `src/lib/logging/evlog.ts`         | Main entry point: re-exports `log`, `createError`, `parseError` |
+| `src/lib/logging/drain.ts`         | Nitro plugin — OTLP drain, enrichers, sanitization, pipeline    |
+| `src/lib/logging/hash.ts`          | HMAC-SHA256 ID hashing for audit logs                           |
+| `src/lib/logging/sanitize.ts`      | Allowlist-based field sanitizer for PII removal before drain    |
+| `src/lib/logging/client-logger.ts` | Client-side logger with env-based enable/level control          |
+| `vite.config.ts` (`nitro.modules`) | evlog Nitro v3 module registration, sampling, route exclusions  |
 
 ## How it works
 
@@ -35,26 +35,37 @@ request-scoped wide event automatically:
 ```ts
 import { createError, log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
+import { isExpectedError, toError } from '@/lib/validation';
 
-export const createTransaction = createServerFn().handler(async ({ data }) => {
-  try {
-    const result = await db.insert(transactions).values(data);
-    log.info({
-      action: 'txn.create',
-      user: { idHash: hashId(userId) },
-      outcome: { id: result.id },
-    });
-    return result;
-  } catch (error) {
-    throw createError({
-      message: 'Failed to create transaction.',
-      status: 500,
-      why: error instanceof Error ? error.message : String(error),
-      fix: 'Check the database connection and try again.',
-      cause: error instanceof Error ? error : new Error(String(error)),
-    });
-  }
-});
+export const createTransaction = createServerFn()
+  .middleware([authMiddleware])
+  .handler(async ({ context, data }) => {
+    const userId = requireUserId(context);
+
+    try {
+      const result = await db.insert(transactions).values(data);
+      log.info({
+        action: 'txn.create',
+        outcome: { idHash: hashId(result.id) },
+        user: { idHash: hashId(userId) },
+      });
+      return result;
+    } catch (error) {
+      if (isExpectedError(error)) throw error;
+      log.error({
+        action: 'txn.create',
+        error: toError(error).message,
+        outcome: { success: false },
+        user: { idHash: hashId(userId) },
+      });
+      throw createError({
+        cause: toError(error),
+        fix: 'Try again. If the problem persists, contact support.',
+        message: 'Failed to create transaction.',
+        status: 500,
+      });
+    }
+  });
 ```
 
 The wide event is emitted automatically at request end — never call `log.emit()` manually.
@@ -77,10 +88,10 @@ throw createError({
 ### In Nitro routes (if added directly)
 
 `useLogger(event)` is available in raw Nitro route handlers and supports `log.set()`
-for incremental context accumulation throughout the request:
+for incremental context accumulation throughout the request. Import directly from `evlog/nitro/v3` (not re-exported from `@/lib/logging/evlog`):
 
 ```ts
-import { useLogger } from '@/lib/logging/evlog';
+import { useLogger } from 'evlog/nitro/v3';
 
 export default defineHandler(async (event) => {
   const log = useLogger(event);

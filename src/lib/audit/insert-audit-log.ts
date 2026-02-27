@@ -3,6 +3,8 @@ import { logAuditEvent } from '@/lib/audit/log-audit-event';
 import type { AuditAction } from '@/lib/audit/types';
 import { auditLogs } from '@/modules/finance/db/schema';
 
+type DbOrTx = Pick<Db, 'insert'>;
+
 type InsertAuditLogParams = {
   action: AuditAction;
   actorId: string;
@@ -13,7 +15,7 @@ type InsertAuditLogParams = {
 };
 
 export async function insertAuditLog(
-  tx: Db,
+  tx: DbOrTx,
   params: InsertAuditLogParams,
 ): Promise<void> {
   await tx.insert(auditLogs).values({

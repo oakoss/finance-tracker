@@ -66,6 +66,13 @@ export default defineConfig(
         {
           caseSensitive: false,
           minKeys: 3,
+          overrides: [
+            {
+              esquery:
+                'CallExpression[callee.type="CallExpression"][callee.callee.name="createFileRoute"] > ObjectExpression',
+              ignore: true,
+            },
+          ],
         },
       ],
       'unicorn/filename-case': [

@@ -1,0 +1,366 @@
+import { useForm } from '@tanstack/react-form';
+import { type } from 'arktype';
+
+import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  accountOwnerTypeEnum,
+  accountTypeEnum,
+} from '@/modules/accounts/db/schema';
+import type { CreateAccountInput } from '@/modules/accounts/types';
+import { m } from '@/paraglide/messages';
+
+const accountFormSchema = type({
+  currency: 'string > 0',
+  name: 'string > 0',
+  type: type.enumerated(...accountTypeEnum.enumValues),
+});
+
+type AccountFormValues = {
+  accountNumberMask: string;
+  currency: string;
+  initialBalanceCents: string;
+  institution: string;
+  name: string;
+  openedAt: string;
+  ownerType: (typeof accountOwnerTypeEnum.enumValues)[number];
+  terms: {
+    aprBps: string;
+    dueDay: string;
+    minPaymentType: string;
+    minPaymentValue: string;
+    statementDay: string;
+  };
+  type: CreateAccountInput['type'];
+};
+
+type AccountFormProps = {
+  defaultValues?: Partial<AccountFormValues>;
+  isSubmitting: boolean;
+  onSubmit: (values: AccountFormValues) => void;
+};
+
+const DEFAULT_VALUES: AccountFormValues = {
+  accountNumberMask: '',
+  currency: 'USD',
+  initialBalanceCents: '',
+  institution: '',
+  name: '',
+  openedAt: '',
+  ownerType: 'personal',
+  terms: {
+    aprBps: '',
+    dueDay: '',
+    minPaymentType: 'percentage',
+    minPaymentValue: '',
+    statementDay: '',
+  },
+  type: 'checking',
+};
+
+function hasTerms(accountType: string): boolean {
+  return accountType === 'credit_card' || accountType === 'loan';
+}
+
+export function AccountForm({
+  defaultValues,
+  isSubmitting,
+  onSubmit,
+}: AccountFormProps) {
+  const form = useForm({
+    defaultValues: { ...DEFAULT_VALUES, ...defaultValues },
+    onSubmit: ({ value }) => onSubmit(value),
+    validators: {
+      onBlur: accountFormSchema,
+      onSubmit: accountFormSchema,
+    },
+  });
+
+  return (
+    <form
+      className="grid gap-4"
+      id="account-form"
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        void form.handleSubmit();
+      }}
+    >
+      <form.Field name="name">
+        {(field) => (
+          <Field data-invalid={field.state.meta.errors.length > 0}>
+            <FieldLabel htmlFor="account-name">
+              {m['accounts.form.name']()}
+            </FieldLabel>
+            <Input
+              disabled={isSubmitting}
+              id="account-name"
+              name={field.name}
+              placeholder="e.g. Chase Checking"
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(e.target.value)}
+            />
+            <FieldError errors={field.state.meta.errors} />
+          </Field>
+        )}
+      </form.Field>
+
+      <div className="grid grid-cols-2 gap-4">
+        <form.Field name="type">
+          {(field) => (
+            <Field>
+              <FieldLabel>{m['accounts.form.type']()}</FieldLabel>
+              <Select
+                disabled={isSubmitting}
+                value={field.state.value}
+                onValueChange={(v) => field.handleChange(v!)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {accountTypeEnum.enumValues.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {m[`accounts.type.${t}`]()}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+          )}
+        </form.Field>
+
+        <form.Field name="currency">
+          {(field) => (
+            <Field>
+              <FieldLabel htmlFor="currency">
+                {m['accounts.form.currency']()}
+              </FieldLabel>
+              <Input
+                disabled={isSubmitting}
+                id="currency"
+                name={field.name}
+                placeholder="USD"
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+            </Field>
+          )}
+        </form.Field>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <form.Field name="ownerType">
+          {(field) => (
+            <Field>
+              <FieldLabel>{m['accounts.form.ownerType']()}</FieldLabel>
+              <Select
+                disabled={isSubmitting}
+                value={field.state.value}
+                onValueChange={(v) => field.handleChange(v!)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {accountOwnerTypeEnum.enumValues.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {m[`accounts.ownerType.${t}`]()}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+          )}
+        </form.Field>
+
+        <form.Field name="institution">
+          {(field) => (
+            <Field>
+              <FieldLabel htmlFor="institution">
+                {m['accounts.form.institution']()}
+              </FieldLabel>
+              <Input
+                disabled={isSubmitting}
+                id="institution"
+                name={field.name}
+                placeholder="e.g. Chase"
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+            </Field>
+          )}
+        </form.Field>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <form.Field name="accountNumberMask">
+          {(field) => (
+            <Field>
+              <FieldLabel htmlFor="account-number-mask">
+                {m['accounts.form.accountNumberMask']()}
+              </FieldLabel>
+              <Input
+                disabled={isSubmitting}
+                id="account-number-mask"
+                maxLength={4}
+                name={field.name}
+                placeholder="1234"
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+            </Field>
+          )}
+        </form.Field>
+
+        <form.Field name="openedAt">
+          {(field) => (
+            <Field>
+              <FieldLabel htmlFor="opened-at">
+                {m['accounts.form.openedAt']()}
+              </FieldLabel>
+              <Input
+                disabled={isSubmitting}
+                id="opened-at"
+                name={field.name}
+                type="date"
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+            </Field>
+          )}
+        </form.Field>
+      </div>
+
+      <form.Field name="initialBalanceCents">
+        {(field) => (
+          <Field>
+            <FieldLabel htmlFor="initial-balance">
+              {m['accounts.form.initialBalance']()}
+            </FieldLabel>
+            <Input
+              disabled={isSubmitting}
+              id="initial-balance"
+              name={field.name}
+              placeholder="0.00"
+              step="0.01"
+              type="number"
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChange={(e) => field.handleChange(e.target.value)}
+            />
+          </Field>
+        )}
+      </form.Field>
+
+      <form.Subscribe selector={(s) => s.values.type}>
+        {(accountType) =>
+          hasTerms(accountType) && (
+            <FieldSet className="rounded-lg border p-4">
+              <legend className="text-sm font-medium leading-none px-1">
+                {m['accounts.form.termsSection']()}
+              </legend>
+
+              <div className="grid grid-cols-2 gap-4">
+                <form.Field name="terms.aprBps">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor="apr-bps">
+                        {m['accounts.form.aprBps']()}
+                      </FieldLabel>
+                      <Input
+                        disabled={isSubmitting}
+                        id="apr-bps"
+                        name={field.name}
+                        placeholder="2499"
+                        type="number"
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                      />
+                    </Field>
+                  )}
+                </form.Field>
+
+                <form.Field name="terms.dueDay">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor="due-day">
+                        {m['accounts.form.dueDay']()}
+                      </FieldLabel>
+                      <Input
+                        disabled={isSubmitting}
+                        id="due-day"
+                        max={28}
+                        min={1}
+                        name={field.name}
+                        placeholder="15"
+                        type="number"
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                      />
+                    </Field>
+                  )}
+                </form.Field>
+              </div>
+
+              <form.Field name="terms.statementDay">
+                {(field) => (
+                  <Field>
+                    <FieldLabel htmlFor="statement-day">
+                      {m['accounts.form.statementDay']()}
+                    </FieldLabel>
+                    <Input
+                      disabled={isSubmitting}
+                      id="statement-day"
+                      max={28}
+                      min={1}
+                      name={field.name}
+                      placeholder="20"
+                      type="number"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                  </Field>
+                )}
+              </form.Field>
+            </FieldSet>
+          )
+        }
+      </form.Subscribe>
+    </form>
+  );
+}
+
+function parseIntOrNull(value: string): number | null {
+  if (!value) return null;
+  const parsed = Number.parseInt(value, 10);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
+export function parseFormTerms(values: AccountFormValues) {
+  if (!hasTerms(values.type)) return;
+  return {
+    aprBps: parseIntOrNull(values.terms.aprBps),
+    dueDay: parseIntOrNull(values.terms.dueDay),
+    minPaymentType: values.terms.minPaymentType || null,
+    minPaymentValue: parseIntOrNull(values.terms.minPaymentValue),
+    statementDay: parseIntOrNull(values.terms.statementDay),
+  };
+}
+
+export type { AccountFormValues };
