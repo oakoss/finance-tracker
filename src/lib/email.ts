@@ -29,13 +29,15 @@ const defaultReplyTo = env.EMAIL_REPLY_TO
 export async function sendEmail(options: SendEmailOptions) {
   const { html, replyTo, subject, text, to } = options;
 
-  await brevo.transactionalEmails.sendTransacEmail({
-    headers: env.EMAIL_SANDBOX ? { 'X-Sib-Sandbox': 'drop' } : undefined,
-    htmlContent: html,
-    replyTo: replyTo ?? defaultReplyTo,
-    sender: defaultSender,
-    subject,
-    textContent: text,
-    to,
-  });
+  await brevo.transactionalEmails.sendTransacEmail(
+    {
+      htmlContent: html,
+      replyTo: replyTo ?? defaultReplyTo,
+      sender: defaultSender,
+      subject,
+      textContent: text,
+      to,
+    },
+    env.EMAIL_SANDBOX ? { headers: { 'X-Sib-Sandbox': 'drop' } } : undefined,
+  );
 }
