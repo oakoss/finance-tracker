@@ -30,6 +30,7 @@ export async function sendEmail(options: SendEmailOptions) {
   const { html, replyTo, subject, text, to } = options;
 
   await brevo.transactionalEmails.sendTransacEmail({
+    headers: env.EMAIL_SANDBOX ? { 'X-Sib-Sandbox': 'drop' } : undefined,
     htmlContent: html,
     replyTo: replyTo ?? defaultReplyTo,
     sender: defaultSender,

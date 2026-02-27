@@ -8,6 +8,7 @@ export const Env = type({
   EMAIL_FROM: 'string.email',
   'EMAIL_FROM_NAME?': 'string > 0',
   EMAIL_REPLY_TO: 'string.email',
+  EMAIL_SANDBOX: 'boolean = false',
   GITHUB_CLIENT_ID: 'string > 0',
   GITHUB_CLIENT_SECRET: 'string > 0',
   GOOGLE_CLIENT_ID: 'string > 0',
