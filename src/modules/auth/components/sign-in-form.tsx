@@ -163,7 +163,9 @@ function SignInForm({ redirect }: SignInFormProps) {
 
         <p className="text-center text-sm text-muted-foreground">
           {m['auth.login.noAccount']()}{' '}
-          <RouterLink to="/sign-up">{m['auth.login.signUpLink']()}</RouterLink>
+          <RouterLink inline to="/sign-up">
+            {m['auth.login.signUpLink']()}
+          </RouterLink>
         </p>
       </CardContent>
     </Card>

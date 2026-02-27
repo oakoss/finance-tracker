@@ -36,14 +36,9 @@ test.describe('sign up', { tag: ['@smoke', '@auth', '@a11y'] }, () => {
     });
 
     await test.step('fill form with valid data', async () => {
-      await page.getByLabel('Name').click();
-      await page.getByLabel('Name').pressSequentially('Test Signup User');
-      await page.getByLabel('Email').click();
-      await page.getByLabel('Email').pressSequentially(uniqueEmail);
-      await page.getByLabel('Password', { exact: true }).click();
-      await page
-        .getByLabel('Password', { exact: true })
-        .pressSequentially('TestPassword1!');
+      await page.getByLabel('Name').fill('Test Signup User');
+      await page.getByLabel('Email').fill(uniqueEmail);
+      await page.getByLabel('Password', { exact: true }).fill('TestPassword1!');
     });
 
     await test.step('submit form and verify redirect to dashboard', async () => {

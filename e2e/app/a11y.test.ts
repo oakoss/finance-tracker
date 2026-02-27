@@ -3,62 +3,33 @@ import { expect, type Page, test } from '@playwright/test';
 
 test.use({ storageState: { cookies: [], origins: [] } });
 
-function contrastScan(page: Page) {
+function a11yScan(page: Page) {
   return new AxeBuilder({ page })
-    .withTags(['wcag2aa'])
-    .withRules(['color-contrast'])
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
     .analyze();
 }
 
+const pages = [
+  { name: 'landing', path: '/' },
+  { name: 'sign-in', path: '/sign-in' },
+  { name: 'sign-up', path: '/sign-up' },
+];
+
+const colorSchemes = ['light', 'dark'] as const;
+
 test.describe('accessibility', { tag: '@a11y' }, () => {
-  test('landing page has no contrast violations', async ({ page }) => {
-    await page.goto('/');
-    const results = await contrastScan(page);
-    expect(results.violations).toEqual([]);
-  });
-
-  test('landing page has no contrast violations in dark mode', async ({
-    browser,
-  }) => {
-    const context = await browser.newContext({ colorScheme: 'dark' });
-    const page = await context.newPage();
-    await page.goto('/');
-    const results = await contrastScan(page);
-    expect(results.violations).toEqual([]);
-    await context.close();
-  });
-
-  test('sign-in page has no contrast violations', async ({ page }) => {
-    await page.goto('/sign-in');
-    const results = await contrastScan(page);
-    expect(results.violations).toEqual([]);
-  });
-
-  test('sign-in page has no contrast violations in dark mode', async ({
-    browser,
-  }) => {
-    const context = await browser.newContext({ colorScheme: 'dark' });
-    const page = await context.newPage();
-    await page.goto('/sign-in');
-    const results = await contrastScan(page);
-    expect(results.violations).toEqual([]);
-    await context.close();
-  });
-
-  test('sign-up page has no contrast violations', async ({ page }) => {
-    await page.goto('/sign-up');
-    const results = await contrastScan(page);
-    expect(results.violations).toEqual([]);
-  });
-
-  test('sign-up page has no contrast violations in dark mode', async ({
-    browser,
-  }) => {
-    const context = await browser.newContext({ colorScheme: 'dark' });
-    const page = await context.newPage();
-    await page.goto('/sign-up');
-    const results = await contrastScan(page);
-    expect(results.violations).toEqual([]);
-    await context.close();
-  });
+  for (const { name, path } of pages) {
+    for (const scheme of colorSchemes) {
+      test(`${name} page has no a11y violations (${scheme})`, async ({
+        browser,
+      }) => {
+        const context = await browser.newContext({ colorScheme: scheme });
+        const page = await context.newPage();
+        await page.goto(path);
+        const results = await a11yScan(page);
+        expect(results.violations).toEqual([]);
+        await context.close();
+      });
+    }
+  }
 });

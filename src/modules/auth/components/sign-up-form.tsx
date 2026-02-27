@@ -233,7 +233,9 @@ function SignUpForm() {
 
         <p className="text-center text-sm text-muted-foreground">
           {m['auth.signup.hasAccount']()}{' '}
-          <RouterLink to="/sign-in">{m['auth.signup.signInLink']()}</RouterLink>
+          <RouterLink inline to="/sign-in">
+            {m['auth.signup.signInLink']()}
+          </RouterLink>
         </p>
       </CardContent>
     </Card>
