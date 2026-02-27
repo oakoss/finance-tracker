@@ -3,27 +3,25 @@ import arkenv, { type } from 'arkenv';
 export const Env = type({
   BETTER_AUTH_SECRET: 'string >= 32',
   BETTER_AUTH_URL: 'string.url',
-  BREVO_API_KEY: 'string > 0',
+  'BREVO_API_KEY?': 'string > 0',
   DATABASE_URL: 'string > 0',
   EMAIL_FROM: 'string.email',
   'EMAIL_FROM_NAME?': 'string > 0',
   EMAIL_REPLY_TO: 'string.email',
-  EMAIL_SANDBOX: 'boolean = false',
+  // OAuth credentials for social login providers
   GITHUB_CLIENT_ID: 'string > 0',
   GITHUB_CLIENT_SECRET: 'string > 0',
   GOOGLE_CLIENT_ID: 'string > 0',
   GOOGLE_CLIENT_SECRET: 'string > 0',
-
   // Min 32-char secret for HMAC-SHA256 ID hashing in audit logs
   LOG_HASH_SECRET: "string >= 32 = 'dev-placeholder-secret-do-not-use-in-prod'",
-
   // Logging (evlog + SigNoz via OTLP) — optional; if unset, logs go to stdout only
   'OTEL_EXPORTER_OTLP_ENDPOINT?': 'string.url',
-
   'OTEL_RESOURCE_ATTRIBUTES?': 'string > 0',
-
   'OTEL_SERVICE_NAME?': 'string > 0',
-
+  // SMTP transport for local dev / CI (Mailpit); when unset, Brevo API is used
+  'SMTP_HOST?': 'string > 0',
+  'SMTP_PORT?': '1 <= number <= 65535',
   TRUSTED_ORIGINS: 'string > 0',
   // Client-side vars (VITE_* prefix — available in browser via import.meta.env)
   VITE_CLIENT_LOG_LEVEL: "'debug' | 'info' | 'warn' | 'error' = 'warn'",

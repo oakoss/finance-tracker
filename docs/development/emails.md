@@ -5,8 +5,57 @@ How we build and style transactional emails in this repo.
 ## Stack
 
 - Templates: React Email (`@react-email/components`)
-- Delivery: Brevo Transactional Email API (`@getbrevo/brevo`)
+- Delivery: Brevo Transactional Email API (production) or SMTP via
+  nodemailer (local dev / CI)
 - Styling: Tailwind v4 via the React Email `Tailwind` wrapper
+- Local testing: Mailpit (SMTP trap with web UI and REST API)
+
+## Email transport
+
+`src/lib/email.ts` picks the transport at runtime:
+
+| Condition                  | Transport         | Use case                |
+| -------------------------- | ----------------- | ----------------------- |
+| `SMTP_HOST` is set         | nodemailer → SMTP | Local dev, CI (Mailpit) |
+| `SMTP_HOST` is **not** set | Brevo API         | Production              |
+
+Set `SMTP_HOST=localhost` and `SMTP_PORT=1025` in your `.env` for local
+development. Brevo requires `BREVO_API_KEY` and is only used in
+production.
+
+## Mailpit (local email testing)
+
+Mailpit runs as a Docker Compose service alongside PostgreSQL:
+
+```bash
+pnpm docker:up        # starts db + mailpit
+```
+
+- **SMTP**: `localhost:1025` (receives all outgoing email)
+- **Web UI**: `http://localhost:8025` (browse captured emails)
+- **REST API**: `http://localhost:8025/api/v1/...` (used by E2E tests)
+
+Emails are stored in memory and reset on container restart.
+
+### E2E email assertions
+
+Import the Mailpit fixture in Playwright tests:
+
+```ts
+import { expect, test } from '~e2e/fixtures/mailpit';
+
+test('sends verification email', async ({ page, mailpit }) => {
+  const emailPromise = mailpit.waitForEvent('new');
+
+  // trigger sign-up flow...
+
+  const event = await emailPromise;
+  expect(event.Data.Subject).toBe('Verify your email');
+});
+```
+
+The fixture clears all messages before each test and disconnects
+the event listener after.
 
 ## Where templates live
 
@@ -63,9 +112,9 @@ If you add new tokens for email, extend the `colors` (or `fontFamily`) in `BaseE
 ## Accessibility checklist
 
 - Add `alt` text for any images.
-- Use descriptive link text (avoid “click here”).
+- Use descriptive link text (avoid "click here").
 - Ensure good text/background contrast.
-- Don’t rely on color alone to convey meaning.
+- Don't rely on color alone to convey meaning.
 - Keep the `lang` attribute set on the root `<Html>`.
 
 ## Adding a new email
@@ -140,12 +189,14 @@ export async function sendBillingSummaryEmail(params: {
 
 ## Environment variables
 
-From `docs/development/env.md`:
-
-- `BREVO_API_KEY`
-- `EMAIL_FROM`
-- `EMAIL_FROM_NAME`
-- `EMAIL_REPLY_TO`
+| Variable          | Required  | Description                                          |
+| ----------------- | --------- | ---------------------------------------------------- |
+| `SMTP_HOST`       | No        | SMTP server host (enables nodemailer transport)      |
+| `SMTP_PORT`       | No        | SMTP server port (default: 1025)                     |
+| `BREVO_API_KEY`   | Prod only | Brevo API key (required when `SMTP_HOST` is not set) |
+| `EMAIL_FROM`      | Yes       | Sender email address                                 |
+| `EMAIL_FROM_NAME` | No        | Sender display name                                  |
+| `EMAIL_REPLY_TO`  | Yes       | Reply-to email address                               |
 
 ## Related docs
 

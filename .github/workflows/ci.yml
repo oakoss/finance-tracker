@@ -91,9 +91,6 @@ jobs:
         run: pnpm test:integration
 
   e2e-tests:
-    if: >-
-      github.event.pull_request.head.repo.full_name == github.repository
-      || github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     services:
@@ -110,6 +107,11 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      mailpit:
+        image: axllent/mailpit:latest
+        ports:
+          - 1025:1025
+          - 8025:8025
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -117,49 +119,8 @@ jobs:
           fetch-depth: 1
       - name: Setup
         uses: ./.github/actions/setup
-      - name: Load secrets from 1Password
-        uses: 1password/load-secrets-action@8d0d610af187e78a2772c2d18d627f4c52d3fbfb # v3.1.0
-        with:
-          export-env: true
-        env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-          BETTER_AUTH_SECRET: op://Infrastructure Secrets/finance-tracker-env/BETTER_AUTH_SECRET
-          BETTER_AUTH_URL: op://Infrastructure Secrets/finance-tracker-env/BETTER_AUTH_URL
-          BREVO_API_KEY: op://Infrastructure Secrets/finance-tracker-env/BREVO_API_KEY
-          EMAIL_FROM: op://Infrastructure Secrets/finance-tracker-env/EMAIL_FROM
-          EMAIL_FROM_NAME: op://Infrastructure Secrets/finance-tracker-env/EMAIL_FROM_NAME
-          EMAIL_REPLY_TO: op://Infrastructure Secrets/finance-tracker-env/EMAIL_REPLY_TO
-          GITHUB_CLIENT_ID: op://Infrastructure Secrets/finance-tracker-env/GITHUB_CLIENT_ID
-          GITHUB_CLIENT_SECRET: op://Infrastructure Secrets/finance-tracker-env/GITHUB_CLIENT_SECRET
-          GOOGLE_CLIENT_ID: op://Infrastructure Secrets/finance-tracker-env/GOOGLE_CLIENT_ID
-          GOOGLE_CLIENT_SECRET: op://Infrastructure Secrets/finance-tracker-env/GOOGLE_CLIENT_SECRET
-          TRUSTED_ORIGINS: op://Infrastructure Secrets/finance-tracker-env/TRUSTED_ORIGINS
-          LOG_HASH_SECRET: op://Infrastructure Secrets/finance-tracker-env/LOG_HASH_SECRET
-          E2E_USER_EMAIL: op://Infrastructure Secrets/finance-tracker-env/E2E_USER_EMAIL
-          E2E_USER_PASSWORD: op://Infrastructure Secrets/finance-tracker-env/E2E_USER_PASSWORD
-      - name: Write .env file
-        run: |
-          cat <<'EOF' > .env
-          DATABASE_URL=postgres://finance_tracker:finance_tracker_password@localhost:5432/finance_tracker_dev
-          BETTER_AUTH_SECRET=${{ env.BETTER_AUTH_SECRET }}
-          BETTER_AUTH_URL=${{ env.BETTER_AUTH_URL }}
-          BREVO_API_KEY=${{ env.BREVO_API_KEY }}
-          EMAIL_FROM=${{ env.EMAIL_FROM }}
-          EMAIL_FROM_NAME=${{ env.EMAIL_FROM_NAME }}
-          EMAIL_REPLY_TO=${{ env.EMAIL_REPLY_TO }}
-          GITHUB_CLIENT_ID=${{ env.GITHUB_CLIENT_ID }}
-          GITHUB_CLIENT_SECRET=${{ env.GITHUB_CLIENT_SECRET }}
-          GOOGLE_CLIENT_ID=${{ env.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET=${{ env.GOOGLE_CLIENT_SECRET }}
-          TRUSTED_ORIGINS=${{ env.TRUSTED_ORIGINS }}
-          LOG_HASH_SECRET=${{ env.LOG_HASH_SECRET }}
-          E2E_USER_EMAIL=${{ env.E2E_USER_EMAIL }}
-          E2E_USER_PASSWORD=${{ env.E2E_USER_PASSWORD }}
-          EMAIL_SANDBOX=true
-          VITE_CLIENT_LOG_LEVEL=warn
-          EOF
-      - name: Compile paraglide
-        run: pnpm paraglide:compile
+      - name: Prepare CI environment
+        uses: ./.github/actions/ci-prepare
       - name: Migrate and seed database
         run: pnpm db:migrate && pnpm with:env tsx test/seed/seed-runner.ts e2e
       - name: Cache Playwright browsers

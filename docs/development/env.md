@@ -93,13 +93,6 @@ used in production. Keep `BETTER_AUTH_SECRET` unique per environment.
 4. If it's a `VITE_*` variable, it will be typed automatically via the
    Vite plugin.
 
-## Future: encrypted env files
-
-When E2E tests require real secrets in CI, consider using
-`dotenvx encrypt` to commit encrypted `.env.ci` files to the repo. Only
-one GitHub secret (`DOTENV_PRIVATE_KEY_CI`) would be needed to decrypt
-at runtime. See [dotenvx encryption docs](https://dotenvx.com/docs/encryption).
-
 ## Docker Compose variables
 
 These variables in `.env.example` configure the local Postgres container
@@ -113,6 +106,8 @@ by `docker-compose.yml`:
 | `POSTGRES_DB`       | `finance_tracker_dev`      |
 | `POSTGRES_PORT`     | `5432`                     |
 | `POSTGRES_DATA_DIR` | `/var/lib/postgresql/data` |
+| `MAILPIT_SMTP_PORT` | `1025`                     |
+| `MAILPIT_UI_PORT`   | `8025`                     |
 
 `DATABASE_URL` in the app connects to this container using these values.
 
