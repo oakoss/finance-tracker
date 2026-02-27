@@ -47,6 +47,10 @@ These are enforced by tooling and will reject code if violated:
   `ci`, `config`, `db`, `deps`, `docs`, `email`, `env`, `finance`,
   `i18n`, `infra`, `logging`, `routes`, `scripts`, `tests`, `todos`,
   `tooling`, `ui`. Scope is optional but custom scopes are rejected.
+- **Commit body style**: Large changes get a 1-2 sentence summary
+  followed by bullet points. Small changes get just bullet points
+  (or no body if the subject says it all). Keep bullets concise:
+  what changed, not how. No wall-of-text paragraphs.
 - **Kebab-case filenames**: `unicorn/filename-case`.
 - **No barrel files**: Import from concrete module paths.
 - **Absolute imports**: Use `@/` paths. No parent relative imports.
