@@ -96,12 +96,12 @@ const chartData = [
 
 const chartConfig = {
   desktop: {
-    label: 'Desktop',
     color: 'var(--primary)',
+    label: 'Desktop',
   },
   mobile: {
-    label: 'Mobile',
     color: 'var(--primary)',
+    label: 'Mobile',
   },
   visitors: {
     label: 'Visitors',

@@ -39,8 +39,8 @@ function InputOTPGroup({ className, ...props }: React.ComponentProps<'div'>) {
 }
 
 function InputOTPSlot({
-  index,
   className,
+  index,
   ...props
 }: React.ComponentProps<'div'> & {
   index: number;

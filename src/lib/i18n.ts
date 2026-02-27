@@ -65,16 +65,16 @@ export const formatCurrency = (params: {
   const currency = params.currency ?? defaultCurrency;
   const amountCents = params.amountCents;
   const formatter = getNumberFormatter(locale, {
-    style: 'currency',
     currency,
+    style: 'currency',
   });
   return formatter.format(amountCents / 100);
 };
 
 export const formatNumber = (params: {
-  value: number;
   locale?: string;
   options?: Intl.NumberFormatOptions;
+  value: number;
 }) => {
   const locale = params.locale ?? getLocale();
   const options = params.options ?? {};
@@ -84,9 +84,9 @@ export const formatNumber = (params: {
 };
 
 export const formatDate = (params: {
-  value: Date;
   locale?: string;
   timeZone?: string;
+  value: Date;
 }) => {
   const locale = params.locale ?? getLocale();
   const timeZone = params.timeZone ?? defaultTimeZone;
@@ -101,9 +101,9 @@ export const formatDate = (params: {
 };
 
 export const formatDateTime = (params: {
-  value: Date;
   locale?: string;
   timeZone?: string;
+  value: Date;
 }) => {
   const locale = params.locale ?? getLocale();
   const timeZone = params.timeZone ?? defaultTimeZone;
@@ -120,9 +120,9 @@ export const formatDateTime = (params: {
 };
 
 export const formatDateTimeFull = (params: {
-  value: Date;
   locale?: string;
   timeZone?: string;
+  value: Date;
 }) => {
   const locale = params.locale ?? getLocale();
   const timeZone = params.timeZone ?? defaultTimeZone;
@@ -140,9 +140,9 @@ export const formatDateTimeFull = (params: {
 };
 
 export const formatMonthYear = (params: {
-  value: Date;
   locale?: string;
   timeZone?: string;
+  value: Date;
 }) => {
   const locale = params.locale ?? getLocale();
   const timeZone = params.timeZone ?? defaultTimeZone;

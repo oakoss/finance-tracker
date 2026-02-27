@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { validateInput } from '@/components/filters/helpers';
 import type { FilterFieldConfig } from '@/components/filters/types';
+
+import { validateInput } from '@/components/filters/helpers';
 import { Icons } from '@/components/icons';
 import {
   InputGroup,
@@ -19,10 +20,10 @@ import { cn } from '@/lib/utils';
 import { m } from '@/paraglide/messages';
 
 function FilterInput<T = unknown>({
+  className,
   field,
   onBlur,
   onKeyDown,
-  className,
   shouldFocus = false,
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement> & {

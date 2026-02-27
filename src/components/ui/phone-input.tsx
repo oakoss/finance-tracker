@@ -1,4 +1,5 @@
 import type React from 'react';
+
 import { createContext, use, useMemo, useState } from 'react';
 import * as BasePhoneInput from 'react-phone-number-input';
 import flags from 'react-phone-number-input/flags';
@@ -23,9 +24,9 @@ import { cn } from '@/lib/utils';
 type PhoneInputSize = 'sm' | 'default' | 'lg';
 
 const PhoneInputContext = createContext<{
-  variant: PhoneInputSize;
   popupClassName?: string;
   scrollAreaClassName?: string;
+  variant: PhoneInputSize;
 }>({
   popupClassName: undefined,
   scrollAreaClassName: undefined,
@@ -41,18 +42,18 @@ type PhoneInputProps = Omit<
     'onChange' | 'variant' | 'popupClassName' | 'scrollAreaClassName'
   > & {
     onChange?: (value: BasePhoneInput.Value) => void;
-    variant?: PhoneInputSize;
     popupClassName?: string;
     scrollAreaClassName?: string;
+    variant?: PhoneInputSize;
   };
 
 function PhoneInput({
   className,
-  variant,
+  onChange,
   popupClassName,
   scrollAreaClassName,
-  onChange,
   value,
+  variant,
   ...props
 }: PhoneInputProps) {
   const phoneInputSize = variant ?? 'default';
@@ -107,18 +108,18 @@ type CountryEntry = {
 
 type CountrySelectProps = {
   disabled?: boolean;
-  value?: BasePhoneInput.Country;
-  options: CountryEntry[];
   onChange: (country: BasePhoneInput.Country) => void;
+  options: CountryEntry[];
+  value?: BasePhoneInput.Country;
 };
 
 function CountrySelect({
   disabled,
-  value: selectedCountry,
-  options: countryList,
   onChange,
+  options: countryList,
+  value: selectedCountry,
 }: CountrySelectProps) {
-  const { variant, popupClassName } = use(PhoneInputContext);
+  const { popupClassName, variant } = use(PhoneInputContext);
   const [searchValue, setSearchValue] = useState('');
 
   const filteredCountries = useMemo(() => {

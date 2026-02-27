@@ -8,6 +8,7 @@ import type {
   users,
 } from '@/db/schema';
 import type { Db } from '~test/factories/base';
+
 import { insertCategory } from '~test/factories/category.factory';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
 import { insertPayee } from '~test/factories/payee.factory';

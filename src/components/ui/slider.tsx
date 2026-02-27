@@ -8,9 +8,9 @@ import { cn } from '@/lib/utils';
 function Slider({
   className,
   defaultValue,
-  value,
-  min = 0,
   max = 100,
+  min = 0,
+  value,
   ...props
 }: SliderPrimitive.Root.Props) {
   const _values = React.useMemo(

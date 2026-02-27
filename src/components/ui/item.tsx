@@ -37,30 +37,30 @@ function ItemSeparator({
 const itemVariants = cva(
   '[a]:hover:bg-muted rounded-lg border text-sm w-full group/item focus-visible:border-ring focus-visible:ring-ring/50 flex items-center flex-wrap outline-none transition-colors duration-100 focus-visible:ring-[3px] [a]:transition-colors',
   {
+    defaultVariants: {
+      size: 'default',
+      variant: 'default',
+    },
     variants: {
-      variant: {
-        default: 'border-transparent',
-        muted: 'bg-muted/50 border-transparent',
-        outline: 'border-border',
-      },
       size: {
         default: 'gap-2.5 px-3 py-2.5',
         sm: 'gap-2.5 px-3 py-2.5',
         xs: 'gap-2 px-2.5 py-2 in-data-[slot=dropdown-menu-content]:p-0',
       },
-    },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
+      variant: {
+        default: 'border-transparent',
+        muted: 'bg-muted/50 border-transparent',
+        outline: 'border-border',
+      },
     },
   },
 );
 
 function Item({
   className,
-  variant = 'default',
-  size = 'default',
   render,
+  size = 'default',
+  variant = 'default',
   ...props
 }: useRender.ComponentProps<'div'> & VariantProps<typeof itemVariants>) {
   return useRender({
@@ -83,6 +83,9 @@ function Item({
 const itemMediaVariants = cva(
   'gap-2 group-has-data-[slot=item-description]/item:translate-y-0.5 group-has-data-[slot=item-description]/item:self-start flex shrink-0 items-center justify-center [&_svg]:pointer-events-none',
   {
+    defaultVariants: {
+      variant: 'default',
+    },
     variants: {
       variant: {
         default: 'bg-transparent',
@@ -90,9 +93,6 @@ const itemMediaVariants = cva(
         image:
           'size-10 overflow-hidden rounded-sm group-data-[size=sm]/item:size-8 group-data-[size=xs]/item:size-6 [&_img]:size-full [&_img]:object-cover',
       },
-    },
-    defaultVariants: {
-      variant: 'default',
     },
   },
 );
@@ -104,7 +104,7 @@ function ItemMedia({
 }: React.ComponentProps<'div'> & VariantProps<typeof itemMediaVariants>) {
   return (
     <div
-      className={cn(itemMediaVariants({ variant, className }))}
+      className={cn(itemMediaVariants({ className, variant }))}
       data-slot="item-media"
       data-variant={variant}
       {...props}

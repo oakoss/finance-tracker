@@ -6,17 +6,18 @@ import {
 import { useNavigate, useRouter } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
+import type {
+  CreateAccountInput,
+  DeleteAccountInput,
+  UpdateAccountInput,
+} from '@/modules/accounts/types';
+
 import { clientLog } from '@/lib/logging/client-logger';
 import { parseError } from '@/lib/logging/evlog';
 import { createAccount } from '@/modules/accounts/api/create-account';
 import { deleteAccount } from '@/modules/accounts/api/delete-account';
 import { listAccounts } from '@/modules/accounts/api/list-accounts';
 import { updateAccount } from '@/modules/accounts/api/update-account';
-import type {
-  CreateAccountInput,
-  DeleteAccountInput,
-  UpdateAccountInput,
-} from '@/modules/accounts/types';
 import { m } from '@/paraglide/messages';
 
 export const accountQueries = {

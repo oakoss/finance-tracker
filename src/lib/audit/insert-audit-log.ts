@@ -1,6 +1,7 @@
 import type { Db } from '@/db';
-import { logAuditEvent } from '@/lib/audit/log-audit-event';
 import type { AuditAction } from '@/lib/audit/types';
+
+import { logAuditEvent } from '@/lib/audit/log-audit-event';
 import { auditLogs } from '@/modules/finance/db/schema';
 
 type DbOrTx = Pick<Db, 'insert'>;

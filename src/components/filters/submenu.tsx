@@ -1,7 +1,8 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
-import { renderIcon } from '@/components/filters/helpers';
 import type { FilterFieldConfig } from '@/components/filters/types';
+
+import { renderIcon } from '@/components/filters/helpers';
 import {
   DropdownMenuCheckboxItem,
   DropdownMenuGroup,
@@ -24,14 +25,14 @@ type SubmenuContentProps<T = unknown> = {
 };
 
 function SubmenuContent<T = unknown>({
-  field,
   currentValues,
-  isMultiSelect,
-  onToggle,
+  field,
   isActive,
+  isMultiSelect,
   onActive,
   onBack,
   onClose,
+  onToggle,
 }: SubmenuContentProps<T>) {
   const [searchInput, setSearchInput] = useState('');
   const [highlightedIndex, setHighlightedIndex] = useState(-1);

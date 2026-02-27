@@ -16,26 +16,26 @@ import { cn } from '@/lib/utils';
 import { m } from '@/paraglide/messages';
 
 const headerCellSpacingVariants = cva('', {
-  variants: {
-    size: {
-      dense: 'px-2.5 h-9',
-      default: 'px-4',
-    },
-  },
   defaultVariants: {
     size: 'default',
+  },
+  variants: {
+    size: {
+      default: 'px-4',
+      dense: 'px-2.5 h-9',
+    },
   },
 });
 
 const bodyCellSpacingVariants = cva('', {
-  variants: {
-    size: {
-      dense: 'px-2.5 py-2',
-      default: 'px-4 py-2.5',
-    },
-  },
   defaultVariants: {
     size: 'default',
+  },
+  variants: {
+    size: {
+      default: 'px-4 py-2.5',
+      dense: 'px-2.5 py-2',
+    },
   },
 });
 
@@ -119,14 +119,14 @@ function DataGridTableHeadRow<TData>({
 
 function DataGridTableHeadRowCell<TData>({
   children,
-  header,
   dndRef,
   dndStyle,
+  header,
 }: {
   children: ReactNode;
-  header: Header<TData, unknown>;
   dndRef?: React.Ref<HTMLTableCellElement>;
   dndStyle?: CSSProperties;
+  header: Header<TData, unknown>;
 }) {
   const { props } = useDataGrid();
 
@@ -222,7 +222,7 @@ function DataGridTableBody({ children }: { children: ReactNode }) {
 }
 
 function DataGridTableBodyRowSkeleton({ children }: { children: ReactNode }) {
-  const { table, props } = useDataGrid();
+  const { props, table } = useDataGrid();
 
   return (
     <tr
@@ -287,14 +287,14 @@ function DataGridTableBodyRowSkeletonCell<TData>({
 
 function DataGridTableBodyRow<TData>({
   children,
-  row,
   dndRef,
   dndStyle,
+  row,
 }: {
   children: ReactNode;
-  row: Row<TData>;
   dndRef?: React.Ref<HTMLTableRowElement>;
   dndStyle?: CSSProperties;
+  row: Row<TData>;
 }) {
   const { props, table } = useDataGrid();
 
@@ -346,13 +346,13 @@ function DataGridTableBodyRowExpanded<TData>({ row }: { row: Row<TData> }) {
 }
 
 function DataGridTableBodyRowCell<TData>({
-  children,
   cell,
+  children,
   dndRef,
   dndStyle,
 }: {
-  children: ReactNode;
   cell: Cell<TData, unknown>;
+  children: ReactNode;
   dndRef?: React.Ref<HTMLTableCellElement>;
   dndStyle?: CSSProperties;
 }) {
@@ -409,7 +409,7 @@ function DataGridTableBodyRowCell<TData>({
 }
 
 function DataGridTableEmpty() {
-  const { table, props } = useDataGrid();
+  const { props, table } = useDataGrid();
   const totalColumns = table.getAllColumns().length;
 
   return (
@@ -457,7 +457,7 @@ function DataGridTableRowSelect<TData>({ row }: { row: Row<TData> }) {
 }
 
 function DataGridTableRowSelectAll() {
-  const { table, recordCount, isLoading } = useDataGrid();
+  const { isLoading, recordCount, table } = useDataGrid();
 
   const isAllSelected = table.getIsAllPageRowsSelected();
   const isSomeSelected = table.getIsSomePageRowsSelected();
@@ -475,7 +475,7 @@ function DataGridTableRowSelectAll() {
 }
 
 function DataGridTable<TData>() {
-  const { table, isLoading, props } = useDataGrid();
+  const { isLoading, props, table } = useDataGrid();
   const pagination = table.getState().pagination;
   const skeletonRows = useMemo(() => {
     const count = pagination?.pageSize ?? 0;

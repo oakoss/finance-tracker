@@ -8,6 +8,8 @@ import {
   useState,
 } from 'react';
 
+import type { Filter, FilterFieldsConfig } from '@/components/filters/types';
+
 import { filtersContainerVariants } from '@/components/filters/content';
 import { FilterContext } from '@/components/filters/context';
 import {
@@ -19,7 +21,6 @@ import {
 import { OperatorDropdown } from '@/components/filters/operators';
 import { RemoveButton } from '@/components/filters/remove-button';
 import { SubmenuContent } from '@/components/filters/submenu';
-import type { Filter, FilterFieldsConfig } from '@/components/filters/types';
 import { ValueSelector } from '@/components/filters/value-selector';
 import { ButtonGroup, ButtonGroupText } from '@/components/ui/button-group';
 import {
@@ -57,20 +58,20 @@ type FiltersProps<T = unknown> = {
 };
 
 function Filters<T = unknown>({
-  filters,
-  fields,
-  onChange,
-  className,
-  variant = 'default',
-  size = 'default',
-  radius = 'default',
-  showSearchInput = true,
-  trigger,
   allowMultiple = true,
-  menuPopupClassName,
+  className,
   enableShortcut = false,
+  fields,
+  filters,
+  menuPopupClassName,
+  onChange,
+  radius = 'default',
   shortcutKey = 'f',
   shortcutLabel = 'F',
+  showSearchInput = true,
+  size = 'default',
+  trigger,
+  variant = 'default',
 }: FiltersProps<T>) {
   const [addFilterOpen, setAddFilterOpen] = useState(false);
   const [menuSearchInput, setMenuSearchInput] = useState('');

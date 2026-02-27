@@ -43,8 +43,8 @@ describe('env lazy proxy', () => {
     const arkenv = await import('arkenv');
     const mockedArkenv = arkenv.default as unknown as MockInstance;
     mockedArkenv.mockReturnValue({
-      DATABASE_URL: 'postgres://localhost/test',
       BETTER_AUTH_URL: 'http://localhost:3000',
+      DATABASE_URL: 'postgres://localhost/test',
     });
 
     const { env } = await import('@/configs/env');

@@ -26,19 +26,19 @@ function useTimeline() {
 // Components
 type TimelineProps = {
   defaultValue?: number;
-  value?: number;
   onValueChange?: (value: number) => void;
   orientation?: 'horizontal' | 'vertical';
+  value?: number;
 } & useRender.ComponentProps<'div'>;
 
 function Timeline({
+  children,
+  className,
   defaultValue = 1,
-  value,
   onValueChange,
   orientation = 'vertical',
-  className,
   render,
-  children,
+  value,
   ...props
 }: TimelineProps) {
   const [activeStepState, setActiveStepState] = useState(defaultValue);
@@ -80,9 +80,9 @@ function Timeline({
 
 // TimelineContent
 function TimelineContent({
+  children,
   className,
   render,
-  children,
   ...props
 }: useRender.ComponentProps<'div'>) {
   const defaultProps = {
@@ -102,9 +102,9 @@ function TimelineContent({
 type TimelineDateProps = useRender.ComponentProps<'time'>;
 
 function TimelineDate({
+  children,
   className,
   render,
-  children,
   ...props
 }: TimelineDateProps) {
   const defaultProps = {
@@ -125,9 +125,9 @@ function TimelineDate({
 
 // TimelineHeader
 function TimelineHeader({
+  children,
   className,
   render,
-  children,
   ...props
 }: useRender.ComponentProps<'div'>) {
   const defaultProps = {
@@ -147,8 +147,8 @@ function TimelineHeader({
 type TimelineIndicatorProps = useRender.ComponentProps<'div'>;
 
 function TimelineIndicator({
-  className,
   children,
+  className,
   render,
   ...props
 }: TimelineIndicatorProps) {
@@ -175,10 +175,10 @@ type TimelineItemProps = {
 } & useRender.ComponentProps<'div'>;
 
 function TimelineItem({
-  step,
+  children,
   className,
   render,
-  children,
+  step,
   ...props
 }: TimelineItemProps) {
   const { activeStep } = useTimeline();
@@ -202,9 +202,9 @@ function TimelineItem({
 
 // TimelineSeparator
 function TimelineSeparator({
+  children,
   className,
   render,
-  children,
   ...props
 }: useRender.ComponentProps<'div'>) {
   const defaultProps = {
@@ -226,9 +226,9 @@ function TimelineSeparator({
 
 // TimelineTitle
 function TimelineTitle({
+  children,
   className,
   render,
-  children,
   ...props
 }: useRender.ComponentProps<'h3'>) {
   const defaultProps = {

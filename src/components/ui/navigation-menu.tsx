@@ -6,8 +6,8 @@ import { cn } from '@/lib/utils';
 
 function NavigationMenu({
   align = 'start',
-  className,
   children,
+  className,
   ...props
 }: NavigationMenuPrimitive.Root.Props &
   Pick<NavigationMenuPrimitive.Positioner.Props, 'align'>) {
@@ -60,8 +60,8 @@ const navigationMenuTriggerStyle = cva(
 );
 
 function NavigationMenuTrigger({
-  className,
   children,
+  className,
   ...props
 }: NavigationMenuPrimitive.Trigger.Props) {
   return (
@@ -96,11 +96,11 @@ function NavigationMenuContent({
 }
 
 function NavigationMenuPositioner({
+  align = 'start',
+  alignOffset = 0,
   className,
   side = 'bottom',
   sideOffset = 8,
-  align = 'start',
-  alignOffset = 0,
   ...props
 }: NavigationMenuPrimitive.Positioner.Props) {
   return (

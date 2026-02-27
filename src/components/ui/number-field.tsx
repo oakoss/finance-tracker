@@ -16,6 +16,9 @@ const NumberFieldContext = createContext<{
 const numberFieldGroupVariants = cva(
   'relative flex w-full justify-between border border-input data-disabled:pointer-events-none data-disabled:opacity-50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive focus-within:has-aria-invalid:border-destructive focus-within:has-aria-invalid:ring-destructive/20 dark:focus-within:has-aria-invalid:ring-destructive/40 rounded-md bg-input/30 transition-colors focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]',
   {
+    defaultVariants: {
+      size: 'default',
+    },
     variants: {
       size: {
         default: 'h-9 text-sm',
@@ -23,15 +26,15 @@ const numberFieldGroupVariants = cva(
         sm: 'h-8 text-sm',
       },
     },
-    defaultVariants: {
-      size: 'default',
-    },
   },
 );
 
 const numberFieldButtonVariants = cva(
   'relative flex shrink-0 cursor-pointer items-center justify-center transition-colors pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11 hover:bg-accent',
   {
+    defaultVariants: {
+      size: 'default',
+    },
     variants: {
       size: {
         default: "px-2.5 [&_svg:not([class*='size-'])]:size-4",
@@ -39,15 +42,15 @@ const numberFieldButtonVariants = cva(
         sm: "px-2 [&_svg:not([class*='size-'])]:size-3.5",
       },
     },
-    defaultVariants: {
-      size: 'default',
-    },
   },
 );
 
 const numberFieldInputVariants = cva(
   'w-full min-w-0 flex-1 bg-transparent text-center tabular-nums outline-none',
   {
+    defaultVariants: {
+      size: 'default',
+    },
     variants: {
       size: {
         default: 'px-3 py-1.5',
@@ -55,15 +58,12 @@ const numberFieldInputVariants = cva(
         sm: 'px-2.5 py-1',
       },
     },
-    defaultVariants: {
-      size: 'default',
-    },
   },
 );
 
 function NumberField({
-  id,
   className,
+  id,
   size = 'default',
   ...props
 }: NumberFieldPrimitive.Root.Props &
@@ -109,9 +109,9 @@ function NumberFieldGroup({
 }
 
 function NumberFieldDecrement({
+  children,
   className,
   size: sizeProp,
-  children,
   ...props
 }: NumberFieldPrimitive.Decrement.Props &
   Partial<VariantProps<typeof numberFieldButtonVariants>> & {
@@ -141,9 +141,9 @@ function NumberFieldDecrement({
 }
 
 function NumberFieldIncrement({
+  children,
   className,
   size: sizeProp,
-  children,
   ...props
 }: NumberFieldPrimitive.Increment.Props &
   Partial<VariantProps<typeof numberFieldButtonVariants>> & {

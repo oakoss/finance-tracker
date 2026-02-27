@@ -41,8 +41,8 @@ PostgreSQL/Drizzle, Better Auth, Tailwind CSS v4/shadcn.
 
 These are enforced by tooling and will reject code if violated:
 
-- **`sort-keys-plus`**: Object keys must be alphabetically sorted
-  (objects with 3+ keys, case-insensitive).
+- **`perfectionist/sort-objects`**: Object keys must be alphabetically
+  sorted (case-insensitive). `createFileRoute` calls are exempt.
 - **Commit format**: `type(scope): subject`. Allowed scopes: `auth`,
   `ci`, `config`, `db`, `deps`, `docs`, `email`, `env`, `finance`,
   `i18n`, `infra`, `logging`, `routes`, `scripts`, `tests`, `todos`,

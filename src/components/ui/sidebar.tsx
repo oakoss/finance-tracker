@@ -35,12 +35,12 @@ const SIDEBAR_WIDTH_ICON = '3rem';
 const SIDEBAR_KEYBOARD_SHORTCUT = 'b';
 
 type SidebarContextProps = {
-  state: 'expanded' | 'collapsed';
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  openMobile: boolean;
-  setOpenMobile: (open: boolean) => void;
   isMobile: boolean;
+  open: boolean;
+  openMobile: boolean;
+  setOpen: (open: boolean) => void;
+  setOpenMobile: (open: boolean) => void;
+  state: 'expanded' | 'collapsed';
   toggleSidebar: () => void;
 };
 
@@ -56,17 +56,17 @@ function useSidebar() {
 }
 
 function SidebarProvider({
-  defaultOpen = true,
-  open: openProp,
-  onOpenChange: setOpenProp,
-  className,
-  style,
   children,
+  className,
+  defaultOpen = true,
+  onOpenChange: setOpenProp,
+  open: openProp,
+  style,
   ...props
 }: React.ComponentProps<'div'> & {
   defaultOpen?: boolean;
-  open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  open?: boolean;
 }) {
   const isMobile = useIsMobile();
   const [openMobile, setOpenMobile] = React.useState(false);
@@ -154,19 +154,19 @@ function SidebarProvider({
 }
 
 function Sidebar({
+  children,
+  className,
+  collapsible = 'offcanvas',
+  dir,
   side = 'left',
   variant = 'sidebar',
-  collapsible = 'offcanvas',
-  className,
-  children,
-  dir,
   ...props
 }: React.ComponentProps<'div'> & {
+  collapsible?: 'offcanvas' | 'icon' | 'none';
   side?: 'left' | 'right';
   variant?: 'sidebar' | 'floating' | 'inset';
-  collapsible?: 'offcanvas' | 'icon' | 'none';
 }) {
-  const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+  const { isMobile, openMobile, setOpenMobile, state } = useSidebar();
 
   if (collapsible === 'none') {
     return (
@@ -412,8 +412,8 @@ function SidebarGroupLabel({
     ),
     render,
     state: {
-      slot: 'sidebar-group-label',
       sidebar: 'group-label',
+      slot: 'sidebar-group-label',
     },
   });
 }
@@ -436,8 +436,8 @@ function SidebarGroupAction({
     ),
     render,
     state: {
-      slot: 'sidebar-group-action',
       sidebar: 'group-action',
+      slot: 'sidebar-group-action',
     },
   });
 }
@@ -481,32 +481,32 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<'li'>) {
 const sidebarMenuButtonVariants = cva(
   'ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground gap-2 rounded-md p-2 text-left text-sm transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! focus-visible:ring-2 data-active:font-medium peer/menu-button flex w-full items-center overflow-hidden outline-hidden group/menu-button disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&_svg]:size-4 [&_svg]:shrink-0',
   {
+    defaultVariants: {
+      size: 'default',
+      variant: 'default',
+    },
     variants: {
-      variant: {
-        default: 'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-        outline:
-          'bg-background hover:bg-sidebar-accent hover:text-sidebar-accent-foreground shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]',
-      },
       size: {
         default: 'h-8 text-sm',
         lg: 'h-12 text-sm group-data-[collapsible=icon]:p-0!',
         sm: 'h-7 text-xs',
       },
-    },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
+      variant: {
+        default: 'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+        outline:
+          'bg-background hover:bg-sidebar-accent hover:text-sidebar-accent-foreground shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]',
+      },
     },
   },
 );
 
 function SidebarMenuButton({
-  render,
+  className,
   isActive = false,
-  variant = 'default',
+  render,
   size = 'default',
   tooltip,
-  className,
+  variant = 'default',
   ...props
 }: useRender.ComponentProps<'button'> &
   React.ComponentProps<'button'> & {
@@ -518,7 +518,7 @@ function SidebarMenuButton({
     defaultTagName: 'button',
     props: mergeProps<'button'>(
       {
-        className: cn(sidebarMenuButtonVariants({ variant, size }), className),
+        className: cn(sidebarMenuButtonVariants({ size, variant }), className),
       },
       props,
     ),
@@ -578,8 +578,8 @@ function SidebarMenuAction({
     ),
     render,
     state: {
-      slot: 'sidebar-menu-action',
       sidebar: 'menu-action',
+      slot: 'sidebar-menu-action',
     },
   });
 }
@@ -668,15 +668,15 @@ function SidebarMenuSubItem({
 }
 
 function SidebarMenuSubButton({
+  className,
+  isActive = false,
   render,
   size = 'md',
-  isActive = false,
-  className,
   ...props
 }: useRender.ComponentProps<'a'> &
   React.ComponentProps<'a'> & {
-    size?: 'sm' | 'md';
     isActive?: boolean;
+    size?: 'sm' | 'md';
   }) {
   return useRender({
     defaultTagName: 'a',

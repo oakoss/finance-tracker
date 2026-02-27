@@ -1,8 +1,9 @@
 import { sql } from 'drizzle-orm';
 import { test as base } from 'vitest';
 
-import { createTestDb } from '~test/db';
 import type { Db } from '~test/factories/base';
+
+import { createTestDb } from '~test/db';
 
 type IntegrationFixtures = {
   db: Db;
@@ -20,6 +21,25 @@ type IntegrationFixtures = {
  *   test('inserts a user', async ({ db }) => { ... });
  */
 export const test = base.extend<IntegrationFixtures>({
+  // Test-scoped: savepoint per test
+  db: async ({ fileDb }, use) => {
+    await fileDb.execute(sql`SAVEPOINT test_sp`);
+    try {
+      await use(fileDb);
+    } finally {
+      try {
+        await fileDb.execute(sql`ROLLBACK TO SAVEPOINT test_sp`);
+      } catch (error: unknown) {
+        console.warn('[test] ROLLBACK TO SAVEPOINT failed:', error);
+        try {
+          await fileDb.execute(sql`ROLLBACK`);
+          await fileDb.execute(sql`BEGIN`);
+        } catch (recoveryError: unknown) {
+          console.warn('[test] Transaction recovery failed:', recoveryError);
+        }
+      }
+    }
+  },
   // File-scoped: one connection + transaction per test file
   fileDb: [
     // eslint-disable-next-line no-empty-pattern
@@ -41,24 +61,4 @@ export const test = base.extend<IntegrationFixtures>({
     },
     { scope: 'file' },
   ],
-
-  // Test-scoped: savepoint per test
-  db: async ({ fileDb }, use) => {
-    await fileDb.execute(sql`SAVEPOINT test_sp`);
-    try {
-      await use(fileDb);
-    } finally {
-      try {
-        await fileDb.execute(sql`ROLLBACK TO SAVEPOINT test_sp`);
-      } catch (error: unknown) {
-        console.warn('[test] ROLLBACK TO SAVEPOINT failed:', error);
-        try {
-          await fileDb.execute(sql`ROLLBACK`);
-          await fileDb.execute(sql`BEGIN`);
-        } catch (recoveryError: unknown) {
-          console.warn('[test] Transaction recovery failed:', recoveryError);
-        }
-      }
-    }
-  },
 });

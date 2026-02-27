@@ -1,5 +1,6 @@
-import { faker } from '@faker-js/faker';
 import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
+
+import { faker } from '@faker-js/faker';
 
 import { accountBalanceSnapshots } from '@/db/schema';
 import { type Db, fakeCents, fakeDate, fakeId } from '~test/factories/base';

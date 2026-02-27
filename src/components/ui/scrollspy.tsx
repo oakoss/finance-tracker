@@ -10,27 +10,27 @@ import {
 
 type ScrollspyProps = {
   children: ReactNode;
-  targetRef?: RefObject<
-    HTMLElement | HTMLDivElement | Document | null | undefined
-  >;
-  onUpdate?: (id: string) => void;
-  offset?: number;
-  smooth?: boolean;
   className?: string;
   dataAttribute?: string;
   history?: boolean;
+  offset?: number;
+  onUpdate?: (id: string) => void;
+  smooth?: boolean;
+  targetRef?: RefObject<
+    HTMLElement | HTMLDivElement | Document | null | undefined
+  >;
   throttleTime?: number;
 };
 
 export function Scrollspy({
   children,
-  targetRef,
-  onUpdate,
   className,
-  offset = 0,
-  smooth = true,
   dataAttribute = 'scrollspy',
   history = true,
+  offset = 0,
+  onUpdate,
+  smooth = true,
+  targetRef,
 }: ScrollspyProps) {
   const selfRef = useRef<HTMLDivElement | null>(null);
   const anchorElementsRef = useRef<Element[] | null>(null);

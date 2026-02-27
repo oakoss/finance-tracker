@@ -24,8 +24,8 @@ function AccordionItem({ className, ...props }: AccordionPrimitive.Item.Props) {
 }
 
 function AccordionTrigger({
-  className,
   children,
+  className,
   ...props
 }: AccordionPrimitive.Trigger.Props) {
   return (
@@ -53,8 +53,8 @@ function AccordionTrigger({
 }
 
 function AccordionContent({
-  className,
   children,
+  className,
   ...props
 }: AccordionPrimitive.Panel.Props) {
   return (

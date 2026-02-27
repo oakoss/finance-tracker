@@ -16,10 +16,10 @@ type TreeLike = {
 };
 
 type TreeContextValue<T = any> = {
-  indent: number;
   currentItem?: ItemInstance<T>;
-  tree?: TreeLike;
+  indent: number;
   toggleIconType?: ToggleIconType;
+  tree?: TreeLike;
 };
 
 const TreeContext = createContext<TreeContextValue>({
@@ -35,15 +35,15 @@ function useTreeContext<T = any>() {
 
 type TreeProps = {
   indent?: number;
-  tree?: TreeLike;
   toggleIconType?: ToggleIconType;
+  tree?: TreeLike;
 } & React.HTMLAttributes<HTMLDivElement>;
 
 function Tree({
-  indent = 20,
-  tree,
   className,
+  indent = 20,
   toggleIconType = 'chevron',
+  tree,
   ...props
 }: TreeProps) {
   const containerProps =
@@ -74,15 +74,15 @@ function Tree({
 }
 
 type TreeItemProps<T = any> = {
-  item: ItemInstance<T>;
   indent?: number;
+  item: ItemInstance<T>;
 } & Omit<useRender.ComponentProps<'button'>, 'indent'>;
 
 function TreeItem<T = any>({
-  item,
-  className,
-  render,
   children,
+  className,
+  item,
+  render,
   ...props
 }: TreeItemProps<T>) {
   const parentContext = useTreeContext<T>();
@@ -146,9 +146,9 @@ type TreeItemLabelProps<T = any> = {
 } & React.HTMLAttributes<HTMLSpanElement>;
 
 function TreeItemLabel<T = any>({
-  item: propItem,
   children,
   className,
+  item: propItem,
   ...props
 }: TreeItemLabelProps<T>) {
   const { currentItem, toggleIconType } = useTreeContext<T>();

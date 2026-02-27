@@ -12,6 +12,9 @@ const alertVariants = cva(
     'has-[>[data-slot=alert-title]+[data-slot=alert-description]]:**:data-[slot=alert-action]:sm:row-end-3',
   ],
   {
+    defaultVariants: {
+      variant: 'default',
+    },
     variants: {
       variant: {
         default: 'bg-card text-card-foreground',
@@ -23,9 +26,6 @@ const alertVariants = cva(
         success: 'border-success/30 bg-success/4 [&>svg]:text-success',
         warning: 'border-warning/30 bg-warning/4 [&>svg]:text-warning',
       },
-    },
-    defaultVariants: {
-      variant: 'default',
     },
   },
 );

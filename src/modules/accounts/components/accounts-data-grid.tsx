@@ -4,10 +4,11 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
+import type { AccountListItem } from '@/modules/accounts/api/list-accounts';
+
 import { DataGrid, DataGridContainer } from '@/components/data-grid';
 import { DataGridPagination } from '@/components/data-grid/pagination';
 import { DataGridTable } from '@/components/data-grid/table';
-import type { AccountListItem } from '@/modules/accounts/api/list-accounts';
 import { accountColumns } from '@/modules/accounts/components/accounts-columns';
 
 type AccountsDataGridProps = {

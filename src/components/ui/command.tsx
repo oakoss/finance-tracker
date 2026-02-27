@@ -31,18 +31,18 @@ function Command({
 }
 
 function CommandDialog({
-  title = 'Command Palette',
-  description = 'Search for a command to run...',
   children,
   className,
+  description = 'Search for a command to run...',
   showCloseButton = false,
+  title = 'Command Palette',
   ...props
 }: Omit<React.ComponentProps<typeof Dialog>, 'children'> & {
-  title?: string;
-  description?: string;
-  className?: string;
-  showCloseButton?: boolean;
   children: React.ReactNode;
+  className?: string;
+  description?: string;
+  showCloseButton?: boolean;
+  title?: string;
 }) {
   return (
     <Dialog {...props}>
@@ -145,8 +145,8 @@ function CommandSeparator({
 }
 
 function CommandItem({
-  className,
   children,
+  className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Item>) {
   return (

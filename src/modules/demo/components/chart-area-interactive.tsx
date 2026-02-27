@@ -56,8 +56,8 @@ function getDaysToSubtract(value: string): number {
 
 function formatChartDate(value: string): string {
   return new Date(value).toLocaleDateString('en-US', {
-    month: 'short',
     day: 'numeric',
+    month: 'short',
   });
 }
 

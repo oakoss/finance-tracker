@@ -2,12 +2,12 @@ import { serialize } from 'cookie';
 import Cookies from 'universal-cookie';
 
 type CookieOptions = {
+  domain?: string;
+  httpOnly?: boolean;
   maxAge?: number;
   path?: string;
   sameSite?: 'lax' | 'strict' | 'none';
   secure?: boolean;
-  httpOnly?: boolean;
-  domain?: string;
 };
 
 const defaultOptions: CookieOptions = {

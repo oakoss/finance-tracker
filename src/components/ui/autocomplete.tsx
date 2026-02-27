@@ -16,15 +16,15 @@ import { cn } from '@/lib/utils';
 const inputVariants = cva(
   'outline-none flex w-full text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [[readonly]]:bg-muted/80 [[readonly]]:cursor-not-allowed text-sm',
   {
+    defaultVariants: {
+      size: 'default',
+    },
     variants: {
       size: {
         default: 'h-9 px-3',
         lg: 'h-10 px-4',
         sm: 'h-8 px-3',
       },
-    },
-    defaultVariants: {
-      size: 'default',
     },
   },
 );
@@ -39,10 +39,10 @@ function AutocompleteValue({ ...props }: AutocompletePrimitive.Value.Props) {
 
 function AutocompleteInput({
   className,
-  size = 'default',
   disabled = false,
   showClear = false,
   showTrigger = false,
+  size = 'default',
   ...props
 }: Omit<AutocompletePrimitive.Input.Props, 'size'> &
   VariantProps<typeof inputVariants> & {
@@ -127,8 +127,8 @@ function AutocompleteList({
   ...props
 }: AutocompletePrimitive.List.Props & {
   scrollAreaClassName?: string;
-  scrollFade?: boolean;
   scrollbarGutter?: boolean;
+  scrollFade?: boolean;
 }) {
   return (
     <ScrollArea
@@ -191,22 +191,22 @@ function AutocompleteItem({
 
 export type AutocompleteContentProps = {
   align?: AutocompletePrimitive.Positioner.Props['align'];
-  sideOffset?: AutocompletePrimitive.Positioner.Props['sideOffset'];
   alignOffset?: AutocompletePrimitive.Positioner.Props['alignOffset'];
-  side?: AutocompletePrimitive.Positioner.Props['side'];
   anchor?: AutocompletePrimitive.Positioner.Props['anchor'];
   showBackdrop?: boolean;
+  side?: AutocompletePrimitive.Positioner.Props['side'];
+  sideOffset?: AutocompletePrimitive.Positioner.Props['sideOffset'];
 } & React.ComponentProps<typeof AutocompletePrimitive.Popup>;
 
 function AutocompleteContent({
-  className,
-  children,
-  showBackdrop = false,
   align = 'start',
-  sideOffset = 4,
   alignOffset = 0,
-  side = 'bottom',
   anchor,
+  children,
+  className,
+  showBackdrop = false,
+  side = 'bottom',
+  sideOffset = 4,
   ...props
 }: AutocompleteContentProps) {
   return (

@@ -45,9 +45,9 @@ import { cn } from '@/lib/utils';
 
 // Sortable Item Context
 const SortableItemContext = createContext<{
-  listeners: DraggableSyntheticListeners | undefined;
-  isDragging?: boolean;
   disabled?: boolean;
+  isDragging?: boolean;
+  listeners: DraggableSyntheticListeners | undefined;
 }>({
   disabled: false,
   isDragging: false,
@@ -79,36 +79,36 @@ const dropAnimationConfig: DropAnimation = {
 
 // Multipurpose Sortable Component
 export type SortableRootProps<T> = {
-  value: T[];
-  onValueChange: (value: T[]) => void;
-  getItemValue: (item: T) => string;
   children: ReactNode;
+  getItemValue: (item: T) => string;
+  modifiers?: Modifiers;
+  onDragEnd?: (event: DragEndEvent) => void;
+  onDragStart?: (event: DragStartEvent) => void;
   onMove?: (event: {
-    event: DragEndEvent;
     activeIndex: number;
+    event: DragEndEvent;
     overIndex: number;
   }) => void;
+  onValueChange: (value: T[]) => void;
   strategy?: 'horizontal' | 'vertical' | 'grid';
-  onDragStart?: (event: DragStartEvent) => void;
-  onDragEnd?: (event: DragEndEvent) => void;
-  modifiers?: Modifiers;
+  value: T[];
 } & Omit<
   useRender.ComponentProps<'div'>,
   'onDragStart' | 'onDragEnd' | 'children'
 >;
 
 function Sortable<T>({
-  value,
-  onValueChange,
-  getItemValue,
-  className,
-  render,
-  onMove,
-  strategy = 'vertical',
-  onDragStart,
-  onDragEnd,
-  modifiers,
   children,
+  className,
+  getItemValue,
+  modifiers,
+  onDragEnd,
+  onDragStart,
+  onMove,
+  onValueChange,
+  render,
+  strategy = 'vertical',
+  value,
   ...props
 }: SortableRootProps<T>) {
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
@@ -256,26 +256,26 @@ function Sortable<T>({
 }
 
 export type SortableItemProps = {
-  value: string;
   disabled?: boolean;
+  value: string;
 } & useRender.ComponentProps<'div'>;
 
 function SortableItem({
-  value,
   className,
-  render,
   disabled,
+  render,
+  value,
   ...props
 }: SortableItemProps) {
   const isOverlay = use(IsOverlayContext);
 
   const {
+    attributes,
+    isDragging: isSortableDragging,
+    listeners,
     setNodeRef,
     transform,
     transition,
-    attributes,
-    listeners,
-    isDragging: isSortableDragging,
   } = useSortable({
     animateLayoutChanges,
     disabled: Boolean(disabled) || isOverlay,
@@ -286,8 +286,8 @@ function SortableItem({
   const style = isOverlay
     ? undefined
     : ({
-        transition,
         transform: CSS.Transform.toString(transform),
+        transition,
       } as CSSProperties);
 
   const baseProps = {
@@ -335,11 +335,11 @@ export type SortableItemHandleProps = {
 
 function SortableItemHandle({
   className,
-  render,
   cursor = true,
+  render,
   ...props
 }: SortableItemHandleProps) {
-  const { listeners, isDragging, disabled } = use(SortableItemContext);
+  const { disabled, isDragging, listeners } = use(SortableItemContext);
 
   const defaultProps = {
     'data-disabled': disabled,

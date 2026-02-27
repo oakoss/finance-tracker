@@ -10,11 +10,11 @@ import {
 import * as React from 'react';
 
 type BaseEmailProps = {
-  preview: string;
   children: React.ReactNode;
+  preview: string;
 };
 
-export function BaseEmail({ preview, children }: BaseEmailProps) {
+export function BaseEmail({ children, preview }: BaseEmailProps) {
   return (
     <Html lang="en">
       <Head />

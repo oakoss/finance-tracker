@@ -44,17 +44,17 @@ describe('sanitizeEvent', () => {
 
   it('recursively sanitizes nested objects', () => {
     const result = sanitizeEvent({
+      meta: { deep: { action: 'read', token: 'xyz' } },
       user: { name: 'Alice', password: 'secret123' },
-      meta: { deep: { token: 'xyz', action: 'read' } },
     });
     expect(result).toEqual({
+      meta: { deep: { action: 'read', token: '[REDACTED]' } },
       user: { name: 'Alice', password: '[REDACTED]' },
-      meta: { deep: { token: '[REDACTED]', action: 'read' } },
     });
   });
 
   it('passes arrays through unchanged', () => {
-    const input = { tags: ['a', 'b', 'c'], counts: [1, 2, 3] };
+    const input = { counts: [1, 2, 3], tags: ['a', 'b', 'c'] };
     expect(sanitizeEvent(input)).toEqual(input);
   });
 

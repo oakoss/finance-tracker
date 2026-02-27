@@ -141,7 +141,7 @@ function DataGridTableDnd<TData>({
 }: {
   handleDragEnd: (event: DragEndEvent) => void;
 }) {
-  const { table, isLoading, props } = useDataGrid();
+  const { isLoading, props, table } = useDataGrid();
   const pagination = table.getState().pagination;
   const skeletonRows = useMemo(() => {
     const count = pagination?.pageSize ?? 0;

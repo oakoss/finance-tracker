@@ -38,8 +38,8 @@ function DialogOverlay({
 }
 
 function DialogContent({
-  className,
   children,
+  className,
   showCloseButton = true,
   ...props
 }: DialogPrimitive.Popup.Props & {
@@ -88,9 +88,9 @@ function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
 }
 
 function DialogFooter({
+  children,
   className,
   showCloseButton = false,
-  children,
   ...props
 }: React.ComponentProps<'div'> & {
   showCloseButton?: boolean;

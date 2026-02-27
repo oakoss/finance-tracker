@@ -11,8 +11,8 @@ import { ResetPasswordEmail } from './reset-password-email';
 import { VerificationEmail } from './verification-email';
 
 type EmailPerson = {
-  id?: string | null;
   email: string;
+  id?: string | null;
   name?: string | null;
 };
 
@@ -40,10 +40,10 @@ async function getUserLocale(userId?: string | null) {
 }
 
 export async function sendVerificationEmail(params: {
-  user: EmailPerson;
-  url: string;
-  locale?: EmailLocale;
   cookie?: string | null;
+  locale?: EmailLocale;
+  url: string;
+  user: EmailPerson;
 }) {
   const recipientName =
     params.user.name === null ? undefined : params.user.name;
@@ -67,10 +67,10 @@ export async function sendVerificationEmail(params: {
 }
 
 export async function sendResetPasswordEmail(params: {
-  user: EmailPerson;
-  url: string;
-  locale?: EmailLocale;
   cookie?: string | null;
+  locale?: EmailLocale;
+  url: string;
+  user: EmailPerson;
 }) {
   const recipientName =
     params.user.name === null ? undefined : params.user.name;

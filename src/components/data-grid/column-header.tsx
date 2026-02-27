@@ -32,22 +32,22 @@ function renderIcon(icon: React.ReactNode) {
 
 type DataGridColumnHeaderProps<TData, TValue> = {
   column: Column<TData, TValue>;
-  title?: string;
+  filter?: ReactNode;
   icon?: ReactNode;
   pinnable?: boolean;
-  filter?: ReactNode;
+  title?: string;
   visibility?: boolean;
 } & HTMLAttributes<HTMLDivElement>;
 
 function DataGridColumnHeaderInner<TData, TValue>({
-  column,
-  title = '',
-  icon,
   className,
+  column,
   filter,
+  icon,
+  title = '',
   visibility = false,
 }: DataGridColumnHeaderProps<TData, TValue>) {
-  const { isLoading, table, props, recordCount } = useDataGrid();
+  const { isLoading, props, recordCount, table } = useDataGrid();
 
   const columnOrder = table.getState().columnOrder;
   const columnVisibility = table.getState().columnVisibility;

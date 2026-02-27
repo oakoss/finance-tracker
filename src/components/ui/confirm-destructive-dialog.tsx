@@ -20,9 +20,9 @@ type ConfirmDestructiveDialogProps = {
   confirmPhrase: string;
   description: string;
   loading?: boolean;
+  onConfirm: () => void;
   title: string;
   trigger: React.ReactElement;
-  onConfirm: () => void;
 };
 
 function ConfirmDestructiveDialog({
@@ -30,9 +30,9 @@ function ConfirmDestructiveDialog({
   confirmPhrase,
   description,
   loading,
+  onConfirm,
   title,
   trigger,
-  onConfirm,
 }: ConfirmDestructiveDialogProps) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');

@@ -23,80 +23,80 @@ declare module '@tanstack/react-table' {
 }
 
 export type DataGridColumnMeta<TData extends RowData> = {
-  headerTitle?: string;
-  headerClassName?: string;
   cellClassName?: string;
-  skeleton?: ReactNode;
   expandedContent?: (row: TData) => ReactNode;
+  headerClassName?: string;
+  headerTitle?: string;
+  skeleton?: ReactNode;
 };
 
 export type DataGridApiFetchParams = {
+  filters?: ColumnFiltersState;
   pageIndex: number;
   pageSize: number;
-  sorting?: SortingState;
-  filters?: ColumnFiltersState;
   searchQuery?: string;
+  sorting?: SortingState;
 };
 
 export type DataGridApiResponse<T> = {
   data: T[];
   empty: boolean;
   pagination: {
-    total: number;
     page: number;
+    total: number;
   };
 };
 
 export type DataGridContextProps<TData extends object> = {
-  props: DataGridProps<TData>;
-  table: Table<TData>;
-  recordCount: number;
   isLoading: boolean;
+  props: DataGridProps<TData>;
+  recordCount: number;
+  table: Table<TData>;
 };
 
 export type DataGridRequestParams = {
+  columnFilters?: ColumnFiltersState;
   pageIndex: number;
   pageSize: number;
   sorting?: SortingState;
-  columnFilters?: ColumnFiltersState;
 };
 
 export type DataGridProps<TData extends object> = {
-  className?: string;
-  table?: Table<TData>;
-  recordCount: number;
   children?: ReactNode;
-  onRowClick?: (row: TData) => void;
-  isLoading?: boolean;
-  loadingMode?: 'skeleton' | 'spinner';
-  loadingMessage?: ReactNode | string;
+  className?: string;
   emptyMessage?: ReactNode | string;
-  tableLayout?: {
-    dense?: boolean;
-    cellBorder?: boolean;
-    rowBorder?: boolean;
-    rowRounded?: boolean;
-    stripped?: boolean;
-    headerBackground?: boolean;
-    headerBorder?: boolean;
-    headerSticky?: boolean;
-    width?: 'auto' | 'fixed';
-    columnsVisibility?: boolean;
-    columnsResizable?: boolean;
-    columnsPinnable?: boolean;
-    columnsMovable?: boolean;
-    columnsDraggable?: boolean;
-    rowsDraggable?: boolean;
-  };
+  isLoading?: boolean;
+  loadingMessage?: ReactNode | string;
+  loadingMode?: 'skeleton' | 'spinner';
+  onRowClick?: (row: TData) => void;
+  recordCount: number;
+  table?: Table<TData>;
   tableClassNames?: {
     base?: string;
+    body?: string;
+    bodyRow?: string;
+    edgeCell?: string;
+    footer?: string;
     header?: string;
     headerRow?: string;
     headerSticky?: string;
-    body?: string;
-    bodyRow?: string;
-    footer?: string;
-    edgeCell?: string;
+  };
+  tableLayout?: {
+    cellBorder?: boolean;
+    columnsDraggable?: boolean;
+    columnsMovable?: boolean;
+    columnsPinnable?: boolean;
+    columnsResizable?: boolean;
+    columnsVisibility?: boolean;
+    dense?: boolean;
+    headerBackground?: boolean;
+    headerBorder?: boolean;
+    headerSticky?: boolean;
+    rowBorder?: boolean;
+    rowRounded?: boolean;
+    rowsDraggable?: boolean;
+    stripped?: boolean;
+    width?: 'auto' | 'fixed';
   };
 };
 
@@ -193,13 +193,13 @@ function DataGrid<TData extends object>({
 }
 
 function DataGridContainer({
+  border = true,
   children,
   className,
-  border = true,
 }: {
+  border?: boolean;
   children: ReactNode;
   className?: string;
-  border?: boolean;
 }) {
   return (
     <div

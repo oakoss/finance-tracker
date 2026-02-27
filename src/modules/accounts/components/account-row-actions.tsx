@@ -1,5 +1,7 @@
 import { useNavigate } from '@tanstack/react-router';
 
+import type { AccountListItem } from '@/modules/accounts/api/list-accounts';
+
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,7 +10,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import type { AccountListItem } from '@/modules/accounts/api/list-accounts';
 import { DeleteAccountAction } from '@/modules/accounts/components/delete-account-action';
 import { m } from '@/paraglide/messages';
 

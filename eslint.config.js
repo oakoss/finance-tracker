@@ -1,22 +1,20 @@
 //  @ts-check
 
-import js from '@eslint/js';
 import pluginReact from '@eslint-react/eslint-plugin';
+import js from '@eslint/js';
 import pluginQuery from '@tanstack/eslint-plugin-query';
 import pluginRouter from '@tanstack/eslint-plugin-router';
-import { defineConfig, globalIgnores } from 'eslint/config';
 import configPrettier from 'eslint-config-prettier';
 import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import importX from 'eslint-plugin-import-x';
 // @ts-ignore
 import jsxA11y from 'eslint-plugin-jsx-a11y';
+import perfectionist from 'eslint-plugin-perfectionist';
 import playwright from 'eslint-plugin-playwright';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
-import simpleImportSort from 'eslint-plugin-simple-import-sort';
-// @ts-ignore
-import sortKeysPlus from 'eslint-plugin-sort-keys-plus';
 import unicorn from 'eslint-plugin-unicorn';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
@@ -48,8 +46,7 @@ export default defineConfig(
     plugins: {
       // @ts-expect-error -- types are missing
       'import-x': importX,
-      'simple-import-sort': simpleImportSort,
-      'sort-keys-plus': sortKeysPlus,
+      perfectionist,
     },
     rules: {
       eqeqeq: 'error',
@@ -58,21 +55,62 @@ export default defineConfig(
       'import-x/no-duplicates': ['error', { 'prefer-inline': true }],
       'import-x/no-relative-parent-imports': 'error',
       'no-console': 'warn',
-      'simple-import-sort/exports': 'error',
-      'simple-import-sort/imports': 'error',
-      'sort-keys-plus/sort-keys': [
+      'perfectionist/sort-exports': [
         'error',
-        'asc',
         {
-          caseSensitive: false,
-          minKeys: 3,
-          overrides: [
-            {
-              esquery:
-                'CallExpression[callee.type="CallExpression"][callee.callee.name="createFileRoute"] > ObjectExpression',
-              ignore: true,
-            },
+          ignoreCase: true,
+          order: 'asc',
+          type: 'alphabetical',
+        },
+      ],
+      'perfectionist/sort-imports': [
+        'error',
+        {
+          groups: [
+            'type-import',
+            ['value-builtin', 'value-external'],
+            'type-internal',
+            'value-internal',
+            ['type-parent', 'type-sibling', 'type-index'],
+            ['value-parent', 'value-sibling', 'value-index'],
+            'ts-equals-import',
+            'unknown',
           ],
+          ignoreCase: true,
+          internalPattern: ['^@/.+', '^~.+'],
+          newlinesBetween: 1,
+          order: 'asc',
+          type: 'alphabetical',
+        },
+      ],
+      'perfectionist/sort-named-exports': [
+        'error',
+        {
+          ignoreCase: true,
+          order: 'asc',
+          type: 'alphabetical',
+        },
+      ],
+      'perfectionist/sort-named-imports': [
+        'error',
+        {
+          ignoreCase: true,
+          order: 'asc',
+          type: 'alphabetical',
+        },
+      ],
+      'perfectionist/sort-objects': [
+        'error',
+        {
+          type: 'unsorted',
+          useConfigurationIf: {
+            callingFunctionNamePattern: String.raw`^createFileRoute\(`,
+          },
+        },
+        {
+          ignoreCase: true,
+          order: 'asc',
+          type: 'alphabetical',
         },
       ],
       'unicorn/filename-case': [
@@ -129,6 +167,14 @@ export default defineConfig(
       '@typescript-eslint/only-throw-error': 'off',
       '@typescript-eslint/prefer-return-this-type': 'error',
       '@typescript-eslint/restrict-template-expressions': 'off',
+      'perfectionist/sort-object-types': [
+        'error',
+        {
+          ignoreCase: true,
+          order: 'asc',
+          type: 'alphabetical',
+        },
+      ],
     },
   },
   {
@@ -154,22 +200,24 @@ export default defineConfig(
       '@eslint-react/hooks-extra/no-direct-set-state-in-use-effect': 'off',
       '@eslint-react/no-context-provider': 'off',
       '@eslint-react/no-nested-component-definitions': 'off',
+      'perfectionist/sort-jsx-props': [
+        'error',
+        {
+          customGroups: [
+            { elementNamePattern: '^(key|ref)$', groupName: 'reserved' },
+            { elementNamePattern: '^on.+', groupName: 'callback' },
+          ],
+          groups: ['reserved', 'shorthand-prop', 'prop', 'callback'],
+          ignoreCase: true,
+          order: 'asc',
+          type: 'alphabetical',
+        },
+      ],
       'react-hooks/exhaustive-deps': 'off',
       'react-hooks/incompatible-library': 'off',
       'react/jsx-no-bind': 'off',
       'react/jsx-no-constructed-context-values': 'off',
       'react/jsx-no-useless-fragment': 'off',
-      'react/jsx-sort-props': [
-        'error',
-        {
-          callbacksLast: true,
-          ignoreCase: true,
-          noSortAlphabetically: false,
-          reservedFirst: true,
-          shorthandFirst: true,
-          shorthandLast: false,
-        },
-      ],
       'react/no-danger': 'off',
       'react/prop-types': 'off',
     },

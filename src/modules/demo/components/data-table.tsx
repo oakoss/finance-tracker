@@ -212,8 +212,8 @@ const columns: ColumnDef<DataTableRow>[] = [
       <DataGridColumnHeader column={column} title="Target" />
     ),
     meta: {
-      headerTitle: 'Target',
       headerClassName: 'text-right',
+      headerTitle: 'Target',
     },
   },
   {
@@ -234,8 +234,8 @@ const columns: ColumnDef<DataTableRow>[] = [
       <DataGridColumnHeader column={column} title="Limit" />
     ),
     meta: {
-      headerTitle: 'Limit',
       headerClassName: 'text-right',
+      headerTitle: 'Limit',
     },
   },
   {
@@ -502,12 +502,12 @@ const chartData = [
 
 const chartConfig = {
   desktop: {
-    label: 'Desktop',
     color: 'var(--primary)',
+    label: 'Desktop',
   },
   mobile: {
-    label: 'Mobile',
     color: 'var(--primary)',
+    label: 'Mobile',
   },
 } satisfies ChartConfig;
 

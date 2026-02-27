@@ -1,9 +1,10 @@
-import { useFilterContext } from '@/components/filters/context';
 import type {
   FilterFieldConfig,
   FilterOperator,
   FilterOperatorValue,
 } from '@/components/filters/types';
+
+import { useFilterContext } from '@/components/filters/context';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import {

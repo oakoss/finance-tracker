@@ -1,4 +1,5 @@
 import type React from 'react';
+
 import {
   type ChangeEvent,
   type DragEvent,
@@ -9,11 +10,11 @@ import {
 } from 'react';
 
 export type FileMetadata = {
+  id: string;
   name: string;
   size: number;
   type: string;
   url: string;
-  id: string;
 };
 
 export type FileWithPreview = {
@@ -23,52 +24,52 @@ export type FileWithPreview = {
 };
 
 export type FileUploadOptions = {
+  accept?: string;
+  initialFiles?: FileMetadata[];
   maxFiles?: number; // Only used when multiple is true, defaults to Infinity
   maxSize?: number; // in bytes
-  accept?: string;
   multiple?: boolean; // Defaults to false
-  initialFiles?: FileMetadata[];
-  onFilesChange?: (files: FileWithPreview[]) => void; // Callback when files change
-  onFilesAdded?: (addedFiles: FileWithPreview[]) => void; // Callback when new files are added
   onError?: (errors: string[]) => void;
+  onFilesAdded?: (addedFiles: FileWithPreview[]) => void; // Callback when new files are added
+  onFilesChange?: (files: FileWithPreview[]) => void; // Callback when files change
 };
 
 export type FileUploadState = {
+  errors: string[];
   files: FileWithPreview[];
   isDragging: boolean;
-  errors: string[];
 };
 
 export type FileUploadActions = {
   addFiles: (files: FileList | File[]) => void;
-  removeFile: (id: string) => void;
-  clearFiles: () => void;
   clearErrors: () => void;
+  clearFiles: () => void;
+  getInputProps: (
+    props?: InputHTMLAttributes<HTMLInputElement>,
+  ) => InputHTMLAttributes<HTMLInputElement> & {
+    ref: React.Ref<HTMLInputElement>;
+  };
   handleDragEnter: (e: DragEvent<HTMLElement>) => void;
   handleDragLeave: (e: DragEvent<HTMLElement>) => void;
   handleDragOver: (e: DragEvent<HTMLElement>) => void;
   handleDrop: (e: DragEvent<HTMLElement>) => void;
   handleFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
   openFileDialog: () => void;
-  getInputProps: (
-    props?: InputHTMLAttributes<HTMLInputElement>,
-  ) => InputHTMLAttributes<HTMLInputElement> & {
-    ref: React.Ref<HTMLInputElement>;
-  };
+  removeFile: (id: string) => void;
 };
 
 export const useFileUpload = (
   options: FileUploadOptions = {},
 ): [FileUploadState, FileUploadActions] => {
   const {
+    accept = '*',
+    initialFiles = [],
     maxFiles = Number.POSITIVE_INFINITY,
     maxSize = Number.POSITIVE_INFINITY,
-    accept = '*',
     multiple = false,
-    initialFiles = [],
-    onFilesChange,
-    onFilesAdded,
     onError,
+    onFilesAdded,
+    onFilesChange,
   } = options;
 
   const [state, setState] = useState<FileUploadState>({

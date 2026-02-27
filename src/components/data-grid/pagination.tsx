@@ -26,7 +26,7 @@ type DataGridPaginationProps = {
 };
 
 function DataGridPagination(props: DataGridPaginationProps): React.JSX.Element {
-  const { table, recordCount, isLoading } = useDataGrid();
+  const { isLoading, recordCount, table } = useDataGrid();
 
   const sizes = props.sizes ?? [5, 10, 25, 50, 100];
   const moreLimit = props.moreLimit ?? 5;

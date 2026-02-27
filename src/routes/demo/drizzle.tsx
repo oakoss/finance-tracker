@@ -75,9 +75,9 @@ function DemoDrizzle() {
       <div
         className="w-full max-w-2xl p-8 rounded-xl shadow-2xl border border-white/10"
         style={{
+          backdropFilter: 'blur(10px)',
           background:
             'linear-gradient(135deg, rgba(22, 32, 46, 0.95) 0%, rgba(12, 26, 43, 0.95) 100%)',
-          backdropFilter: 'blur(10px)',
         }}
       >
         <div

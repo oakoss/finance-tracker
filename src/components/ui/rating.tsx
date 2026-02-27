@@ -5,6 +5,9 @@ import { Icons } from '@/components/icons';
 import { cn } from '@/lib/utils';
 
 const ratingVariants = cva('flex items-center', {
+  defaultVariants: {
+    size: 'default',
+  },
   variants: {
     size: {
       default: 'gap-2.5',
@@ -12,12 +15,12 @@ const ratingVariants = cva('flex items-center', {
       sm: 'gap-2',
     },
   },
-  defaultVariants: {
-    size: 'default',
-  },
 });
 
 const starVariants = cva('', {
+  defaultVariants: {
+    size: 'default',
+  },
   variants: {
     size: {
       default: 'size-5',
@@ -25,12 +28,12 @@ const starVariants = cva('', {
       sm: 'size-4',
     },
   },
-  defaultVariants: {
-    size: 'default',
-  },
 });
 
 const valueVariants = cva('text-muted-foreground w-5', {
+  defaultVariants: {
+    size: 'default',
+  },
   variants: {
     size: {
       default: 'text-sm',
@@ -38,31 +41,36 @@ const valueVariants = cva('text-muted-foreground w-5', {
       sm: 'text-xs',
     },
   },
-  defaultVariants: {
-    size: 'default',
-  },
 });
 
 function Rating({
-  rating,
-  maxRating = 5,
-  size,
   className,
-  starClassName,
-  showValue = false,
   editable = false,
+  maxRating = 5,
   onRatingChange,
+  rating,
+  showValue = false,
+  size,
+  starClassName,
   ...props
 }: React.ComponentProps<'div'> &
   VariantProps<typeof ratingVariants> & {
     /**
-     * Current rating value (supports decimal values for partial stars)
+     * Whether the rating is editable (clickable)
      */
-    rating: number;
+    editable?: boolean;
     /**
      * Maximum rating value (number of stars to show)
      */
     maxRating?: number;
+    /**
+     * Callback function called when rating changes
+     */
+    onRatingChange?: (rating: number) => void;
+    /**
+     * Current rating value (supports decimal values for partial stars)
+     */
+    rating: number;
     /**
      * Whether to show the numeric rating value
      */
@@ -71,14 +79,6 @@ function Rating({
      * Class name for the value span
      */
     starClassName?: string;
-    /**
-     * Whether the rating is editable (clickable)
-     */
-    editable?: boolean;
-    /**
-     * Callback function called when rating changes
-     */
-    onRatingChange?: (rating: number) => void;
   }) {
   const [hoveredRating, setHoveredRating] = useState<number | null>(null);
   const displayRating =

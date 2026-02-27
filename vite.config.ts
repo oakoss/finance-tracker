@@ -22,7 +22,6 @@ export default defineConfig({
     target: 'es2023',
   },
   nitro: {
-    plugins: ['./src/lib/logging/drain.ts'],
     modules: [
       evlog({
         env: {
@@ -39,6 +38,8 @@ export default defineConfig({
           '/api/auth/get-session',
         ],
         sampling: {
+          // Always keep error responses (4xx/5xx) and slow requests
+          keep: [{ status: 400 }, { status: 500 }, { duration: 3000 }],
           rates: {
             // debug off in production
             debug: isProduction ? 0 : 100,
@@ -47,11 +48,10 @@ export default defineConfig({
             info: isProduction ? 10 : 100,
             warn: 100,
           },
-          // Always keep error responses (4xx/5xx) and slow requests
-          keep: [{ status: 400 }, { status: 500 }, { duration: 3000 }],
         },
       }),
     ],
+    plugins: ['./src/lib/logging/drain.ts'],
   },
   plugins: [
     devtools(),

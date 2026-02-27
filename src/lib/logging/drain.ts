@@ -1,4 +1,6 @@
 import type { DrainContext, EnrichContext } from 'evlog';
+import type { NitroApp } from 'nitro/types';
+
 import {
   createRequestSizeEnricher,
   createTraceContextEnricher,
@@ -6,7 +8,6 @@ import {
 } from 'evlog/enrichers';
 import { createOTLPDrain } from 'evlog/otlp';
 import { createDrainPipeline } from 'evlog/pipeline';
-import type { NitroApp } from 'nitro/types';
 
 import { sanitizeEvent } from './sanitize';
 
@@ -43,8 +44,8 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
   // Wrap OTLP drain in a pipeline for batching, retry, and buffer management
   const pipeline = createDrainPipeline<DrainContext>({
     batch: {
-      size: 50,
       intervalMs: 5000,
+      size: 50,
     },
     maxBufferSize: 1000,
     onDropped: (events, error) => {

@@ -1,5 +1,6 @@
-import { faker } from '@faker-js/faker';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
+
+import { faker } from '@faker-js/faker';
 
 import type * as schema from '@/db/schema';
 

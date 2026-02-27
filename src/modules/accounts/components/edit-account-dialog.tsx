@@ -1,6 +1,8 @@
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
+import type { AccountListItem } from '@/modules/accounts/api/list-accounts';
+
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -10,7 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import type { AccountListItem } from '@/modules/accounts/api/list-accounts';
 import {
   AccountForm,
   type AccountFormValues,

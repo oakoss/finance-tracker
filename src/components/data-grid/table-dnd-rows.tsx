@@ -96,12 +96,12 @@ function DataGridTableDndRowHandle({ className }: { className?: string }) {
 
 function DataGridTableDndRow<TData>({ row }: { row: Row<TData> }) {
   const {
+    attributes,
+    isDragging,
+    listeners,
+    setNodeRef,
     transform,
     transition,
-    setNodeRef,
-    isDragging,
-    attributes,
-    listeners,
   } = useSortable({
     id: row.id,
   });
@@ -135,13 +135,13 @@ function DataGridTableDndRow<TData>({ row }: { row: Row<TData> }) {
 }
 
 function DataGridTableDndRows<TData>({
-  handleDragEnd,
   dataIds,
+  handleDragEnd,
 }: {
-  handleDragEnd: (event: DragEndEvent) => void;
   dataIds: UniqueIdentifier[];
+  handleDragEnd: (event: DragEndEvent) => void;
 }) {
-  const { table, isLoading, props } = useDataGrid();
+  const { isLoading, props, table } = useDataGrid();
   const pagination = table.getState().pagination;
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const skeletonRows = useMemo(() => {
@@ -160,8 +160,8 @@ function DataGridTableDndRows<TData>({
 
   const modifiers = useMemo(() => {
     const restrictToTableContainer: Modifier = ({
-      transform,
       draggingNodeRect,
+      transform,
     }) => {
       if (!tableContainerRef.current || !draggingNodeRect) {
         return transform;

@@ -29,9 +29,9 @@ function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
 }
 
 function SelectTrigger({
+  children,
   className,
   size = 'default',
-  children,
   ...props
 }: SelectPrimitive.Trigger.Props & {
   size?: 'sm' | 'default';
@@ -57,13 +57,13 @@ function SelectTrigger({
 }
 
 function SelectContent({
-  className,
+  align = 'center',
+  alignItemWithTrigger = true,
+  alignOffset = 0,
   children,
+  className,
   side = 'bottom',
   sideOffset = 4,
-  align = 'center',
-  alignOffset = 0,
-  alignItemWithTrigger = true,
   ...props
 }: SelectPrimitive.Popup.Props &
   Pick<
@@ -112,8 +112,8 @@ function SelectLabel({
 }
 
 function SelectItem({
-  className,
   children,
+  className,
   ...props
 }: SelectPrimitive.Item.Props) {
   return (

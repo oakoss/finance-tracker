@@ -16,18 +16,18 @@ import { m } from '@/paraglide/messages';
 
 type DataGridColumnFilterProps<TData, TValue extends string> = {
   column?: Column<TData, TValue>;
-  title?: string;
   options: {
+    icon?: React.ComponentType<{ className?: string }>;
     label: string;
     value: TValue;
-    icon?: React.ComponentType<{ className?: string }>;
   }[];
+  title?: string;
 };
 
 function DataGridColumnFilter<TData, TValue extends string>({
   column,
-  title,
   options,
+  title,
 }: DataGridColumnFilterProps<TData, TValue>) {
   const facets = column?.getFacetedUniqueValues();
   const selectedValues = new Set(column?.getFilterValue() as TValue[]);

@@ -8,11 +8,11 @@ type EmailRecipient = {
 };
 
 type SendEmailOptions = {
-  subject: string;
   html: string;
+  replyTo?: EmailRecipient;
+  subject: string;
   text?: string;
   to: EmailRecipient[];
-  replyTo?: EmailRecipient;
 };
 
 const brevo = new BrevoClient({ apiKey: env.BREVO_API_KEY });
@@ -27,7 +27,7 @@ const defaultReplyTo = env.EMAIL_REPLY_TO
   : undefined;
 
 export async function sendEmail(options: SendEmailOptions) {
-  const { subject, html, text, to, replyTo } = options;
+  const { html, replyTo, subject, text, to } = options;
 
   await brevo.transactionalEmails.sendTransacEmail({
     htmlContent: html,

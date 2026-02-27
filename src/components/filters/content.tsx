@@ -1,11 +1,12 @@
 import { cva } from 'class-variance-authority';
 import { useCallback, useMemo } from 'react';
 
+import type { Filter, FilterFieldsConfig } from '@/components/filters/types';
+
 import { useFilterContext } from '@/components/filters/context';
 import { getFieldsMap, renderIcon } from '@/components/filters/helpers';
 import { OperatorDropdown } from '@/components/filters/operators';
 import { RemoveButton } from '@/components/filters/remove-button';
-import type { Filter, FilterFieldsConfig } from '@/components/filters/types';
 import { ValueSelector } from '@/components/filters/value-selector';
 import { ButtonGroup, ButtonGroupText } from '@/components/ui/button-group';
 import { cn } from '@/lib/utils';
@@ -35,8 +36,8 @@ type FiltersContentProps<T = unknown> = {
 };
 
 function FiltersContent<T = unknown>({
-  filters,
   fields,
+  filters,
   onChange,
 }: FiltersContentProps<T>) {
   const context = useFilterContext();

@@ -21,11 +21,11 @@ export const auth = betterAuth({
     encryptOAuthTokens: process.env.NODE_ENV === 'production',
   },
   advanced: {
-    ipAddress: {
-      ipAddressHeaders: ['cf-connecting-ip'],
-    },
     database: {
       generateId: 'uuid',
+    },
+    ipAddress: {
+      ipAddressHeaders: ['cf-connecting-ip'],
     },
   },
   appName: appConfig.name,
@@ -40,7 +40,7 @@ export const auth = betterAuth({
     requireEmailVerification: true,
     resetPasswordTokenExpiresIn: 60 * 60 * 2,
     revokeSessionsOnPasswordReset: true,
-    sendResetPassword: async ({ user, url }, request) =>
+    sendResetPassword: async ({ url, user }, request) =>
       sendResetPasswordEmail({
         cookie: request?.headers.get('cookie') ?? null,
         url,
@@ -50,7 +50,7 @@ export const auth = betterAuth({
   emailVerification: {
     sendOnSignIn: true,
     sendOnSignUp: true,
-    sendVerificationEmail: async ({ user, url }, request) =>
+    sendVerificationEmail: async ({ url, user }, request) =>
       sendVerificationEmail({
         cookie: request?.headers.get('cookie') ?? null,
         url,

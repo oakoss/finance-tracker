@@ -1,12 +1,13 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
-import { useFilterContext } from '@/components/filters/context';
-import { renderIcon } from '@/components/filters/helpers';
-import { FilterInput } from '@/components/filters/input';
 import type {
   FilterFieldConfig,
   FilterOperatorValue,
 } from '@/components/filters/types';
+
+import { useFilterContext } from '@/components/filters/context';
+import { renderIcon } from '@/components/filters/helpers';
+import { FilterInput } from '@/components/filters/input';
 import { Button } from '@/components/ui/button';
 import { ButtonGroupText } from '@/components/ui/button-group';
 import {
@@ -40,10 +41,10 @@ type SelectOptionsPopoverProps<T = unknown> = {
 
 function SelectOptionsPopover<T = unknown>({
   field,
-  values,
+  inline = false,
   onChange,
   onClose,
-  inline = false,
+  values,
 }: SelectOptionsPopoverProps<T>) {
   const [open, setOpen] = useState(false);
   const [searchInput, setSearchInput] = useState('');
@@ -359,10 +360,10 @@ function SelectOptionsPopover<T = unknown>({
 
 function ValueSelector<T = unknown>({
   field,
-  values,
   onChange,
   operator,
   shouldFocus,
+  values,
 }: ValueSelectorProps<T>) {
   if (operator === 'empty' || operator === 'not_empty') {
     return null;

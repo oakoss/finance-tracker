@@ -1,6 +1,8 @@
 import { useForm } from '@tanstack/react-form';
 import { type } from 'arktype';
 
+import type { CreateAccountInput } from '@/modules/accounts/types';
+
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
@@ -14,7 +16,6 @@ import {
   accountOwnerTypeEnum,
   accountTypeEnum,
 } from '@/modules/accounts/db/schema';
-import type { CreateAccountInput } from '@/modules/accounts/types';
 import { m } from '@/paraglide/messages';
 
 const accountFormSchema = type({

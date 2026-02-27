@@ -7,7 +7,18 @@ import { cn } from '@/lib/utils';
 const badgeVariants = cva(
   'rounded-4xl border border-transparent font-medium transition-all has-data-[icon=inline-end]:pe-1.5 has-data-[icon=inline-start]:ps-1.5 [&>svg]:size-3! inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive overflow-hidden group/badge',
   {
+    defaultVariants: {
+      size: 'default',
+      variant: 'default',
+    },
     variants: {
+      size: {
+        default: 'h-5 min-w-5 gap-1 px-1.25 py-0.5 text-xs',
+        lg: 'h-5.5 min-w-5.5 gap-1 px-1.5 py-0.5 text-xs',
+        sm: 'h-4.5 min-w-4.5 gap-1 px-1 py-px text-[0.625rem] leading-none',
+        xl: 'h-6 min-w-6 gap-1.5 px-2 py-0.75 text-sm',
+        xs: 'h-4 min-w-4 gap-1 px-1 py-px text-[0.6rem] leading-none',
+      },
       variant: {
         default: 'bg-primary text-primary-foreground [a]:hover:bg-primary/80',
         destructive:
@@ -48,31 +59,20 @@ const badgeVariants = cva(
         'warning-outline':
           'bg-background border-border text-warning-foreground dark:bg-input/30',
       },
-      size: {
-        default: 'h-5 min-w-5 gap-1 px-1.25 py-0.5 text-xs',
-        lg: 'h-5.5 min-w-5.5 gap-1 px-1.5 py-0.5 text-xs',
-        sm: 'h-4.5 min-w-4.5 gap-1 px-1 py-px text-[0.625rem] leading-none',
-        xl: 'h-6 min-w-6 gap-1.5 px-2 py-0.75 text-sm',
-        xs: 'h-4 min-w-4 gap-1 px-1 py-px text-[0.6rem] leading-none',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
     },
   },
 );
 
 type BadgeProps = {
-  variant?: VariantProps<typeof badgeVariants>['variant'];
   size?: VariantProps<typeof badgeVariants>['size'];
+  variant?: VariantProps<typeof badgeVariants>['variant'];
 } & useRender.ComponentProps<'span'>;
 
 function Badge({
   className,
-  variant = 'default',
-  size = 'default',
   render,
+  size = 'default',
+  variant = 'default',
   ...props
 }: BadgeProps) {
   return useRender({

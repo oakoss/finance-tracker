@@ -86,14 +86,14 @@ describe('formatNumber', () => {
   });
 
   it('formats with explicit locale', () => {
-    const result = formatNumber({ value: 1234.5, locale: 'de-DE' });
+    const result = formatNumber({ locale: 'de-DE', value: 1234.5 });
     expect(result).toContain('1.234,5');
   });
 
   it('applies Intl options', () => {
     const result = formatNumber({
-      value: 0.85,
       options: { style: 'percent' },
+      value: 0.85,
     });
     expect(result).toBe('85%');
   });
@@ -114,7 +114,7 @@ describe('formatDate', () => {
   });
 
   it('respects explicit locale', () => {
-    const result = formatDate({ value: date, locale: 'de-DE' });
+    const result = formatDate({ locale: 'de-DE', value: date });
     // German locale uses different month abbreviation
     expect(result).toContain('2025');
     expect(result).toContain('15');
@@ -124,8 +124,8 @@ describe('formatDate', () => {
     // Midnight UTC — should show June 14 in US Pacific (UTC-7 in summer)
     const midnight = new Date('2025-06-15T00:00:00Z');
     const result = formatDate({
-      value: midnight,
       timeZone: 'America/Los_Angeles',
+      value: midnight,
     });
     expect(result).toContain('14');
   });
@@ -146,8 +146,8 @@ describe('formatDateTime', () => {
 
   it('respects timezone for time display', () => {
     const result = formatDateTime({
-      value: date,
       timeZone: 'America/New_York',
+      value: date,
     });
     // UTC 14:30 = EDT 10:30
     expect(result).toContain('10:30');
@@ -167,8 +167,8 @@ describe('formatDateTimeFull', () => {
 
   it('respects timezone', () => {
     const result = formatDateTimeFull({
-      value: date,
       timeZone: 'America/New_York',
+      value: date,
     });
     expect(result).toContain('10:30');
     expect(result).toContain('45');
@@ -185,7 +185,7 @@ describe('formatMonthYear', () => {
   });
 
   it('respects locale', () => {
-    const result = formatMonthYear({ value: date, locale: 'de-DE' });
+    const result = formatMonthYear({ locale: 'de-DE', value: date });
     expect(result).toBe('Dezember 2025');
   });
 
@@ -193,8 +193,8 @@ describe('formatMonthYear', () => {
     // Jan 1 UTC midnight — in UTC-8, still December
     const boundary = new Date('2026-01-01T00:00:00Z');
     const result = formatMonthYear({
-      value: boundary,
       timeZone: 'America/Los_Angeles',
+      value: boundary,
     });
     expect(result).toContain('December');
     expect(result).toContain('2025');

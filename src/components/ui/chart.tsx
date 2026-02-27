@@ -4,13 +4,13 @@ import * as RechartsPrimitive from 'recharts';
 import { cn } from '@/lib/utils';
 
 // Format: { THEME_NAME: CSS_SELECTOR }
-const THEMES = { light: '', dark: '.dark' } as const;
+const THEMES = { dark: '.dark', light: '' } as const;
 
 export type ChartConfig = Record<
   string,
   {
-    label?: React.ReactNode;
     icon?: React.ComponentType;
+    label?: React.ReactNode;
   } & (
     | { color?: string; theme?: never }
     | { color?: never; theme: Record<keyof typeof THEMES, string> }
@@ -34,16 +34,16 @@ function useChart() {
 }
 
 function ChartContainer({
-  id,
-  className,
   children,
+  className,
   config,
+  id,
   ...props
 }: React.ComponentProps<'div'> & {
-  config: ChartConfig;
   children: React.ComponentProps<
     typeof RechartsPrimitive.ResponsiveContainer
   >['children'];
+  config: ChartConfig;
 }) {
   const uniqueId = React.useId();
   const chartId = `chart-${id ?? uniqueId.replaceAll(':', '')}`;
@@ -68,7 +68,7 @@ function ChartContainer({
   );
 }
 
-const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
+const ChartStyle = ({ config, id }: { config: ChartConfig; id: string }) => {
   const colorConfig = Object.entries(config).filter(
     ([, config]) => config.theme ?? config.color,
   );
@@ -101,25 +101,25 @@ const ChartTooltip = RechartsPrimitive.Tooltip;
 
 function ChartTooltipContent({
   active,
-  payload,
   className,
-  indicator = 'dot',
-  hideLabel = false,
-  hideIndicator = false,
-  label,
-  labelFormatter,
-  labelClassName,
-  formatter,
   color,
-  nameKey,
+  formatter,
+  hideIndicator = false,
+  hideLabel = false,
+  indicator = 'dot',
+  label,
+  labelClassName,
+  labelFormatter,
   labelKey,
+  nameKey,
+  payload,
 }: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
   React.ComponentProps<'div'> & {
-    hideLabel?: boolean;
     hideIndicator?: boolean;
+    hideLabel?: boolean;
     indicator?: 'line' | 'dot' | 'dashed';
-    nameKey?: string;
     labelKey?: string;
+    nameKey?: string;
   }) {
   const { config } = useChart();
 
@@ -250,9 +250,9 @@ const ChartLegend = RechartsPrimitive.Legend;
 function ChartLegendContent({
   className,
   hideIcon = false,
+  nameKey,
   payload,
   verticalAlign = 'bottom',
-  nameKey,
 }: React.ComponentProps<'div'> &
   Pick<RechartsPrimitive.LegendProps, 'payload' | 'verticalAlign'> & {
     hideIcon?: boolean;

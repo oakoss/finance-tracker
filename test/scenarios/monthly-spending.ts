@@ -1,5 +1,6 @@
-import { faker } from '@faker-js/faker';
 import type { InferSelectModel } from 'drizzle-orm';
+
+import { faker } from '@faker-js/faker';
 
 import type {
   categories,
@@ -8,6 +9,7 @@ import type {
   transactions,
   users,
 } from '@/db/schema';
+
 import { type Db, fakeCents } from '~test/factories/base';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
