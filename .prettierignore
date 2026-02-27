@@ -18,3 +18,4 @@ drizzle/
 # Ignore generated files
 *.gen.ts
 **/paraglide/
+project.inlang/

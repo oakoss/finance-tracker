@@ -117,7 +117,7 @@ jobs:
       - name: Prepare CI environment
         uses: ./.github/actions/ci-prepare
       - name: Migrate and seed database
-        run: pnpm db:migrate && pnpm db:seed -- e2e
+        run: pnpm db:migrate && pnpm with:env tsx test/seed/seed-runner.ts e2e
       - name: Cache Playwright browsers
         uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
         with:
