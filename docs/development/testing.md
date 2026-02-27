@@ -186,6 +186,45 @@ pnpm test:e2e:ui    # open Playwright UI mode for debugging
 - **ESLint**: `eslint-plugin-playwright` with `flat/recommended` rules
   scoped to `e2e/**/*`
 
+### Directory structure (target)
+
+```text
+e2e/
+  setup/
+    auth.setup.ts            # storageState setup project
+  fixtures/
+    index.ts                 # merged test/expect re-export
+    authenticated.fixture.ts # test.extend with auth context
+  app/
+    shell.test.ts            # @smoke @a11y
+  accounts/
+    crud.test.ts             # @crud
+    list.test.ts             # @smoke @a11y
+  auth/
+    sign-in.test.ts          # @smoke @auth @a11y
+    sign-up.test.ts          # @smoke @auth @a11y
+    sign-out.test.ts         # @auth
+  .auth/                     # gitignored (playwright/.auth)
+```
+
+Feature folders generally correspond to `src/modules/`, plus an
+`app/` folder for shell-level tests. Each file covers a specific
+flow. Tags are applied per `test.describe`, not per file.
+
+### Tags
+
+| Tag      | Purpose                        | Planned CI gate |
+| -------- | ------------------------------ | --------------- |
+| `@smoke` | Page loads, renders, redirects | Every PR        |
+| `@a11y`  | Contrast, ARIA checks via Axe  | Every PR        |
+| `@auth`  | Sign-in/sign-up/sign-out flows | Merge to main   |
+| `@crud`  | Feature happy-path CRUD        | Merge to main   |
+
+CI currently runs all tags; per-tag filtering will be added when
+the suite is large enough to benefit.
+
+Filter: `pnpm test:e2e -- --grep @smoke`
+
 ### Writing tests
 
 Tests live in `e2e/` and use Playwright's test runner (not Vitest).
@@ -241,35 +280,73 @@ test('user creates a new account', async ({ page }) => {
 
 Steps can be nested. Prefer 3-5 steps per test for readability.
 
-### Custom fixtures
+### Authentication via storageState
 
-Playwright fixtures handle repeated setup like authentication and test
-data. When needed, create `e2e/fixtures.ts`:
+Auth is handled by a Playwright setup project that logs in once and
+saves session state to `playwright/.auth/user.json`. Authenticated test projects
+depend on the setup project and reuse the saved storageState.
+
+**`e2e/setup/auth.setup.ts`**: runs once before authenticated tests:
 
 ```ts
-import { test as base } from '@playwright/test';
+import { test as setup } from '@playwright/test';
 
-type Fixtures = {
-  authenticatedPage: Page;
-};
-
-export const test = base.extend<Fixtures>({
-  authenticatedPage: async ({ page }, use) => {
-    // Perform login once, reuse across tests
-    await page.goto('/sign-in');
-    await page.getByLabel('Email').fill('test@example.com');
-    await page.getByLabel('Password').fill('password123');
-    await page.getByRole('button', { name: 'Sign in' }).click();
-    await page.waitForURL('/dashboard');
-    await use(page);
-  },
+setup('authenticate', async ({ page }) => {
+  await page.goto('/sign-in');
+  await page.getByLabel('Email').fill(process.env.E2E_USER_EMAIL!);
+  await page.getByLabel('Password').fill(process.env.E2E_USER_PASSWORD!);
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  await page.waitForURL('/dashboard');
+  await page.context().storageState({ path: 'playwright/.auth/user.json' });
 });
-
-export { expect } from '@playwright/test';
 ```
 
-Import `test` from `e2e/fixtures` instead of `@playwright/test` in
-tests that need fixtures.
+**`playwright.config.ts`** (target config, three projects):
+
+```ts
+projects: [
+  { name: 'setup', testDir: 'e2e/setup', testMatch: '*.setup.ts' },
+  {
+    name: 'chromium:authenticated',
+    dependencies: ['setup'],
+    use: { storageState: 'playwright/.auth/user.json' },
+  },
+  {
+    name: 'chromium:public',
+    use: { storageState: { cookies: [], origins: [] } },
+  },
+],
+```
+
+To test unauthenticated flows within an authenticated test file,
+override at the describe level:
+
+```ts
+test.describe('redirects when signed out', () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test('redirects to sign-in', async ({ page }) => {
+    await page.goto('/dashboard');
+    await expect(page).toHaveURL(/sign-in/);
+  });
+});
+```
+
+Tests without custom fixtures import from `@playwright/test`
+directly. Tests that need auth or other extensions import `test`
+and `expect` from `e2e/fixtures/index.ts` instead.
+
+### Useful assertions
+
+Recent Playwright assertions worth knowing:
+
+- `toHaveAccessibleErrorMessage()`: form validation errors linked
+  via `aria-errormessage`.
+- `toContainClass()`: check for Tailwind classes on an element.
+- `toHaveURL(predicate)`: assert on URL content; accepts string,
+  regex, or `(url: URL) => boolean` for search param checks.
+- `locator.filter({ visible: true })`: narrow to visible elements
+  only (replaces chained `.isVisible()` checks).
 
 ### What needs E2E testing
 
@@ -311,10 +388,14 @@ but skip unit tests for simple rendering.
 
 ### Future considerations
 
-- Secrets for authenticated tests — plan to use `dotenvx encrypt` to
-  store encrypted `.env.production.local` in the repo for CI.
-- Add Firefox/WebKit projects for cross-browser coverage.
-- CI sharding for parallel execution as the test suite grows.
+- Secrets for authenticated tests via `dotenvx encrypt` (encrypted
+  `.env.production.local` in repo for CI).
+- Firefox/WebKit projects for cross-browser coverage.
+- CI sharding for parallel execution as the suite grows.
+- Mobile/responsive testing via separate device projects (not
+  `setViewportSize`).
+- `webServer.wait` to detect server readiness by stdout pattern
+  instead of port polling.
 
 ## CI integration
 
