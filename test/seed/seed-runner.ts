@@ -7,11 +7,17 @@ import { FAKER_SEED } from '~test/factories/base';
 import { createFullTransaction } from '~test/scenarios/full-transaction';
 import { createMonthlySpending } from '~test/scenarios/monthly-spending';
 import { createMultiAccountUser } from '~test/scenarios/multi-account-user';
+import { seedE2eUser } from '~test/seed/e2e-user';
 import { resetDatabase } from '~test/seed/reset';
 
-type Profile = 'minimal' | 'standard' | 'stress';
+type Profile = 'e2e' | 'minimal' | 'standard' | 'stress';
 
-const VALID_PROFILES = new Set<Profile>(['minimal', 'standard', 'stress']);
+const VALID_PROFILES = new Set<Profile>([
+  'e2e',
+  'minimal',
+  'standard',
+  'stress',
+]);
 
 function getProfile(): Profile {
   const arg = process.argv[2] as Profile | undefined;
@@ -34,6 +40,23 @@ async function main() {
 
   console.log('Resetting database...');
   await resetDatabase(db);
+
+  if (profile === 'e2e') {
+    try {
+      await seedE2eUser(db);
+      console.log('E2E seed complete');
+    } catch (error) {
+      console.error(
+        'E2E seed failed:',
+        error instanceof Error ? error.message : error,
+      );
+      console.error(
+        'Hint: run "pnpm docker:reset" then retry "pnpm db:seed e2e"',
+      );
+      process.exit(1);
+    }
+    process.exit(0);
+  }
 
   if (profile === 'minimal') {
     await createFullTransaction(db);

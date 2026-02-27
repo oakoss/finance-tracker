@@ -12,9 +12,22 @@ export default defineConfig({
   fullyParallel: true,
   outputDir: 'test-results',
   projects: [
+    { name: 'setup', testDir: 'e2e/setup', testMatch: '*.setup.ts' },
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      dependencies: ['setup'],
+      name: 'chromium:authenticated',
+      testMatch: [],
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/user.json',
+      },
+    },
+    {
+      name: 'chromium:public',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: { cookies: [], origins: [] },
+      },
     },
   ],
   reporter: process.env.CI ? [['github'], ['blob']] : 'html',

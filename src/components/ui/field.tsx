@@ -171,13 +171,22 @@ function FieldSeparator({
   );
 }
 
+function extractMessages(
+  error: { message?: string } | string | string[] | undefined,
+): string[] {
+  if (!error) return [];
+  if (typeof error === 'string') return [error];
+  if (Array.isArray(error)) return error.filter(Boolean);
+  return error.message ? [error.message] : [];
+}
+
 function FieldError({
   children,
   className,
   errors,
   ...props
 }: React.ComponentProps<'div'> & {
-  errors?: ({ message?: string } | undefined)[];
+  errors?: ({ message?: string } | string | string[] | undefined)[];
 }) {
   const content = useMemo(() => {
     if (children) {
@@ -188,20 +197,23 @@ function FieldError({
       return null;
     }
 
-    const uniqueErrors = [
-      ...new Map(errors.map((error) => [error?.message, error])).values(),
+    const uniqueMessages = [
+      ...new Set(errors.flatMap((error) => extractMessages(error))),
     ];
 
-    if (uniqueErrors?.length === 1) {
-      return uniqueErrors[0]?.message;
+    if (uniqueMessages.length === 0) {
+      return null;
+    }
+
+    if (uniqueMessages.length === 1) {
+      return uniqueMessages[0];
     }
 
     return (
       <ul className="ml-4 flex list-disc flex-col gap-1">
-        {uniqueErrors.map(
-          (error) =>
-            error?.message && <li key={error.message}>{error.message}</li>,
-        )}
+        {uniqueMessages.map((msg) => (
+          <li key={msg}>{msg}</li>
+        ))}
       </ul>
     );
   }, [children, errors]);

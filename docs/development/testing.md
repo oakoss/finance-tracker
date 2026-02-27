@@ -193,7 +193,7 @@ e2e/
   setup/
     auth.setup.ts            # storageState setup project
   fixtures/
-    index.ts                 # merged test/expect re-export
+    index.ts                 # hydration helpers (waitForHydration, etc.)
     authenticated.fixture.ts # test.extend with auth context
   app/
     shell.test.ts            # @smoke @a11y
@@ -228,13 +228,17 @@ Filter: `pnpm test:e2e -- --grep @smoke`
 ### Writing tests
 
 Tests live in `e2e/` and use Playwright's test runner (not Vitest).
-Prefer role/label/text selectors over CSS selectors:
+Import `test`/`expect` from `@playwright/test` directly. Import
+hydration helpers from `~e2e/fixtures`.
 
 ```ts
 import { expect, test } from '@playwright/test';
 
+import { waitForHydration } from '~e2e/fixtures';
+
 test('example', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/sign-in');
+  await waitForHydration(page);
   await expect(page.getByRole('heading')).toBeVisible();
 });
 ```
@@ -248,6 +252,34 @@ test.describe('feature', { tag: '@smoke' }, () => {
   });
 });
 ```
+
+### Locator strategy
+
+Use Playwright's built-in locators in this priority order. CSS
+selectors and XPath are fragile and should be avoided.
+
+| Priority | Locator              | When to use                       | Example                                         |
+| -------- | -------------------- | --------------------------------- | ----------------------------------------------- |
+| 1        | `getByRole()`        | Buttons, headings, links, dialogs | `page.getByRole('button', { name: 'Sign in' })` |
+| 2        | `getByText()`        | Non-interactive text content      | `page.getByText('Welcome, John')`               |
+| 3        | `getByLabel()`       | Form inputs with labels           | `page.getByLabel('Email')`                      |
+| 4        | `getByPlaceholder()` | Inputs without labels             | `page.getByPlaceholder('Search…')`              |
+| 5        | `getByAltText()`     | Images                            | `page.getByAltText('logo')`                     |
+| 6        | `getByTitle()`       | Elements with title attribute     | `page.getByTitle('Issues count')`               |
+| 7        | `getByTestId()`      | Last resort, explicit contract    | `page.getByTestId('balance')`                   |
+
+**Project-specific conventions:**
+
+- **Password fields**: use `getByLabel('Password', { exact: true })`
+  because the `PasswordInput` toggle button's aria-label ("Show
+  password") contains the substring "Password" and causes a strict
+  mode violation without `exact`.
+- **Filtering**: narrow lists with `.filter({ hasText })` or
+  `.filter({ has: locator })` rather than CSS pseudo-selectors.
+- **Chaining**: `page.getByRole('listitem').filter(…).getByRole(…)`
+  is preferred over nested CSS selectors.
+- **Avoid positional**: `.nth()` and `.first()` break when content
+  order changes. Prefer text or role filtering.
 
 ### Structured steps with `test.step()`
 
@@ -291,10 +323,15 @@ depend on the setup project and reuse the saved storageState.
 ```ts
 import { test as setup } from '@playwright/test';
 
+import { waitForHydration } from '~e2e/fixtures';
+
 setup('authenticate', async ({ page }) => {
   await page.goto('/sign-in');
+  await waitForHydration(page);
   await page.getByLabel('Email').fill(process.env.E2E_USER_EMAIL!);
-  await page.getByLabel('Password').fill(process.env.E2E_USER_PASSWORD!);
+  await page
+    .getByLabel('Password', { exact: true })
+    .fill(process.env.E2E_USER_PASSWORD!);
   await page.getByRole('button', { name: 'Sign in' }).click();
   await page.waitForURL('/dashboard');
   await page.context().storageState({ path: 'playwright/.auth/user.json' });
@@ -332,9 +369,10 @@ test.describe('redirects when signed out', () => {
 });
 ```
 
-Tests without custom fixtures import from `@playwright/test`
-directly. Tests that need auth or other extensions import `test`
-and `expect` from `e2e/fixtures/index.ts` instead.
+Import `test` and `expect` from `@playwright/test` directly.
+Import hydration helpers from `~e2e/fixtures`. Future custom
+fixtures (e.g., `authenticated.fixture.ts`) will export an
+extended `test` from `e2e/fixtures/`.
 
 ### Useful assertions
 

@@ -1,6 +1,5 @@
 import { useForm } from '@tanstack/react-form';
 import { useNavigate } from '@tanstack/react-router';
-import { type } from 'arktype';
 import { useState } from 'react';
 
 import { Icons } from '@/components/icons';
@@ -24,8 +23,10 @@ import {
 } from '@/components/ui/tooltip';
 import { appConfig } from '@/configs/app';
 import { authClient } from '@/lib/auth-client';
+import { fieldValidators } from '@/lib/form';
 import { clientLog } from '@/lib/logging/client-logger';
 import { SocialSignIn } from '@/modules/auth/components/social-sign-in';
+import { emailType, nameType } from '@/modules/auth/lib/validate-field';
 import { m } from '@/paraglide/messages';
 
 const passwordRules = [
@@ -37,45 +38,25 @@ const passwordRules = [
   () => m['validation.password.special'](),
 ] as const;
 
-const passwordType = type('string > 0')
-  .narrow((password, ctx) => {
-    let valid = true;
+function validatePassword(value: string): string[] | undefined {
+  const errors: string[] = [];
+  if (value.length < appConfig.passwordMinLength) {
+    errors.push(passwordRules[0]());
+  }
+  if (!/\d/.test(value)) {
+    errors.push(passwordRules[1]());
+  }
+  if (!/[^a-zA-Z0-9\s]/.test(value)) {
+    errors.push(passwordRules[2]());
+  }
+  return errors.length > 0 ? errors : undefined;
+}
 
-    if (password.length < appConfig.passwordMinLength) {
-      ctx.reject({
-        actual: '',
-        expected: passwordRules[0](),
-      });
-      valid = false;
-    }
-
-    if (!/\d/.test(password)) {
-      ctx.reject({
-        actual: '',
-        expected: passwordRules[1](),
-      });
-      valid = false;
-    }
-
-    if (!/[^a-zA-Z0-9\s]/.test(password)) {
-      ctx.reject({
-        actual: '',
-        expected: passwordRules[2](),
-      });
-      valid = false;
-    }
-
-    return valid;
-  })
-  .configure({
-    problem: (ctx) => ctx.expected,
-  });
-
-const signUpSchema = type({
-  email: 'string.email',
-  name: 'string > 0',
-  password: passwordType,
-});
+const passwordValidators = {
+  onBlur: ({ value }: { value: string }) => validatePassword(value),
+  onChange: ({ value }: { value: string }) => validatePassword(value),
+  onSubmit: ({ value }: { value: string }) => validatePassword(value),
+};
 
 function SignUpForm() {
   const navigate = useNavigate();
@@ -118,10 +99,6 @@ function SignUpForm() {
         setServerError(m['auth.error.unexpected']());
       }
     },
-    validators: {
-      onBlur: signUpSchema,
-      onChange: signUpSchema,
-    },
   });
 
   return (
@@ -141,7 +118,7 @@ function SignUpForm() {
             void form.handleSubmit();
           }}
         >
-          <form.Field name="name">
+          <form.Field name="name" validators={fieldValidators(nameType)}>
             {(field) => (
               <Field data-invalid={field.state.meta.errors.length > 0}>
                 <FieldLabel htmlFor="name">
@@ -161,7 +138,7 @@ function SignUpForm() {
             )}
           </form.Field>
 
-          <form.Field name="email">
+          <form.Field name="email" validators={fieldValidators(emailType)}>
             {(field) => (
               <Field data-invalid={field.state.meta.errors.length > 0}>
                 <FieldLabel htmlFor="email">
@@ -181,7 +158,7 @@ function SignUpForm() {
             )}
           </form.Field>
 
-          <form.Field name="password">
+          <form.Field name="password" validators={passwordValidators}>
             {(field) => (
               <Field data-invalid={field.state.meta.errors.length > 0}>
                 <div className="flex items-center gap-1.5">

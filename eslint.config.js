@@ -77,7 +77,7 @@ export default defineConfig(
             'unknown',
           ],
           ignoreCase: true,
-          internalPattern: ['^@/.+', '^~.+'],
+          internalPattern: ['^@/.+', '^~e2e/.+', '^~test/.+'],
           newlinesBetween: 1,
           order: 'asc',
           type: 'alphabetical',

@@ -1,6 +1,5 @@
 import { useForm } from '@tanstack/react-form';
 import { useNavigate } from '@tanstack/react-router';
-import { type } from 'arktype';
 import { useState } from 'react';
 
 import { Icons } from '@/components/icons';
@@ -17,14 +16,11 @@ import { Input } from '@/components/ui/input';
 import { RouterLink } from '@/components/ui/link';
 import { PasswordInput } from '@/components/ui/password-input';
 import { authClient } from '@/lib/auth-client';
+import { fieldValidators } from '@/lib/form';
 import { clientLog } from '@/lib/logging/client-logger';
 import { SocialSignIn } from '@/modules/auth/components/social-sign-in';
+import { emailType, passwordType } from '@/modules/auth/lib/validate-field';
 import { m } from '@/paraglide/messages';
-
-const signInSchema = type({
-  email: 'string.email',
-  password: 'string > 0',
-});
 
 type SignInFormProps = {
   redirect?: string;
@@ -73,10 +69,6 @@ function SignInForm({ redirect }: SignInFormProps) {
         setServerError(m['auth.error.unexpected']());
       }
     },
-    validators: {
-      onBlur: signInSchema,
-      onChange: signInSchema,
-    },
   });
 
   return (
@@ -96,7 +88,7 @@ function SignInForm({ redirect }: SignInFormProps) {
             void form.handleSubmit();
           }}
         >
-          <form.Field name="email">
+          <form.Field name="email" validators={fieldValidators(emailType)}>
             {(field) => (
               <Field data-invalid={field.state.meta.errors.length > 0}>
                 <FieldLabel htmlFor="email">
@@ -116,7 +108,10 @@ function SignInForm({ redirect }: SignInFormProps) {
             )}
           </form.Field>
 
-          <form.Field name="password">
+          <form.Field
+            name="password"
+            validators={fieldValidators(passwordType)}
+          >
             {(field) => (
               <Field data-invalid={field.state.meta.errors.length > 0}>
                 <FieldLabel htmlFor="password">
