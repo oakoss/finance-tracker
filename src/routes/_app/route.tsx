@@ -32,6 +32,7 @@ function AppLayout() {
       }}
     >
       <AppHeader />
+      {/* Banner region — consumers render here via TREK-114, TREK-106 */}
       <main className="flex flex-1 flex-col">
         <Outlet />
       </main>
