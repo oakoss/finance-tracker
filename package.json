@@ -64,7 +64,7 @@
     "@tanstack/router-plugin": "^1.164.0",
     "arkenv": "^0.11.0",
     "arktype": "^2.1.29",
-    "better-auth": "^1.5.0",
+    "better-auth": "^1.5.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

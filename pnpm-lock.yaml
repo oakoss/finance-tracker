@@ -88,7 +88,7 @@ importers:
         specifier: ^2.1.29
         version: 2.1.29
       better-auth:
-        specifier: ^1.5.0
+        specifier: ^1.5.1
         version: 1.5.1(8c9c55fbafd01875396dbb9b43ee86c5)
       class-variance-authority:
         specifier: ^0.7.1
