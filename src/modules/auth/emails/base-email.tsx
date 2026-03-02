@@ -9,14 +9,17 @@ import {
 } from '@react-email/components';
 import * as React from 'react';
 
+import { m } from '@/paraglide/messages';
+
 type BaseEmailProps = {
   children: React.ReactNode;
+  lang?: string;
   preview: string;
 };
 
-export function BaseEmail({ children, preview }: BaseEmailProps) {
+export function BaseEmail({ children, lang = 'en', preview }: BaseEmailProps) {
   return (
-    <Html lang="en">
+    <Html lang={lang}>
       <Head />
       <Preview>{preview}</Preview>
       <Tailwind
@@ -25,18 +28,18 @@ export function BaseEmail({ children, preview }: BaseEmailProps) {
           theme: {
             extend: {
               colors: {
-                accent: 'oklch(0.967 0.001 286.375)',
-                'accent-foreground': 'oklch(0.21 0.006 285.885)',
+                accent: 'oklch(0.967 0.001 247)',
+                'accent-foreground': 'oklch(0.21 0.006 247)',
                 background: 'oklch(1 0 0)',
-                border: 'oklch(0.92 0.004 286.32)',
+                border: 'oklch(0.92 0.004 247)',
                 card: 'oklch(1 0 0)',
-                foreground: 'oklch(0.141 0.005 285.823)',
-                muted: 'oklch(0.967 0.001 286.375)',
-                'muted-foreground': 'oklch(0.552 0.016 285.938)',
-                primary: 'oklch(0.21 0.006 285.885)',
+                foreground: 'oklch(0.141 0.005 247)',
+                muted: 'oklch(0.967 0.001 247)',
+                'muted-foreground': 'oklch(0.54 0.016 247)',
+                primary: 'oklch(0.45 0.08 245)',
                 'primary-foreground': 'oklch(0.985 0 0)',
-                secondary: 'oklch(0.967 0.001 286.375)',
-                'secondary-foreground': 'oklch(0.21 0.006 285.885)',
+                secondary: 'oklch(0.967 0.001 247)',
+                'secondary-foreground': 'oklch(0.21 0.006 247)',
               },
               fontFamily: {
                 sans: [
@@ -61,7 +64,7 @@ export function BaseEmail({ children, preview }: BaseEmailProps) {
           <Section className="mx-auto max-w-130 rounded-2xl border border-border bg-card px-8 py-10">
             {children}
             <Text className="mt-10 text-xs text-muted-foreground">
-              If you did not request this email, you can safely ignore it.
+              {m['email.common.ignoreNotice']()}
             </Text>
           </Section>
         </Section>

@@ -1,6 +1,8 @@
 import { Button, Text } from '@react-email/components';
 
 import { appConfig } from '@/configs/app';
+import { m } from '@/paraglide/messages';
+import { getLocale } from '@/paraglide/runtime';
 
 import { BaseEmail } from './base-email';
 
@@ -10,25 +12,30 @@ type ResetPasswordEmailProps = {
 };
 
 export function ResetPasswordEmail({ name, url }: ResetPasswordEmailProps) {
-  const preview = `Reset your ${appConfig.name} password`;
+  const preview = m['email.resetPassword.preview']({
+    appName: appConfig.name,
+  });
 
   return (
-    <BaseEmail preview={preview}>
+    <BaseEmail lang={getLocale()} preview={preview}>
       <Text className="text-lg font-semibold tracking-tight text-foreground">
-        Reset password
+        {m['email.resetPassword.heading']()}
       </Text>
       <Text className="mt-4 text-base/relaxed text-muted-foreground">
-        {name ? `Hi ${name},` : 'Hi,'} we received a request to reset your
-        {` ${appConfig.name}`} password.
+        {name
+          ? m['email.resetPassword.body']({ appName: appConfig.name, name })
+          : m['email.resetPassword.bodyNoName']({
+              appName: appConfig.name,
+            })}
       </Text>
       <Button
         className="mt-6 inline-block rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
         href={url}
       >
-        Reset password
+        {m['email.resetPassword.button']()}
       </Button>
       <Text className="mt-6 text-xs text-muted-foreground">
-        Or paste this link into your browser: {url}
+        {m['email.common.pasteLink']({ url })}
       </Text>
     </BaseEmail>
   );

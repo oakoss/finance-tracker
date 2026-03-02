@@ -4,6 +4,7 @@ import { db } from '@/db';
 import { createServerCookies } from '@/lib/cookies';
 import { sendEmail } from '@/lib/email';
 import { userPreferences } from '@/modules/finance/db/schema';
+import { m } from '@/paraglide/messages';
 import { isLocale } from '@/paraglide/runtime';
 
 import { type EmailLocale, renderEmail } from './email-render';
@@ -51,16 +52,17 @@ export async function sendVerificationEmail(params: {
     params.locale ??
     getLocaleFromCookie(params.cookie) ??
     (await getUserLocale(params.user.id));
-  const { html, text } = await renderEmail(
+  const { html, subject, text } = await renderEmail(
     <VerificationEmail name={params.user.name} url={params.url} />,
     {
       locale: resolvedLocale,
+      subject: () => m['email.verification.subject'](),
     },
   );
 
   await sendEmail({
     html,
-    subject: 'Verify your email',
+    subject: subject ?? m['email.verification.subject'](),
     text,
     to: [{ email: params.user.email, name: recipientName }],
   });
@@ -78,16 +80,17 @@ export async function sendResetPasswordEmail(params: {
     params.locale ??
     getLocaleFromCookie(params.cookie) ??
     (await getUserLocale(params.user.id));
-  const { html, text } = await renderEmail(
+  const { html, subject, text } = await renderEmail(
     <ResetPasswordEmail name={params.user.name} url={params.url} />,
     {
       locale: resolvedLocale,
+      subject: () => m['email.resetPassword.subject'](),
     },
   );
 
   await sendEmail({
     html,
-    subject: 'Reset your password',
+    subject: subject ?? m['email.resetPassword.subject'](),
     text,
     to: [{ email: params.user.email, name: recipientName }],
   });

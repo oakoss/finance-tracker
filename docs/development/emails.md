@@ -69,9 +69,9 @@ the event listener after.
 Emails use a local Tailwind config in `BaseEmail`:
 
 - `pixelBasedPreset` is enabled for email client compatibility.
-- Colors are aligned to the light theme OKLCH tokens from `:root` in
-  `src/styles/globals.css`.
-  These values are manually mirrored in `BaseEmail`, so keep them in sync
+- Colors are synced to the light-mode OKLCH tokens (hue ~245-247) from
+  `:root` in `src/styles/globals.css`.
+  These values are manually mirrored in `BaseEmail`; keep them in sync
   when tokens change.
 - System font stack is used for maximum client support.
 
@@ -127,7 +127,10 @@ If you add new tokens for email, extend the `colors` (or `fontFamily`) in `BaseE
 
 ## Localization (Paraglide)
 
-- Email templates can use Paraglide messages directly.
+- All user-facing strings in email templates use Paraglide `m['email.*']()` messages.
+  Subject lines in `email-service.tsx` also use message keys.
+- Templates pass `lang={getLocale()}` to `BaseEmail`, which sets the
+  `<Html lang>` attribute to the resolved locale.
 - Use the `renderEmail` helper in `src/modules/auth/emails/email-render.ts` to render
   localized HTML + plain text and restore the previous locale.
 - Pass an optional `locale` when sending emails (e.g.

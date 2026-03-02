@@ -8,6 +8,7 @@ export type EmailLocale = ReturnType<typeof getLocale>;
 
 type RenderEmailOptions = {
   locale?: EmailLocale;
+  subject?: () => string;
 };
 
 export async function renderEmail(
@@ -33,19 +34,22 @@ export async function renderEmail(
   }
 
   let renderError: Error | undefined;
-  let renderResult: { html: string; text: string } | undefined;
+  let renderResult:
+    | { html: string; subject?: string; text: string }
+    | undefined;
 
   try {
+    const subject = options.subject?.();
     const html = await render(element);
     const text = await render(element, { plainText: true });
-    renderResult = { html, text };
+    renderResult = { html, subject, text };
   } catch (error) {
     renderError = createError({
       cause: error instanceof Error ? error : new Error(String(error)),
-      fix: 'Check the email template for runtime errors or missing props.',
+      fix: 'Check the email template or subject callback for runtime errors.',
       message: 'Email render failed.',
       status: 500,
-      why: 'The React Email component threw during rendering.',
+      why: 'The React Email component or subject callback threw during rendering.',
     });
   }
 
