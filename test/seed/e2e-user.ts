@@ -4,9 +4,7 @@ import { eq } from 'drizzle-orm';
 import type { Db } from '~test/factories/base';
 
 import { accounts, users } from '@/db/schema';
-
-const E2E_EMAIL = process.env.E2E_USER_EMAIL ?? 'e2e@test.local';
-const E2E_PASSWORD = process.env.E2E_USER_PASSWORD ?? 'E2ePassword1!';
+import { E2E_EMAIL, E2E_PASSWORD } from '~e2e/fixtures/constants';
 
 export async function seedE2eUser(db: Db): Promise<void> {
   const existing = await db

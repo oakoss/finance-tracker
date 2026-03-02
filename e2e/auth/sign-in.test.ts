@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 import { waitForHydration } from '~e2e/fixtures';
+import { E2E_EMAIL, E2E_PASSWORD } from '~e2e/fixtures/constants';
 
 test.use({ storageState: { cookies: [], origins: [] } });
 
@@ -13,12 +14,8 @@ test.describe('sign in', { tag: ['@smoke', '@auth', '@a11y'] }, () => {
     });
 
     await test.step('fill credentials and submit', async () => {
-      await page
-        .getByLabel('Email')
-        .fill(process.env.E2E_USER_EMAIL ?? 'e2e@test.local');
-      await page
-        .getByLabel('Password', { exact: true })
-        .fill(process.env.E2E_USER_PASSWORD ?? 'E2ePassword1!');
+      await page.getByLabel('Email').fill(E2E_EMAIL);
+      await page.getByLabel('Password', { exact: true }).fill(E2E_PASSWORD);
       await page.getByRole('button', { name: 'Sign in' }).click();
     });
 
@@ -45,12 +42,8 @@ test.describe('sign in', { tag: ['@smoke', '@auth', '@a11y'] }, () => {
     });
 
     await test.step('sign in with valid credentials', async () => {
-      await page
-        .getByLabel('Email')
-        .fill(process.env.E2E_USER_EMAIL ?? 'e2e@test.local');
-      await page
-        .getByLabel('Password', { exact: true })
-        .fill(process.env.E2E_USER_PASSWORD ?? 'E2ePassword1!');
+      await page.getByLabel('Email').fill(E2E_EMAIL);
+      await page.getByLabel('Password', { exact: true }).fill(E2E_PASSWORD);
       await page.getByRole('button', { name: 'Sign in' }).click();
     });
 

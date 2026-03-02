@@ -1,9 +1,7 @@
 import { expect, type Page, test } from '@playwright/test';
 
 import { waitForElementHydration, waitForHydration } from '~e2e/fixtures';
-
-const E2E_EMAIL = process.env.E2E_USER_EMAIL ?? 'e2e@test.local';
-const E2E_PASSWORD = process.env.E2E_USER_PASSWORD ?? 'E2ePassword1!';
+import { E2E_EMAIL, E2E_PASSWORD } from '~e2e/fixtures/constants';
 
 async function signInViaUI(page: Page) {
   await page.goto('/sign-in');

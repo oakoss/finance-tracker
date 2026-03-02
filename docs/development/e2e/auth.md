@@ -18,16 +18,13 @@ files contain cookies and session tokens that must not be committed.
 import { expect, test as setup } from '@playwright/test';
 
 import { waitForHydration } from '~e2e/fixtures';
+import { E2E_EMAIL, E2E_PASSWORD } from '~e2e/fixtures/constants';
 
 setup('authenticate', async ({ page }) => {
   await page.goto('/sign-in');
   await waitForHydration(page);
-  await page
-    .getByLabel('Email')
-    .fill(process.env.E2E_USER_EMAIL ?? 'e2e@test.local');
-  await page
-    .getByLabel('Password', { exact: true })
-    .fill(process.env.E2E_USER_PASSWORD ?? 'E2ePassword1!');
+  await page.getByLabel('Email').fill(E2E_EMAIL);
+  await page.getByLabel('Password', { exact: true }).fill(E2E_PASSWORD);
   await page.getByRole('button', { name: 'Sign in' }).click();
   await expect(page).toHaveURL('/dashboard', { timeout: 15_000 });
   await expect(page.getByRole('heading', { name: /welcome/i })).toBeVisible();
