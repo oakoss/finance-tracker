@@ -78,7 +78,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className="relative">
         {children}
         <Scripts />
       </body>
@@ -110,7 +110,7 @@ function RootComponent() {
       attribute="class"
       defaultTheme="system"
     >
-      <div className="isolate">
+      <div className="isolate relative flex min-h-svh flex-col">
         <Outlet />
       </div>
       <Toaster />
