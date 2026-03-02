@@ -10,7 +10,6 @@
   "branchPrefix": "chore/deps-",
   "platformAutomerge": true,
   "rangeStrategy": "bump",
-  "preserveSemverRanges": true,
   "schedule": ["before 6am on the first day of the month"],
   "timezone": "America/Chicago",
   "labels": ["dependencies"],
