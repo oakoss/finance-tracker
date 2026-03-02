@@ -1,7 +1,7 @@
 # E2E Testing
 
 E2E tests use [Playwright](https://playwright.dev/) with Chromium
-(Chromium only; Firefox/WebKit projects planned).
+(desktop + iPhone + Pixel viewports; Firefox/WebKit projects planned).
 
 ## Commands
 
@@ -25,7 +25,8 @@ npx playwright show-report                 # open the HTML report viewer
   mode, no `noUnusedLocals`/`noUnusedParameters`)
 - **Parallel**: `fullyParallel: true` globally; individual tests run
   in parallel, not just files
-- **Browser**: Chromium only (add Firefox/WebKit projects as needed)
+- **Browser**: Chromium desktop + iPhone 15 Pro Max + Pixel 7
+  (add Firefox/WebKit projects as needed)
 - **Dev server**: Playwright starts `pnpm dev` automatically (port 3000)
 - **Retries**: 2 in CI, 0 locally
 - **Timeouts**: 30s test, 10s action, 15s navigation, 5s assertion.
@@ -86,8 +87,11 @@ e2e/
     auth.setup.ts            # storageState setup project
   fixtures/
     index.ts                 # hydration helpers (waitForHydration, etc.)
-    authenticated.fixture.ts # test.extend with auth context
+    constants.ts             # shared E2E credentials
+    mailpit.ts               # email assertion helpers
+    authenticated.fixture.ts # test.extend with auth context (planned)
   app/
+    dashboard.test.ts        # @smoke @a11y @authenticated
     shell.test.ts            # @smoke @a11y
   accounts/
     crud.test.ts             # @crud
@@ -114,6 +118,7 @@ flow. Tags are applied per `test.describe`, not per file.
 | `@auth`          | Sign-in/sign-up/sign-out flows             | Merge to main   |
 | `@authenticated` | Requires auth storageState (project split) | Merge to main   |
 | `@crud`          | Feature happy-path CRUD                    | Merge to main   |
+| `@mobile`        | Mobile-specific tests (not yet in use)     | Every PR        |
 
 CI currently runs all tags; per-tag filtering will be added when
 the suite is large enough to benefit.
@@ -389,8 +394,6 @@ npx playwright show-report                 # HTML report
 - CI sharding for parallel execution as the suite grows
   (`pnpm test:e2e -- --shard=1/4` across parallel CI jobs,
   `--reporter=blob` to merge reports).
-- Mobile/responsive testing via separate device projects (not
-  `setViewportSize`).
 - `webServer.wait` to detect server readiness by stdout pattern
   instead of port polling.
 - `--only-changed=$GITHUB_BASE_REF` to run only tests affected by

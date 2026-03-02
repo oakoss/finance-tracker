@@ -32,30 +32,60 @@ setup('authenticate', async ({ page }) => {
 });
 ```
 
-**`playwright.config.ts`** (target config, three projects):
+**`playwright.config.ts`** (projects use `grep`/`grepInvert` on
+`@authenticated` to split auth vs public tests):
 
 ```ts
+// Strip defaultBrowserType so iPhone uses Chromium instead of WebKit
+// (avoids requiring a WebKit install). Pixel already defaults to Chromium.
+const { defaultBrowserType: _iphone, ...iPhone } = devices['iPhone 15 Pro Max'];
+const { defaultBrowserType: _pixel, ...pixel } = devices['Pixel 7'];
+
 projects: [
   { name: 'setup', testDir: 'e2e/setup', testMatch: '*.setup.ts' },
+
+  // Desktop
   {
     dependencies: ['setup'],
     grep: /@authenticated/,
     name: 'chromium:authenticated',
-    use: {
-      ...devices['Desktop Chrome'],
-      storageState: 'playwright/.auth/user.json',
-    },
+    use: { ...devices['Desktop Chrome'], storageState: 'playwright/.auth/user.json' },
   },
   {
     grepInvert: /@authenticated/,
     name: 'chromium:public',
-    use: {
-      ...devices['Desktop Chrome'],
-      storageState: { cookies: [], origins: [] },
-    },
+    use: { ...devices['Desktop Chrome'], storageState: { cookies: [], origins: [] } },
+  },
+
+  // iPhone (Chromium with iPhone viewport/UA)
+  {
+    dependencies: ['setup'],
+    grep: /@authenticated/,
+    name: 'iphone:authenticated',
+    use: { ...iPhone, storageState: 'playwright/.auth/user.json' },
+  },
+  {
+    grepInvert: /@authenticated/,
+    name: 'iphone:public',
+    use: { ...iPhone, storageState: { cookies: [], origins: [] } },
+  },
+
+  // Pixel (Chromium with Pixel viewport/UA)
+  {
+    dependencies: ['setup'],
+    grep: /@authenticated/,
+    name: 'pixel:authenticated',
+    use: { ...pixel, storageState: 'playwright/.auth/user.json' },
+  },
+  {
+    grepInvert: /@authenticated/,
+    name: 'pixel:public',
+    use: { ...pixel, storageState: { cookies: [], origins: [] } },
   },
 ],
 ```
+
+For focused desktop-only runs: `pnpm test:e2e -- --project=chromium:public --project=chromium:authenticated`
 
 To test unauthenticated flows within an authenticated test file,
 override at the describe level:

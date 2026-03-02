@@ -3,6 +3,12 @@ import { defineConfig, devices } from '@playwright/test';
 const PORT = 3000;
 const BASE_URL = `http://localhost:${PORT}`;
 
+// Strip defaultBrowserType so iPhone uses Chromium instead of WebKit
+// (avoids requiring a WebKit install). Pixel already defaults to
+// Chromium; destructured for consistency.
+const { defaultBrowserType: _iphone, ...iPhone } = devices['iPhone 15 Pro Max'];
+const { defaultBrowserType: _pixel, ...pixel } = devices['Pixel 7'];
+
 export default defineConfig({
   expect: {
     timeout: 5000,
@@ -27,6 +33,44 @@ export default defineConfig({
       name: 'chromium:public',
       use: {
         ...devices['Desktop Chrome'],
+        storageState: { cookies: [], origins: [] },
+      },
+    },
+
+    // iPhone (Chromium with iPhone viewport/UA)
+    {
+      dependencies: ['setup'],
+      grep: /@authenticated/,
+      name: 'iphone:authenticated',
+      use: {
+        ...iPhone,
+        storageState: 'playwright/.auth/user.json',
+      },
+    },
+    {
+      grepInvert: /@authenticated/,
+      name: 'iphone:public',
+      use: {
+        ...iPhone,
+        storageState: { cookies: [], origins: [] },
+      },
+    },
+
+    // Pixel (Chromium with Pixel viewport/UA)
+    {
+      dependencies: ['setup'],
+      grep: /@authenticated/,
+      name: 'pixel:authenticated',
+      use: {
+        ...pixel,
+        storageState: 'playwright/.auth/user.json',
+      },
+    },
+    {
+      grepInvert: /@authenticated/,
+      name: 'pixel:public',
+      use: {
+        ...pixel,
         storageState: { cookies: [], origins: [] },
       },
     },

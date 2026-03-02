@@ -19,7 +19,10 @@
   /* UI tokens foregrounds */
   --primary-foreground: oklch(0.985 0 0);
   --secondary-foreground: oklch(0.21 0.006 247);
-  --muted-foreground: oklch(0.552 0.016 247);
+  --muted-foreground: oklch(0.54 0.016 247);
+  /* Text needs 4.5:1 (SC 1.4.3) but icons only need 3:1 (SC 1.4.11).
+     In light mode this allows a slightly lighter shade than --muted-foreground. */
+  --muted-icon: oklch(0.552 0.016 247);
   --accent-foreground: oklch(0.21 0.006 247);
   --link-foreground: oklch(0.26 0.12 245);
 
@@ -82,6 +85,7 @@
   --primary-foreground: oklch(0.16 0.01 249);
   --secondary-foreground: oklch(0.985 0 0);
   --muted-foreground: oklch(0.705 0.015 247);
+  --muted-icon: oklch(0.705 0.015 247);
   --accent-foreground: oklch(0.985 0 0);
   --link-foreground: oklch(0.9 0.08 245);
 
@@ -152,6 +156,7 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted-foreground: var(--muted-foreground);
+  --color-muted-icon: var(--muted-icon);
   --color-accent-foreground: var(--accent-foreground);
   --color-link-foreground: var(--link-foreground);
 
