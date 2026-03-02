@@ -139,7 +139,7 @@
     "lefthook": "^2.1.2",
     "mailpit-api": "^1.7.2",
     "markdownlint-cli2": "^0.21.0",
-    "nitro": "npm:nitro-nightly@3.0.1-20260226-083821-5ccf672a",
+    "nitro": "npm:nitro-nightly@3.0.1-20260227-181935-bfbb207c",
     "prettier": "^3.8.1",
     "prettier-plugin-packagejson": "^3.0.0",
     "shadcn": "^3.8.5",
