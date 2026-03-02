@@ -9,6 +9,11 @@ saves session state to `playwright/.auth/user.json`. Authenticated
 test projects depend on the setup project and reuse the saved
 storageState.
 
+A `db-setup` project runs before auth setup to ensure the E2E user
+and seed data exist in the database. This prevents cascade failures
+when the DB is empty (e.g., after `docker:reset && db:migrate`).
+The seed functions are idempotent — repeated runs are safe.
+
 **Important:** Add `playwright/.auth/` to `.gitignore` — these
 files contain cookies and session tokens that must not be committed.
 

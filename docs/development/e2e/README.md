@@ -84,6 +84,7 @@ npx playwright show-report                 # open the HTML report viewer
 ```text
 e2e/
   setup/
+    db.setup.ts              # seeds E2E user + catalog (no browser)
     auth.setup.ts            # storageState setup project
   fixtures/
     index.ts                 # hydration helpers (waitForHydration, etc.)

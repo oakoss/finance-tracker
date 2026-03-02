@@ -50,10 +50,7 @@ async function main() {
       await seedE2eUser(db);
       console.log('E2E seed complete');
     } catch (error) {
-      console.error(
-        'E2E seed failed:',
-        error instanceof Error ? error.message : error,
-      );
+      console.error('E2E seed failed:', error);
       console.error(
         'Hint: run "pnpm docker:reset" then retry "pnpm db:seed e2e"',
       );

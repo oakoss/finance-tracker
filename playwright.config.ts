@@ -18,7 +18,17 @@ export default defineConfig({
   fullyParallel: true,
   outputDir: 'test-results',
   projects: [
-    { name: 'setup', testDir: 'e2e/setup', testMatch: '*.setup.ts' },
+    {
+      name: 'db-setup',
+      testDir: 'e2e/setup',
+      testMatch: 'db.setup.ts',
+    },
+    {
+      dependencies: ['db-setup'],
+      name: 'setup',
+      testDir: 'e2e/setup',
+      testMatch: 'auth.setup.ts',
+    },
     {
       dependencies: ['setup'],
       grep: /@authenticated/,
@@ -29,6 +39,7 @@ export default defineConfig({
       },
     },
     {
+      dependencies: ['db-setup'],
       grepInvert: /@authenticated/,
       name: 'chromium:public',
       use: {
@@ -48,6 +59,7 @@ export default defineConfig({
       },
     },
     {
+      dependencies: ['db-setup'],
       grepInvert: /@authenticated/,
       name: 'iphone:public',
       use: {
@@ -67,6 +79,7 @@ export default defineConfig({
       },
     },
     {
+      dependencies: ['db-setup'],
       grepInvert: /@authenticated/,
       name: 'pixel:public',
       use: {

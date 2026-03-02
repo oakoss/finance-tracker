@@ -97,24 +97,28 @@ export async function seedBaseCategories(
       parent = existing[0];
     }
 
-    if (parent) {
-      if (inserted) all.push(parent);
+    if (!parent) {
+      throw new Error(
+        `Failed to resolve category "${def.name}" for user ${userId}`,
+      );
+    }
 
-      if (def.children) {
-        const children = await db
-          .insert(categories)
-          .values(
-            def.children.map((name) => ({
-              name,
-              parentId: parent.id,
-              type: def.type,
-              userId,
-            })),
-          )
-          .onConflictDoNothing()
-          .returning();
-        all.push(...children);
-      }
+    if (inserted) all.push(parent);
+
+    if (def.children) {
+      const children = await db
+        .insert(categories)
+        .values(
+          def.children.map((name) => ({
+            name,
+            parentId: parent.id,
+            type: def.type,
+            userId,
+          })),
+        )
+        .onConflictDoNothing()
+        .returning();
+      all.push(...children);
     }
   }
 
