@@ -1,12 +1,14 @@
-import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
-
 import { faker } from '@faker-js/faker';
 
-import { transactions } from '@/db/schema';
+import {
+  transactions,
+  type transactionsInsertSchema,
+  type transactionsSelectSchema,
+} from '@/db/schema';
 import { type Db, fakeCents, fakeDate, fakeId } from '~test/factories/base';
 
-type Transaction = InferSelectModel<typeof transactions>;
-type TransactionInsert = InferInsertModel<typeof transactions>;
+type Transaction = typeof transactionsSelectSchema.infer;
+type TransactionInsert = typeof transactionsInsertSchema.infer;
 
 const DESCRIPTIONS = [
   'Amazon Purchase',

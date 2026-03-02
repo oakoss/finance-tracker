@@ -1,14 +1,15 @@
-import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
-
 import { faker } from '@faker-js/faker';
 
-import { accountBalanceSnapshots } from '@/db/schema';
+import {
+  accountBalanceSnapshots,
+  type accountBalanceSnapshotsInsertSchema,
+  type accountBalanceSnapshotsSelectSchema,
+} from '@/db/schema';
 import { type Db, fakeCents, fakeDate, fakeId } from '~test/factories/base';
 
-type AccountBalanceSnapshot = InferSelectModel<typeof accountBalanceSnapshots>;
-type AccountBalanceSnapshotInsert = InferInsertModel<
-  typeof accountBalanceSnapshots
->;
+type AccountBalanceSnapshot = typeof accountBalanceSnapshotsSelectSchema.infer;
+type AccountBalanceSnapshotInsert =
+  typeof accountBalanceSnapshotsInsertSchema.infer;
 
 export function createAccountBalanceSnapshot(
   overrides?: Partial<AccountBalanceSnapshot>,

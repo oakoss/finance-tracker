@@ -1,10 +1,11 @@
-import type { InferSelectModel } from 'drizzle-orm';
-
 import type { Db } from '~test/factories/base';
 
-import { creditCardCatalog } from '@/db/schema';
+import {
+  creditCardCatalog,
+  type creditCardCatalogSelectSchema,
+} from '@/db/schema';
 
-type CreditCardCatalogRow = InferSelectModel<typeof creditCardCatalog>;
+type CreditCardCatalogRow = typeof creditCardCatalogSelectSchema.infer;
 
 const CATALOG = [
   {

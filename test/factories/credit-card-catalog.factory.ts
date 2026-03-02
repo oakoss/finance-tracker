@@ -1,12 +1,14 @@
-import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
-
 import { faker } from '@faker-js/faker';
 
-import { creditCardCatalog } from '@/db/schema';
+import {
+  creditCardCatalog,
+  type creditCardCatalogInsertSchema,
+  type creditCardCatalogSelectSchema,
+} from '@/db/schema';
 import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
-type CreditCardCatalog = InferSelectModel<typeof creditCardCatalog>;
-type CreditCardCatalogInsert = InferInsertModel<typeof creditCardCatalog>;
+type CreditCardCatalog = typeof creditCardCatalogSelectSchema.infer;
+type CreditCardCatalogInsert = typeof creditCardCatalogInsertSchema.infer;
 
 export function createCreditCardCatalog(
   overrides?: Partial<CreditCardCatalog>,

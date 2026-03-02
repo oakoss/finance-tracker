@@ -1,13 +1,11 @@
-import type { InferSelectModel } from 'drizzle-orm';
-
 import { faker } from '@faker-js/faker';
 
 import type {
-  categories,
-  ledgerAccounts,
-  payees,
-  transactions,
-  users,
+  categoriesSelectSchema,
+  ledgerAccountsSelectSchema,
+  payeesSelectSchema,
+  transactionsSelectSchema,
+  usersSelectSchema,
 } from '@/db/schema';
 
 import { type Db, fakeCents } from '~test/factories/base';
@@ -28,11 +26,11 @@ const CATEGORY_NAMES = [
 const PAYEE_NAMES = ['Whole Foods', 'Shell Gas', 'Netflix'];
 
 type MonthlySpendingContext = {
-  account: InferSelectModel<typeof ledgerAccounts>;
-  categories: InferSelectModel<typeof categories>[];
-  payees: InferSelectModel<typeof payees>[];
-  transactions: InferSelectModel<typeof transactions>[];
-  user: InferSelectModel<typeof users>;
+  account: typeof ledgerAccountsSelectSchema.infer;
+  categories: (typeof categoriesSelectSchema.infer)[];
+  payees: (typeof payeesSelectSchema.infer)[];
+  transactions: (typeof transactionsSelectSchema.infer)[];
+  user: typeof usersSelectSchema.infer;
 };
 
 export async function createMonthlySpending(
@@ -54,7 +52,7 @@ export async function createMonthlySpending(
     PAYEE_NAMES.map((name) => insertPayee(db, { name, userId: user.id })),
   );
 
-  const txns: InferSelectModel<typeof transactions>[] = [];
+  const txns: (typeof transactionsSelectSchema.infer)[] = [];
   for (let day = 1; day <= 30; day++) {
     const date = new Date(`2024-06-${String(day).padStart(2, '0')}T12:00:00Z`);
     const txn = await insertTransaction(db, {

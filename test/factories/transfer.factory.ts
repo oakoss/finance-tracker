@@ -1,10 +1,12 @@
-import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
-
-import { transfers } from '@/db/schema';
+import {
+  transfers,
+  type transfersInsertSchema,
+  type transfersSelectSchema,
+} from '@/db/schema';
 import { type Db, fakeCents, fakeDate, fakeId } from '~test/factories/base';
 
-type Transfer = InferSelectModel<typeof transfers>;
-type TransferInsert = InferInsertModel<typeof transfers>;
+type Transfer = typeof transfersSelectSchema.infer;
+type TransferInsert = typeof transfersInsertSchema.infer;
 
 export function createTransfer(overrides?: Partial<Transfer>): Transfer {
   const now = fakeDate();

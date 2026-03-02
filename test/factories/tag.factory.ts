@@ -1,12 +1,14 @@
-import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
-
 import { faker } from '@faker-js/faker';
 
-import { tags } from '@/db/schema';
+import {
+  tags,
+  type tagsInsertSchema,
+  type tagsSelectSchema,
+} from '@/db/schema';
 import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
-type Tag = InferSelectModel<typeof tags>;
-type TagInsert = InferInsertModel<typeof tags>;
+type Tag = typeof tagsSelectSchema.infer;
+type TagInsert = typeof tagsInsertSchema.infer;
 
 const TAG_NAMES = [
   'business',

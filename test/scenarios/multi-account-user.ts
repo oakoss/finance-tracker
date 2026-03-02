@@ -1,16 +1,17 @@
-import type { InferSelectModel } from 'drizzle-orm';
-
-import type { ledgerAccounts, users } from '@/db/schema';
+import type {
+  ledgerAccountsSelectSchema,
+  usersSelectSchema,
+} from '@/db/schema';
 import type { Db } from '~test/factories/base';
 
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
 import { insertUser } from '~test/factories/user.factory';
 
 type MultiAccountUserContext = {
-  checking: InferSelectModel<typeof ledgerAccounts>;
-  creditCard: InferSelectModel<typeof ledgerAccounts>;
-  savings: InferSelectModel<typeof ledgerAccounts>;
-  user: InferSelectModel<typeof users>;
+  checking: typeof ledgerAccountsSelectSchema.infer;
+  creditCard: typeof ledgerAccountsSelectSchema.infer;
+  savings: typeof ledgerAccountsSelectSchema.infer;
+  user: typeof usersSelectSchema.infer;
 };
 
 export async function createMultiAccountUser(

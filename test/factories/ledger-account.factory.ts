@@ -1,12 +1,14 @@
-import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
-
 import { faker } from '@faker-js/faker';
 
-import { ledgerAccounts } from '@/db/schema';
+import {
+  ledgerAccounts,
+  type ledgerAccountsInsertSchema,
+  type ledgerAccountsSelectSchema,
+} from '@/db/schema';
 import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
-type LedgerAccount = InferSelectModel<typeof ledgerAccounts>;
-type LedgerAccountInsert = InferInsertModel<typeof ledgerAccounts>;
+type LedgerAccount = typeof ledgerAccountsSelectSchema.infer;
+type LedgerAccountInsert = typeof ledgerAccountsInsertSchema.infer;
 
 const ACCOUNT_TYPES = [
   'checking',

@@ -1,12 +1,14 @@
-import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
-
 import { faker } from '@faker-js/faker';
 
-import { accountTerms } from '@/db/schema';
+import {
+  accountTerms,
+  type accountTermsInsertSchema,
+  type accountTermsSelectSchema,
+} from '@/db/schema';
 import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
-type AccountTerms = InferSelectModel<typeof accountTerms>;
-type AccountTermsInsert = InferInsertModel<typeof accountTerms>;
+type AccountTerms = typeof accountTermsSelectSchema.infer;
+type AccountTermsInsert = typeof accountTermsInsertSchema.infer;
 
 export function createAccountTerms(
   overrides?: Partial<AccountTerms>,

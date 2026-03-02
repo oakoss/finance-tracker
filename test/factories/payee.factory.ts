@@ -1,12 +1,14 @@
-import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
-
 import { faker } from '@faker-js/faker';
 
-import { payees } from '@/db/schema';
+import {
+  payees,
+  type payeesInsertSchema,
+  type payeesSelectSchema,
+} from '@/db/schema';
 import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
-type Payee = InferSelectModel<typeof payees>;
-type PayeeInsert = InferInsertModel<typeof payees>;
+type Payee = typeof payeesSelectSchema.infer;
+type PayeeInsert = typeof payeesInsertSchema.infer;
 
 export function createPayee(overrides?: Partial<Payee>): Payee {
   const now = fakeDate();

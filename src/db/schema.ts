@@ -1,5 +1,6 @@
 export * from '@/modules/accounts/db/relations';
 export * from '@/modules/accounts/db/schema';
+export * from '@/modules/auth/db/arktype-schemas';
 export * from '@/modules/auth/db/relations';
 export * from '@/modules/auth/db/schema';
 export * from '@/modules/finance/db/relations';

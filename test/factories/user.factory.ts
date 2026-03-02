@@ -1,12 +1,14 @@
-import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
-
 import { faker } from '@faker-js/faker';
 
-import { users } from '@/db/schema';
+import {
+  users,
+  type usersInsertSchema,
+  type usersSelectSchema,
+} from '@/db/schema';
 import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
-type User = InferSelectModel<typeof users>;
-type UserInsert = InferInsertModel<typeof users>;
+type User = typeof usersSelectSchema.infer;
+type UserInsert = typeof usersInsertSchema.infer;
 
 export function createUser(overrides?: Partial<User>): User {
   const now = fakeDate();

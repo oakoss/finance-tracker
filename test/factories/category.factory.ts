@@ -1,12 +1,14 @@
-import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
-
 import { faker } from '@faker-js/faker';
 
-import { categories } from '@/db/schema';
+import {
+  categories,
+  type categoriesInsertSchema,
+  type categoriesSelectSchema,
+} from '@/db/schema';
 import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
-type Category = InferSelectModel<typeof categories>;
-type CategoryInsert = InferInsertModel<typeof categories>;
+type Category = typeof categoriesSelectSchema.infer;
+type CategoryInsert = typeof categoriesInsertSchema.infer;
 
 const CATEGORY_TYPES = ['income', 'expense', 'transfer'] as const;
 

@@ -1,10 +1,14 @@
-import { and, eq, type InferSelectModel } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 import type { Db } from '~test/factories/base';
 
-import { categories, type categoryTypeEnum } from '@/db/schema';
+import {
+  categories,
+  type categoriesSelectSchema,
+  type categoryTypeEnum,
+} from '@/db/schema';
 
-type CategoryRow = InferSelectModel<typeof categories>;
+type CategoryRow = typeof categoriesSelectSchema.infer;
 type CategoryType = (typeof categoryTypeEnum.enumValues)[number];
 
 type CategoryDef = {
