@@ -11,14 +11,15 @@ type CategoryInsert = InferInsertModel<typeof categories>;
 const CATEGORY_TYPES = ['income', 'expense', 'transfer'] as const;
 
 const EXPENSE_CATEGORIES = [
-  'Groceries',
-  'Dining Out',
+  'Housing',
   'Transportation',
-  'Entertainment',
-  'Utilities',
+  'Food',
   'Healthcare',
+  'Entertainment',
   'Shopping',
+  'Personal',
   'Education',
+  'Gifts & Donations',
 ];
 
 export function createCategory(overrides?: Partial<Category>): Category {

@@ -7,6 +7,8 @@ import { FAKER_SEED } from '~test/factories/base';
 import { createFullTransaction } from '~test/scenarios/full-transaction';
 import { createMonthlySpending } from '~test/scenarios/monthly-spending';
 import { createMultiAccountUser } from '~test/scenarios/multi-account-user';
+import { seedBaseCategories } from '~test/seed/base-categories';
+import { seedCreditCardCatalog } from '~test/seed/credit-card-catalog';
 import { seedE2eUser } from '~test/seed/e2e-user';
 import { resetDatabase } from '~test/seed/reset';
 
@@ -41,6 +43,8 @@ async function main() {
   console.log('Resetting database...');
   await resetDatabase(db);
 
+  await seedCreditCardCatalog(db);
+
   if (profile === 'e2e') {
     try {
       await seedE2eUser(db);
@@ -59,22 +63,30 @@ async function main() {
   }
 
   if (profile === 'minimal') {
-    await createFullTransaction(db);
-    console.log('Created: 1 full transaction chain');
+    const ctx = await createFullTransaction(db);
+    await seedBaseCategories(db, ctx.user.id);
+    console.log('Created: 1 full transaction chain + base categories');
   }
 
   if (profile === 'standard' || profile === 'stress') {
-    await createFullTransaction(db);
-    await createMultiAccountUser(db);
-    await createMonthlySpending(db);
+    const fullTxn = await createFullTransaction(db);
+    await seedBaseCategories(db, fullTxn.user.id);
+
+    const multiAcct = await createMultiAccountUser(db);
+    await seedBaseCategories(db, multiAcct.user.id);
+
+    const monthly = await createMonthlySpending(db);
+    await seedBaseCategories(db, monthly.user.id);
+
     console.log(
-      'Created: full transaction + multi-account user + monthly spending',
+      'Created: full transaction + multi-account user + monthly spending + base categories',
     );
   }
 
   if (profile === 'stress') {
     for (let i = 0; i < 9; i++) {
-      await createMonthlySpending(db);
+      const ctx = await createMonthlySpending(db);
+      await seedBaseCategories(db, ctx.user.id);
     }
     console.log('Created: 9 additional monthly spending scenarios');
   }
