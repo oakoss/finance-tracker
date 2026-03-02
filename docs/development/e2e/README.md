@@ -93,6 +93,8 @@ e2e/
     crud.test.ts             # @crud
     list.test.ts             # @smoke @a11y
   auth/
+    redirect.test.ts         # @smoke @auth
+    reverse-guard.test.ts    # @smoke @auth @authenticated
     sign-in.test.ts          # @smoke @auth @a11y
     sign-up.test.ts          # @smoke @auth @a11y
     sign-out.test.ts         # @auth
@@ -105,12 +107,13 @@ flow. Tags are applied per `test.describe`, not per file.
 
 ## Tags
 
-| Tag      | Purpose                        | Planned CI gate |
-| -------- | ------------------------------ | --------------- |
-| `@smoke` | Page loads, renders, redirects | Every PR        |
-| `@a11y`  | Contrast, ARIA checks via Axe  | Every PR        |
-| `@auth`  | Sign-in/sign-up/sign-out flows | Merge to main   |
-| `@crud`  | Feature happy-path CRUD        | Merge to main   |
+| Tag              | Purpose                                    | Planned CI gate |
+| ---------------- | ------------------------------------------ | --------------- |
+| `@smoke`         | Page loads, renders, redirects             | Every PR        |
+| `@a11y`          | Contrast, ARIA checks via Axe              | Every PR        |
+| `@auth`          | Sign-in/sign-up/sign-out flows             | Merge to main   |
+| `@authenticated` | Requires auth storageState (project split) | Merge to main   |
+| `@crud`          | Feature happy-path CRUD                    | Merge to main   |
 
 CI currently runs all tags; per-tag filtering will be added when
 the suite is large enough to benefit.

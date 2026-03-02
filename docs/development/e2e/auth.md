@@ -39,14 +39,15 @@ projects: [
   { name: 'setup', testDir: 'e2e/setup', testMatch: '*.setup.ts' },
   {
     dependencies: ['setup'],
+    grep: /@authenticated/,
     name: 'chromium:authenticated',
-    testMatch: [],  // no tests yet — placeholder until authenticated tests exist
     use: {
       ...devices['Desktop Chrome'],
       storageState: 'playwright/.auth/user.json',
     },
   },
   {
+    grepInvert: /@authenticated/,
     name: 'chromium:public',
     use: {
       ...devices['Desktop Chrome'],

@@ -15,14 +15,15 @@ export default defineConfig({
     { name: 'setup', testDir: 'e2e/setup', testMatch: '*.setup.ts' },
     {
       dependencies: ['setup'],
+      grep: /@authenticated/,
       name: 'chromium:authenticated',
-      testMatch: [],
       use: {
         ...devices['Desktop Chrome'],
         storageState: 'playwright/.auth/user.json',
       },
     },
     {
+      grepInvert: /@authenticated/,
       name: 'chromium:public',
       use: {
         ...devices['Desktop Chrome'],
