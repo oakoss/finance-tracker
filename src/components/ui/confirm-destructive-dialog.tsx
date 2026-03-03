@@ -21,8 +21,10 @@ type ConfirmDestructiveDialogProps = {
   description: string;
   loading?: boolean | undefined;
   onConfirm: () => void;
+  onOpenChange?: (open: boolean) => void;
+  open?: boolean;
   title: string;
-  trigger: React.ReactElement;
+  trigger?: React.ReactElement;
 };
 
 function ConfirmDestructiveDialog({
@@ -31,10 +33,14 @@ function ConfirmDestructiveDialog({
   description,
   loading,
   onConfirm,
+  onOpenChange: onOpenChangeProp,
+  open: openProp,
   title,
   trigger,
 }: ConfirmDestructiveDialogProps) {
-  const [open, setOpen] = React.useState(false);
+  const [internalOpen, setInternalOpen] = React.useState(false);
+  const isControlled = openProp !== undefined;
+  const open = isControlled ? openProp : internalOpen;
   const [value, setValue] = React.useState('');
   const inputId = React.useId();
 
@@ -42,7 +48,8 @@ function ConfirmDestructiveDialog({
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen && loading) return;
-    setOpen(nextOpen);
+    if (!isControlled) setInternalOpen(nextOpen);
+    onOpenChangeProp?.(nextOpen);
     if (!nextOpen) {
       setValue('');
     }
@@ -55,7 +62,7 @@ function ConfirmDestructiveDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={handleOpenChange}>
-      <AlertDialogPrimitive.Trigger render={trigger} />
+      {trigger && <AlertDialogPrimitive.Trigger render={trigger} />}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>

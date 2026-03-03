@@ -240,3 +240,110 @@ describe('ConfirmDestructiveDialog', () => {
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled();
   });
 });
+
+describe('ConfirmDestructiveDialog (controlled mode)', () => {
+  it('renders open when open prop is true', () => {
+    render(
+      <ConfirmDestructiveDialog
+        open
+        confirmPhrase="DELETE"
+        description="This action cannot be undone."
+        title="Delete item?"
+        onConfirm={vi.fn()}
+        onOpenChange={vi.fn()}
+      />,
+    );
+    expect(screen.getByText('Delete item?')).toBeInTheDocument();
+  });
+
+  it('does not render dialog when open prop is false', () => {
+    render(
+      <ConfirmDestructiveDialog
+        confirmPhrase="DELETE"
+        description="This action cannot be undone."
+        open={false}
+        title="Delete item?"
+        onConfirm={vi.fn()}
+        onOpenChange={vi.fn()}
+      />,
+    );
+    expect(screen.queryByText('Delete item?')).not.toBeInTheDocument();
+  });
+
+  it('calls onOpenChange when dialog is dismissed', async () => {
+    const onOpenChange = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <ConfirmDestructiveDialog
+        open
+        confirmPhrase="DELETE"
+        description="This action cannot be undone."
+        title="Delete item?"
+        onConfirm={vi.fn()}
+        onOpenChange={onOpenChange}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it('does not call onOpenChange while loading', async () => {
+    const onOpenChange = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <ConfirmDestructiveDialog
+        loading
+        open
+        confirmPhrase="DELETE"
+        description="This action cannot be undone."
+        title="Delete item?"
+        onConfirm={vi.fn()}
+        onOpenChange={onOpenChange}
+      />,
+    );
+
+    await user.keyboard('{Escape}');
+
+    expect(onOpenChange).not.toHaveBeenCalled();
+  });
+
+  it('stays open when parent does not update open prop', async () => {
+    const user = userEvent.setup();
+    render(
+      <ConfirmDestructiveDialog
+        open
+        confirmPhrase="DELETE"
+        description="This action cannot be undone."
+        title="Delete item?"
+        onConfirm={vi.fn()}
+        onOpenChange={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(screen.getByText('Delete item?')).toBeInTheDocument();
+  });
+
+  it('calls onConfirm when phrase matches in controlled mode', async () => {
+    const onConfirm = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <ConfirmDestructiveDialog
+        open
+        confirmPhrase="DELETE"
+        description="This action cannot be undone."
+        title="Delete item?"
+        onConfirm={onConfirm}
+        onOpenChange={vi.fn()}
+      />,
+    );
+
+    await user.type(screen.getByPlaceholderText('DELETE'), 'DELETE');
+    await user.click(screen.getByRole('button', { name: 'Delete' }));
+
+    expect(onConfirm).toHaveBeenCalledTimes(1);
+  });
+});
