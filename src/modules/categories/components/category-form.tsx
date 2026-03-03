@@ -1,5 +1,4 @@
 import { useForm } from '@tanstack/react-form';
-import { type } from 'arktype';
 
 import type { CategoryListItem } from '@/modules/categories/api/list-categories';
 
@@ -13,15 +12,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { categoryTypeEnum } from '@/modules/categories/db/schema';
+import {
+  type CreateCategoryInput,
+  createCategorySchema,
+} from '@/modules/categories/types';
 import { m } from '@/paraglide/messages';
 
-const categoryFormSchema = type({
-  name: '0 < string <= 100',
-  parentId: 'string',
-  type: type.enumerated(...categoryTypeEnum.enumValues),
-});
-
-export type CategoryFormValues = typeof categoryFormSchema.infer;
+export type CategoryFormValues = CreateCategoryInput;
 
 type CategoryFormProps = {
   categories?: CategoryListItem[];
@@ -33,7 +30,6 @@ type CategoryFormProps = {
 
 const DEFAULT_VALUES: CategoryFormValues = {
   name: '',
-  parentId: '',
   type: 'expense',
 };
 
@@ -48,13 +44,13 @@ export function CategoryForm({
     defaultValues: { ...DEFAULT_VALUES, ...defaultValues },
     onSubmit: ({ value }) => onSubmit(value),
     validators: {
-      onBlur: categoryFormSchema,
-      onSubmit: categoryFormSchema,
+      onBlur: createCategorySchema,
+      onSubmit: createCategorySchema,
     },
   });
 
-  // Only show top-level categories as valid parents (one-level nesting).
-  // Exclude self and current children when editing.
+  // Only show top-level categories (those without a parent) as valid
+  // parents — enforces single-level nesting. Exclude self when editing.
   const parentOptions = categories.filter(
     (c) => !c.parentId && c.id !== editId,
   );
@@ -96,7 +92,9 @@ export function CategoryForm({
             <Select
               disabled={isSubmitting}
               value={field.state.value}
-              onValueChange={(v) => field.handleChange(v!)}
+              onValueChange={(v) => {
+                if (v) field.handleChange(v);
+              }}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -119,13 +117,15 @@ export function CategoryForm({
             <FieldLabel>{m['categories.form.parent']()}</FieldLabel>
             <Select
               disabled={isSubmitting}
-              value={field.state.value || '__none__'}
+              value={field.state.value}
               onValueChange={(v) =>
-                field.handleChange(v === '__none__' ? '' : v!)
+                field.handleChange(
+                  v === '__none__' ? undefined : (v ?? undefined),
+                )
               }
             >
               <SelectTrigger>
-                <SelectValue />
+                <SelectValue placeholder={m['categories.form.parentNone']()} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__none__">

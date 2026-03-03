@@ -40,7 +40,7 @@ export function EditCategoryDialog({ categories }: EditCategoryDialogProps) {
     if (!item) return;
     return {
       name: item.name,
-      parentId: item.parentId ?? '',
+      parentId: item.parentId ?? undefined,
       type: item.type,
     };
   }, [item]);
@@ -56,7 +56,7 @@ export function EditCategoryDialog({ categories }: EditCategoryDialogProps) {
     mutation.mutate({
       id: editId,
       name: values.name,
-      parentId: values.parentId || null,
+      parentId: values.parentId ?? null,
       type: values.type,
     });
   };

@@ -1,14 +1,18 @@
 import { expect, test } from '@playwright/test';
 
-import { waitForHydration } from '~e2e/fixtures';
+import { waitForElementHydration } from '~e2e/fixtures';
 
 test.describe('categories CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
   test('create, edit, and delete a category', async ({ page }) => {
     await page.goto('/categories');
-    await waitForHydration(page);
+    const heading = page.getByRole('heading', { name: /categories/i });
+    await waitForElementHydration(heading);
 
     // Create category
-    await page.getByRole('button', { name: /add category/i }).click();
+    await page
+      .getByRole('button', { name: /add category/i })
+      .first()
+      .click();
     await expect(
       page.getByRole('heading', { name: /create category/i }),
     ).toBeVisible();

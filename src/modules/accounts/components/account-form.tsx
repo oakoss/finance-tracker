@@ -1,7 +1,4 @@
 import { useForm } from '@tanstack/react-form';
-import { type } from 'arktype';
-
-import type { CreateAccountInput } from '@/modules/accounts/types';
 
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
@@ -16,13 +13,15 @@ import {
   accountOwnerTypeEnum,
   accountTypeEnum,
 } from '@/modules/accounts/db/schema';
+import { createAccountSchema } from '@/modules/accounts/types';
 import { m } from '@/paraglide/messages';
 
-const accountFormSchema = type({
-  currency: 'string > 0',
-  name: 'string > 0',
-  type: type.enumerated(...accountTypeEnum.enumValues),
-});
+// Derive form validation from the server schema. Only pick fields
+// whose form-state type matches the server type. Fields like
+// initialBalanceCents (string -> integer), openedAt (string -> date),
+// and terms (string sub-fields -> typed object) are converted in the
+// dialog's handleSubmit before being passed to the server.
+const accountFormSchema = createAccountSchema.pick('currency', 'name', 'type');
 
 type AccountFormValues = {
   accountNumberMask: string;
@@ -39,7 +38,7 @@ type AccountFormValues = {
     minPaymentValue: string;
     statementDay: string;
   };
-  type: CreateAccountInput['type'];
+  type: (typeof accountTypeEnum.enumValues)[number];
 };
 
 type AccountFormProps = {
@@ -122,7 +121,9 @@ export function AccountForm({
               <Select
                 disabled={isSubmitting}
                 value={field.state.value}
-                onValueChange={(v) => field.handleChange(v!)}
+                onValueChange={(v) => {
+                  if (v) field.handleChange(v);
+                }}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -167,7 +168,9 @@ export function AccountForm({
               <Select
                 disabled={isSubmitting}
                 value={field.state.value}
-                onValueChange={(v) => field.handleChange(v!)}
+                onValueChange={(v) => {
+                  if (v) field.handleChange(v);
+                }}
               >
                 <SelectTrigger>
                   <SelectValue />

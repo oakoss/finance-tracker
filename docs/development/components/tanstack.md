@@ -10,8 +10,26 @@ This doc covers how UI components integrate with TanStack libraries.
 ## Form (TanStack Form)
 
 - Use `useForm` and `form.Field` render props.
-- Validation uses ArkType at the form level by default.
 - Add `data-invalid` to `Field` and `aria-invalid` to inputs.
+
+### Validation
+
+- **Single source of truth**: Import the server schema from
+  `types.ts` (e.g. `createCategorySchema`) and use it — or a
+  derivation of it — as the form validator. Never duplicate
+  validation logic in the form component.
+- If the form needs a subset or variant, derive it with
+  `.pick()` / `.omit()` / `.merge()` — don't write a new schema.
+- Validate on both `onBlur` and `onSubmit`:
+
+  ```ts
+  validators: { onBlur: createFooSchema, onSubmit: createFooSchema }
+  ```
+
+- For optional fields that use empty string as "unset" in the UI
+  (e.g. a select with a "None" option), store `undefined` in form
+  state so the schema's `'field?'` constraint works. Map sentinel
+  values to `undefined` in `onValueChange`.
 
 ## Query (TanStack Query)
 

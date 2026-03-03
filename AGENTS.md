@@ -7,7 +7,9 @@ PostgreSQL/Drizzle, Better Auth, Tailwind CSS v4/shadcn.
 
 - **Package manager**: pnpm (not npm).
 - **Path aliases**: `@/*` -> `src/*`, `~e2e/*` -> `e2e/*`, `~test/*` -> `test/*`.
-- **Validation**: ArkType everywhere (not Zod).
+- **Validation**: ArkType everywhere (not Zod). Server schema in
+  `types.ts` is the single source of truth — forms import and reuse
+  it (or derive via `.pick()` / `.omit()` / `.merge()`).
 - **UI style**: shadcn/ui `base-nova` (Base UI, not Radix). Use
   `render` prop / `mergeProps`, not `asChild`. Icons: Lucide.
 - **Typography**: Tailwind classes directly on semantic elements. See
@@ -34,6 +36,7 @@ PostgreSQL/Drizzle, Better Auth, Tailwind CSS v4/shadcn.
 | DB reset          | `pnpm docker:reset`                                   |
 | DB introspect     | `pnpm db:pull`                                        |
 | Auth schema       | `pnpm schema:auth`                                    |
+| Route tree regen  | `pnpm build` (TanStack Router generates via Vite)     |
 | Production start  | `pnpm start`                                          |
 | Clean all         | `pnpm clean`                                          |
 
