@@ -7,8 +7,8 @@ import { createError, log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
 import { arkValidator, isExpectedError, toError } from '@/lib/validation';
 import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
+import { categories } from '@/modules/categories/db/schema';
 import { createCategorySchema } from '@/modules/categories/types';
-import { categories } from '@/modules/finance/db/schema';
 
 export const createCategory = createServerFn({ method: 'POST' })
   .inputValidator(arkValidator(createCategorySchema))

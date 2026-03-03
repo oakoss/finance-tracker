@@ -13,8 +13,8 @@ import {
   toError,
 } from '@/lib/validation';
 import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
+import { categories } from '@/modules/categories/db/schema';
 import { updateCategorySchema } from '@/modules/categories/types';
-import { categories } from '@/modules/finance/db/schema';
 
 export const updateCategory = createServerFn({ method: 'POST' })
   .inputValidator(arkValidator(updateCategorySchema))

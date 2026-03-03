@@ -7,20 +7,19 @@ import {
   users,
   verifications,
 } from '@/modules/auth/db/schema';
+import { categories } from '@/modules/categories/db/schema';
 import {
   attachments,
-  categories,
   debtStrategies,
   imports,
   merchantRules,
-  payees,
   recurringRules,
   statements,
-  tags,
   transfers,
   userPreferences,
 } from '@/modules/finance/db/schema';
 import { todos } from '@/modules/todos/db/schema';
+import { payees, tags } from '@/modules/transactions/db/schema';
 
 // usersRelations spans auth, finance, and todos modules.
 // Drizzle requires exactly one relations() call per table,

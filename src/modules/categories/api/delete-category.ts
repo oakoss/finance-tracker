@@ -13,8 +13,8 @@ import {
   toError,
 } from '@/lib/validation';
 import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
+import { categories } from '@/modules/categories/db/schema';
 import { deleteCategorySchema } from '@/modules/categories/types';
-import { categories } from '@/modules/finance/db/schema';
 
 export const deleteCategory = createServerFn({ method: 'POST' })
   .inputValidator(arkValidator(deleteCategorySchema))

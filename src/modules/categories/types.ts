@@ -5,7 +5,7 @@ import {
   categoriesSelectSchema,
   categoriesUpdateSchema,
   categoryTypeEnum,
-} from '@/modules/finance/db/schema';
+} from '@/modules/categories/db/schema';
 
 export const createCategorySchema = categoriesInsertSchema
   .pick('name', 'parentId', 'type')

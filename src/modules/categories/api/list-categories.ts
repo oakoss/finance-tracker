@@ -7,7 +7,7 @@ import { createError, log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
 import { isExpectedError, toError } from '@/lib/validation';
 import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
-import { categories } from '@/modules/finance/db/schema';
+import { categories } from '@/modules/categories/db/schema';
 
 export const listCategories = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])

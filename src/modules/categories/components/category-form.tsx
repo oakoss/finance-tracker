@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { categoryTypeEnum } from '@/modules/finance/db/schema';
+import { categoryTypeEnum } from '@/modules/categories/db/schema';
 import { m } from '@/paraglide/messages';
 
 const categoryFormSchema = type({
