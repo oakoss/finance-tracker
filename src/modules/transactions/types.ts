@@ -1,13 +1,10 @@
 import { type } from 'arktype';
 
+import { dateString } from '@/lib/schema';
 import {
   transactionDirectionEnum,
   transactionsSelectSchema,
 } from '@/modules/transactions/db/schema';
-
-const dateString = type('string > 0').narrow(
-  (s, ctx) => !Number.isNaN(Date.parse(s)) || ctx.mustBe('a valid date string'),
-);
 
 export const createTransactionSchema = type({
   accountId: 'string > 0',

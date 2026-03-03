@@ -1,5 +1,6 @@
 import { type } from 'arktype';
 
+import { currencyCode, dateOrNull } from '@/lib/schema';
 import {
   accountOwnerTypeEnum,
   accountStatusEnum,
@@ -9,24 +10,17 @@ import {
 
 const termsSchema = type({
   'aprBps?': 'number.integer | null',
-  'dueDay?': 'number.integer | null',
-  'minPaymentType?': 'string | null',
+  'dueDay?': '1 <= number.integer <= 28 | null',
+  'minPaymentType?': type.enumerated('percentage', 'fixed').or(type('null')),
   'minPaymentValue?': 'number.integer | null',
-  'statementDay?': 'number.integer | null',
+  'statementDay?': '1 <= number.integer <= 28 | null',
 });
-
-const dateOrNull = type('string | null')
-  .narrow((s, ctx) => {
-    if (s === null || s === '') return true;
-    return !Number.isNaN(Date.parse(s)) || ctx.mustBe('a valid date string');
-  })
-  .pipe((s) => (s === '' ? null : s));
 
 const TERMS_TYPES = ['credit_card', 'loan'] as const;
 
 export const createAccountBaseSchema = type({
   'accountNumberMask?': 'string | null',
-  currency: 'string > 0',
+  currency: currencyCode,
   'initialBalanceCents?': 'number.integer',
   'institution?': 'string | null',
   name: 'string > 0',
@@ -53,7 +47,7 @@ export type CreateAccountInput = typeof createAccountSchema.infer;
 
 export const updateAccountBaseSchema = type({
   'accountNumberMask?': 'string | null',
-  'currency?': 'string > 0',
+  'currency?': currencyCode,
   id: 'string > 0',
   'institution?': 'string | null',
   'name?': 'string > 0',

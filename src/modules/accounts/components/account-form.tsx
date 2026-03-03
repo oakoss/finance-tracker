@@ -38,7 +38,7 @@ type AccountFormValues = {
   terms: {
     aprBps: string;
     dueDay: string;
-    minPaymentType: string;
+    minPaymentType: 'fixed' | 'percentage';
     minPaymentValue: string;
     statementDay: string;
   };

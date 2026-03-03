@@ -52,7 +52,8 @@ export function EditAccountDialog({ accounts }: EditAccountDialogProps) {
       terms: {
         aprBps: terms?.aprBps?.toString() ?? '',
         dueDay: terms?.dueDay?.toString() ?? '',
-        minPaymentType: terms?.minPaymentType ?? 'percentage',
+        minPaymentType:
+          terms?.minPaymentType === 'fixed' ? 'fixed' : 'percentage',
         minPaymentValue: terms?.minPaymentValue?.toString() ?? '',
         statementDay: terms?.statementDay?.toString() ?? '',
       },
