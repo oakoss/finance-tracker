@@ -28,7 +28,7 @@ const navMain = [
   {
     icon: <Icons.Wallet />,
     title: 'Accounts',
-    url: '/dashboard' as const,
+    url: '/accounts' as const,
   },
   {
     icon: <Icons.ArrowLeftRight />,
@@ -38,7 +38,7 @@ const navMain = [
   {
     icon: <Icons.Tag />,
     title: 'Categories',
-    url: '/dashboard' as const,
+    url: '/categories' as const,
   },
   {
     icon: <Icons.Upload />,

@@ -69,7 +69,10 @@ export default defineConfig({
           environment: 'node',
           globals: true,
           globalSetup: ['./test/global-setup.ts'],
-          include: ['test/**/*.integration.test.{ts,tsx}'],
+          include: [
+            'src/**/*.integration.test.{ts,tsx}',
+            'test/**/*.integration.test.{ts,tsx}',
+          ],
           name: 'integration',
           pool: 'forks',
           testTimeout: 30_000,
