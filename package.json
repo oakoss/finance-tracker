@@ -148,6 +148,7 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1",
     "vite": "^7.3.1",
+    "vite-plugin-killer-instincts": "^1.0.0",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.0.18"
   },

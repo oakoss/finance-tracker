@@ -8,6 +8,7 @@ import viteReact from '@vitejs/plugin-react';
 import evlog from 'evlog/nitro/v3';
 import { nitro } from 'nitro/vite';
 import { defineConfig } from 'vite';
+import killerInstincts from 'vite-plugin-killer-instincts';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 
 import { Env } from './src/configs/env';
@@ -55,10 +56,10 @@ export default defineConfig({
   },
   plugins: [
     devtools(),
-    // this is the plugin that enables path aliases
     viteTsConfigPaths({
       projects: ['./tsconfig.json'],
     }),
+    killerInstincts({ autoKill: true }),
     arkenvVitePlugin(Env),
     tailwindcss(),
     tanstackStart(),
@@ -73,5 +74,6 @@ export default defineConfig({
   ],
   server: {
     port: 3000,
+    strictPort: true,
   },
 });
