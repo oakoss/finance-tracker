@@ -37,7 +37,7 @@ export function CreateCategoryDialog() {
   const handleSubmit = (values: CategoryFormValues) => {
     mutation.mutate({
       name: values.name,
-      parentId: values.parentId || undefined,
+      ...(values.parentId ? { parentId: values.parentId } : {}),
       type: values.type,
     });
   };

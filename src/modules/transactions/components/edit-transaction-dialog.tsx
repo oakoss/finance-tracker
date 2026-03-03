@@ -58,11 +58,11 @@ export function EditTransactionDialog({
     return {
       accountId: item.accountId,
       amount: (item.amountCents / 100).toFixed(2),
-      categoryId: item.categoryId ?? undefined,
+      ...(item.categoryId ? { categoryId: item.categoryId } : {}),
       description: item.description,
       direction: item.direction ?? 'debit',
       memo: item.memo ?? '',
-      payeeId: item.payeeId ?? undefined,
+      ...(item.payeeId ? { payeeId: item.payeeId } : {}),
       pending: item.pending,
       tagIds: item.tags?.map((t) => t.id) ?? [],
       transactionAt: dateStr,
@@ -89,11 +89,14 @@ export function EditTransactionDialog({
       direction: values.direction,
       id: editId,
       memo: values.memo?.length ? values.memo : null,
-      newPayeeName: payeeState.newPayeeName,
-      newTagNames:
-        tagState.newTagNames.length > 0 ? tagState.newTagNames : undefined,
+      ...(payeeState.newPayeeName
+        ? { newPayeeName: payeeState.newPayeeName }
+        : {}),
+      ...(tagState.newTagNames.length > 0
+        ? { newTagNames: tagState.newTagNames }
+        : {}),
       payeeId: payeeState.payeeId ?? null,
-      pending: values.pending,
+      ...(values.pending === undefined ? {} : { pending: values.pending }),
       tagIds: tagState.tagIds,
       transactionAt: values.transactionAt,
     });

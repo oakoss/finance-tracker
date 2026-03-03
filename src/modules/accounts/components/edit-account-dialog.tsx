@@ -68,6 +68,7 @@ export function EditAccountDialog({ accounts }: EditAccountDialogProps) {
 
   const handleSubmit = (values: AccountFormValues) => {
     if (!editId) return;
+    const terms = parseFormTerms(values);
     mutation.mutate({
       accountNumberMask: values.accountNumberMask || null,
       currency: values.currency,
@@ -76,7 +77,7 @@ export function EditAccountDialog({ accounts }: EditAccountDialogProps) {
       name: values.name,
       openedAt: values.openedAt || null,
       ownerType: values.ownerType,
-      terms: parseFormTerms(values),
+      ...(terms ? { terms } : {}),
       type: values.type,
     });
   };

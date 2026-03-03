@@ -7,8 +7,8 @@ import { baseLocale, getLocale, setLocale } from '@/paraglide/runtime';
 export type EmailLocale = ReturnType<typeof getLocale>;
 
 type RenderEmailOptions = {
-  locale?: EmailLocale;
-  subject?: () => string;
+  locale?: EmailLocale | undefined;
+  subject?: (() => string) | undefined;
 };
 
 export async function renderEmail(
@@ -35,7 +35,7 @@ export async function renderEmail(
 
   let renderError: Error | undefined;
   let renderResult:
-    | { html: string; subject?: string; text: string }
+    | { html: string; subject?: string | undefined; text: string }
     | undefined;
 
   try {

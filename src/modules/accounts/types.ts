@@ -1,19 +1,19 @@
 import { type } from 'arktype';
 
 import {
-  accountTermsInsertSchema,
-  ledgerAccountsInsertSchema,
+  accountOwnerTypeEnum,
+  accountStatusEnum,
+  accountTypeEnum,
   ledgerAccountsSelectSchema,
-  ledgerAccountsUpdateSchema,
 } from '@/modules/accounts/db/schema';
 
-const termsSchema = accountTermsInsertSchema.pick(
-  'aprBps',
-  'dueDay',
-  'minPaymentType',
-  'minPaymentValue',
-  'statementDay',
-);
+const termsSchema = type({
+  'aprBps?': 'number.integer | null',
+  'dueDay?': 'number.integer | null',
+  'minPaymentType?': 'string | null',
+  'minPaymentValue?': 'number.integer | null',
+  'statementDay?': 'number.integer | null',
+});
 
 const dateOrNull = type('string | null')
   .narrow((s, ctx) => {
@@ -24,25 +24,20 @@ const dateOrNull = type('string | null')
 
 const TERMS_TYPES = ['credit_card', 'loan'] as const;
 
-export const createAccountSchema = ledgerAccountsInsertSchema
-  .pick(
-    'accountNumberMask',
-    'currency',
-    'institution',
-    'name',
-    'ownerType',
-    'type',
-  )
-  .merge(
-    type({
-      currency: 'string > 0',
-      'initialBalanceCents?': 'number.integer',
-      name: 'string > 0',
-      'openedAt?': dateOrNull,
-      'terms?': termsSchema,
-    }),
-  )
-  .narrow((data, ctx) => {
+export const createAccountBaseSchema = type({
+  'accountNumberMask?': 'string | null',
+  currency: 'string > 0',
+  'initialBalanceCents?': 'number.integer',
+  'institution?': 'string | null',
+  name: 'string > 0',
+  'openedAt?': dateOrNull,
+  'ownerType?': type.enumerated(...accountOwnerTypeEnum.enumValues),
+  'terms?': termsSchema,
+  type: type.enumerated(...accountTypeEnum.enumValues),
+});
+
+export const createAccountSchema = createAccountBaseSchema.narrow(
+  (data, ctx) => {
     if (
       data.terms &&
       !TERMS_TYPES.includes(data.type as (typeof TERMS_TYPES)[number])
@@ -51,30 +46,26 @@ export const createAccountSchema = ledgerAccountsInsertSchema
       return false;
     }
     return true;
-  });
+  },
+);
 
 export type CreateAccountInput = typeof createAccountSchema.infer;
 
-export const updateAccountSchema = ledgerAccountsUpdateSchema
-  .pick(
-    'accountNumberMask',
-    'currency',
-    'institution',
-    'name',
-    'ownerType',
-    'status',
-    'type',
-  )
-  .merge(
-    type({
-      'currency?': 'string > 0',
-      id: 'string > 0',
-      'name?': 'string > 0',
-      'openedAt?': dateOrNull,
-      'terms?': termsSchema,
-    }),
-  )
-  .narrow((data, ctx) => {
+export const updateAccountBaseSchema = type({
+  'accountNumberMask?': 'string | null',
+  'currency?': 'string > 0',
+  id: 'string > 0',
+  'institution?': 'string | null',
+  'name?': 'string > 0',
+  'openedAt?': dateOrNull,
+  'ownerType?': type.enumerated(...accountOwnerTypeEnum.enumValues),
+  'status?': type.enumerated(...accountStatusEnum.enumValues),
+  'terms?': termsSchema,
+  'type?': type.enumerated(...accountTypeEnum.enumValues),
+});
+
+export const updateAccountSchema = updateAccountBaseSchema.narrow(
+  (data, ctx) => {
     if (
       data.terms &&
       data.type &&
@@ -84,7 +75,8 @@ export const updateAccountSchema = ledgerAccountsUpdateSchema
       return false;
     }
     return true;
-  });
+  },
+);
 
 export type UpdateAccountInput = typeof updateAccountSchema.infer;
 

@@ -6,18 +6,18 @@ import { env } from '@/configs/env';
 
 type EmailRecipient = {
   email: string;
-  name?: string;
+  name?: string | undefined;
 };
 
 type SendEmailOptions = {
   html: string;
-  replyTo?: EmailRecipient;
+  replyTo?: EmailRecipient | undefined;
   subject: string;
-  text?: string;
+  text?: string | undefined;
   to: EmailRecipient[];
 };
 
-const defaultSender = {
+const defaultSender: EmailRecipient = {
   email: env.EMAIL_FROM,
   name: env.EMAIL_FROM_NAME,
 };
@@ -44,9 +44,9 @@ async function sendViaSmtp(options: SendEmailOptions) {
       ? `${defaultSender.name} <${defaultSender.email}>`
       : defaultSender.email,
     html: options.html,
-    replyTo: replyTo ? replyTo.email : undefined,
+    ...(replyTo ? { replyTo: replyTo.email } : {}),
     subject: options.subject,
-    text: options.text,
+    ...(options.text !== undefined && { text: options.text }),
     to: options.to.map((r) => (r.name ? `${r.name} <${r.email}>` : r.email)),
   });
 }
@@ -70,11 +70,17 @@ async function sendViaBrevo(options: SendEmailOptions) {
 
   await brevo.transactionalEmails.sendTransacEmail({
     htmlContent: options.html,
-    replyTo,
-    sender: defaultSender,
+    ...(replyTo !== undefined && { replyTo }),
+    sender: {
+      email: defaultSender.email,
+      ...(defaultSender.name !== undefined && { name: defaultSender.name }),
+    },
     subject: options.subject,
-    textContent: options.text,
-    to: options.to,
+    ...(options.text !== undefined && { textContent: options.text }),
+    to: options.to.map((r) => ({
+      email: r.email,
+      ...(r.name !== undefined && { name: r.name }),
+    })),
   });
 }
 

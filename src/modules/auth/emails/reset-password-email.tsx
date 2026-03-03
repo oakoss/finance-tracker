@@ -7,7 +7,7 @@ import { getLocale } from '@/paraglide/runtime';
 import { BaseEmail } from './base-email';
 
 type ResetPasswordEmailProps = {
-  name?: string | null;
+  name?: string | null | undefined;
   url: string;
 };
 

@@ -40,7 +40,7 @@ export function EditCategoryDialog({ categories }: EditCategoryDialogProps) {
     if (!item) return;
     return {
       name: item.name,
-      parentId: item.parentId ?? undefined,
+      ...(item.parentId ? { parentId: item.parentId } : {}),
       type: item.type,
     };
   }, [item]);

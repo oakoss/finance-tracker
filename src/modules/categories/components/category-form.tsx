@@ -12,13 +12,16 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { categoryTypeEnum } from '@/modules/categories/db/schema';
-import {
-  type CreateCategoryInput,
-  createCategorySchema,
-} from '@/modules/categories/types';
+import { createCategorySchema } from '@/modules/categories/types';
 import { m } from '@/paraglide/messages';
 
-export type CategoryFormValues = CreateCategoryInput;
+const categoryFormSchema = createCategorySchema.pick('name', 'type');
+
+export type CategoryFormValues = {
+  name: string;
+  parentId?: string;
+  type: (typeof categoryTypeEnum.enumValues)[number];
+};
 
 type CategoryFormProps = {
   categories?: CategoryListItem[];
@@ -44,8 +47,8 @@ export function CategoryForm({
     defaultValues: { ...DEFAULT_VALUES, ...defaultValues },
     onSubmit: ({ value }) => onSubmit(value),
     validators: {
-      onBlur: createCategorySchema,
-      onSubmit: createCategorySchema,
+      onBlur: categoryFormSchema,
+      onSubmit: categoryFormSchema,
     },
   });
 

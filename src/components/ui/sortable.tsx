@@ -45,8 +45,8 @@ import { cn } from '@/lib/utils';
 
 // Sortable Item Context
 const SortableItemContext = createContext<{
-  disabled?: boolean;
-  isDragging?: boolean;
+  disabled?: boolean | undefined;
+  isDragging?: boolean | undefined;
   listeners: DraggableSyntheticListeners | undefined;
 }>({
   disabled: false,
@@ -58,7 +58,7 @@ const IsOverlayContext = createContext(false);
 
 const SortableInternalContext = createContext<{
   activeId: UniqueIdentifier | null;
-  modifiers?: Modifiers;
+  modifiers?: Modifiers | undefined;
 }>({
   activeId: null,
   modifiers: undefined,
@@ -224,11 +224,11 @@ function Sortable<T>({
             strategy: MeasuringStrategy.Always,
           },
         }}
-        modifiers={modifiers}
         sensors={sensors}
         onDragCancel={handleDragCancel}
         onDragEnd={handleDragEnd}
         onDragStart={handleDragStart}
+        {...(modifiers !== undefined && { modifiers })}
       >
         <SortableContext items={itemIds} strategy={getStrategy()}>
           {useRender({
@@ -242,7 +242,7 @@ function Sortable<T>({
             <DragOverlay
               className={cn('z-50', activeId && 'cursor-grabbing')}
               dropAnimation={dropAnimationConfig}
-              modifiers={modifiers}
+              {...(modifiers !== undefined && { modifiers })}
             >
               <IsOverlayContext.Provider value={true}>
                 {overlayContent}
@@ -385,7 +385,7 @@ function SortableOverlay({
     <DragOverlay
       className={cn('z-50', activeId && 'cursor-grabbing', className)}
       dropAnimation={dropAnimationConfig}
-      modifiers={modifiers}
+      {...(modifiers !== undefined && { modifiers })}
       {...props}
     >
       <IsOverlayContext.Provider value={true}>

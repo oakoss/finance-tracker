@@ -27,9 +27,9 @@ function FilterInput<T = unknown>({
   shouldFocus = false,
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement> & {
-  className?: string;
-  field?: FilterFieldConfig<T>;
-  shouldFocus?: boolean;
+  className?: string | undefined;
+  field?: FilterFieldConfig<T> | undefined;
+  shouldFocus?: boolean | undefined;
 }) {
   const [isValid, setIsValid] = useState(true);
   const [validationMessage, setValidationMessage] = useState('');

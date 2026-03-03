@@ -16,10 +16,10 @@ type TreeLike = {
 };
 
 type TreeContextValue<T = any> = {
-  currentItem?: ItemInstance<T>;
+  currentItem?: ItemInstance<T> | undefined;
   indent: number;
   toggleIconType?: ToggleIconType;
-  tree?: TreeLike;
+  tree?: TreeLike | undefined;
 };
 
 const TreeContext = createContext<TreeContextValue>({

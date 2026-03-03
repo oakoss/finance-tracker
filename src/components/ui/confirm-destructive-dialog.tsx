@@ -19,7 +19,7 @@ type ConfirmDestructiveDialogProps = {
   actionLabel?: string;
   confirmPhrase: string;
   description: string;
-  loading?: boolean;
+  loading?: boolean | undefined;
   onConfirm: () => void;
   title: string;
   trigger: React.ReactElement;

@@ -13,7 +13,7 @@ import {
   accountOwnerTypeEnum,
   accountTypeEnum,
 } from '@/modules/accounts/db/schema';
-import { createAccountSchema } from '@/modules/accounts/types';
+import { createAccountBaseSchema } from '@/modules/accounts/types';
 import { m } from '@/paraglide/messages';
 
 // Derive form validation from the server schema. Only pick fields
@@ -21,7 +21,11 @@ import { m } from '@/paraglide/messages';
 // initialBalanceCents (string -> integer), openedAt (string -> date),
 // and terms (string sub-fields -> typed object) are converted in the
 // dialog's handleSubmit before being passed to the server.
-const accountFormSchema = createAccountSchema.pick('currency', 'name', 'type');
+const accountFormSchema = createAccountBaseSchema.pick(
+  'currency',
+  'name',
+  'type',
+);
 
 type AccountFormValues = {
   accountNumberMask: string;

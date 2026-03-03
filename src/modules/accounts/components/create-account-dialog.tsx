@@ -35,15 +35,18 @@ export function CreateAccountDialog() {
       ? Math.round(Number.parseFloat(values.initialBalanceCents) * 100)
       : undefined;
 
+    const terms = parseFormTerms(values);
     mutation.mutate({
-      accountNumberMask: values.accountNumberMask || undefined,
+      ...(values.accountNumberMask
+        ? { accountNumberMask: values.accountNumberMask }
+        : {}),
       currency: values.currency,
-      initialBalanceCents,
-      institution: values.institution || undefined,
+      ...(initialBalanceCents === undefined ? {} : { initialBalanceCents }),
+      ...(values.institution ? { institution: values.institution } : {}),
       name: values.name,
       openedAt: values.openedAt || null,
       ownerType: values.ownerType,
-      terms: parseFormTerms(values),
+      ...(terms ? { terms } : {}),
       type: values.type,
     });
   };

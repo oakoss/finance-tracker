@@ -34,7 +34,7 @@ export function NavUser({
   user,
 }: {
   user: {
-    avatar?: string;
+    avatar?: string | undefined;
     email: string;
     name: string;
   };

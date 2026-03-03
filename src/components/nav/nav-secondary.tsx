@@ -17,7 +17,7 @@ export function NavSecondary({
   items: {
     icon: React.ReactNode;
     title: string;
-    url: LinkProps['to'];
+    url: NonNullable<LinkProps['to']>;
   }[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (

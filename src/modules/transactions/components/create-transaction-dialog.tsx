@@ -48,16 +48,19 @@ export function CreateTransactionDialog() {
     mutation.mutate({
       accountId: values.accountId,
       amountCents: Math.round(Number.parseFloat(values.amount) * 100),
-      categoryId: values.categoryId?.length ? values.categoryId : undefined,
+      ...(values.categoryId?.length ? { categoryId: values.categoryId } : {}),
       description: values.description,
       direction: values.direction,
-      memo: values.memo?.length ? values.memo : undefined,
-      newPayeeName: payeeState.newPayeeName,
-      newTagNames:
-        tagState.newTagNames.length > 0 ? tagState.newTagNames : undefined,
-      payeeId: payeeState.payeeId,
-      pending: values.pending,
-      tagIds: tagState.tagIds.length > 0 ? tagState.tagIds : undefined,
+      ...(values.memo?.length ? { memo: values.memo } : {}),
+      ...(payeeState.newPayeeName
+        ? { newPayeeName: payeeState.newPayeeName }
+        : {}),
+      ...(tagState.newTagNames.length > 0
+        ? { newTagNames: tagState.newTagNames }
+        : {}),
+      ...(payeeState.payeeId ? { payeeId: payeeState.payeeId } : {}),
+      ...(values.pending === undefined ? {} : { pending: values.pending }),
+      ...(tagState.tagIds.length > 0 ? { tagIds: tagState.tagIds } : {}),
       transactionAt: values.transactionAt,
     });
   };

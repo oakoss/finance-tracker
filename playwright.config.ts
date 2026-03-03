@@ -106,5 +106,5 @@ export default defineConfig({
     timeout: 120_000,
     url: BASE_URL,
   },
-  workers: process.env.CI ? 1 : undefined,
+  ...(process.env.CI ? { workers: 1 } : {}),
 });

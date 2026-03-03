@@ -65,7 +65,7 @@ export type DataGridProps<TData extends object> = {
   children?: ReactNode;
   className?: string;
   emptyMessage?: ReactNode | string;
-  isLoading?: boolean;
+  isLoading?: boolean | undefined;
   loadingMessage?: ReactNode | string;
   loadingMode?: 'skeleton' | 'spinner';
   onRowClick?: (row: TData) => void;

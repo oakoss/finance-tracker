@@ -15,7 +15,7 @@ export function SidebarShell({
   user,
 }: {
   children: React.ReactNode;
-  user?: AppSidebarUser;
+  user?: AppSidebarUser | undefined;
 }) {
   return (
     <SidebarProvider style={sidebarShellStyles}>

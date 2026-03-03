@@ -10,6 +10,11 @@ PostgreSQL/Drizzle, Better Auth, Tailwind CSS v4/shadcn.
 - **Validation**: ArkType everywhere (not Zod). Server schema in
   `types.ts` is the single source of truth — forms import and reuse
   it (or derive via `.pick()` / `.omit()` / `.merge()`).
+  - `types.ts` defines API contracts as independent `type({...})` —
+    not derived from Drizzle insert/update schemas.
+  - Cross-field validation: export `baseSchema` (pickable) +
+    `schema` (narrowed). Forms `.pick()` from base schemas.
+  - `drizzle-arktype` is used for select/delete schemas only.
 - **UI style**: shadcn/ui `base-nova` (Base UI, not Radix). Use
   `render` prop / `mergeProps`, not `asChild`. Icons: Lucide.
 - **Typography**: Tailwind classes directly on semantic elements. See

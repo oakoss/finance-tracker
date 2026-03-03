@@ -2,11 +2,11 @@ import { createContext, use } from 'react';
 
 type FilterContextValue = {
   allowMultiple?: boolean;
-  className?: string;
+  className?: string | undefined;
   radius: 'default' | 'full';
   showSearchInput?: boolean;
   size: 'sm' | 'default' | 'lg';
-  trigger?: React.ReactNode;
+  trigger?: React.ReactNode | undefined;
   variant: 'solid' | 'default';
 };
 

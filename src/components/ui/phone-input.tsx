@@ -24,8 +24,8 @@ import { cn } from '@/lib/utils';
 type PhoneInputSize = 'sm' | 'default' | 'lg';
 
 const PhoneInputContext = createContext<{
-  popupClassName?: string;
-  scrollAreaClassName?: string;
+  popupClassName?: string | undefined;
+  scrollAreaClassName?: string | undefined;
   variant: PhoneInputSize;
 }>({
   popupClassName: undefined,
@@ -61,7 +61,9 @@ function PhoneInput({
     <PhoneInputContext.Provider
       value={{ popupClassName, scrollAreaClassName, variant: phoneInputSize }}
     >
+      {/* @ts-expect-error -- react-phone-number-input Props lack `| undefined` on optional fields, incompatible with exactOptionalPropertyTypes */}
       <BasePhoneInput.default
+        {...props}
         className={cn(
           'flex',
           props['aria-invalid'] &&
@@ -76,7 +78,6 @@ function PhoneInput({
         onChange={(nextValue) =>
           onChange?.(nextValue ?? ('' as BasePhoneInput.Value))
         }
-        {...props}
       />
     </PhoneInputContext.Provider>
   );
@@ -209,8 +210,8 @@ function CountrySelect({
 }
 
 type FlagPreviewProps = {
-  country?: BasePhoneInput.Country;
-  countryName?: string;
+  country?: BasePhoneInput.Country | undefined;
+  countryName?: string | undefined;
 };
 
 function FlagPreview({ country, countryName }: FlagPreviewProps) {

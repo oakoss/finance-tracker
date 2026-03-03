@@ -127,16 +127,16 @@ export type DateSelectorPeriodType =
 export type DateSelectorFilterType = 'is' | 'before' | 'after' | 'between';
 
 export type DateSelectorValue = {
-  endDate?: Date;
-  halfYear?: number;
-  month?: number;
+  endDate?: Date | undefined;
+  halfYear?: number | undefined;
+  month?: number | undefined;
   operator: DateSelectorFilterType;
   period: DateSelectorPeriodType;
-  quarter?: number;
-  rangeEnd?: { value: number; year: number };
-  rangeStart?: { value: number; year: number };
-  startDate?: Date;
-  year?: number;
+  quarter?: number | undefined;
+  rangeEnd?: { value: number; year: number } | undefined;
+  rangeStart?: { value: number; year: number } | undefined;
+  startDate?: Date | undefined;
+  year?: number | undefined;
 };
 
 export type DateSelectorContextValue = {
@@ -227,23 +227,23 @@ type DateSelectorYearOptions =
   | {
       maxYear?: undefined;
       minYear?: undefined;
-      yearRange?: number;
+      yearRange?: number | undefined;
     }
   | {
-      maxYear?: number;
-      minYear?: number;
+      maxYear?: number | undefined;
+      minYear?: number | undefined;
       yearRange?: undefined;
     };
 
 type UseDateSelectorOptions = DateSelectorYearOptions & {
-  allowRange?: boolean;
-  baseYear?: number;
-  defaultFilterType?: DateSelectorFilterType;
-  defaultPeriodType?: DateSelectorPeriodType;
-  onChange?: (value: DateSelectorValue) => void;
-  periodTypes?: DateSelectorPeriodType[];
-  presetMode?: DateSelectorFilterType;
-  value?: DateSelectorValue;
+  allowRange?: boolean | undefined;
+  baseYear?: number | undefined;
+  defaultFilterType?: DateSelectorFilterType | undefined;
+  defaultPeriodType?: DateSelectorPeriodType | undefined;
+  onChange?: ((value: DateSelectorValue) => void) | undefined;
+  periodTypes?: DateSelectorPeriodType[] | undefined;
+  presetMode?: DateSelectorFilterType | undefined;
+  value?: DateSelectorValue | undefined;
 };
 
 export function useDateSelector({
@@ -619,11 +619,11 @@ export function useDateSelector({
 }
 
 type DateSelectorFilterToggleProps = {
-  className?: string;
+  className?: string | undefined;
   onChange: (value: DateSelectorFilterType) => void;
-  presetMode?: DateSelectorFilterType;
-  showBetween?: boolean;
-  showIs?: boolean;
+  presetMode?: DateSelectorFilterType | undefined;
+  showBetween?: boolean | undefined;
+  showIs?: boolean | undefined;
   value: DateSelectorFilterType;
 };
 
@@ -693,12 +693,12 @@ function DateSelectorFilterToggle({
 }
 
 type DateSelectorDateSelectorPeriodTabsProps = {
-  calendarMonth?: Date;
-  className?: string;
+  calendarMonth?: Date | undefined;
+  className?: string | undefined;
   onChange: (value: DateSelectorPeriodType) => void;
-  onMonthChange?: (date: Date) => void;
-  periodTypes?: DateSelectorPeriodType[];
-  showNavigationButtons?: boolean;
+  onMonthChange?: ((date: Date) => void) | undefined;
+  periodTypes?: DateSelectorPeriodType[] | undefined;
+  showNavigationButtons?: boolean | undefined;
   value: DateSelectorPeriodType;
 };
 
@@ -802,16 +802,16 @@ function DateSelectorPeriodTabs({
 }
 
 type DateSelectorDayPickerProps = {
-  className?: string;
+  className?: string | undefined;
   currentMonth: Date;
-  hoverDate?: Date | null;
+  hoverDate?: Date | null | undefined;
   isRange: boolean;
   onDayClick: (day: Date) => void;
-  onDayHover?: (day: Date | null) => void;
-  selectedDate?: Date;
-  selectedEndDate?: Date;
-  showTwoMonths?: boolean;
-  weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+  onDayHover?: ((day: Date | null) => void) | undefined;
+  selectedDate?: Date | undefined;
+  selectedEndDate?: Date | undefined;
+  showTwoMonths?: boolean | undefined;
+  weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | undefined;
 };
 
 function DateSelectorDayPicker({
@@ -940,15 +940,15 @@ function DateSelectorDayPicker({
 }
 
 type DateSelectorDateSelectorPeriodGridProps = {
-  className?: string;
+  className?: string | undefined;
   columns: number;
   isInRange: (year: number, value: number) => boolean;
   items: string[];
   onSelect: (year: number, value: number) => void;
-  rangeEnd?: { value: number; year: number };
-  rangeStart?: { value: number; year: number };
-  selectedValue?: number;
-  selectedYear?: number;
+  rangeEnd?: { value: number; year: number } | undefined;
+  rangeStart?: { value: number; year: number } | undefined;
+  selectedValue?: number | undefined;
+  selectedYear?: number | undefined;
   years: number[];
 };
 
@@ -1016,12 +1016,12 @@ function DateSelectorPeriodGrid({
 }
 
 type DateSelectorYearListProps = {
-  className?: string;
+  className?: string | undefined;
   isYearInRange: (year: number) => boolean;
   onSelect: (year: number) => void;
-  rangeEnd?: { value: number; year: number };
-  rangeStart?: { value: number; year: number };
-  selectedYear?: number;
+  rangeEnd?: { value: number; year: number } | undefined;
+  rangeStart?: { value: number; year: number } | undefined;
+  selectedYear?: number | undefined;
   years: number[];
 };
 
@@ -1067,23 +1067,23 @@ function DateSelectorYearList({
 }
 
 export type DateSelectorProps = DateSelectorYearOptions & {
-  allowRange?: boolean;
-  baseYear?: number;
-  className?: string;
-  dayDateFormat?: string;
-  dayDateFormats?: string[];
-  defaultFilterType?: DateSelectorFilterType;
-  defaultPeriodType?: DateSelectorPeriodType;
-  i18n?: Partial<DateSelectorI18nConfig>;
-  inputHint?: string;
-  label?: string;
-  onChange?: (value: DateSelectorValue) => void;
-  periodTypes?: DateSelectorPeriodType[];
-  presetMode?: DateSelectorFilterType;
-  showInput?: boolean;
-  showTwoMonths?: boolean;
-  value?: DateSelectorValue;
-  weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+  allowRange?: boolean | undefined;
+  baseYear?: number | undefined;
+  className?: string | undefined;
+  dayDateFormat?: string | undefined;
+  dayDateFormats?: string[] | undefined;
+  defaultFilterType?: DateSelectorFilterType | undefined;
+  defaultPeriodType?: DateSelectorPeriodType | undefined;
+  i18n?: Partial<DateSelectorI18nConfig> | undefined;
+  inputHint?: string | undefined;
+  label?: string | undefined;
+  onChange?: ((value: DateSelectorValue) => void) | undefined;
+  periodTypes?: DateSelectorPeriodType[] | undefined;
+  presetMode?: DateSelectorFilterType | undefined;
+  showInput?: boolean | undefined;
+  showTwoMonths?: boolean | undefined;
+  value?: DateSelectorValue | undefined;
+  weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | undefined;
 };
 
 export function DateSelector({

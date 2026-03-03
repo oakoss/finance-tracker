@@ -44,7 +44,7 @@ const buttonVariants = cva(
 
 type ButtonProps = ButtonPrimitive.Props &
   VariantProps<typeof buttonVariants> & {
-    loading?: boolean;
+    loading?: boolean | undefined;
   };
 
 function Button({

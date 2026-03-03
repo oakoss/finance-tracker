@@ -27,7 +27,7 @@ type ValueSelectorProps<T = unknown> = {
   field: FilterFieldConfig<T>;
   onChange: (values: T[]) => void;
   operator: FilterOperatorValue;
-  shouldFocus?: boolean;
+  shouldFocus?: boolean | undefined;
   values: T[];
 };
 

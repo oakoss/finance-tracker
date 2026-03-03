@@ -20,7 +20,7 @@ export type FileMetadata = {
 export type FileWithPreview = {
   file: File | FileMetadata;
   id: string;
-  preview?: string;
+  preview?: string | undefined;
 };
 
 export type FileUploadOptions = {

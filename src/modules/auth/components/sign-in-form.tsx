@@ -24,7 +24,7 @@ import { emailType, passwordType } from '@/modules/auth/lib/validate-field';
 import { m } from '@/paraglide/messages';
 
 type SignInFormProps = {
-  redirect?: string;
+  redirect?: string | undefined;
 };
 
 function SignInForm({ redirect }: SignInFormProps) {

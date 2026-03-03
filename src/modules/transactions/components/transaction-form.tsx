@@ -77,7 +77,6 @@ function getDefaultValues(): TransactionFormValues {
   return {
     accountId: '',
     amount: '',
-    categoryId: undefined,
     description: '',
     direction: 'debit',
     memo: '',

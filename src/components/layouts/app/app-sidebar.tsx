@@ -14,7 +14,7 @@ import {
 import { appConfig } from '@/configs/app';
 
 export type AppSidebarUser = {
-  avatar?: string | null;
+  avatar?: string | null | undefined;
   email: string;
   name: string;
 };
@@ -58,7 +58,9 @@ const navSecondary = [
 export function AppSidebar({
   user,
   ...props
-}: { user?: AppSidebarUser } & React.ComponentProps<typeof Sidebar>) {
+}: { user?: AppSidebarUser | undefined } & React.ComponentProps<
+  typeof Sidebar
+>) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
