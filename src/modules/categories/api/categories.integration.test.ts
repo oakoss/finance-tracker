@@ -2,6 +2,7 @@ import { and, eq, isNull } from 'drizzle-orm';
 import { expect } from 'vitest';
 
 import { auditLogs, categories } from '@/db/schema';
+import { throwIfConstraintViolation } from '@/lib/db/pg-error';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
@@ -117,6 +118,33 @@ test('create — rejects duplicate name for same user', async ({ db }) => {
       userId: user.id,
     }),
   ).rejects.toThrow();
+});
+
+test('create — throwIfConstraintViolation returns 409 with fix message for duplicate category', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  await insertCategory(db, { name: 'Dup-Cat', userId: user.id });
+
+  let caught: unknown;
+  try {
+    await db.insert(categories).values({
+      createdById: user.id,
+      name: 'Dup-Cat',
+      type: 'expense',
+      userId: user.id,
+    });
+    expect.fail('Expected unique violation');
+  } catch (error) {
+    caught = error;
+  }
+
+  expect(() => throwIfConstraintViolation(caught, 'category.create')).toThrow(
+    expect.objectContaining({
+      fix: 'A category with this name already exists.',
+      status: 409,
+    }),
+  );
 });
 
 test('create — writes audit log', async ({ db }) => {

@@ -3,6 +3,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { db } from '@/db';
 import { insertAuditLog } from '@/lib/audit/insert-audit-log';
 import { notDeleted } from '@/lib/audit/soft-delete';
+import { pgErrorFields, throwIfConstraintViolation } from '@/lib/db/pg-error';
 import { createError, log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
 import { arkValidator, isExpectedError, toError } from '@/lib/validation';
@@ -176,11 +177,13 @@ export const createTransaction = createServerFn({ method: 'POST' })
       return result;
     } catch (error) {
       if (isExpectedError(error)) throw error;
+      throwIfConstraintViolation(error, 'transaction.create', hashId(userId));
       log.error({
         action: 'transaction.create',
         error: toError(error).message,
         outcome: { success: false },
         user: { idHash: hashId(userId) },
+        ...pgErrorFields(error),
       });
       throw createError({
         cause: toError(error),

@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start';
 
 import { db } from '@/db';
 import { insertAuditLog } from '@/lib/audit/insert-audit-log';
+import { pgErrorFields, throwIfConstraintViolation } from '@/lib/db/pg-error';
 import { createError, log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
 import { arkValidator, isExpectedError, toError } from '@/lib/validation';
@@ -81,11 +82,13 @@ export const createAccount = createServerFn({ method: 'POST' })
       return result;
     } catch (error) {
       if (isExpectedError(error)) throw error;
+      throwIfConstraintViolation(error, 'account.create', hashId(userId));
       log.error({
         action: 'account.create',
         error: toError(error).message,
         outcome: { success: false },
         user: { idHash: hashId(userId) },
+        ...pgErrorFields(error),
       });
       throw createError({
         cause: toError(error),

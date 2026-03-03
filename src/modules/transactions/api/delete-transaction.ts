@@ -4,6 +4,7 @@ import { and, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { insertAuditLog } from '@/lib/audit/insert-audit-log';
 import { notDeleted } from '@/lib/audit/soft-delete';
+import { pgErrorFields, throwIfConstraintViolation } from '@/lib/db/pg-error';
 import { createError, log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
 import {
@@ -86,11 +87,13 @@ export const deleteTransaction = createServerFn({ method: 'POST' })
       return { success: true };
     } catch (error) {
       if (isExpectedError(error)) throw error;
+      throwIfConstraintViolation(error, 'transaction.delete', hashId(userId));
       log.error({
         action: 'transaction.delete',
         error: toError(error).message,
         outcome: { success: false },
         user: { idHash: hashId(userId) },
+        ...pgErrorFields(error),
       });
       throw createError({
         cause: toError(error),

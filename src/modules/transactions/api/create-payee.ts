@@ -3,6 +3,11 @@ import { type } from 'arktype';
 
 import { db } from '@/db';
 import { notDeleted } from '@/lib/audit/soft-delete';
+import {
+  parsePgError,
+  pgErrorFields,
+  throwIfConstraintViolation,
+} from '@/lib/db/pg-error';
 import { createError, log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
 import { arkValidator, isExpectedError, toError } from '@/lib/validation';
@@ -61,8 +66,8 @@ export const createPayee = createServerFn({ method: 'POST' })
       if (isExpectedError(error)) throw error;
 
       // Handle unique constraint race condition (code 23505)
-      const pgError = toError(error);
-      if ('code' in pgError && (pgError as { code: string }).code === '23505') {
+      const pgInfo = parsePgError(error);
+      if (pgInfo?.code === '23505') {
         const existing = await db.query.payees.findFirst({
           where: (t, { and: a, eq: e }) =>
             a(
@@ -74,11 +79,13 @@ export const createPayee = createServerFn({ method: 'POST' })
         if (existing) return existing;
       }
 
+      throwIfConstraintViolation(error, 'payee.create', hashId(userId));
       log.error({
         action: 'payee.create',
         error: toError(error).message,
         outcome: { success: false },
         user: { idHash: hashId(userId) },
+        ...pgErrorFields(error),
       });
       throw createError({
         cause: toError(error),
