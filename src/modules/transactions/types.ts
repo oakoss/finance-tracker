@@ -1,0 +1,49 @@
+import { type } from 'arktype';
+
+import {
+  transactionDirectionEnum,
+  transactionsSelectSchema,
+} from '@/modules/transactions/db/schema';
+
+const dateString = type('string > 0').narrow(
+  (s, ctx) => !Number.isNaN(Date.parse(s)) || ctx.mustBe('a valid date string'),
+);
+
+export const createTransactionSchema = type({
+  accountId: 'string > 0',
+  amountCents: 'number.integer > 0',
+  'categoryId?': '(string > 0) | null',
+  description: '0 < string <= 500',
+  'direction?': type.enumerated(...transactionDirectionEnum.enumValues),
+  'memo?': '(string <= 1000) | null',
+  'newPayeeName?': '0 < string <= 200',
+  'newTagNames?': 'string[]',
+  'payeeId?': '(string > 0) | null',
+  'pending?': 'boolean',
+  'tagIds?': 'string[]',
+  transactionAt: dateString,
+});
+
+export type CreateTransactionInput = typeof createTransactionSchema.infer;
+
+export const updateTransactionSchema = type({
+  'accountId?': 'string > 0',
+  'amountCents?': 'number.integer > 0',
+  'categoryId?': '(string > 0) | null',
+  'description?': '0 < string <= 500',
+  'direction?': type.enumerated(...transactionDirectionEnum.enumValues),
+  id: 'string > 0',
+  'memo?': '(string <= 1000) | null',
+  'newPayeeName?': '0 < string <= 200',
+  'newTagNames?': 'string[]',
+  'payeeId?': '(string > 0) | null',
+  'pending?': 'boolean',
+  'tagIds?': 'string[]',
+  'transactionAt?': dateString,
+});
+
+export type UpdateTransactionInput = typeof updateTransactionSchema.infer;
+
+export const deleteTransactionSchema = transactionsSelectSchema.pick('id');
+
+export type DeleteTransactionInput = typeof deleteTransactionSchema.infer;

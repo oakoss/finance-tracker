@@ -33,7 +33,7 @@ const navMain = [
   {
     icon: <Icons.ArrowLeftRight />,
     title: 'Transactions',
-    url: '/dashboard' as const,
+    url: '/transactions' as const,
   },
   {
     icon: <Icons.Tag />,

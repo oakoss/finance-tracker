@@ -1,11 +1,11 @@
 import { expect, test as setup } from '@playwright/test';
 
-import { waitForHydration } from '~e2e/fixtures';
+import { waitForElementHydration } from '~e2e/fixtures';
 import { E2E_EMAIL, E2E_PASSWORD } from '~e2e/fixtures/constants';
 
 setup('authenticate', async ({ page }) => {
   await page.goto('/sign-in');
-  await waitForHydration(page);
+  await waitForElementHydration(page.getByRole('button', { name: 'Sign in' }));
   await page.getByLabel('Email').fill(E2E_EMAIL);
   await page.getByLabel('Password', { exact: true }).fill(E2E_PASSWORD);
   await page.getByRole('button', { name: 'Sign in' }).click();

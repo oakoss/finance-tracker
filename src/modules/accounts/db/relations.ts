@@ -12,9 +12,9 @@ import {
   imports,
   promotions,
   statements,
-  transactions,
   transfers,
 } from '@/modules/finance/db/schema';
+import { transactions } from '@/modules/transactions/db/schema';
 
 export const creditCardCatalogRelations = relations(
   creditCardCatalog,
