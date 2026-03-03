@@ -1,6 +1,5 @@
 import { expect, test } from '@playwright/test';
 
-import { waitForHydration } from '~e2e/fixtures';
 import { E2E_EMAIL } from '~e2e/fixtures/constants';
 
 test.use({ storageState: { cookies: [], origins: [] } });
@@ -19,7 +18,9 @@ test.describe('sign up', { tag: ['@smoke', '@auth', '@a11y'] }, () => {
 
   test('shows validation errors on empty submit', async ({ page }) => {
     await page.goto('/sign-up');
-    await waitForHydration(page);
+    await expect(
+      page.getByRole('button', { name: 'Create account' }),
+    ).toBeEnabled();
     await page.getByLabel('Name').click();
     await page.getByLabel('Email').click();
     await page.getByLabel('Password', { exact: true }).click();
@@ -33,7 +34,9 @@ test.describe('sign up', { tag: ['@smoke', '@auth', '@a11y'] }, () => {
 
     await test.step('navigate to sign-up page', async () => {
       await page.goto('/sign-up');
-      await waitForHydration(page);
+      await expect(
+        page.getByRole('button', { name: 'Create account' }),
+      ).toBeEnabled();
     });
 
     await test.step('fill form with valid data', async () => {
@@ -51,7 +54,9 @@ test.describe('sign up', { tag: ['@smoke', '@auth', '@a11y'] }, () => {
   test('shows error when signing up with duplicate email', async ({ page }) => {
     await test.step('navigate to sign-up page', async () => {
       await page.goto('/sign-up');
-      await waitForHydration(page);
+      await expect(
+        page.getByRole('button', { name: 'Create account' }),
+      ).toBeEnabled();
     });
 
     await test.step('fill form with existing E2E user email', async () => {

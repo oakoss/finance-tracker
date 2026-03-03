@@ -1,13 +1,12 @@
 import { expect, test } from '@playwright/test';
 
-import { waitForElementHydration } from '~e2e/fixtures';
+import { waitForHydration } from '~e2e/fixtures';
 import { a11yScan } from '~e2e/fixtures/a11y';
 
 test.describe('dashboard', { tag: ['@smoke', '@authenticated'] }, () => {
   test('renders welcome heading', async ({ page }) => {
     await page.goto('/dashboard');
     const heading = page.getByRole('heading', { name: /welcome/i });
-    await waitForElementHydration(heading);
     await expect(heading).toBeVisible();
   });
 
@@ -24,8 +23,7 @@ test.describe(
       test(`no a11y violations (${scheme})`, async ({ page }) => {
         await page.emulateMedia({ colorScheme: scheme });
         await page.goto('/dashboard');
-        const heading = page.getByRole('heading', { name: /welcome/i });
-        await waitForElementHydration(heading);
+        await waitForHydration(page);
         const results = await a11yScan(page);
         expect(results.violations).toEqual([]);
       });

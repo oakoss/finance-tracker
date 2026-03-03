@@ -1,11 +1,11 @@
 import { expect, type Page, test } from '@playwright/test';
 
-import { waitForElementHydration, waitForHydration } from '~e2e/fixtures';
+import { waitForHydration } from '~e2e/fixtures';
 import { E2E_EMAIL, E2E_PASSWORD } from '~e2e/fixtures/constants';
 
 async function signInViaUI(page: Page) {
   await page.goto('/sign-in');
-  await waitForHydration(page);
+  await expect(page.getByRole('button', { name: 'Sign in' })).toBeEnabled();
   await page.getByLabel('Email').fill(E2E_EMAIL);
   await page.getByLabel('Password', { exact: true }).fill(E2E_PASSWORD);
   await page.getByRole('button', { name: 'Sign in' }).click();
@@ -36,7 +36,9 @@ test.describe('sign out', { tag: '@auth' }, () => {
     await test.step('open user menu and click sign out', async () => {
       await ensureSidebarOpen(page);
       const userButton = page.getByRole('button', { name: /E2E Test User/i });
-      await waitForElementHydration(userButton);
+      // dispatchEvent bypasses Playwright's actionability — wait for
+      // hydration so the click handler is attached.
+      await waitForHydration(page);
       await expect(userButton).toBeVisible();
       // dispatchEvent bypasses Playwright's viewport check — the sidebar
       // footer sits in a position:fixed container that can't be scrolled
@@ -61,9 +63,9 @@ test.describe('sign out', { tag: '@auth' }, () => {
     context,
     page,
   }, testInfo) => {
-    // BroadcastChannel listener is in NavUser, which only mounts when
-    // the mobile sidebar Sheet is opened. On mobile the Sheet starts
-    // closed, so the listener isn't active after page load. Skip on mobile.
+    // The useSignOut hook registers a BroadcastChannel listener via useEffect.
+    // On mobile, NavUser is inside the sidebar Sheet which may not mount its
+    // content until opened — so the listener isn't active after page load.
     // eslint-disable-next-line playwright/no-skipped-test
     test.skip(
       testInfo.project.name.startsWith('iphone') ||
@@ -80,19 +82,21 @@ test.describe('sign out', { tag: '@auth' }, () => {
         const newPage = await context.newPage();
         await newPage.goto('/dashboard');
         await expect(newPage).toHaveURL(/dashboard/);
-        // Wait for React hydration so the BroadcastChannel listener
+        // Wait for hydration so the BroadcastChannel listener
         // is registered before the first tab signs out.
-        const heading = newPage.getByRole('heading', { name: /welcome/i });
-        await waitForElementHydration(heading);
+        await waitForHydration(newPage);
         return newPage;
       });
 
     await test.step('sign out in first tab', async () => {
       await ensureSidebarOpen(page);
       const userButton = page.getByRole('button', { name: /E2E Test User/i });
-      await waitForElementHydration(userButton);
+      // dispatchEvent bypasses Playwright's actionability — wait for
+      // hydration so the click handler is attached.
+      await waitForHydration(page);
       await expect(userButton).toBeVisible();
-      // dispatchEvent bypasses actionability — sidebar footer may be clipped on mobile
+      // dispatchEvent bypasses Playwright's viewport check — the sidebar
+      // footer sits in a position:fixed container that can't be scrolled
       await userButton.dispatchEvent('click');
       await page.getByRole('menuitem', { name: 'Sign out' }).click();
       await expect(page).toHaveURL(/sign-in/);

@@ -17,6 +17,7 @@ import { RootErrorBoundary } from '@/components/errors/root-error-boundary';
 import { DefaultShell } from '@/components/layouts/shells/default-shell';
 import { Toaster } from '@/components/ui/sonner';
 import { appConfig } from '@/configs/app';
+import { useHydratedAttribute } from '@/hooks/use-hydrated';
 import { devtoolsPlugins } from '@/lib/devtools';
 import { getLocale } from '@/paraglide/runtime';
 import globalsCss from '@/styles/globals.css?url';
@@ -103,6 +104,8 @@ function RootError(props: ErrorComponentProps) {
 }
 
 function RootComponent() {
+  useHydratedAttribute();
+
   return (
     <ThemeProvider
       disableTransitionOnChange

@@ -87,7 +87,7 @@ e2e/
     db.setup.ts              # seeds E2E user + catalog (no browser)
     auth.setup.ts            # storageState setup project
   fixtures/
-    index.ts                 # hydration helpers (waitForHydration, etc.)
+    index.ts                 # waitForHydration helper (body[data-hydrated])
     constants.ts             # shared E2E credentials
     mailpit.ts               # email assertion helpers
     authenticated.fixture.ts # test.extend with auth context (planned)
@@ -160,8 +160,7 @@ from the HTML reporter — useful for internal tracking metadata.
 ## Writing tests
 
 Tests live in `e2e/` and use Playwright's test runner (not Vitest).
-Import `test`/`expect` from `@playwright/test` directly. Import
-hydration helpers from `~e2e/fixtures`.
+Import `test`/`expect` from `@playwright/test` directly.
 
 **Test isolation:** Each test runs in its own `BrowserContext` — an
 isolated incognito-equivalent with separate cookies, localStorage,
@@ -190,11 +189,45 @@ await page.getByRole('link', { name: 'Dashboard' }).click();
 await page.waitForURL('/dashboard');
 ```
 
-**Hydration:** `page.goto()` returns after `load` fires but before
-JavaScript attaches event listeners. During this hydration window,
-elements appear actionable but may not respond. Use
-`waitForHydration(page)` from `~e2e/fixtures` after `goto()` to
-wait for the app to become interactive.
+**Hydration:** SSR renders HTML before React attaches event
+handlers. Auth form submit buttons and page header "Add" buttons
+use `disabled={!hydrated}` via the `useHydrated()` hook. This
+fixes the real UX bug (users on slow connections clicking
+unhydrated buttons) AND lets Playwright's actionability auto-wait
+handle the timing — `click()` waits for the button to be enabled,
+which happens after hydration.
+
+**Hydration gate for form fills:** `fill()` on controlled React
+inputs before hydration is silently lost — React's hydration pass
+resets the DOM value to the server-rendered default. Use
+`toBeEnabled()` on the disabled submit button as a native
+hydration gate before filling:
+
+```ts
+await page.goto('/sign-in');
+// Hydration gate — button is disabled until useHydrated() returns true
+await expect(page.getByRole('button', { name: 'Sign in' })).toBeEnabled();
+// Safe to fill — React event handlers are attached
+await page.getByLabel('Email').fill(email);
+```
+
+**When to use `waitForHydration(page)`:** Only for operations
+that bypass Playwright's actionability checks:
+
+- `dispatchEvent('click')` — fires events directly, ignores
+  disabled state
+- `BroadcastChannel` listeners — need `useEffect` to register
+- `a11yScan(page)` — axe-core scans the DOM directly
+
+Most tests need no explicit hydration wait.
+
+**New page-level interactive controls:** Auth form submit buttons
+and page header buttons (e.g., "Add Account") must use
+`disabled={!hydrated}` via `useHydrated()` from
+`@/hooks/use-hydrated`. Dialog buttons don't need this — they
+only render after user interaction (which requires hydration).
+Forgetting this on page-level buttons causes flaky E2E tests
+and a UX bug on slow connections.
 
 **Mocking browser APIs:** Use `addInitScript()` to override native
 APIs before the page loads (must be called before `goto()`):
@@ -236,12 +269,11 @@ point. Use this to extend an existing test interactively.
 ```ts
 import { expect, test } from '@playwright/test';
 
-import { waitForHydration } from '~e2e/fixtures';
-
 test('example', async ({ page }) => {
   await page.goto('/sign-in');
-  await waitForHydration(page);
-  await expect(page.getByRole('heading')).toBeVisible();
+  // No waitForHydration needed — the sign-in button is disabled
+  // until hydrated, and Playwright auto-waits for enabled state.
+  await page.getByRole('button', { name: 'Sign in' }).click();
 });
 ```
 

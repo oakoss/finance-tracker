@@ -1,7 +1,5 @@
 import { expect, test } from '@playwright/test';
 
-import { waitForElementHydration } from '~e2e/fixtures';
-
 test.describe(
   'transactions CRUD',
   { tag: ['@smoke', '@authenticated'] },
@@ -9,8 +7,6 @@ test.describe(
     test.beforeEach(async ({ page }) => {
       // Ensure at least one account exists for the transaction form
       await page.goto('/accounts');
-      const heading = page.getByRole('heading', { name: /accounts/i });
-      await waitForElementHydration(heading);
 
       const hasAccount = await page
         .getByRole('row')
@@ -30,10 +26,6 @@ test.describe(
 
     test('create, edit, and delete a transaction', async ({ page }) => {
       await page.goto('/transactions');
-      const txHeading = page.getByRole('heading', {
-        name: /transactions/i,
-      });
-      await waitForElementHydration(txHeading);
 
       // Create transaction
       await page

@@ -15,6 +15,7 @@ import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { RouterLink } from '@/components/ui/link';
 import { PasswordInput } from '@/components/ui/password-input';
+import { useHydrated } from '@/hooks/use-hydrated';
 import { authClient } from '@/lib/auth-client';
 import { fieldValidators } from '@/lib/form';
 import { clientLog } from '@/lib/logging/client-logger';
@@ -27,6 +28,7 @@ type SignInFormProps = {
 };
 
 function SignInForm({ redirect }: SignInFormProps) {
+  const hydrated = useHydrated();
   const navigate = useNavigate();
   const [serverError, setServerError] = useState('');
 
@@ -144,6 +146,7 @@ function SignInForm({ redirect }: SignInFormProps) {
             {(isSubmitting) => (
               <Button
                 className="w-full"
+                disabled={!hydrated}
                 loading={isSubmitting}
                 size="lg"
                 type="submit"

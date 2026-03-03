@@ -22,12 +22,13 @@ files contain cookies and session tokens that must not be committed.
 ```ts
 import { expect, test as setup } from '@playwright/test';
 
-import { waitForHydration } from '~e2e/fixtures';
 import { E2E_EMAIL, E2E_PASSWORD } from '~e2e/fixtures/constants';
 
 setup('authenticate', async ({ page }) => {
   await page.goto('/sign-in');
-  await waitForHydration(page);
+  // Button is disabled until hydrated — wait for enabled to ensure
+  // React event handlers are attached before filling inputs.
+  await expect(page.getByRole('button', { name: 'Sign in' })).toBeEnabled();
   await page.getByLabel('Email').fill(E2E_EMAIL);
   await page.getByLabel('Password', { exact: true }).fill(E2E_PASSWORD);
   await page.getByRole('button', { name: 'Sign in' }).click();
@@ -47,7 +48,8 @@ const { defaultBrowserType: _iphone, ...iPhone } = devices['iPhone 15 Pro Max'];
 const { defaultBrowserType: _pixel, ...pixel } = devices['Pixel 7'];
 
 projects: [
-  { name: 'setup', testDir: 'e2e/setup', testMatch: '*.setup.ts' },
+  { name: 'db-setup', testDir: 'e2e/setup', testMatch: 'db.setup.ts' },
+  { dependencies: ['db-setup'], name: 'setup', testDir: 'e2e/setup', testMatch: 'auth.setup.ts' },
 
   // Desktop
   {
@@ -57,6 +59,7 @@ projects: [
     use: { ...devices['Desktop Chrome'], storageState: 'playwright/.auth/user.json' },
   },
   {
+    dependencies: ['db-setup'],
     grepInvert: /@authenticated/,
     name: 'chromium:public',
     use: { ...devices['Desktop Chrome'], storageState: { cookies: [], origins: [] } },
@@ -70,6 +73,7 @@ projects: [
     use: { ...iPhone, storageState: 'playwright/.auth/user.json' },
   },
   {
+    dependencies: ['db-setup'],
     grepInvert: /@authenticated/,
     name: 'iphone:public',
     use: { ...iPhone, storageState: { cookies: [], origins: [] } },
@@ -83,6 +87,7 @@ projects: [
     use: { ...pixel, storageState: 'playwright/.auth/user.json' },
   },
   {
+    dependencies: ['db-setup'],
     grepInvert: /@authenticated/,
     name: 'pixel:public',
     use: { ...pixel, storageState: { cookies: [], origins: [] } },
@@ -266,9 +271,10 @@ Manually created contexts must be explicitly closed with
 automatically by Playwright.
 
 Import `test` and `expect` from `@playwright/test` directly.
-Import hydration helpers from `~e2e/fixtures`. Future custom
-fixtures (e.g., `authenticated.fixture.ts`) will export an
-extended `test` from `e2e/fixtures/`.
+Import `waitForHydration` from `~e2e/fixtures` only when needed
+(see hydration section in README.md). Future custom fixtures
+(e.g., `authenticated.fixture.ts`) will export an extended `test`
+from `e2e/fixtures/`.
 
 ## Page Object Model (POM)
 

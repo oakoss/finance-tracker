@@ -22,6 +22,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { appConfig } from '@/configs/app';
+import { useHydrated } from '@/hooks/use-hydrated';
 import { authClient } from '@/lib/auth-client';
 import { fieldValidators } from '@/lib/form';
 import { clientLog } from '@/lib/logging/client-logger';
@@ -59,6 +60,7 @@ const passwordValidators = {
 };
 
 function SignUpForm() {
+  const hydrated = useHydrated();
   const navigate = useNavigate();
   const [serverError, setServerError] = useState('');
 
@@ -214,6 +216,7 @@ function SignUpForm() {
             {(isSubmitting) => (
               <Button
                 className="w-full"
+                disabled={!hydrated}
                 loading={isSubmitting}
                 size="lg"
                 type="submit"

@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 
+import { waitForHydration } from '~e2e/fixtures';
 import { a11yScan } from '~e2e/fixtures/a11y';
 
 test.use({ storageState: { cookies: [], origins: [] } });
@@ -20,6 +21,7 @@ test.describe('accessibility', { tag: '@a11y' }, () => {
       }) => {
         await page.emulateMedia({ colorScheme: scheme });
         await page.goto(path);
+        await waitForHydration(page);
         const results = await a11yScan(page);
         expect(results.violations).toEqual([]);
       });
