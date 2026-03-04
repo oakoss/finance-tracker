@@ -7,8 +7,8 @@ import {
 } from '@/db/schema';
 import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
-type User = typeof usersSelectSchema.infer;
-type UserInsert = typeof usersInsertSchema.infer;
+export type User = typeof usersSelectSchema.infer;
+export type UserInsert = typeof usersInsertSchema.infer;
 
 export function createUser(overrides?: Partial<User>): User {
   const now = fakeDate();

@@ -7,8 +7,8 @@ import {
 } from '@/db/schema';
 import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
-type AccountTerms = typeof accountTermsSelectSchema.infer;
-type AccountTermsInsert = typeof accountTermsInsertSchema.infer;
+export type AccountTerms = typeof accountTermsSelectSchema.infer;
+export type AccountTermsInsert = typeof accountTermsInsertSchema.infer;
 
 export function createAccountTerms(
   overrides?: Partial<AccountTerms>,

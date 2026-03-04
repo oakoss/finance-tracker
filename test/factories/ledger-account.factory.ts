@@ -7,8 +7,8 @@ import {
 } from '@/db/schema';
 import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
-type LedgerAccount = typeof ledgerAccountsSelectSchema.infer;
-type LedgerAccountInsert = typeof ledgerAccountsInsertSchema.infer;
+export type LedgerAccount = typeof ledgerAccountsSelectSchema.infer;
+export type LedgerAccountInsert = typeof ledgerAccountsInsertSchema.infer;
 
 const ACCOUNT_TYPES = [
   'checking',

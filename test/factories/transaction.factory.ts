@@ -7,8 +7,8 @@ import {
 } from '@/db/schema';
 import { type Db, fakeCents, fakeDate, fakeId } from '~test/factories/base';
 
-type Transaction = typeof transactionsSelectSchema.infer;
-type TransactionInsert = typeof transactionsInsertSchema.infer;
+export type Transaction = typeof transactionsSelectSchema.infer;
+export type TransactionInsert = typeof transactionsInsertSchema.infer;
 
 const DESCRIPTIONS = [
   'Amazon Purchase',

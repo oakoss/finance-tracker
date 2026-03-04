@@ -7,8 +7,8 @@ import {
 } from '@/db/schema';
 import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
-type Category = typeof categoriesSelectSchema.infer;
-type CategoryInsert = typeof categoriesInsertSchema.infer;
+export type Category = typeof categoriesSelectSchema.infer;
+export type CategoryInsert = typeof categoriesInsertSchema.infer;
 
 const CATEGORY_TYPES = ['income', 'expense', 'transfer'] as const;
 
