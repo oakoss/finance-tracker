@@ -1656,3 +1656,104 @@ test('update — clears categoryId to null', async ({ db }) => {
 
   expect(updated.categoryId).toBeNull();
 });
+
+// ---------------------------------------------------------------------------
+// Cross-user resource linking
+// ---------------------------------------------------------------------------
+
+test('create — cross-user categoryId accepted by DB (no ownership FK)', async ({
+  db,
+}) => {
+  const userA = await insertUser(db);
+  const userB = await insertUser(db);
+  const accountA = await insertLedgerAccount(db, { userId: userA.id });
+  const categoryB = await insertCategory(db, {
+    type: 'expense',
+    userId: userB.id,
+  });
+
+  // DB FK only checks categories.id, not userId — insert succeeds
+  const [txn] = await db
+    .insert(transactions)
+    .values({
+      accountId: accountA.id,
+      amountCents: 1000,
+      categoryId: categoryB.id,
+      createdById: userA.id,
+      description: 'cross-user category',
+      direction: 'debit',
+      postedAt: new Date(),
+      transactionAt: new Date(),
+    })
+    .returning();
+
+  expect(txn.categoryId).toBe(categoryB.id);
+
+  // Ownership query pattern: userId filter correctly excludes it
+  const owned = await db.query.categories.findFirst({
+    where: (t, { and: a, eq: e }) =>
+      a(e(t.id, categoryB.id), e(t.userId, userA.id)),
+  });
+  expect(owned).toBeUndefined();
+});
+
+test('create — cross-user payeeId accepted by DB (no ownership FK)', async ({
+  db,
+}) => {
+  const userA = await insertUser(db);
+  const userB = await insertUser(db);
+  const accountA = await insertLedgerAccount(db, { userId: userA.id });
+  const payeeB = await insertPayee(db, { userId: userB.id });
+
+  const [txn] = await db
+    .insert(transactions)
+    .values({
+      accountId: accountA.id,
+      amountCents: 1000,
+      createdById: userA.id,
+      description: 'cross-user payee',
+      direction: 'debit',
+      payeeId: payeeB.id,
+      postedAt: new Date(),
+      transactionAt: new Date(),
+    })
+    .returning();
+
+  expect(txn.payeeId).toBe(payeeB.id);
+
+  // Ownership query pattern: userId filter correctly excludes it
+  const owned = await db.query.payees.findFirst({
+    where: (t, { and: a, eq: e }) =>
+      a(e(t.id, payeeB.id), e(t.userId, userA.id)),
+  });
+  expect(owned).toBeUndefined();
+});
+
+test('create — cross-user tagId accepted by DB (no ownership FK)', async ({
+  db,
+}) => {
+  const userA = await insertUser(db);
+  const userB = await insertUser(db);
+  const accountA = await insertLedgerAccount(db, { userId: userA.id });
+  const tagB = await insertTag(db, { userId: userB.id });
+  const txn = await insertTransaction(db, { accountId: accountA.id });
+
+  // transactionTags FK only checks tags.id, not userId
+  await db
+    .insert(transactionTags)
+    .values({ tagId: tagB.id, transactionId: txn.id });
+
+  const rows = await db
+    .select()
+    .from(transactionTags)
+    .where(eq(transactionTags.transactionId, txn.id));
+
+  expect(rows).toHaveLength(1);
+  expect(rows[0].tagId).toBe(tagB.id);
+
+  // Ownership query pattern: userId filter correctly excludes it
+  const owned = await db.query.tags.findFirst({
+    where: (t, { and: a, eq: e }) => a(e(t.id, tagB.id), e(t.userId, userA.id)),
+  });
+  expect(owned).toBeUndefined();
+});
