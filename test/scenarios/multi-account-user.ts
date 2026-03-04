@@ -1,17 +1,15 @@
-import type {
-  ledgerAccountsSelectSchema,
-  usersSelectSchema,
-} from '@/db/schema';
+import type { LedgerAccount } from '@/modules/accounts/db/schema';
+import type { User } from '@/modules/auth/db/arktype-schemas';
 import type { Db } from '~test/factories/base';
 
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
 import { insertUser } from '~test/factories/user.factory';
 
 type MultiAccountUserContext = {
-  checking: typeof ledgerAccountsSelectSchema.infer;
-  creditCard: typeof ledgerAccountsSelectSchema.infer;
-  savings: typeof ledgerAccountsSelectSchema.infer;
-  user: typeof usersSelectSchema.infer;
+  checking: LedgerAccount;
+  creditCard: LedgerAccount;
+  savings: LedgerAccount;
+  user: User;
 };
 
 export async function createMultiAccountUser(

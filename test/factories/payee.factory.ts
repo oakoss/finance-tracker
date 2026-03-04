@@ -1,14 +1,9 @@
 import { faker } from '@faker-js/faker';
 
-import {
-  payees,
-  type payeesInsertSchema,
-  type payeesSelectSchema,
-} from '@/db/schema';
-import { type Db, fakeDate, fakeId } from '~test/factories/base';
+import type { Payee, PayeeInsert } from '@/modules/transactions/db/schema';
 
-export type Payee = typeof payeesSelectSchema.infer;
-export type PayeeInsert = typeof payeesInsertSchema.infer;
+import { payees } from '@/db/schema';
+import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
 export function createPayee(overrides?: Partial<Payee>): Payee {
   const now = fakeDate();

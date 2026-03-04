@@ -1,12 +1,7 @@
-import {
-  transfers,
-  type transfersInsertSchema,
-  type transfersSelectSchema,
-} from '@/db/schema';
-import { type Db, fakeCents, fakeDate, fakeId } from '~test/factories/base';
+import type { Transfer, TransferInsert } from '@/modules/finance/db/schema';
 
-type Transfer = typeof transfersSelectSchema.infer;
-type TransferInsert = typeof transfersInsertSchema.infer;
+import { transfers } from '@/db/schema';
+import { type Db, fakeCents, fakeDate, fakeId } from '~test/factories/base';
 
 export function createTransfer(overrides?: Partial<Transfer>): Transfer {
   const now = fakeDate();

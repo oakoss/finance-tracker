@@ -1,11 +1,7 @@
+import type { CreditCardCatalog } from '@/modules/accounts/db/schema';
 import type { Db } from '~test/factories/base';
 
-import {
-  creditCardCatalog,
-  type creditCardCatalogSelectSchema,
-} from '@/db/schema';
-
-type CreditCardCatalogRow = typeof creditCardCatalogSelectSchema.infer;
+import { creditCardCatalog } from '@/db/schema';
 
 const CATALOG = [
   {
@@ -172,7 +168,7 @@ const CATALOG = [
 
 export async function seedCreditCardCatalog(
   db: Db,
-): Promise<CreditCardCatalogRow[]> {
+): Promise<CreditCardCatalog[]> {
   const rows = await db
     .insert(creditCardCatalog)
     .values([...CATALOG])

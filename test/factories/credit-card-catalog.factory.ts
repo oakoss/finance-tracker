@@ -1,14 +1,12 @@
 import { faker } from '@faker-js/faker';
 
-import {
-  creditCardCatalog,
-  type creditCardCatalogInsertSchema,
-  type creditCardCatalogSelectSchema,
-} from '@/db/schema';
-import { type Db, fakeDate, fakeId } from '~test/factories/base';
+import type {
+  CreditCardCatalog,
+  CreditCardCatalogInsert,
+} from '@/modules/accounts/db/schema';
 
-type CreditCardCatalog = typeof creditCardCatalogSelectSchema.infer;
-type CreditCardCatalogInsert = typeof creditCardCatalogInsertSchema.infer;
+import { creditCardCatalog } from '@/db/schema';
+import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
 export function createCreditCardCatalog(
   overrides?: Partial<CreditCardCatalog>,

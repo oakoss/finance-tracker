@@ -15,6 +15,9 @@ export const usersSelectSchema = createSelectSchema(users);
 export const usersInsertSchema = createInsertSchema(users);
 export const usersUpdateSchema = createUpdateSchema(users);
 
+export type User = typeof usersSelectSchema.infer;
+export type UserInsert = typeof usersInsertSchema.infer;
+
 export const sessionsSelectSchema = createSelectSchema(sessions);
 export const sessionsInsertSchema = createInsertSchema(sessions);
 export const sessionsUpdateSchema = createUpdateSchema(sessions);

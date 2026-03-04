@@ -1,14 +1,12 @@
 import { faker } from '@faker-js/faker';
 
-import {
-  ledgerAccounts,
-  type ledgerAccountsInsertSchema,
-  type ledgerAccountsSelectSchema,
-} from '@/db/schema';
-import { type Db, fakeDate, fakeId } from '~test/factories/base';
+import type {
+  LedgerAccount,
+  LedgerAccountInsert,
+} from '@/modules/accounts/db/schema';
 
-export type LedgerAccount = typeof ledgerAccountsSelectSchema.infer;
-export type LedgerAccountInsert = typeof ledgerAccountsInsertSchema.infer;
+import { ledgerAccounts } from '@/db/schema';
+import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
 const ACCOUNT_TYPES = [
   'checking',

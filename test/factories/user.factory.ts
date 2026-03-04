@@ -1,14 +1,9 @@
 import { faker } from '@faker-js/faker';
 
-import {
-  users,
-  type usersInsertSchema,
-  type usersSelectSchema,
-} from '@/db/schema';
-import { type Db, fakeDate, fakeId } from '~test/factories/base';
+import type { User, UserInsert } from '@/modules/auth/db/arktype-schemas';
 
-export type User = typeof usersSelectSchema.infer;
-export type UserInsert = typeof usersInsertSchema.infer;
+import { users } from '@/db/schema';
+import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
 export function createUser(overrides?: Partial<User>): User {
   const now = fakeDate();

@@ -1,15 +1,12 @@
 import { faker } from '@faker-js/faker';
 
-import {
-  accountBalanceSnapshots,
-  type accountBalanceSnapshotsInsertSchema,
-  type accountBalanceSnapshotsSelectSchema,
-} from '@/db/schema';
-import { type Db, fakeCents, fakeDate, fakeId } from '~test/factories/base';
+import type {
+  AccountBalanceSnapshot,
+  AccountBalanceSnapshotInsert,
+} from '@/modules/accounts/db/schema';
 
-type AccountBalanceSnapshot = typeof accountBalanceSnapshotsSelectSchema.infer;
-type AccountBalanceSnapshotInsert =
-  typeof accountBalanceSnapshotsInsertSchema.infer;
+import { accountBalanceSnapshots } from '@/db/schema';
+import { type Db, fakeCents, fakeDate, fakeId } from '~test/factories/base';
 
 export function createAccountBalanceSnapshot(
   overrides?: Partial<AccountBalanceSnapshot>,

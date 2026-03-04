@@ -1,12 +1,10 @@
-import {
-  transactionTags,
-  type transactionTagsInsertSchema,
-  type transactionTagsSelectSchema,
+import type {
+  TransactionTag,
+  TransactionTagInsert,
 } from '@/modules/transactions/db/schema';
-import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
-type TransactionTag = typeof transactionTagsSelectSchema.infer;
-type TransactionTagInsert = typeof transactionTagsInsertSchema.infer;
+import { transactionTags } from '@/db/schema';
+import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
 export function createTransactionTag(
   overrides?: Partial<TransactionTag>,

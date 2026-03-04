@@ -1,15 +1,12 @@
+import type {
+  LedgerAccount,
+  LedgerAccountInsert,
+} from '@/modules/accounts/db/schema';
+import type { User, UserInsert } from '@/modules/auth/db/arktype-schemas';
 import type { Db } from '~test/factories/base';
 
-import {
-  insertLedgerAccount,
-  type LedgerAccount,
-  type LedgerAccountInsert,
-} from '~test/factories/ledger-account.factory';
-import {
-  insertUser,
-  type User,
-  type UserInsert,
-} from '~test/factories/user.factory';
+import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
+import { insertUser } from '~test/factories/user.factory';
 
 type AccountWithUser = {
   account: LedgerAccount;

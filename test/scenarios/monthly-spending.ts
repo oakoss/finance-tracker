@@ -1,15 +1,11 @@
 import { faker } from '@faker-js/faker';
 
-import {
-  categories,
-  type categoriesSelectSchema,
-  type ledgerAccountsSelectSchema,
-  payees,
-  type payeesSelectSchema,
-  transactions,
-  type transactionsSelectSchema,
-  type usersSelectSchema,
-} from '@/db/schema';
+import type { LedgerAccount } from '@/modules/accounts/db/schema';
+import type { User } from '@/modules/auth/db/arktype-schemas';
+import type { Category } from '@/modules/categories/db/schema';
+import type { Payee, Transaction } from '@/modules/transactions/db/schema';
+
+import { categories, payees, transactions } from '@/db/schema';
 import { type Db, fakeCents } from '~test/factories/base';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
 import { insertUser } from '~test/factories/user.factory';
@@ -25,11 +21,11 @@ const CATEGORY_NAMES = [
 const PAYEE_NAMES = ['Whole Foods', 'Shell Gas', 'Netflix'];
 
 type MonthlySpendingContext = {
-  account: typeof ledgerAccountsSelectSchema.infer;
-  categories: (typeof categoriesSelectSchema.infer)[];
-  payees: (typeof payeesSelectSchema.infer)[];
-  transactions: (typeof transactionsSelectSchema.infer)[];
-  user: typeof usersSelectSchema.infer;
+  account: LedgerAccount;
+  categories: Category[];
+  payees: Payee[];
+  transactions: Transaction[];
+  user: User;
 };
 
 export async function createMonthlySpending(

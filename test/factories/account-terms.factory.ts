@@ -1,14 +1,12 @@
 import { faker } from '@faker-js/faker';
 
-import {
-  accountTerms,
-  type accountTermsInsertSchema,
-  type accountTermsSelectSchema,
-} from '@/db/schema';
-import { type Db, fakeDate, fakeId } from '~test/factories/base';
+import type {
+  AccountTerms,
+  AccountTermsInsert,
+} from '@/modules/accounts/db/schema';
 
-export type AccountTerms = typeof accountTermsSelectSchema.infer;
-export type AccountTermsInsert = typeof accountTermsInsertSchema.infer;
+import { accountTerms } from '@/db/schema';
+import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
 export function createAccountTerms(
   overrides?: Partial<AccountTerms>,

@@ -1,14 +1,9 @@
 import { faker } from '@faker-js/faker';
 
-import {
-  categories,
-  type categoriesInsertSchema,
-  type categoriesSelectSchema,
-} from '@/db/schema';
-import { type Db, fakeDate, fakeId } from '~test/factories/base';
+import type { Category, CategoryInsert } from '@/modules/categories/db/schema';
 
-export type Category = typeof categoriesSelectSchema.infer;
-export type CategoryInsert = typeof categoriesInsertSchema.infer;
+import { categories } from '@/db/schema';
+import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
 const CATEGORY_TYPES = ['income', 'expense', 'transfer'] as const;
 

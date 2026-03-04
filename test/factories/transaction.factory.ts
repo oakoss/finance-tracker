@@ -1,14 +1,12 @@
 import { faker } from '@faker-js/faker';
 
-import {
-  transactions,
-  type transactionsInsertSchema,
-  type transactionsSelectSchema,
-} from '@/db/schema';
-import { type Db, fakeCents, fakeDate, fakeId } from '~test/factories/base';
+import type {
+  Transaction,
+  TransactionInsert,
+} from '@/modules/transactions/db/schema';
 
-export type Transaction = typeof transactionsSelectSchema.infer;
-export type TransactionInsert = typeof transactionsInsertSchema.infer;
+import { transactions } from '@/db/schema';
+import { type Db, fakeCents, fakeDate, fakeId } from '~test/factories/base';
 
 const DESCRIPTIONS = [
   'Amazon Purchase',

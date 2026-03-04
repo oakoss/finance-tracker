@@ -1,15 +1,9 @@
+import type { User, UserInsert } from '@/modules/auth/db/arktype-schemas';
+import type { Category, CategoryInsert } from '@/modules/categories/db/schema';
 import type { Db } from '~test/factories/base';
 
-import {
-  type Category,
-  type CategoryInsert,
-  insertCategory,
-} from '~test/factories/category.factory';
-import {
-  insertUser,
-  type User,
-  type UserInsert,
-} from '~test/factories/user.factory';
+import { insertCategory } from '~test/factories/category.factory';
+import { insertUser } from '~test/factories/user.factory';
 
 type CategoryWithUser = {
   category: Category;

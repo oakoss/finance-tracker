@@ -1,14 +1,9 @@
 import { faker } from '@faker-js/faker';
 
-import {
-  tags,
-  type tagsInsertSchema,
-  type tagsSelectSchema,
-} from '@/db/schema';
-import { type Db, fakeDate, fakeId } from '~test/factories/base';
+import type { Tag, TagInsert } from '@/modules/transactions/db/schema';
 
-type Tag = typeof tagsSelectSchema.infer;
-type TagInsert = typeof tagsInsertSchema.infer;
+import { tags } from '@/db/schema';
+import { type Db, fakeDate, fakeId } from '~test/factories/base';
 
 const TAG_NAMES = [
   'business',

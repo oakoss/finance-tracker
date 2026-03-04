@@ -461,6 +461,9 @@ export const transfersInsertSchema = createInsertSchema(transfers);
 export const transfersUpdateSchema = createUpdateSchema(transfers);
 export const transfersDeleteSchema = transfersSelectSchema.pick('id');
 
+export type Transfer = typeof transfersSelectSchema.infer;
+export type TransferInsert = typeof transfersInsertSchema.infer;
+
 export const importsSelectSchema = createSelectSchema(imports);
 export const importsInsertSchema = createInsertSchema(imports);
 export const importsUpdateSchema = createUpdateSchema(imports);

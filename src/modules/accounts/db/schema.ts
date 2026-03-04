@@ -140,15 +140,25 @@ export const creditCardCatalogUpdateSchema =
 export const creditCardCatalogDeleteSchema =
   creditCardCatalogSelectSchema.pick('id');
 
+export type CreditCardCatalog = typeof creditCardCatalogSelectSchema.infer;
+export type CreditCardCatalogInsert =
+  typeof creditCardCatalogInsertSchema.infer;
+
 export const ledgerAccountsSelectSchema = createSelectSchema(ledgerAccounts);
 export const ledgerAccountsInsertSchema = createInsertSchema(ledgerAccounts);
 export const ledgerAccountsUpdateSchema = createUpdateSchema(ledgerAccounts);
 export const ledgerAccountsDeleteSchema = ledgerAccountsSelectSchema.pick('id');
 
+export type LedgerAccount = typeof ledgerAccountsSelectSchema.infer;
+export type LedgerAccountInsert = typeof ledgerAccountsInsertSchema.infer;
+
 export const accountTermsSelectSchema = createSelectSchema(accountTerms);
 export const accountTermsInsertSchema = createInsertSchema(accountTerms);
 export const accountTermsUpdateSchema = createUpdateSchema(accountTerms);
 export const accountTermsDeleteSchema = accountTermsSelectSchema.pick('id');
+
+export type AccountTerms = typeof accountTermsSelectSchema.infer;
+export type AccountTermsInsert = typeof accountTermsInsertSchema.infer;
 
 export const accountBalanceSnapshotsSelectSchema = createSelectSchema(
   accountBalanceSnapshots,
@@ -161,3 +171,8 @@ export const accountBalanceSnapshotsUpdateSchema = createUpdateSchema(
 );
 export const accountBalanceSnapshotsDeleteSchema =
   accountBalanceSnapshotsSelectSchema.pick('id');
+
+export type AccountBalanceSnapshot =
+  typeof accountBalanceSnapshotsSelectSchema.infer;
+export type AccountBalanceSnapshotInsert =
+  typeof accountBalanceSnapshotsInsertSchema.infer;

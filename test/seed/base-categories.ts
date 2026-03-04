@@ -1,14 +1,10 @@
 import { and, eq } from 'drizzle-orm';
 
+import type { Category } from '@/modules/categories/db/schema';
 import type { Db } from '~test/factories/base';
 
-import {
-  categories,
-  type categoriesSelectSchema,
-  type categoryTypeEnum,
-} from '@/db/schema';
+import { categories, type categoryTypeEnum } from '@/db/schema';
 
-type CategoryRow = typeof categoriesSelectSchema.infer;
 type CategoryType = (typeof categoryTypeEnum.enumValues)[number];
 
 type CategoryDef = {
@@ -75,8 +71,8 @@ const CATEGORY_TREE: CategoryDef[] = [
 export async function seedBaseCategories(
   db: Db,
   userId: string,
-): Promise<CategoryRow[]> {
-  const all: CategoryRow[] = [];
+): Promise<Category[]> {
+  const all: Category[] = [];
 
   for (const def of CATEGORY_TREE) {
     const [inserted] = await db

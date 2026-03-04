@@ -1,30 +1,22 @@
+import type {
+  LedgerAccount,
+  LedgerAccountInsert,
+} from '@/modules/accounts/db/schema';
+import type { User, UserInsert } from '@/modules/auth/db/arktype-schemas';
+import type { Category, CategoryInsert } from '@/modules/categories/db/schema';
+import type {
+  Payee,
+  PayeeInsert,
+  Transaction,
+  TransactionInsert,
+} from '@/modules/transactions/db/schema';
 import type { Db } from '~test/factories/base';
 
-import {
-  type Category,
-  type CategoryInsert,
-  insertCategory,
-} from '~test/factories/category.factory';
-import {
-  insertLedgerAccount,
-  type LedgerAccount,
-  type LedgerAccountInsert,
-} from '~test/factories/ledger-account.factory';
-import {
-  insertPayee,
-  type Payee,
-  type PayeeInsert,
-} from '~test/factories/payee.factory';
-import {
-  insertTransaction,
-  type Transaction,
-  type TransactionInsert,
-} from '~test/factories/transaction.factory';
-import {
-  insertUser,
-  type User,
-  type UserInsert,
-} from '~test/factories/user.factory';
+import { insertCategory } from '~test/factories/category.factory';
+import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
+import { insertPayee } from '~test/factories/payee.factory';
+import { insertTransaction } from '~test/factories/transaction.factory';
+import { insertUser } from '~test/factories/user.factory';
 
 type TransactionWithRelations = {
   account: LedgerAccount;
