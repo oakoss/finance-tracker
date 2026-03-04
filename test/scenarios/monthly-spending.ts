@@ -1,18 +1,17 @@
 import { faker } from '@faker-js/faker';
 
-import type {
-  categoriesSelectSchema,
-  ledgerAccountsSelectSchema,
-  payeesSelectSchema,
-  transactionsSelectSchema,
-  usersSelectSchema,
+import {
+  categories,
+  type categoriesSelectSchema,
+  type ledgerAccountsSelectSchema,
+  payees,
+  type payeesSelectSchema,
+  transactions,
+  type transactionsSelectSchema,
+  type usersSelectSchema,
 } from '@/db/schema';
-
 import { type Db, fakeCents } from '~test/factories/base';
-import { insertCategory } from '~test/factories/category.factory';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
-import { insertPayee } from '~test/factories/payee.factory';
-import { insertTransaction } from '~test/factories/transaction.factory';
 import { insertUser } from '~test/factories/user.factory';
 
 const CATEGORY_NAMES = [
@@ -42,30 +41,42 @@ export async function createMonthlySpending(
     userId: user.id,
   });
 
-  const cats = await Promise.all(
-    CATEGORY_NAMES.map((name) =>
-      insertCategory(db, { name, type: 'expense', userId: user.id }),
-    ),
-  );
+  const cats = await db
+    .insert(categories)
+    .values(
+      CATEGORY_NAMES.map((name) => ({
+        name,
+        type: 'expense' as const,
+        userId: user.id,
+      })),
+    )
+    .returning();
 
-  const pays = await Promise.all(
-    PAYEE_NAMES.map((name) => insertPayee(db, { name, userId: user.id })),
-  );
+  const pays = await db
+    .insert(payees)
+    .values(PAYEE_NAMES.map((name) => ({ name, userId: user.id })))
+    .returning();
 
-  const txns: (typeof transactionsSelectSchema.infer)[] = [];
-  for (let day = 1; day <= 30; day++) {
-    const date = new Date(`2024-06-${String(day).padStart(2, '0')}T12:00:00Z`);
-    const txn = await insertTransaction(db, {
-      accountId: account.id,
-      amountCents: fakeCents(500, 15_000),
-      categoryId: faker.helpers.arrayElement(cats).id,
-      description: `Day ${day} purchase`,
-      payeeId: faker.helpers.arrayElement(pays).id,
-      postedAt: date,
-      transactionAt: date,
-    });
-    txns.push(txn);
-  }
+  const txns = await db
+    .insert(transactions)
+    .values(
+      Array.from({ length: 30 }, (_, i) => {
+        const day = i + 1;
+        const date = new Date(
+          `2024-06-${String(day).padStart(2, '0')}T12:00:00Z`,
+        );
+        return {
+          accountId: account.id,
+          amountCents: fakeCents(500, 15_000),
+          categoryId: faker.helpers.arrayElement(cats).id,
+          description: `Day ${day} purchase`,
+          payeeId: faker.helpers.arrayElement(pays).id,
+          postedAt: date,
+          transactionAt: date,
+        };
+      }),
+    )
+    .returning();
 
   return {
     account,

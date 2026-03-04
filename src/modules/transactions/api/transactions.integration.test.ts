@@ -635,22 +635,21 @@ test('create — inline tags: creates new tags within transaction', async ({
     })
     .returning();
 
-  const tagIds: string[] = [];
-  for (const tagName of newTagNames) {
-    const trimmed = tagName.trim();
-
-    const [newTag] = await db
-      .insert(tags)
-      .values({ createdById: user.id, name: trimmed, userId: user.id })
-      .returning();
-
-    tagIds.push(newTag.id);
-  }
+  const insertedTags = await db
+    .insert(tags)
+    .values(
+      newTagNames.map((name) => ({
+        createdById: user.id,
+        name: name.trim(),
+        userId: user.id,
+      })),
+    )
+    .returning();
 
   await db.insert(transactionTags).values(
-    tagIds.map((tagId) => ({
+    insertedTags.map((tag) => ({
       createdById: user.id,
-      tagId,
+      tagId: tag.id,
       transactionId: txn.id,
     })),
   );
@@ -789,30 +788,28 @@ test('create — inline tags: skips empty and whitespace-only names', async ({
     })
     .returning();
 
-  const tagIds: string[] = [];
-  for (const tagName of newTagNames) {
-    const trimmed = tagName.trim();
-    if (!trimmed) continue;
+  const validNames = newTagNames.map((n) => n.trim()).filter(Boolean);
 
-    const [newTag] = await db
-      .insert(tags)
-      .values({ createdById: user.id, name: trimmed, userId: user.id })
-      .returning();
-
-    tagIds.push(newTag.id);
-  }
-
-  if (tagIds.length > 0) {
-    await db.insert(transactionTags).values(
-      tagIds.map((tagId) => ({
+  const insertedTags = await db
+    .insert(tags)
+    .values(
+      validNames.map((name) => ({
         createdById: user.id,
-        tagId,
-        transactionId: txn.id,
+        name,
+        userId: user.id,
       })),
-    );
-  }
+    )
+    .returning();
 
-  expect(tagIds).toHaveLength(2);
+  await db.insert(transactionTags).values(
+    insertedTags.map((tag) => ({
+      createdById: user.id,
+      tagId: tag.id,
+      transactionId: txn.id,
+    })),
+  );
+
+  expect(insertedTags).toHaveLength(2);
 
   const tagRows = await db
     .select()
@@ -1076,32 +1073,28 @@ test('update — inline tags: creates new tags during update', async ({ db }) =>
     .delete(transactionTags)
     .where(eq(transactionTags.transactionId, txn.id));
 
-  const allTagIds: string[] = [];
+  const validNames = newTagNames.map((n) => n.trim()).filter(Boolean);
 
-  for (const tagName of newTagNames) {
-    const trimmed = tagName.trim();
-    if (!trimmed) continue;
-
-    const [newTag] = await db
-      .insert(tags)
-      .values({ createdById: user.id, name: trimmed, userId: user.id })
-      .returning();
-
-    allTagIds.push(newTag.id);
-  }
-
-  if (allTagIds.length > 0) {
-    const uniqueTagIds = [...new Set(allTagIds)];
-    await db.insert(transactionTags).values(
-      uniqueTagIds.map((tagId) => ({
+  const insertedTags = await db
+    .insert(tags)
+    .values(
+      validNames.map((name) => ({
         createdById: user.id,
-        tagId,
-        transactionId: txn.id,
+        name,
+        userId: user.id,
       })),
-    );
-  }
+    )
+    .returning();
 
-  expect(allTagIds).toHaveLength(2);
+  await db.insert(transactionTags).values(
+    insertedTags.map((tag) => ({
+      createdById: user.id,
+      tagId: tag.id,
+      transactionId: txn.id,
+    })),
+  );
+
+  expect(insertedTags).toHaveLength(2);
 
   const tagRows = await db
     .select()
