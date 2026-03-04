@@ -20,16 +20,49 @@ This doc covers how UI components integrate with TanStack libraries.
   validation logic in the form component.
 - If the form needs a subset or variant, derive it with
   `.pick()` / `.omit()` / `.merge()` — don't write a new schema.
-- Validate on both `onBlur` and `onSubmit`:
+- Validate on `onBlur` + `onSubmit` (not `onChange`):
 
   ```ts
   validators: { onBlur: createFooSchema, onSubmit: createFooSchema }
   ```
 
+  `onChange` validation fires on every keystroke, showing errors
+  while the user is still typing. Use `onBlur` for feedback after
+  leaving a field and `onSubmit` as the final gate.
+
 - For optional fields that use empty string as "unset" in the UI
   (e.g. a select with a "None" option), store `undefined` in form
   state so the schema's `'field?'` constraint works. Map sentinel
   values to `undefined` in `onValueChange`.
+
+### Reactivity: `form.state` vs `form.Subscribe`
+
+Reading `form.state.isSubmitting` (or any form state) directly in
+JSX **does not trigger re-renders**. The value updates internally
+but the component won't know.
+
+```tsx
+// WRONG — will not re-render when isSubmitting changes
+<Input disabled={form.state.isSubmitting} />
+
+// RIGHT — reactive subscription
+<form.Subscribe selector={(s) => s.isSubmitting}>
+  {(isSubmitting) => <Button disabled={isSubmitting}>Save</Button>}
+</form.Subscribe>
+
+// RIGHT — hook-based subscription
+const isSubmitting = useStore(form.store, (s) => s.isSubmitting)
+```
+
+This applies to all `form.state.*` properties: `isSubmitting`,
+`canSubmit`, `isValid`, `submissionAttempts`, etc.
+
+### Input disabled state during submission
+
+Do **not** disable inputs with `form.state.isSubmitting`. If
+`isSubmitting` gets stuck (reactivity issue above), users cannot
+correct validation errors. Only disable the **submit button** via
+`form.Subscribe`.
 
 ## Query (TanStack Query)
 
