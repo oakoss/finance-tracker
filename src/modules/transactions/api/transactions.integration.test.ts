@@ -1624,7 +1624,10 @@ test('update — clears categoryId to null', async ({ db }) => {
 });
 
 // ---------------------------------------------------------------------------
-// Cross-user resource linking
+// Cross-user resource linking (DB level)
+// DB FKs don't enforce ownership — service layer does (TREK-173).
+// These tests confirm the DB constraint gap still exists at the raw SQL level,
+// while resolvePayeeId/resolveTagIds/create+update services now reject it.
 // ---------------------------------------------------------------------------
 
 test('create — cross-user categoryId accepted by DB (no ownership FK)', async ({
@@ -1637,7 +1640,7 @@ test('create — cross-user categoryId accepted by DB (no ownership FK)', async 
     userId: userB.id,
   });
 
-  // DB FK only checks categories.id, not userId — insert succeeds
+  // DB FK only checks categories.id, not userId — raw insert still succeeds
   const [txn] = await db
     .insert(transactions)
     .values({
@@ -1669,6 +1672,7 @@ test('create — cross-user payeeId accepted by DB (no ownership FK)', async ({
   const { user: userB } = await insertAccountWithUser(db);
   const payeeB = await insertPayee(db, { userId: userB.id });
 
+  // DB FK only checks payees.id, not userId — raw insert still succeeds
   const [txn] = await db
     .insert(transactions)
     .values({
@@ -1701,7 +1705,7 @@ test('create — cross-user tagId accepted by DB (no ownership FK)', async ({
   const tagB = await insertTag(db, { userId: userB.id });
   const txn = await insertTransaction(db, { accountId: accountA.id });
 
-  // transactionTags FK only checks tags.id, not userId
+  // transactionTags FK only checks tags.id, not userId — raw insert still succeeds
   await db
     .insert(transactionTags)
     .values({ tagId: tagB.id, transactionId: txn.id });

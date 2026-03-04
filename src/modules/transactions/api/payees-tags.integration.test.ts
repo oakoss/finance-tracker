@@ -421,6 +421,38 @@ test('resolvePayeeId — returns existingPayeeId when no new name', async ({
   expect(id).toBe(payee.id);
 });
 
+test('resolvePayeeId — rejects cross-user existingPayeeId', async ({ db }) => {
+  const user1 = await insertUser(db);
+  const user2 = await insertUser(db);
+  const payee = await insertPayee(db, { userId: user2.id });
+
+  await expect(
+    resolvePayeeId(db, { existingPayeeId: payee.id, userId: user1.id }),
+  ).rejects.toThrow(expect.objectContaining({ status: 404 }));
+});
+
+test('resolvePayeeId — rejects soft-deleted existingPayeeId', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const payee = await insertPayee(db, {
+    deletedAt: new Date(),
+    userId: user.id,
+  });
+
+  await expect(
+    resolvePayeeId(db, { existingPayeeId: payee.id, userId: user.id }),
+  ).rejects.toThrow(expect.objectContaining({ status: 404 }));
+});
+
+test('resolvePayeeId — rejects nonexistent existingPayeeId', async ({ db }) => {
+  const user = await insertUser(db);
+
+  await expect(
+    resolvePayeeId(db, { existingPayeeId: fakeId(), userId: user.id }),
+  ).rejects.toThrow(expect.objectContaining({ status: 404 }));
+});
+
 test('resolvePayeeId — creates new payee', async ({ db }) => {
   const user = await insertUser(db);
   const id = await resolvePayeeId(db, {
@@ -497,6 +529,67 @@ test('resolveTagIds — passes through existing tag IDs', async ({ db }) => {
     userId: user.id,
   });
   expect(ids).toEqual([tag.id]);
+});
+
+test('resolveTagIds — rejects cross-user existingTagIds', async ({ db }) => {
+  const user1 = await insertUser(db);
+  const user2 = await insertUser(db);
+  const tag = await insertTag(db, { name: 'alien', userId: user2.id });
+
+  await expect(
+    resolveTagIds(db, { existingTagIds: [tag.id], userId: user1.id }),
+  ).rejects.toThrow(expect.objectContaining({ status: 404 }));
+});
+
+test('resolveTagIds — rejects soft-deleted existingTagIds', async ({ db }) => {
+  const user = await insertUser(db);
+  const tag = await insertTag(db, {
+    deletedAt: new Date(),
+    name: 'gone',
+    userId: user.id,
+  });
+
+  await expect(
+    resolveTagIds(db, { existingTagIds: [tag.id], userId: user.id }),
+  ).rejects.toThrow(expect.objectContaining({ status: 404 }));
+});
+
+test('resolveTagIds — rejects when any tag in list is cross-user', async ({
+  db,
+}) => {
+  const user1 = await insertUser(db);
+  const user2 = await insertUser(db);
+  const ownTag = await insertTag(db, { name: 'mine', userId: user1.id });
+  const alienTag = await insertTag(db, { name: 'theirs', userId: user2.id });
+
+  await expect(
+    resolveTagIds(db, {
+      existingTagIds: [ownTag.id, alienTag.id],
+      userId: user1.id,
+    }),
+  ).rejects.toThrow(expect.objectContaining({ status: 404 }));
+});
+
+test('resolveTagIds — rejects nonexistent existingTagIds', async ({ db }) => {
+  const user = await insertUser(db);
+
+  await expect(
+    resolveTagIds(db, { existingTagIds: [fakeId()], userId: user.id }),
+  ).rejects.toThrow(expect.objectContaining({ status: 404 }));
+});
+
+test('resolveTagIds — deduplicates existingTagIds before ownership check', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const tag = await insertTag(db, { name: 'dup-test', userId: user.id });
+
+  const ids = await resolveTagIds(db, {
+    existingTagIds: [tag.id, tag.id],
+    userId: user.id,
+  });
+
+  expect(ids).toContain(tag.id);
 });
 
 test('resolveTagIds — creates multiple new tags in one call', async ({

@@ -1,8 +1,10 @@
-import { sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 
 import type { DbOrTx } from '@/db';
 
-import { createError } from '@/lib/logging/evlog';
+import { notDeleted } from '@/lib/audit/soft-delete';
+import { createError, log } from '@/lib/logging/evlog';
+import { hashId } from '@/lib/logging/hash';
 import { payees } from '@/modules/transactions/db/schema';
 
 type ResolvePayeeOpts = {
@@ -16,7 +18,34 @@ export async function resolvePayeeId(
   opts: ResolvePayeeOpts,
 ): Promise<string | null> {
   if (!opts.newPayeeName) {
-    return opts.existingPayeeId ?? null;
+    if (!opts.existingPayeeId) return null;
+
+    const [owned] = await tx
+      .select({ id: payees.id })
+      .from(payees)
+      .where(
+        and(
+          eq(payees.id, opts.existingPayeeId),
+          eq(payees.userId, opts.userId),
+          notDeleted(payees.deletedAt),
+        ),
+      );
+
+    if (!owned) {
+      log.warn({
+        action: 'payee.ownershipCheck',
+        outcome: { success: false },
+        payeeId: hashId(opts.existingPayeeId),
+        userId: hashId(opts.userId),
+      });
+      throw createError({
+        fix: 'Select a valid payee.',
+        message: 'Payee not found.',
+        status: 404,
+      });
+    }
+
+    return owned.id;
   }
 
   const trimmed = opts.newPayeeName.trim();

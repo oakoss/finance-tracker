@@ -1,8 +1,10 @@
-import { sql } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 
 import type { DbOrTx } from '@/db';
 
-import { createError } from '@/lib/logging/evlog';
+import { notDeleted } from '@/lib/audit/soft-delete';
+import { createError, log } from '@/lib/logging/evlog';
+import { hashId } from '@/lib/logging/hash';
 import { tags } from '@/modules/transactions/db/schema';
 
 type ResolveTagsOpts = {
@@ -15,7 +17,37 @@ export async function resolveTagIds(
   tx: DbOrTx,
   opts: ResolveTagsOpts,
 ): Promise<string[]> {
-  const allIds = [...(opts.existingTagIds ?? [])];
+  const existingIds = [...new Set(opts.existingTagIds)];
+
+  if (existingIds.length > 0) {
+    const owned = await tx
+      .select({ id: tags.id })
+      .from(tags)
+      .where(
+        and(
+          inArray(tags.id, existingIds),
+          eq(tags.userId, opts.userId),
+          notDeleted(tags.deletedAt),
+        ),
+      );
+
+    if (owned.length !== existingIds.length) {
+      log.warn({
+        action: 'tag.ownershipCheck',
+        expected: existingIds.length,
+        found: owned.length,
+        outcome: { success: false },
+        userId: hashId(opts.userId),
+      });
+      throw createError({
+        fix: 'Remove any recently deleted tags and try again.',
+        message: 'One or more tags not found.',
+        status: 404,
+      });
+    }
+  }
+
+  const allIds = [...existingIds];
 
   const names = (opts.newTagNames ?? []).map((n) => n.trim()).filter(Boolean);
 

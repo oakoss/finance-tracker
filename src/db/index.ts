@@ -11,4 +11,4 @@ export const db = drizzle(env.DATABASE_URL, {
 
 export type Db = typeof db;
 
-export type DbOrTx = Pick<Db, 'insert'>;
+export type DbOrTx = Pick<Db, 'insert' | 'select'>;

@@ -6,7 +6,8 @@ import type { UpdateTransactionInput } from '@/modules/transactions/validators';
 import { insertAuditLog } from '@/lib/audit/insert-audit-log';
 import { notDeleted } from '@/lib/audit/soft-delete';
 import { ensureFound } from '@/lib/form/validation';
-import { createError } from '@/lib/logging/evlog';
+import { createError, log } from '@/lib/logging/evlog';
+import { hashId } from '@/lib/logging/hash';
 import { ledgerAccounts } from '@/modules/accounts/db/schema';
 import {
   transactions,
@@ -49,6 +50,31 @@ export async function updateTransactionService(
         .then((rows) => rows[0]?.transaction),
       'Transaction',
     );
+
+    if (fields.categoryId) {
+      const category = await tx.query.categories.findFirst({
+        where: (t, { and: a, eq: e }) =>
+          a(
+            e(t.id, fields.categoryId!),
+            e(t.userId, userId),
+            notDeleted(t.deletedAt),
+          ),
+      });
+
+      if (!category) {
+        log.warn({
+          action: 'category.ownershipCheck',
+          categoryId: hashId(fields.categoryId),
+          outcome: { success: false },
+          userId: hashId(userId),
+        });
+        throw createError({
+          fix: 'Select a valid category.',
+          message: 'Category not found.',
+          status: 404,
+        });
+      }
+    }
 
     if (fields.accountId && fields.accountId !== existing.accountId) {
       const account = await tx.query.ledgerAccounts.findFirst({

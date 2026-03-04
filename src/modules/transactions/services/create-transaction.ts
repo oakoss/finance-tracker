@@ -3,7 +3,8 @@ import type { CreateTransactionInput } from '@/modules/transactions/validators';
 
 import { insertAuditLog } from '@/lib/audit/insert-audit-log';
 import { notDeleted } from '@/lib/audit/soft-delete';
-import { createError } from '@/lib/logging/evlog';
+import { createError, log } from '@/lib/logging/evlog';
+import { hashId } from '@/lib/logging/hash';
 import {
   transactions,
   transactionTags,
@@ -32,6 +33,31 @@ export async function createTransactionService(
         message: 'Account not found.',
         status: 404,
       });
+    }
+
+    if (data.categoryId) {
+      const category = await tx.query.categories.findFirst({
+        where: (t, { and: a, eq: e }) =>
+          a(
+            e(t.id, data.categoryId!),
+            e(t.userId, userId),
+            notDeleted(t.deletedAt),
+          ),
+      });
+
+      if (!category) {
+        log.warn({
+          action: 'category.ownershipCheck',
+          categoryId: hashId(data.categoryId),
+          outcome: { success: false },
+          userId: hashId(userId),
+        });
+        throw createError({
+          fix: 'Select a valid category.',
+          message: 'Category not found.',
+          status: 404,
+        });
+      }
     }
 
     const payeeId = await resolvePayeeId(tx, {
