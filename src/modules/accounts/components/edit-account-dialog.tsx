@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { toISODateString } from '@/lib/i18n/date';
 import {
   AccountForm,
   type AccountFormValues,
@@ -46,7 +47,7 @@ export function EditAccountDialog({ accounts }: EditAccountDialogProps) {
       institution: account.institution ?? '',
       name: account.name,
       openedAt: account.openedAt
-        ? new Date(account.openedAt).toISOString().split('T')[0]
+        ? toISODateString(new Date(account.openedAt))
         : '',
       ownerType: account.ownerType,
       terms: {

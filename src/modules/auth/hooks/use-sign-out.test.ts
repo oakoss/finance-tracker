@@ -23,7 +23,7 @@ vi.mock('@/hooks/use-broadcast-channel', () => ({
   },
 }));
 
-vi.mock('@/lib/auth-client', () => ({
+vi.mock('@/lib/auth/client', () => ({
   authClient: {
     signOut: (...args: unknown[]) => mockSignOut(...args),
   },

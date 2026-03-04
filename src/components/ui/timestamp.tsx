@@ -12,7 +12,7 @@ import {
   formatDateTimeFull,
   formatRelativeTime,
   getUserTimeZone,
-} from '@/lib/i18n';
+} from '@/lib/i18n/date';
 import { cn } from '@/lib/utils';
 
 type TimestampProps = {

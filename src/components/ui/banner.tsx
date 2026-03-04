@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import { X } from 'lucide-react';
 import * as React from 'react';
 
+import { Icons } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { m } from '@/paraglide/messages';
 
@@ -110,7 +110,7 @@ function BannerDismiss({
       type="button"
       {...props}
     >
-      <X className="size-4" />
+      <Icons.X className="size-4" />
     </button>
   );
 }

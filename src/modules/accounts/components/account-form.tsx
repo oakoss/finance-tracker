@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { toSelectItems } from '@/lib/form';
+import { toSelectItems } from '@/lib/form/field';
 import {
   accountOwnerTypeEnum,
   accountTypeEnum,

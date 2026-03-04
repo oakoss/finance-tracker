@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { toISODateString } from '@/lib/i18n/date';
 import { accountQueries } from '@/modules/accounts/hooks/use-accounts';
 import { categoryQueries } from '@/modules/categories/hooks/use-categories';
 import {
@@ -54,7 +55,7 @@ export function EditTransactionDialog({
     | undefined
   >(() => {
     if (!item) return;
-    const dateStr = new Date(item.transactionAt).toISOString().split('T')[0];
+    const dateStr = toISODateString(new Date(item.transactionAt));
     return {
       accountId: item.accountId,
       amount: (item.amountCents / 100).toFixed(2),

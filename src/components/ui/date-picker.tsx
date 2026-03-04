@@ -8,17 +8,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { formatDate } from '@/lib/i18n';
+import { formatDate, toISODateString } from '@/lib/i18n/date';
 import { cn } from '@/lib/utils';
 import { m } from '@/paraglide/messages';
-
-function formatDateToISO(date: Date): string {
-  return [
-    date.getFullYear(),
-    String(date.getMonth() + 1).padStart(2, '0'),
-    String(date.getDate()).padStart(2, '0'),
-  ].join('-');
-}
 
 type DatePickerProps = {
   disabled?: boolean;
@@ -73,7 +65,7 @@ function DatePicker({
           selected={selected}
           onSelect={(date) => {
             if (date) {
-              onValueChange(formatDateToISO(date));
+              onValueChange(toISODateString(date));
               setOpen(false);
             }
           }}

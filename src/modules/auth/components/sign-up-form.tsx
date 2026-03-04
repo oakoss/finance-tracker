@@ -23,8 +23,8 @@ import {
 } from '@/components/ui/tooltip';
 import { appConfig } from '@/configs/app';
 import { useHydrated } from '@/hooks/use-hydrated';
-import { authClient } from '@/lib/auth-client';
-import { fieldValidators } from '@/lib/form';
+import { authClient } from '@/lib/auth/client';
+import { fieldValidators } from '@/lib/form/field';
 import { clientLog } from '@/lib/logging/client-logger';
 import { SocialSignIn } from '@/modules/auth/components/social-sign-in';
 import { emailType, nameType } from '@/modules/auth/lib/validate-field';

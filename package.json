@@ -26,7 +26,7 @@
     "paraglide:compile": "pnpm exec paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
     "preview": "vite preview",
     "schema:auth": "pnpm schema:auth:generate && pnpm schema:auth:postprocess && eslint --fix src/modules/auth/db/schema.ts && prettier --write src/modules/auth/db/schema.ts",
-    "schema:auth:generate": "pnpm with:env pnpm dlx @better-auth/cli generate --config src/lib/auth.ts --output src/modules/auth/db/schema.ts --yes",
+    "schema:auth:generate": "pnpm with:env pnpm dlx @better-auth/cli generate --config src/lib/auth/server.ts --output src/modules/auth/db/schema.ts --yes",
     "schema:auth:postprocess": "tsx scripts/postprocess-auth-schema.ts",
     "start": "pnpm with:env node .output/server/index.mjs",
     "test": "vitest run",
@@ -41,6 +41,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.2.0",
+    "@date-fns/tz": "^1.4.1",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",

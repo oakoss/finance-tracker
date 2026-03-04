@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { authClient } from '@/lib/auth-client';
+import { authClient } from '@/lib/auth/client';
 import { clientLog } from '@/lib/logging/client-logger';
 import { m } from '@/paraglide/messages';
 

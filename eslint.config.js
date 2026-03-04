@@ -290,5 +290,159 @@ export default defineConfig(
       'unicorn/prefer-top-level-await': 'off',
     },
   },
+  // -- Restricted imports (all restrictions in one block) --
+  {
+    files: ['**/*.{ts,tsx}'],
+    ignores: [
+      'src/components/filters/**',
+      'src/components/icons.tsx',
+      'src/components/ui/**',
+      'src/lib/i18n/date.ts',
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              message: 'Import from @/lib/i18n/date instead.',
+              name: '@date-fns/tz',
+            },
+            {
+              message: 'Import from @/lib/i18n/date instead.',
+              name: 'date-fns',
+            },
+            {
+              message:
+                'Import from @/components/ui/* instead of @base-ui/react directly.',
+              name: '@base-ui/react',
+            },
+            {
+              message: 'Import from @/components/icons instead.',
+              name: 'lucide-react',
+            },
+            {
+              message:
+                'Import from @/components/ui/calendar instead of react-day-picker directly.',
+              name: 'react-day-picker',
+            },
+          ],
+          patterns: [
+            {
+              group: ['@date-fns/*'],
+              message: 'Import from @/lib/i18n/date instead.',
+            },
+            {
+              group: ['date-fns/*'],
+              message: 'Import from @/lib/i18n/date instead.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // Override: src/lib/i18n/date.ts may use date-fns directly
+  {
+    files: ['src/lib/i18n/date.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              message:
+                'Import from @/components/ui/* instead of @base-ui/react directly.',
+              name: '@base-ui/react',
+            },
+            {
+              message: 'Import from @/components/icons instead.',
+              name: 'lucide-react',
+            },
+            {
+              message:
+                'Import from @/components/ui/calendar instead of react-day-picker directly.',
+              name: 'react-day-picker',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // Override: src/components/icons.tsx may use lucide-react directly
+  {
+    files: ['src/components/icons.tsx'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              message: 'Import from @/lib/i18n/date instead.',
+              name: '@date-fns/tz',
+            },
+            {
+              message: 'Import from @/lib/i18n/date instead.',
+              name: 'date-fns',
+            },
+            {
+              message:
+                'Import from @/components/ui/* instead of @base-ui/react directly.',
+              name: '@base-ui/react',
+            },
+            {
+              message:
+                'Import from @/components/ui/calendar instead of react-day-picker directly.',
+              name: 'react-day-picker',
+            },
+          ],
+          patterns: [
+            {
+              group: ['@date-fns/*'],
+              message: 'Import from @/lib/i18n/date instead.',
+            },
+            {
+              group: ['date-fns/*'],
+              message: 'Import from @/lib/i18n/date instead.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // Override: UI components may use @base-ui/react and react-day-picker directly
+  {
+    files: ['src/components/ui/**', 'src/components/filters/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              message: 'Import from @/lib/i18n/date instead.',
+              name: '@date-fns/tz',
+            },
+            {
+              message: 'Import from @/lib/i18n/date instead.',
+              name: 'date-fns',
+            },
+            {
+              message: 'Import from @/components/icons instead.',
+              name: 'lucide-react',
+            },
+          ],
+          patterns: [
+            {
+              group: ['@date-fns/*'],
+              message: 'Import from @/lib/i18n/date instead.',
+            },
+            {
+              group: ['date-fns/*'],
+              message: 'Import from @/lib/i18n/date instead.',
+            },
+          ],
+        },
+      ],
+    },
+  },
   configPrettier,
 );

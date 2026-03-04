@@ -2,9 +2,9 @@ import { createServerFn } from '@tanstack/react-start';
 import { asc } from 'drizzle-orm';
 
 import { db } from '@/db';
+import { isExpectedError, toError } from '@/lib/form/validation';
 import { createError, log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
-import { isExpectedError, toError } from '@/lib/validation';
 import { creditCardCatalog } from '@/modules/accounts/db/schema';
 import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
 

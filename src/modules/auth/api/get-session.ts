@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start';
 import { getRequestHeaders } from '@tanstack/react-start/server';
 
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/auth/server';
 import { createError, log } from '@/lib/logging/evlog';
 
 export const getSession = createServerFn({ method: 'GET' }).handler(

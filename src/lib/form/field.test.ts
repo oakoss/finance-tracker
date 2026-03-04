@@ -1,4 +1,4 @@
-import { toSelectItems } from './form';
+import { toSelectItems } from './field';
 
 describe('toSelectItems', () => {
   it('maps enum values to labels', () => {

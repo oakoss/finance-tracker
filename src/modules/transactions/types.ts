@@ -1,6 +1,6 @@
 import { type } from 'arktype';
 
-import { dateString } from '@/lib/schema';
+import { dateString } from '@/lib/form/schema';
 import {
   transactionDirectionEnum,
   transactionsSelectSchema,

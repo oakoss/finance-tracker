@@ -1,6 +1,6 @@
 import { type } from 'arktype';
 
-import { currencyCode, dateOrNull } from '@/lib/schema';
+import { currencyCode, dateOrNull } from '@/lib/form/schema';
 import {
   accountOwnerTypeEnum,
   accountStatusEnum,

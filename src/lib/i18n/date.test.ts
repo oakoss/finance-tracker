@@ -5,117 +5,85 @@ import { vi } from 'vitest';
 import { getLocale } from '@/paraglide/runtime';
 
 import {
-  defaultCurrency,
   defaultTimeZone,
-  formatCurrency,
   formatDate,
   formatDateTime,
   formatDateTimeFull,
   formatMonthYear,
-  formatNumber,
   formatRelativeTime,
   getUserTimeZone,
-} from './i18n';
+  todayISODateString,
+  toISODateString,
+} from './date';
 
 vi.mock('@/paraglide/runtime', () => ({
   getLocale: vi.fn(() => 'en-US'),
 }));
 
-// Widen to accept arbitrary locale strings (Paraglide constrains to available locales)
 const mockedGetLocale = getLocale as unknown as ReturnType<
   typeof vi.fn<() => string>
 >;
 
-// restoreMocks resets vi.fn(() => 'en-US') to return undefined (not the factory
-// default), so we must explicitly set the default before each test.
 beforeEach(() => {
   mockedGetLocale.mockReturnValue('en-US');
 });
 
-describe('i18n constants', () => {
-  it('has expected defaults', () => {
-    expect(defaultCurrency).toBe('USD');
+describe('defaultTimeZone', () => {
+  it('defaults to UTC', () => {
     expect(defaultTimeZone).toBe('UTC');
   });
 });
 
-describe('formatCurrency', () => {
-  it('formats cents to dollars with default locale and currency', () => {
-    const result = formatCurrency({ amountCents: 1299 });
-    expect(result).toBe('$12.99');
+describe('toISODateString', () => {
+  it('pads single-digit month and day', () => {
+    expect(toISODateString(new Date(2024, 0, 5))).toBe('2024-01-05');
   });
 
-  it('formats zero cents', () => {
-    const result = formatCurrency({ amountCents: 0 });
-    expect(result).toBe('$0.00');
+  it('handles double-digit month and day', () => {
+    expect(toISODateString(new Date(2024, 10, 15))).toBe('2024-11-15');
   });
 
-  it('formats negative amounts', () => {
-    const result = formatCurrency({ amountCents: -500 });
-    expect(result).toBe('-$5.00');
+  it('handles December 31', () => {
+    expect(toISODateString(new Date(2024, 11, 31))).toBe('2024-12-31');
   });
 
-  it('respects explicit currency override', () => {
-    const result = formatCurrency({ amountCents: 1000, currency: 'EUR' });
-    // Intl.NumberFormat with en-US locale and EUR renders the symbol
-    expect(result).toContain('10.00');
+  it('handles January 1', () => {
+    expect(toISODateString(new Date(2025, 0, 1))).toBe('2025-01-01');
   });
 
-  it('respects explicit locale override', () => {
-    const result = formatCurrency({
-      amountCents: 1000,
-      currency: 'EUR',
-      locale: 'de-DE',
-    });
-    // German locale uses comma as decimal separator
-    expect(result).toContain('10,00');
-  });
-
-  it('uses getLocale() when no locale provided', () => {
-    mockedGetLocale.mockReturnValue('ja-JP');
-    const result = formatCurrency({ amountCents: 100_000, currency: 'JPY' });
-    // JPY has no decimal places
-    expect(result).toContain('1,000');
+  it('handles leap day', () => {
+    expect(toISODateString(new Date(2024, 1, 29))).toBe('2024-02-29');
   });
 });
 
-describe('formatNumber', () => {
-  it('formats a number with default locale', () => {
-    const result = formatNumber({ value: 1234.5 });
-    expect(result).toBe('1,234.5');
+describe('todayISODateString', () => {
+  it('returns today in YYYY-MM-DD format', () => {
+    const result = todayISODateString();
+    expect(result).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 
-  it('formats with explicit locale', () => {
-    const result = formatNumber({ locale: 'de-DE', value: 1234.5 });
-    expect(result).toContain('1.234,5');
-  });
-
-  it('applies Intl options', () => {
-    const result = formatNumber({
-      options: { style: 'percent' },
-      value: 0.85,
-    });
-    expect(result).toBe('85%');
-  });
-
-  it('formats zero', () => {
-    expect(formatNumber({ value: 0 })).toBe('0');
+  it('uses local time, not UTC', () => {
+    const result = todayISODateString();
+    const now = new Date();
+    const expected = [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, '0'),
+      String(now.getDate()).padStart(2, '0'),
+    ].join('-');
+    expect(result).toBe(expected);
   });
 });
 
 describe('formatDate', () => {
-  // Use a fixed date to avoid timezone flakiness
   const date = new Date('2025-06-15T12:00:00Z');
 
   it('formats a date with default locale and timezone', () => {
     const result = formatDate({ value: date });
-    // en-US short month, 2-digit day, numeric year
     expect(result).toBe('Jun 15, 2025');
   });
 
   it('respects explicit locale', () => {
     const result = formatDate({ locale: 'de-DE', value: date });
-    // German locale uses different month abbreviation
     expect(result).toContain('2025');
     expect(result).toContain('15');
   });
@@ -136,7 +104,6 @@ describe('formatDateTime', () => {
 
   it('includes time components', () => {
     const result = formatDateTime({ value: date });
-    // Should contain date + time
     expect(result).toContain('Jun');
     expect(result).toContain('15');
     expect(result).toContain('2025');
@@ -248,7 +215,7 @@ describe('formatRelativeTime', () => {
 
   it('handles just now', () => {
     const result = formatRelativeTime({ now, value: now });
-    expect(result).toContain('now');
+    expect(result).toBe('0 seconds ago');
   });
 
   it('respects locale', () => {
@@ -259,19 +226,26 @@ describe('formatRelativeTime', () => {
   });
 });
 
+describe('locale fallback', () => {
+  it('falls back to en-US for unrecognized locale', () => {
+    const result = formatDate({
+      locale: 'fr-FR',
+      value: new Date('2025-06-15T12:00:00Z'),
+    });
+    expect(result).toBe('Jun 15, 2025');
+  });
+
+  it('uses getLocale() when no locale provided', () => {
+    mockedGetLocale.mockReturnValue('de-DE');
+    const result = formatMonthYear({ value: new Date('2025-12-15T12:00:00Z') });
+    expect(result).toBe('Dezember 2025');
+  });
+});
+
 describe('getUserTimeZone', () => {
   it('returns a valid IANA timezone string', () => {
     const tz = getUserTimeZone();
     expect(typeof tz).toBe('string');
     expect(tz.length).toBeGreaterThan(0);
-  });
-});
-
-describe('formatter caching', () => {
-  it('returns consistent results across repeated calls (cache hit path)', () => {
-    const params = { amountCents: 999 };
-    const first = formatCurrency(params);
-    const second = formatCurrency(params);
-    expect(first).toBe(second);
   });
 });

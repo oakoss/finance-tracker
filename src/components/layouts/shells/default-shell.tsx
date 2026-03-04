@@ -3,7 +3,7 @@ import { ModeToggle } from '@/components/mode-toggle';
 import { Button } from '@/components/ui/button';
 import { RouterLink } from '@/components/ui/link';
 import { appConfig } from '@/configs/app';
-import { authClient } from '@/lib/auth-client';
+import { authClient } from '@/lib/auth/client';
 import { useSignOut } from '@/modules/auth/hooks/use-sign-out';
 
 export function DefaultShell({ children }: { children: React.ReactNode }) {

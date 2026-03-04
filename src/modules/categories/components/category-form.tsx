@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { toSelectItems } from '@/lib/form';
+import { toSelectItems } from '@/lib/form/field';
 import { categoryTypeEnum } from '@/modules/categories/db/schema';
 import { createCategorySchema } from '@/modules/categories/types';
 import { m } from '@/paraglide/messages';

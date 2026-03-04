@@ -2,7 +2,7 @@ import { useRouter } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
 import { useBroadcastChannel } from '@/hooks/use-broadcast-channel';
-import { authClient } from '@/lib/auth-client';
+import { authClient } from '@/lib/auth/client';
 import { clientLog } from '@/lib/logging/client-logger';
 import { m } from '@/paraglide/messages';
 

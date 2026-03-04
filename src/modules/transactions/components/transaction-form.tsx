@@ -28,7 +28,8 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { toSelectItems } from '@/lib/form';
+import { toSelectItems } from '@/lib/form/field';
+import { todayISODateString } from '@/lib/i18n/date';
 import { transactionDirectionEnum } from '@/modules/transactions/db/schema';
 import { createTransactionSchema } from '@/modules/transactions/types';
 import { m } from '@/paraglide/messages';
@@ -83,7 +84,7 @@ function getDefaultValues(): TransactionFormValues {
     direction: 'debit',
     memo: '',
     pending: false,
-    transactionAt: new Date().toISOString().split('T')[0],
+    transactionAt: todayISODateString(),
   };
 }
 

@@ -25,7 +25,7 @@
  * // Server function
  * import { createError, log } from '@/lib/logging/evlog'
  * import { hashId } from '@/lib/logging/hash'
- * import { isExpectedError, toError } from '@/lib/validation'
+ * import { isExpectedError, toError } from '@/lib/form/validation'
  *
  * export const createTransaction = createServerFn()
  *   .middleware([authMiddleware])

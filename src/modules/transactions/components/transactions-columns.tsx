@@ -5,7 +5,7 @@ import type { TransactionListItem } from '@/modules/transactions/api/list-transa
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Timestamp } from '@/components/ui/timestamp';
-import { formatCurrency } from '@/lib/i18n';
+import { formatCurrency } from '@/lib/i18n/number';
 import { TransactionRowActions } from '@/modules/transactions/components/transaction-row-actions';
 import { m } from '@/paraglide/messages';
 
