@@ -1,8 +1,6 @@
 import { and, desc, eq, getTableName } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '~test/factories/base';
-
 import {
   accountBalanceSnapshots,
   accountTerms,
@@ -10,10 +8,12 @@ import {
   ledgerAccounts,
 } from '@/db/schema';
 import { notDeleted } from '@/lib/audit/soft-delete';
+import { throwIfConstraintViolation } from '@/lib/db/pg-error';
 import { expectAuditLogEntry, expectPgError } from '~test/assertions';
 import { insertAccountBalanceSnapshot } from '~test/factories/account-balance-snapshot.factory';
 import { insertAccountTermsWithAccount } from '~test/factories/account-terms-with-account.factory';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
+import { type Db, fakeId } from '~test/factories/base';
 import { insertCreditCardCatalog } from '~test/factories/credit-card-catalog.factory';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
 import { insertUser } from '~test/factories/user.factory';
@@ -319,6 +319,40 @@ test('create — rejects duplicate accountTerms for same account', async ({
   );
 });
 
+test('create — throwIfConstraintViolation returns 409 for duplicate terms', async ({
+  db,
+}) => {
+  const { account, user } = await insertAccountTermsWithAccount(db, {
+    account: { type: 'credit_card' },
+  });
+
+  let caught: unknown;
+  try {
+    await db.insert(accountTerms).values({
+      accountId: account.id,
+      aprBps: 1500,
+      createdById: user.id,
+      dueDay: 1,
+      statementDay: 15,
+    });
+  } catch (error) {
+    caught = error;
+  }
+
+  if (caught === undefined) {
+    expect.fail('Expected a Postgres constraint violation');
+  }
+
+  expect(() =>
+    throwIfConstraintViolation(caught, 'accountTerms.create'),
+  ).toThrow(
+    expect.objectContaining({
+      fix: 'This account already has terms. Edit existing terms.',
+      status: 409,
+    }),
+  );
+});
+
 // ---------------------------------------------------------------------------
 // Update account
 // ---------------------------------------------------------------------------
@@ -393,6 +427,24 @@ test('update — updates existing terms (update branch)', async ({ db }) => {
   expect(terms.dueDay).toBe(15);
   expect(terms.statementDay).toBe(25); // unchanged
   expect(terms.updatedById).toBe(user.id);
+});
+
+test('update — returns empty for non-existent id', async ({ db }) => {
+  const user = await insertUser(db);
+
+  const result = await db
+    .update(ledgerAccounts)
+    .set({ name: 'Ghost', updatedById: user.id })
+    .where(
+      and(
+        eq(ledgerAccounts.id, fakeId()),
+        eq(ledgerAccounts.userId, user.id),
+        notDeleted(ledgerAccounts.deletedAt),
+      ),
+    )
+    .returning();
+
+  expect(result).toHaveLength(0);
 });
 
 test('update — rejects non-owner', async ({ db }) => {
@@ -484,6 +536,24 @@ test('delete — soft deletes account', async ({ db }) => {
 
   expect(deleted.deletedAt).toBeInstanceOf(Date);
   expect(deleted.deletedById).toBe(user.id);
+});
+
+test('delete — returns empty for non-existent id', async ({ db }) => {
+  const user = await insertUser(db);
+
+  const result = await db
+    .update(ledgerAccounts)
+    .set({ deletedAt: new Date(), deletedById: user.id })
+    .where(
+      and(
+        eq(ledgerAccounts.id, fakeId()),
+        eq(ledgerAccounts.userId, user.id),
+        notDeleted(ledgerAccounts.deletedAt),
+      ),
+    )
+    .returning();
+
+  expect(result).toHaveLength(0);
 });
 
 test('delete — rejects non-owner', async ({ db }) => {

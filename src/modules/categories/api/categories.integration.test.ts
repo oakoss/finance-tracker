@@ -5,6 +5,7 @@ import { categories } from '@/db/schema';
 import { notDeleted } from '@/lib/audit/soft-delete';
 import { parsePgError, throwIfConstraintViolation } from '@/lib/db/pg-error';
 import { expectAuditLogEntry, expectPgError } from '~test/assertions';
+import { fakeId } from '~test/factories/base';
 import { insertCategoryWithUser } from '~test/factories/category-with-user.factory';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertUser } from '~test/factories/user.factory';
@@ -253,6 +254,24 @@ test('update — updates fields', async ({ db }) => {
   expect(updated.name).toBe('New Name');
 });
 
+test('update — returns empty for non-existent id', async ({ db }) => {
+  const user = await insertUser(db);
+
+  const result = await db
+    .update(categories)
+    .set({ name: 'Ghost', updatedById: user.id })
+    .where(
+      and(
+        eq(categories.id, fakeId()),
+        eq(categories.userId, user.id),
+        notDeleted(categories.deletedAt),
+      ),
+    )
+    .returning();
+
+  expect(result).toHaveLength(0);
+});
+
 test('update — rejects non-owner', async ({ db }) => {
   const { category } = await insertCategoryWithUser(db);
   const other = await insertUser(db);
@@ -447,6 +466,24 @@ test('delete — nullifies children parentId on soft delete', async ({ db }) => 
     .where(eq(categories.id, child.id));
 
   expect(updatedChild.parentId).toBeNull();
+});
+
+test('delete — returns empty for non-existent id', async ({ db }) => {
+  const user = await insertUser(db);
+
+  const result = await db
+    .update(categories)
+    .set({ deletedAt: new Date(), deletedById: user.id })
+    .where(
+      and(
+        eq(categories.id, fakeId()),
+        eq(categories.userId, user.id),
+        notDeleted(categories.deletedAt),
+      ),
+    )
+    .returning();
+
+  expect(result).toHaveLength(0);
 });
 
 test('delete — rejects non-owner', async ({ db }) => {

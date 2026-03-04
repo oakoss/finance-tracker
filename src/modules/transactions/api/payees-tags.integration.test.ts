@@ -7,6 +7,7 @@ import { parsePgError, throwIfConstraintViolation } from '@/lib/db/pg-error';
 import { resolvePayeeId } from '@/modules/transactions/lib/resolve-payee';
 import { resolveTagIds } from '@/modules/transactions/lib/resolve-tags';
 import { expectPgError } from '~test/assertions';
+import { fakeId } from '~test/factories/base';
 import { insertPayee } from '~test/factories/payee.factory';
 import { insertTag } from '~test/factories/tag.factory';
 import { insertUser } from '~test/factories/user.factory';
@@ -325,6 +326,75 @@ test('createTag — dedup is case-sensitive', async ({ db }) => {
 
   expect(found).toHaveLength(1);
   expect(found[0].id).toBe(lower.id);
+});
+
+// ---------------------------------------------------------------------------
+// FK violation — payees
+// ---------------------------------------------------------------------------
+
+test('createPayee — throwIfConstraintViolation returns 422 for FK violation', async ({
+  db,
+}) => {
+  let caught: unknown;
+  try {
+    await db.insert(payees).values({
+      createdById: fakeId(),
+      name: 'Orphan Payee',
+      normalizedName: 'orphan payee',
+      userId: fakeId(),
+    });
+  } catch (error) {
+    caught = error;
+  }
+
+  if (caught === undefined) {
+    expect.fail('Expected a Postgres FK violation');
+  }
+
+  const pgInfo = parsePgError(caught);
+  expect(pgInfo).not.toBeNull();
+  expect(pgInfo!.code).toBe('23503');
+
+  expect(() => throwIfConstraintViolation(caught, 'payee.create')).toThrow(
+    expect.objectContaining({
+      fix: expect.stringContaining('referenced record'),
+      status: 422,
+    }),
+  );
+});
+
+// ---------------------------------------------------------------------------
+// FK violation — tags
+// ---------------------------------------------------------------------------
+
+test('createTag — throwIfConstraintViolation returns 422 for FK violation', async ({
+  db,
+}) => {
+  let caught: unknown;
+  try {
+    await db.insert(tags).values({
+      createdById: fakeId(),
+      name: 'orphan-tag',
+      userId: fakeId(),
+    });
+  } catch (error) {
+    caught = error;
+  }
+
+  if (caught === undefined) {
+    expect.fail('Expected a Postgres FK violation');
+  }
+
+  const pgInfo = parsePgError(caught);
+  expect(pgInfo).not.toBeNull();
+  expect(pgInfo!.code).toBe('23503');
+
+  expect(() => throwIfConstraintViolation(caught, 'tag.create')).toThrow(
+    expect.objectContaining({
+      fix: expect.stringContaining('referenced record'),
+      status: 422,
+    }),
+  );
 });
 
 // ---------------------------------------------------------------------------

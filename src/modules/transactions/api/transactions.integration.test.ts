@@ -11,6 +11,7 @@ import {
 import { notDeleted } from '@/lib/audit/soft-delete';
 import { expectAuditLogEntry, expectPgError } from '~test/assertions';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
+import { fakeId } from '~test/factories/base';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
 import { insertPayee } from '~test/factories/payee.factory';
@@ -883,6 +884,20 @@ test('create — soft-deleted account excluded by notDeleted filter', async ({
 // Update transaction
 // ---------------------------------------------------------------------------
 
+test('update — returns empty for non-existent id', async ({ db }) => {
+  const { user } = await insertAccountWithUser(db);
+
+  const result = await db
+    .update(transactions)
+    .set({ description: 'Ghost', updatedById: user.id })
+    .where(
+      and(eq(transactions.id, fakeId()), notDeleted(transactions.deletedAt)),
+    )
+    .returning();
+
+  expect(result).toHaveLength(0);
+});
+
 test('update — updates fields', async ({ db }) => {
   const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, {
@@ -1372,6 +1387,20 @@ test('update — soft-deleted transaction is not found', async ({ db }) => {
 // ---------------------------------------------------------------------------
 // Delete transaction (soft delete)
 // ---------------------------------------------------------------------------
+
+test('delete — returns empty for non-existent id', async ({ db }) => {
+  const { user } = await insertAccountWithUser(db);
+
+  const result = await db
+    .update(transactions)
+    .set({ deletedAt: new Date(), deletedById: user.id })
+    .where(
+      and(eq(transactions.id, fakeId()), notDeleted(transactions.deletedAt)),
+    )
+    .returning();
+
+  expect(result).toHaveLength(0);
+});
 
 test('delete — soft deletes', async ({ db }) => {
   const { account, user } = await insertAccountWithUser(db);
