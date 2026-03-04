@@ -16,6 +16,7 @@ import {
   ComboboxItem,
   ComboboxList,
 } from '@/components/ui/combobox';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
@@ -177,14 +178,12 @@ export function TransactionForm({
               <FieldLabel htmlFor="transaction-date">
                 {m['transactions.form.transactionAt']()}
               </FieldLabel>
-              <Input
+              <DatePicker
                 disabled={isSubmitting}
                 id="transaction-date"
-                name={field.name}
-                type="date"
                 value={field.state.value}
                 onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
+                onValueChange={field.handleChange}
               />
               <FieldError errors={field.state.meta.errors} />
             </Field>
@@ -270,7 +269,7 @@ export function TransactionForm({
                 <Switch
                   checked={field.state.value ?? false}
                   disabled={isSubmitting}
-                  onCheckedChange={(checked) => field.handleChange(checked)}
+                  onCheckedChange={field.handleChange}
                 />
               </div>
             </Field>
@@ -313,11 +312,11 @@ export function TransactionForm({
               <Select
                 disabled={isSubmitting}
                 value={field.state.value}
-                onValueChange={(v) =>
+                onValueChange={(v) => {
                   field.handleChange(
                     v === '__none__' ? undefined : (v ?? undefined),
-                  )
-                }
+                  );
+                }}
               >
                 <SelectTrigger>
                   <SelectValue

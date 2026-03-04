@@ -149,6 +149,7 @@
   "auth.social.continueWithGitHub": "Continue with GitHub",
   "auth.social.continueWithGoogle": "Continue with Google",
   "common.loading": "Loading",
+  "common.pickDate": "Pick a date",
   "confirm.typePhrasePrefix": "Type",
   "confirm.typePhraseSuffix": "to confirm",
   "dataGrid.column.asc": "Asc",

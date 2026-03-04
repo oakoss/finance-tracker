@@ -8,6 +8,7 @@ import {
   ComboboxItem,
   ComboboxList,
 } from '@/components/ui/combobox';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
@@ -274,14 +275,12 @@ export function AccountForm({
               <FieldLabel htmlFor="opened-at">
                 {m['accounts.form.openedAt']()}
               </FieldLabel>
-              <Input
+              <DatePicker
                 disabled={isSubmitting}
                 id="opened-at"
-                name={field.name}
-                type="date"
                 value={field.state.value}
                 onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
+                onValueChange={field.handleChange}
               />
             </Field>
           )}

@@ -518,6 +518,131 @@ export function WizardFormExample() {
 }
 ```
 
+## Select with enum values
+
+When a Select's `value` differs from the display label (e.g. enum
+values like `"checking"` that should display as "Checking"),
+`SelectValue` cannot resolve the label because the popup items
+are in a Portal and may not mount until the user opens it.
+
+Pass an `items` record to `Select.Root` mapping values to labels.
+`SelectValue` reads from this map directly.
+
+```tsx
+import { useForm } from '@tanstack/react-form';
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { m } from '@/paraglide/messages';
+
+const SIZES = ['sm', 'md', 'lg'] as const;
+
+export function SelectEnumExample() {
+  // Build the value-to-label map once per render.
+  // Paraglide message calls must happen at render time for i18n reactivity.
+  const sizeItems = Object.fromEntries(
+    SIZES.map((s) => [s, m[`sizes.${s}`]()]),
+  );
+
+  const form = useForm({
+    defaultValues: { size: 'md' as (typeof SIZES)[number] },
+    onSubmit: ({ value }) => console.log(value),
+  });
+
+  return (
+    <form.Field name="size">
+      {(field) => (
+        <Field>
+          <FieldLabel>Size</FieldLabel>
+          <Select
+            items={sizeItems}
+            value={field.state.value}
+            onValueChange={(v) => {
+              if (v) field.handleChange(v);
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {SIZES.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {sizeItems[s]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </Field>
+      )}
+    </form.Field>
+  );
+}
+```
+
+Key points:
+
+- `items` is `Record<string, ReactNode>` — maps raw values to
+  display labels so the trigger always shows the right text.
+- Reuse the same map in `SelectItem` children to avoid duplicate
+  i18n calls.
+- The `label` prop on `SelectItem` is for keyboard text
+  navigation only — it does not control the trigger display.
+
+## Combobox in forms
+
+Use Combobox for closed lists that benefit from filtering (e.g.
+currency codes). The `InputGroup` fieldset needs `m-0 p-0
+overflow-hidden` (already applied at the component level) to
+prevent alignment issues.
+
+```tsx
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from '@/components/ui/combobox';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+
+const CURRENCY_CODES = Intl.supportedValuesOf('currency');
+
+// Inside a form.Field render prop:
+<Field data-invalid={field.state.meta.errors.length > 0}>
+  <FieldLabel>Currency</FieldLabel>
+  <Combobox
+    value={field.state.value}
+    onValueChange={(v) => {
+      if (v) field.handleChange(v);
+    }}
+  >
+    <ComboboxInput
+      disabled={isSubmitting}
+      placeholder="USD"
+      onBlur={field.handleBlur}
+    />
+    <ComboboxContent>
+      <ComboboxList>
+        <ComboboxEmpty>No results found</ComboboxEmpty>
+        {CURRENCY_CODES.map((code) => (
+          <ComboboxItem key={code} value={code}>
+            {code}
+          </ComboboxItem>
+        ))}
+      </ComboboxList>
+    </ComboboxContent>
+  </Combobox>
+  <FieldError errors={field.state.meta.errors} />
+</Field>;
+```
+
 ## Field-level validators (sync + async)
 
 ```tsx
