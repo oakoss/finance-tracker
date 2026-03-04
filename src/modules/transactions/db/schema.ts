@@ -15,7 +15,7 @@ import { auditFields } from '@/db/shared';
 import { ledgerAccounts } from '@/modules/accounts/db/schema';
 import { users } from '@/modules/auth/db/schema';
 import { categories } from '@/modules/categories/db/schema';
-import { transfers } from '@/modules/finance/db/schema';
+import { transfers } from '@/modules/transfers/db/schema';
 
 export const transactionDirectionEnum = pgEnum('transaction_direction', [
   'debit',

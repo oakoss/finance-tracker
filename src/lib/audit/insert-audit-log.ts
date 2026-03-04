@@ -1,8 +1,8 @@
 import type { DbOrTx } from '@/db';
 import type { AuditAction } from '@/lib/audit/types';
 
+import { auditLogs } from '@/db/audit';
 import { logAuditEvent } from '@/lib/audit/log-audit-event';
-import { auditLogs } from '@/modules/finance/db/schema';
 
 type InsertAuditLogParams = {
   action: AuditAction;

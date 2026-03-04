@@ -3,21 +3,21 @@ import { relations } from 'drizzle-orm';
 import { ledgerAccounts } from '@/modules/accounts/db/schema';
 import { users } from '@/modules/auth/db/schema';
 import { categories } from '@/modules/categories/db/schema';
+import { importRows } from '@/modules/imports/db/schema';
+import { promoBucketTransactions } from '@/modules/promotions/db/schema';
 import {
-  attachments,
-  importRows,
   merchantRules,
   payeeAliases,
-  promoBucketTransactions,
   recurringRules,
-  transfers,
-} from '@/modules/finance/db/schema';
+} from '@/modules/rules/db/schema';
+import { attachments } from '@/modules/statements/db/schema';
 import {
   payees,
   tags,
   transactions,
   transactionTags,
 } from '@/modules/transactions/db/schema';
+import { transfers } from '@/modules/transfers/db/schema';
 
 export const transactionsRelations = relations(
   transactions,

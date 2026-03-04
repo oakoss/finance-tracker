@@ -7,14 +7,12 @@ import {
   ledgerAccounts,
 } from '@/modules/accounts/db/schema';
 import { users } from '@/modules/auth/db/schema';
-import {
-  debtStrategyOrder,
-  imports,
-  promotions,
-  statements,
-  transfers,
-} from '@/modules/finance/db/schema';
+import { debtStrategyOrder } from '@/modules/debt/db/schema';
+import { imports } from '@/modules/imports/db/schema';
+import { promotions } from '@/modules/promotions/db/schema';
+import { statements } from '@/modules/statements/db/schema';
 import { transactions } from '@/modules/transactions/db/schema';
+import { transfers } from '@/modules/transfers/db/schema';
 
 export const creditCardCatalogRelations = relations(
   creditCardCatalog,

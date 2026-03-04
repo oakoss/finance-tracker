@@ -15,12 +15,12 @@ const importModule = async () => {
     hashId: vi.fn((id: string) => `hashed_${id}`),
   }));
 
-  vi.mock('@/modules/finance/db/schema', () => ({
+  vi.mock('@/db/audit', () => ({
     auditLogs: Symbol('auditLogs'),
   }));
 
   const evlog = await import('@/lib/logging/evlog');
-  const schema = await import('@/modules/finance/db/schema');
+  const schema = await import('@/db/audit');
   const mod = await import('./insert-audit-log');
   // eslint-disable-next-line @typescript-eslint/unbound-method -- mock fn
   const logInfo = vi.mocked(evlog.log.info);
@@ -62,7 +62,7 @@ describe('insertAuditLog', () => {
   it('inserts correct values for an update action with beforeData and afterData', async () => {
     const { insertAuditLog } = await importModule();
     const mockValues = vi.fn().mockImplementation(() => Promise.resolve());
-    const { ...tx } = createMockTx(mockValues);
+    const tx = createMockTx(mockValues);
 
     await insertAuditLog(
       tx as unknown as Parameters<typeof insertAuditLog>[0],
@@ -85,7 +85,7 @@ describe('insertAuditLog', () => {
   it('inserts correct values for a delete action', async () => {
     const { insertAuditLog } = await importModule();
     const mockValues = vi.fn().mockImplementation(() => Promise.resolve());
-    const { ...tx } = createMockTx(mockValues);
+    const tx = createMockTx(mockValues);
 
     await insertAuditLog(
       tx as unknown as Parameters<typeof insertAuditLog>[0],
@@ -107,7 +107,7 @@ describe('insertAuditLog', () => {
   it('omits beforeData and afterData when not provided', async () => {
     const { insertAuditLog } = await importModule();
     const mockValues = vi.fn().mockImplementation(() => Promise.resolve());
-    const { ...tx } = createMockTx(mockValues);
+    const tx = createMockTx(mockValues);
 
     await insertAuditLog(
       tx as unknown as Parameters<typeof insertAuditLog>[0],
@@ -127,7 +127,7 @@ describe('insertAuditLog', () => {
   it('logs via logAuditEvent with correct fields', async () => {
     const { insertAuditLog, logInfo } = await importModule();
     const mockValues = vi.fn().mockImplementation(() => Promise.resolve());
-    const { ...tx } = createMockTx(mockValues);
+    const tx = createMockTx(mockValues);
 
     await insertAuditLog(
       tx as unknown as Parameters<typeof insertAuditLog>[0],
@@ -154,7 +154,7 @@ describe('insertAuditLog', () => {
     const { insertAuditLog, logInfo } = await importModule();
     const dbError = new Error('unique_violation');
     const mockValues = vi.fn().mockRejectedValue(dbError);
-    const { ...tx } = createMockTx(mockValues);
+    const tx = createMockTx(mockValues);
 
     await expect(
       insertAuditLog(tx as unknown as Parameters<typeof insertAuditLog>[0], {
@@ -171,7 +171,7 @@ describe('insertAuditLog', () => {
   it('resolves successfully even when logging fails', async () => {
     const { insertAuditLog, logInfo } = await importModule();
     const mockValues = vi.fn().mockImplementation(() => Promise.resolve());
-    const { ...tx } = createMockTx(mockValues);
+    const tx = createMockTx(mockValues);
 
     logInfo.mockImplementation(() => {
       throw new Error('evlog transport failed');

@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { createServerCookies } from '@/lib/cookies';
 import { sendEmail } from '@/lib/email';
-import { userPreferences } from '@/modules/finance/db/schema';
+import { userPreferences } from '@/modules/preferences/db/schema';
 import { m } from '@/paraglide/messages';
 import { isLocale } from '@/paraglide/runtime';
 

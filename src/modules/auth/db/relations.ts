@@ -8,18 +8,14 @@ import {
   verifications,
 } from '@/modules/auth/db/schema';
 import { categories } from '@/modules/categories/db/schema';
-import {
-  attachments,
-  debtStrategies,
-  imports,
-  merchantRules,
-  recurringRules,
-  statements,
-  transfers,
-  userPreferences,
-} from '@/modules/finance/db/schema';
+import { debtStrategies } from '@/modules/debt/db/schema';
+import { imports } from '@/modules/imports/db/schema';
+import { userPreferences } from '@/modules/preferences/db/schema';
+import { merchantRules, recurringRules } from '@/modules/rules/db/schema';
+import { attachments, statements } from '@/modules/statements/db/schema';
 import { todos } from '@/modules/todos/db/schema';
 import { payees, tags } from '@/modules/transactions/db/schema';
+import { transfers } from '@/modules/transfers/db/schema';
 
 // usersRelations spans auth, finance, and todos modules.
 // Drizzle requires exactly one relations() call per table,

@@ -1,3 +1,3 @@
-import type { auditActionEnum } from '@/modules/finance/db/schema';
+import type { auditActionEnum } from '@/db/audit';
 
 export type AuditAction = (typeof auditActionEnum)['enumValues'][number];

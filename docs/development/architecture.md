@@ -131,11 +131,22 @@ Modules:
   `hooks/` (e.g., `use-sign-out.ts`), `lib/`, `middleware.ts`
 - **transactions**: `api/`, `services/`, `lib/`, `db/`, `models.ts`,
   `validators.ts`
-- **finance**: `db/` (schema, relations), `models.ts`
+- **accounts**: `api/`, `db/`, `models.ts`, `validators.ts`
+- **categories**: `api/`, `db/`, `models.ts`, `validators.ts`
+- **debt**: `db/`, `models.ts` (debt strategies, order, runs)
+- **imports**: `db/`, `models.ts` (CSV/PDF imports, import rows)
+- **preferences**: `db/`, `models.ts` (user preferences)
+- **promotions**: `db/`, `models.ts` (promos, buckets, bucket txns)
+- **rules**: `db/`, `models.ts` (recurring rules, merchant rules,
+  payee aliases)
+- **statements**: `db/`, `models.ts` (statements, attachments)
 - **todos**: `db/` (schema, relations), `models.ts`
+- **transfers**: `db/`, `models.ts`
 
 Each module owns its Drizzle schema and relations in `{module}/db/`.
 All are re-exported through `src/db/schema.ts` (the aggregator).
+Global infra tables live in `src/db/` directly: `audit.ts` (auditLogs
+table + enum), `audit-relations.ts`, `audit-models.ts`.
 
 **Relations pattern:** Drizzle requires exactly one `relations()` call
 per table. `usersRelations` lives in `src/modules/auth/db/relations.ts`

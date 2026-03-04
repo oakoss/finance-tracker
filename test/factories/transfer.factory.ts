@@ -1,4 +1,4 @@
-import type { Transfer, TransferInsert } from '@/modules/finance/models';
+import type { Transfer, TransferInsert } from '@/modules/transfers/models';
 
 import { transfers } from '@/db/schema';
 import { type Db, fakeCents, fakeDate, fakeId } from '~test/factories/base';
