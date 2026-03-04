@@ -1,7 +1,7 @@
 import type {
   TransactionTag,
   TransactionTagInsert,
-} from '@/modules/transactions/db/schema';
+} from '@/modules/transactions/models';
 
 import { transactionTags } from '@/db/schema';
 import { type Db, fakeDate, fakeId } from '~test/factories/base';

@@ -11,7 +11,7 @@ import {
   accountTerms,
   ledgerAccounts,
 } from '@/modules/accounts/db/schema';
-import { createAccountSchema } from '@/modules/accounts/types';
+import { createAccountSchema } from '@/modules/accounts/validators';
 import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
 
 export const createAccount = createServerFn({ method: 'POST' })

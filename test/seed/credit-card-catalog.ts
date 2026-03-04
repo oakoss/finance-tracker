@@ -1,4 +1,4 @@
-import type { CreditCardCatalog } from '@/modules/accounts/db/schema';
+import type { CreditCardCatalog } from '@/modules/accounts/models';
 import type { Db } from '~test/factories/base';
 
 import { creditCardCatalog } from '@/db/schema';

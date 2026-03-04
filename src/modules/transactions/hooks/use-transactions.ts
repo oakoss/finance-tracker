@@ -10,7 +10,7 @@ import type {
   CreateTransactionInput,
   DeleteTransactionInput,
   UpdateTransactionInput,
-} from '@/modules/transactions/types';
+} from '@/modules/transactions/validators';
 
 import { clientLog } from '@/lib/logging/client-logger';
 import { parseError } from '@/lib/logging/evlog';

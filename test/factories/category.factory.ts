@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import type { Category, CategoryInsert } from '@/modules/categories/db/schema';
+import type { Category, CategoryInsert } from '@/modules/categories/models';
 
 import { categories } from '@/db/schema';
 import { type Db, fakeDate, fakeId } from '~test/factories/base';

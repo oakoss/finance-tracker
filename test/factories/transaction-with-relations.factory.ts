@@ -1,15 +1,15 @@
 import type {
   LedgerAccount,
   LedgerAccountInsert,
-} from '@/modules/accounts/db/schema';
-import type { User, UserInsert } from '@/modules/auth/db/arktype-schemas';
-import type { Category, CategoryInsert } from '@/modules/categories/db/schema';
+} from '@/modules/accounts/models';
+import type { User, UserInsert } from '@/modules/auth/models';
+import type { Category, CategoryInsert } from '@/modules/categories/models';
 import type {
   Payee,
   PayeeInsert,
   Transaction,
   TransactionInsert,
-} from '@/modules/transactions/db/schema';
+} from '@/modules/transactions/models';
 import type { Db } from '~test/factories/base';
 
 import { insertCategory } from '~test/factories/category.factory';

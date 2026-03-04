@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 
 import type { Db } from '@/db';
-import type { DeleteTransactionInput } from '@/modules/transactions/types';
+import type { DeleteTransactionInput } from '@/modules/transactions/validators';
 
 import { insertAuditLog } from '@/lib/audit/insert-audit-log';
 import { notDeleted } from '@/lib/audit/soft-delete';

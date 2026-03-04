@@ -1,5 +1,5 @@
-import type { User, UserInsert } from '@/modules/auth/db/arktype-schemas';
-import type { Category, CategoryInsert } from '@/modules/categories/db/schema';
+import type { User, UserInsert } from '@/modules/auth/models';
+import type { Category, CategoryInsert } from '@/modules/categories/models';
 import type { Db } from '~test/factories/base';
 
 import { insertCategory } from '~test/factories/category.factory';

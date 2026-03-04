@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import type { Tag, TagInsert } from '@/modules/transactions/db/schema';
+import type { Tag, TagInsert } from '@/modules/transactions/models';
 
 import { tags } from '@/db/schema';
 import { type Db, fakeDate, fakeId } from '~test/factories/base';

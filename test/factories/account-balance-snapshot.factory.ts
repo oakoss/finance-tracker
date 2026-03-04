@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import type {
   AccountBalanceSnapshot,
   AccountBalanceSnapshotInsert,
-} from '@/modules/accounts/db/schema';
+} from '@/modules/accounts/models';
 
 import { accountBalanceSnapshots } from '@/db/schema';
 import { type Db, fakeCents, fakeDate, fakeId } from '~test/factories/base';

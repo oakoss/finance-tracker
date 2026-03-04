@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 
-import type { Category } from '@/modules/categories/db/schema';
+import type { Category } from '@/modules/categories/models';
 import type { Db } from '~test/factories/base';
 
 import { categories, type categoryTypeEnum } from '@/db/schema';

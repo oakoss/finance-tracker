@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import type {
   Transaction,
   TransactionInsert,
-} from '@/modules/transactions/db/schema';
+} from '@/modules/transactions/models';
 
 import { transactions } from '@/db/schema';
 import { type Db, fakeCents, fakeDate, fakeId } from '~test/factories/base';

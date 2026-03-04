@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import type {
   AccountTerms,
   AccountTermsInsert,
-} from '@/modules/accounts/db/schema';
+} from '@/modules/accounts/models';
 
 import { accountTerms } from '@/db/schema';
 import { type Db, fakeDate, fakeId } from '~test/factories/base';

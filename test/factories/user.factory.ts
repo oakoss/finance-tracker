@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import type { User, UserInsert } from '@/modules/auth/db/arktype-schemas';
+import type { User, UserInsert } from '@/modules/auth/models';
 
 import { users } from '@/db/schema';
 import { type Db, fakeDate, fakeId } from '~test/factories/base';

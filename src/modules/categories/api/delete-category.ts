@@ -15,7 +15,7 @@ import { createError, log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
 import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
 import { categories } from '@/modules/categories/db/schema';
-import { deleteCategorySchema } from '@/modules/categories/types';
+import { deleteCategorySchema } from '@/modules/categories/validators';
 
 export const deleteCategory = createServerFn({ method: 'POST' })
   .inputValidator(arkValidator(deleteCategorySchema))

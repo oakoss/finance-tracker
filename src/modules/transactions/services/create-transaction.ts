@@ -1,5 +1,5 @@
 import type { Db } from '@/db';
-import type { CreateTransactionInput } from '@/modules/transactions/types';
+import type { CreateTransactionInput } from '@/modules/transactions/validators';
 
 import { insertAuditLog } from '@/lib/audit/insert-audit-log';
 import { notDeleted } from '@/lib/audit/soft-delete';

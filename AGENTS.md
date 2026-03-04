@@ -8,13 +8,17 @@ PostgreSQL/Drizzle, Better Auth, Tailwind CSS v4/shadcn.
 - **Package manager**: pnpm (not npm).
 - **Path aliases**: `@/*` -> `src/*`, `~e2e/*` -> `e2e/*`, `~test/*` -> `test/*`.
 - **Validation**: ArkType everywhere (not Zod). Server schema in
-  `types.ts` is the single source of truth — forms import and reuse
-  it (or derive via `.pick()` / `.omit()` / `.merge()`).
-  - `types.ts` defines API contracts as independent `type({...})` —
-    not derived from Drizzle insert/update schemas.
+  `validators.ts` is the single source of truth — forms import and
+  reuse it (or derive via `.pick()` / `.omit()` / `.merge()`).
+  - `validators.ts` defines API contracts as independent `type({...})`
+    — not derived from Drizzle insert/update schemas.
+  - `models.ts` holds ArkType CRUD schemas (select/insert/update/delete)
+    and entity type aliases generated via `drizzle-arktype`.
   - Cross-field validation: export `baseSchema` (pickable) +
     `schema` (narrowed). Forms `.pick()` from base schemas.
   - `drizzle-arktype` is used for select/delete schemas only.
+  - Import entity types from `@/modules/{mod}/models`, not `db/schema`.
+  - Import validators from `@/modules/{mod}/validators`.
 - **UI style**: shadcn/ui `base-nova` (Base UI, not Radix). Use
   `render` prop / `mergeProps`, not `asChild`. Icons: Lucide
   via `@/components/icons` (never import `lucide-react` directly).

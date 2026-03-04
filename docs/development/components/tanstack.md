@@ -15,7 +15,7 @@ This doc covers how UI components integrate with TanStack libraries.
 ### Validation
 
 - **Single source of truth**: Import the server schema from
-  `types.ts` (e.g. `createCategorySchema`) and use it — or a
+  `validators.ts` (e.g. `createCategorySchema`) and use it — or a
   derivation of it — as the form validator. Never duplicate
   validation logic in the form component.
 - If the form needs a subset or variant, derive it with

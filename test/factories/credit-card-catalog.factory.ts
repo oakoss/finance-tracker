@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import type {
   CreditCardCatalog,
   CreditCardCatalogInsert,
-} from '@/modules/accounts/db/schema';
+} from '@/modules/accounts/models';
 
 import { creditCardCatalog } from '@/db/schema';
 import { type Db, fakeDate, fakeId } from '~test/factories/base';

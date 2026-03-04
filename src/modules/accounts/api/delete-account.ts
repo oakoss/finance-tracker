@@ -14,7 +14,7 @@ import {
 import { createError, log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
 import { accountTerms, ledgerAccounts } from '@/modules/accounts/db/schema';
-import { deleteAccountSchema } from '@/modules/accounts/types';
+import { deleteAccountSchema } from '@/modules/accounts/validators';
 import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
 
 export const deleteAccount = createServerFn({ method: 'POST' })

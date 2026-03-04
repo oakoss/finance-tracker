@@ -1,8 +1,3 @@
-import {
-  createInsertSchema,
-  createSelectSchema,
-  createUpdateSchema,
-} from 'drizzle-arktype';
 import { sql } from 'drizzle-orm';
 import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
@@ -29,8 +24,3 @@ export const todos = pgTable('todos', {
     onDelete: 'set null',
   }),
 });
-
-export const todosSelectSchema = createSelectSchema(todos);
-export const todosInsertSchema = createInsertSchema(todos);
-export const todosUpdateSchema = createUpdateSchema(todos);
-export const todosDeleteSchema = todosSelectSchema.pick('id');

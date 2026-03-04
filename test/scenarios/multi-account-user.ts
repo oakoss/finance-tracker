@@ -1,5 +1,5 @@
-import type { LedgerAccount } from '@/modules/accounts/db/schema';
-import type { User } from '@/modules/auth/db/arktype-schemas';
+import type { LedgerAccount } from '@/modules/accounts/models';
+import type { User } from '@/modules/auth/models';
 import type { Db } from '~test/factories/base';
 
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';

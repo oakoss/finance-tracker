@@ -7,7 +7,7 @@ import { hashId } from '@/lib/logging/hash';
 import { handleServerFnError } from '@/lib/server-fn/handle-error';
 import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
 import { createTransactionService } from '@/modules/transactions/services/create-transaction';
-import { createTransactionSchema } from '@/modules/transactions/types';
+import { createTransactionSchema } from '@/modules/transactions/validators';
 
 export const createTransaction = createServerFn({ method: 'POST' })
   .inputValidator(arkValidator(createTransactionSchema))

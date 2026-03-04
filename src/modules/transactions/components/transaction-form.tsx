@@ -31,7 +31,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toSelectItems } from '@/lib/form/field';
 import { todayISODateString } from '@/lib/i18n/date';
 import { transactionDirectionEnum } from '@/modules/transactions/db/schema';
-import { createTransactionSchema } from '@/modules/transactions/types';
+import { createTransactionSchema } from '@/modules/transactions/validators';
 import { m } from '@/paraglide/messages';
 
 // Derive form validation from the server schema. Fields whose form

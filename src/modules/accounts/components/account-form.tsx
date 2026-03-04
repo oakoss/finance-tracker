@@ -23,7 +23,7 @@ import {
   accountOwnerTypeEnum,
   accountTypeEnum,
 } from '@/modules/accounts/db/schema';
-import { createAccountBaseSchema } from '@/modules/accounts/types';
+import { createAccountBaseSchema } from '@/modules/accounts/validators';
 import { m } from '@/paraglide/messages';
 
 const CURRENCY_CODES = Intl.supportedValuesOf('currency');

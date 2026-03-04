@@ -10,7 +10,7 @@ import type {
   CreateAccountInput,
   DeleteAccountInput,
   UpdateAccountInput,
-} from '@/modules/accounts/types';
+} from '@/modules/accounts/validators';
 
 import { clientLog } from '@/lib/logging/client-logger';
 import { parseError } from '@/lib/logging/evlog';

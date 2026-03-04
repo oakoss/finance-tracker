@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import type { Payee, PayeeInsert } from '@/modules/transactions/db/schema';
+import type { Payee, PayeeInsert } from '@/modules/transactions/models';
 
 import { payees } from '@/db/schema';
 import { type Db, fakeDate, fakeId } from '~test/factories/base';

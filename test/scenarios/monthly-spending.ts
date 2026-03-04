@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker';
 
-import type { LedgerAccount } from '@/modules/accounts/db/schema';
-import type { User } from '@/modules/auth/db/arktype-schemas';
-import type { Category } from '@/modules/categories/db/schema';
-import type { Payee, Transaction } from '@/modules/transactions/db/schema';
+import type { LedgerAccount } from '@/modules/accounts/models';
+import type { User } from '@/modules/auth/models';
+import type { Category } from '@/modules/categories/models';
+import type { Payee, Transaction } from '@/modules/transactions/models';
 
 import { categories, payees, transactions } from '@/db/schema';
 import { type Db, fakeCents } from '~test/factories/base';

@@ -3,8 +3,8 @@ import type {
   AccountTermsInsert,
   LedgerAccount,
   LedgerAccountInsert,
-} from '@/modules/accounts/db/schema';
-import type { User, UserInsert } from '@/modules/auth/db/arktype-schemas';
+} from '@/modules/accounts/models';
+import type { User, UserInsert } from '@/modules/auth/models';
 import type { Db } from '~test/factories/base';
 
 import { insertAccountTerms } from '~test/factories/account-terms.factory';

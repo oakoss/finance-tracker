@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/select';
 import { toSelectItems } from '@/lib/form/field';
 import { categoryTypeEnum } from '@/modules/categories/db/schema';
-import { createCategorySchema } from '@/modules/categories/types';
+import { createCategorySchema } from '@/modules/categories/validators';
 import { m } from '@/paraglide/messages';
 
 const categoryFormSchema = createCategorySchema.pick('name', 'type');

@@ -105,8 +105,9 @@ src/modules/{module}/
   api/           Server fns — auth, validation, error mapping, logging
   services/      Business logic — orchestration, mutations, audit logging
   lib/           Domain helpers — reusable DB utilities (resolve-payee, etc.)
-  db/            Schema + relations
-  types.ts       Validation schemas
+  db/            Drizzle tables, enums, indexes, relations
+  models.ts      ArkType select/insert/update/delete schemas + entity types
+  validators.ts  API contract validation schemas with business rules
 ```
 
 - **`api/`** — thin handler: `requireUserId` -> call service -> log
@@ -117,17 +118,21 @@ src/modules/{module}/
 - **`lib/`** — domain helpers that aren't full services (e.g.,
   `resolve-payee`, `resolve-tags`). Accept `tx: DbOrTx`, no
   transaction management.
-- **`db/`** — Drizzle schema and relations.
+- **`db/`** — Drizzle tables, enums, indexes, relations only.
+- **`models.ts`** — ArkType CRUD schemas (`*SelectSchema`, etc.)
+  and entity type aliases (`User`, `LedgerAccount`, etc.).
+- **`validators.ts`** — API contract schemas with business rules
+  (create/update/delete input validation).
 
 Modules:
 
 - **auth**: `api/`, `db/` (generated schema, do not edit, relations),
-  `emails/` (React Email templates, rendering, sending), `hooks/`
-  (e.g., `use-sign-out.ts`), `lib/`, `middleware.ts`
-- **transactions**: `api/`, `services/`, `lib/`, `db/`, `types.ts`
-- **finance**: `db/` (schema, relations) for accounts, categories,
-  payees, imports, debt strategies, promotions, etc.
-- **todos**: `db/` (schema, relations), minimal example module
+  `models.ts`, `emails/` (React Email templates, rendering, sending),
+  `hooks/` (e.g., `use-sign-out.ts`), `lib/`, `middleware.ts`
+- **transactions**: `api/`, `services/`, `lib/`, `db/`, `models.ts`,
+  `validators.ts`
+- **finance**: `db/` (schema, relations), `models.ts`
+- **todos**: `db/` (schema, relations), `models.ts`
 
 Each module owns its Drizzle schema and relations in `{module}/db/`.
 All are re-exported through `src/db/schema.ts` (the aggregator).

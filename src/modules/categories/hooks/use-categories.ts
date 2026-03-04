@@ -10,7 +10,7 @@ import type {
   CreateCategoryInput,
   DeleteCategoryInput,
   UpdateCategoryInput,
-} from '@/modules/categories/types';
+} from '@/modules/categories/validators';
 
 import { clientLog } from '@/lib/logging/client-logger';
 import { parseError } from '@/lib/logging/evlog';

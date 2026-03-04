@@ -95,7 +95,8 @@ src/modules/<feature>/
   emails/
   hooks/
   lib/
-  types.ts
+  models.ts
+  validators.ts
 ```
 
 - Keep feature UI inside the module; route files should compose it.

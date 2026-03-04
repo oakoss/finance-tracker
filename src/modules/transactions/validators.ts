@@ -1,10 +1,8 @@
 import { type } from 'arktype';
 
 import { dateString } from '@/lib/form/schema';
-import {
-  transactionDirectionEnum,
-  transactionsSelectSchema,
-} from '@/modules/transactions/db/schema';
+import { transactionDirectionEnum } from '@/modules/transactions/db/schema';
+import { transactionsDeleteSchema } from '@/modules/transactions/models';
 
 export const createTransactionSchema = type({
   accountId: 'string > 0',
@@ -41,6 +39,6 @@ export const updateTransactionSchema = type({
 
 export type UpdateTransactionInput = typeof updateTransactionSchema.infer;
 
-export const deleteTransactionSchema = transactionsSelectSchema.pick('id');
+export const deleteTransactionSchema = transactionsDeleteSchema;
 
 export type DeleteTransactionInput = typeof deleteTransactionSchema.infer;

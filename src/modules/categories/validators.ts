@@ -1,9 +1,7 @@
 import { type } from 'arktype';
 
-import {
-  categoriesSelectSchema,
-  categoryTypeEnum,
-} from '@/modules/categories/db/schema';
+import { categoryTypeEnum } from '@/modules/categories/db/schema';
+import { categoriesDeleteSchema } from '@/modules/categories/models';
 
 export const createCategorySchema = type({
   name: '0 < string <= 100',
@@ -22,6 +20,6 @@ export const updateCategorySchema = type({
 
 export type UpdateCategoryInput = typeof updateCategorySchema.infer;
 
-export const deleteCategorySchema = categoriesSelectSchema.pick('id');
+export const deleteCategorySchema = categoriesDeleteSchema;
 
 export type DeleteCategoryInput = typeof deleteCategorySchema.infer;

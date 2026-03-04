@@ -5,8 +5,8 @@ import {
   accountOwnerTypeEnum,
   accountStatusEnum,
   accountTypeEnum,
-  ledgerAccountsSelectSchema,
 } from '@/modules/accounts/db/schema';
+import { ledgerAccountsDeleteSchema } from '@/modules/accounts/models';
 
 const termsSchema = type({
   'aprBps?': 'number.integer | null',
@@ -74,6 +74,6 @@ export const updateAccountSchema = updateAccountBaseSchema.narrow(
 
 export type UpdateAccountInput = typeof updateAccountSchema.infer;
 
-export const deleteAccountSchema = ledgerAccountsSelectSchema.pick('id');
+export const deleteAccountSchema = ledgerAccountsDeleteSchema;
 
 export type DeleteAccountInput = typeof deleteAccountSchema.infer;
