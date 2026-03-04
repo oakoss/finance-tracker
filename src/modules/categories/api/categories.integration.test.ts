@@ -5,6 +5,7 @@ import { categories } from '@/db/schema';
 import { notDeleted } from '@/lib/audit/soft-delete';
 import { parsePgError, throwIfConstraintViolation } from '@/lib/db/pg-error';
 import { expectAuditLogEntry, expectPgError } from '~test/assertions';
+import { insertCategoryWithUser } from '~test/factories/category-with-user.factory';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
@@ -14,10 +15,8 @@ import { test } from '~test/integration-setup';
 // ---------------------------------------------------------------------------
 
 test('list — returns active categories for user', async ({ db }) => {
-  const user = await insertUser(db);
-  const category = await insertCategory(db, {
-    type: 'expense',
-    userId: user.id,
+  const { category, user } = await insertCategoryWithUser(db, {
+    category: { type: 'expense' },
   });
 
   const rows = await db
@@ -32,10 +31,8 @@ test('list — returns active categories for user', async ({ db }) => {
 });
 
 test('list — excludes soft-deleted', async ({ db }) => {
-  const user = await insertUser(db);
-  await insertCategory(db, {
-    deletedAt: new Date(),
-    userId: user.id,
+  const { user } = await insertCategoryWithUser(db, {
+    category: { deletedAt: new Date() },
   });
   await insertCategory(db, { userId: user.id });
 
@@ -50,10 +47,8 @@ test('list — excludes soft-deleted', async ({ db }) => {
 });
 
 test('list — isolates by user', async ({ db }) => {
-  const user1 = await insertUser(db);
-  const user2 = await insertUser(db);
-  await insertCategory(db, { userId: user1.id });
-  await insertCategory(db, { userId: user2.id });
+  const { user: user1 } = await insertCategoryWithUser(db);
+  await insertCategoryWithUser(db);
 
   const rows = await db
     .select()
@@ -90,11 +85,8 @@ test('create — inserts with required fields', async ({ db }) => {
 });
 
 test('create — inserts child with parentId', async ({ db }) => {
-  const user = await insertUser(db);
-  const parent = await insertCategory(db, {
-    name: 'Food',
-    type: 'expense',
-    userId: user.id,
+  const { category: parent, user } = await insertCategoryWithUser(db, {
+    category: { name: 'Food', type: 'expense' },
   });
 
   const [child] = await db
@@ -112,10 +104,8 @@ test('create — inserts child with parentId', async ({ db }) => {
 });
 
 test('create — rejects duplicate name for same user', async ({ db }) => {
-  const user = await insertUser(db);
-  await insertCategory(db, {
-    name: 'Unique-Name',
-    userId: user.id,
+  const { user } = await insertCategoryWithUser(db, {
+    category: { name: 'Unique-Name' },
   });
 
   await expectPgError(
@@ -133,11 +123,8 @@ test('create — rejects duplicate name for same user', async ({ db }) => {
 test('create — re-creates after soft-delete (partial index)', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  await insertCategory(db, {
-    deletedAt: new Date(),
-    name: 'Gone-Cat',
-    userId: user.id,
+  const { user } = await insertCategoryWithUser(db, {
+    category: { deletedAt: new Date(), name: 'Gone-Cat' },
   });
 
   // Partial unique index allows re-creation with the same name
@@ -158,8 +145,9 @@ test('create — re-creates after soft-delete (partial index)', async ({
 test('create — throwIfConstraintViolation returns 409 with fix message for duplicate category', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  await insertCategory(db, { name: 'Dup-Cat', userId: user.id });
+  const { user } = await insertCategoryWithUser(db, {
+    category: { name: 'Dup-Cat' },
+  });
 
   let caught: unknown;
   try {
@@ -213,10 +201,8 @@ test('create — writes audit log', async ({ db }) => {
 
 test('create — rejects parentId owned by another user', async ({ db }) => {
   const user1 = await insertUser(db);
-  const user2 = await insertUser(db);
-  const otherParent = await insertCategory(db, {
-    name: 'Other Parent',
-    userId: user2.id,
+  const { category: otherParent } = await insertCategoryWithUser(db, {
+    category: { name: 'Other Parent' },
   });
 
   // Mirrors server fn: lookup parent by id + userId + notDeleted
@@ -233,11 +219,8 @@ test('create — rejects parentId owned by another user', async ({ db }) => {
 });
 
 test('create — rejects soft-deleted parentId', async ({ db }) => {
-  const user = await insertUser(db);
-  const deletedParent = await insertCategory(db, {
-    deletedAt: new Date(),
-    name: 'Deleted Parent',
-    userId: user.id,
+  const { category: deletedParent, user } = await insertCategoryWithUser(db, {
+    category: { deletedAt: new Date(), name: 'Deleted Parent' },
   });
 
   const parent = await db.query.categories.findFirst({
@@ -257,10 +240,8 @@ test('create — rejects soft-deleted parentId', async ({ db }) => {
 // ---------------------------------------------------------------------------
 
 test('update — updates fields', async ({ db }) => {
-  const user = await insertUser(db);
-  const category = await insertCategory(db, {
-    name: 'Old Name',
-    userId: user.id,
+  const { category, user } = await insertCategoryWithUser(db, {
+    category: { name: 'Old Name' },
   });
 
   const [updated] = await db
@@ -273,9 +254,8 @@ test('update — updates fields', async ({ db }) => {
 });
 
 test('update — rejects non-owner', async ({ db }) => {
-  const owner = await insertUser(db);
+  const { category } = await insertCategoryWithUser(db);
   const other = await insertUser(db);
-  const category = await insertCategory(db, { userId: owner.id });
 
   const result = await db
     .update(categories)
@@ -289,8 +269,7 @@ test('update — rejects non-owner', async ({ db }) => {
 test('update — self-parent is allowed at DB level (guard is in server fn)', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const category = await insertCategory(db, { userId: user.id });
+  const { category, user } = await insertCategoryWithUser(db);
 
   // The server fn rejects parentId === id with a 422 before any DB write.
   // At the DB level, no constraint prevents self-reference.
@@ -305,10 +284,8 @@ test('update — self-parent is allowed at DB level (guard is in server fn)', as
 
 test('update — rejects parentId owned by another user', async ({ db }) => {
   const user1 = await insertUser(db);
-  const user2 = await insertUser(db);
-  const otherParent = await insertCategory(db, {
-    name: 'Other User Parent',
-    userId: user2.id,
+  const { category: otherParent } = await insertCategoryWithUser(db, {
+    category: { name: 'Other User Parent' },
   });
 
   const parent = await db.query.categories.findFirst({
@@ -324,11 +301,8 @@ test('update — rejects parentId owned by another user', async ({ db }) => {
 });
 
 test('update — rejects soft-deleted parentId', async ({ db }) => {
-  const user = await insertUser(db);
-  const deletedParent = await insertCategory(db, {
-    deletedAt: new Date(),
-    name: 'Deleted Update Parent',
-    userId: user.id,
+  const { category: deletedParent, user } = await insertCategoryWithUser(db, {
+    category: { deletedAt: new Date(), name: 'Deleted Update Parent' },
   });
 
   const parent = await db.query.categories.findFirst({
@@ -344,10 +318,8 @@ test('update — rejects soft-deleted parentId', async ({ db }) => {
 });
 
 test('update — clearing parentId to null demotes to root', async ({ db }) => {
-  const user = await insertUser(db);
-  const parent = await insertCategory(db, {
-    name: 'Parent Cat',
-    userId: user.id,
+  const { category: parent, user } = await insertCategoryWithUser(db, {
+    category: { name: 'Parent Cat' },
   });
   const child = await insertCategory(db, {
     name: 'Child Cat',
@@ -369,8 +341,9 @@ test('update — clearing parentId to null demotes to root', async ({ db }) => {
 test('update — throwIfConstraintViolation on duplicate rename', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  await insertCategory(db, { name: 'Existing', userId: user.id });
+  const { user } = await insertCategoryWithUser(db, {
+    category: { name: 'Existing' },
+  });
   const category = await insertCategory(db, {
     name: 'To Rename',
     userId: user.id,
@@ -401,10 +374,8 @@ test('update — throwIfConstraintViolation on duplicate rename', async ({
 });
 
 test('update — soft-deleted category returns zero rows', async ({ db }) => {
-  const user = await insertUser(db);
-  const category = await insertCategory(db, {
-    deletedAt: new Date(),
-    userId: user.id,
+  const { category, user } = await insertCategoryWithUser(db, {
+    category: { deletedAt: new Date() },
   });
 
   const result = await db
@@ -427,8 +398,7 @@ test('update — soft-deleted category returns zero rows', async ({ db }) => {
 // ---------------------------------------------------------------------------
 
 test('delete — soft deletes', async ({ db }) => {
-  const user = await insertUser(db);
-  const category = await insertCategory(db, { userId: user.id });
+  const { category, user } = await insertCategoryWithUser(db);
 
   await db
     .update(categories)
@@ -445,10 +415,8 @@ test('delete — soft deletes', async ({ db }) => {
 });
 
 test('delete — nullifies children parentId on soft delete', async ({ db }) => {
-  const user = await insertUser(db);
-  const parent = await insertCategory(db, {
-    name: 'Parent',
-    userId: user.id,
+  const { category: parent, user } = await insertCategoryWithUser(db, {
+    category: { name: 'Parent' },
   });
   const child = await insertCategory(db, {
     name: 'Child',
@@ -482,9 +450,8 @@ test('delete — nullifies children parentId on soft delete', async ({ db }) => 
 });
 
 test('delete — rejects non-owner', async ({ db }) => {
-  const owner = await insertUser(db);
+  const { category } = await insertCategoryWithUser(db);
   const other = await insertUser(db);
-  const category = await insertCategory(db, { userId: owner.id });
 
   const result = await db
     .update(categories)
@@ -505,10 +472,8 @@ test('delete — rejects non-owner', async ({ db }) => {
 test('delete — orphan promotion skips soft-deleted children', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const parent = await insertCategory(db, {
-    name: 'Parent To Delete',
-    userId: user.id,
+  const { category: parent, user } = await insertCategoryWithUser(db, {
+    category: { name: 'Parent To Delete' },
   });
   const activeChild = await insertCategory(db, {
     name: 'Active Child',
@@ -554,8 +519,7 @@ test('delete — orphan promotion skips soft-deleted children', async ({
 });
 
 test('delete — writes audit log', async ({ db }) => {
-  const user = await insertUser(db);
-  const category = await insertCategory(db, { userId: user.id });
+  const { category, user } = await insertCategoryWithUser(db);
 
   await db
     .update(categories)
@@ -576,11 +540,8 @@ test('delete — writes audit log', async ({ db }) => {
 // ---------------------------------------------------------------------------
 
 test('list — ordered by type ASC, name ASC', async ({ db }) => {
-  const user = await insertUser(db);
-  await insertCategory(db, {
-    name: 'Zebra',
-    type: 'expense',
-    userId: user.id,
+  const { user } = await insertCategoryWithUser(db, {
+    category: { name: 'Zebra', type: 'expense' },
   });
   await insertCategory(db, {
     name: 'Alpha',
@@ -612,10 +573,8 @@ test('list — ordered by type ASC, name ASC', async ({ db }) => {
 });
 
 test('list — returns projected columns only', async ({ db }) => {
-  const user = await insertUser(db);
-  await insertCategory(db, {
-    type: 'expense',
-    userId: user.id,
+  const { user } = await insertCategoryWithUser(db, {
+    category: { type: 'expense' },
   });
 
   const rows = await db

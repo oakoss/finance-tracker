@@ -10,12 +10,13 @@ import {
 } from '@/db/schema';
 import { notDeleted } from '@/lib/audit/soft-delete';
 import { expectAuditLogEntry, expectPgError } from '~test/assertions';
+import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
 import { insertPayee } from '~test/factories/payee.factory';
 import { insertTag } from '~test/factories/tag.factory';
+import { insertTransactionWithRelations } from '~test/factories/transaction-with-relations.factory';
 import { insertTransaction } from '~test/factories/transaction.factory';
-import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
 
 /** Mirrors listTransactions payeeName suppression: null when payee is soft-deleted */
@@ -30,8 +31,7 @@ function resolvePayeeName(row: {
 // ---------------------------------------------------------------------------
 
 test('list — returns active transactions for user', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, { accountId: account.id });
 
   const rows = await db
@@ -50,8 +50,7 @@ test('list — returns active transactions for user', async ({ db }) => {
 });
 
 test('list — excludes soft-deleted', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account } = await insertAccountWithUser(db);
   await insertTransaction(db, {
     accountId: account.id,
     deletedAt: new Date(),
@@ -72,10 +71,8 @@ test('list — excludes soft-deleted', async ({ db }) => {
 });
 
 test('list — isolates by user via account join', async ({ db }) => {
-  const user1 = await insertUser(db);
-  const user2 = await insertUser(db);
-  const account1 = await insertLedgerAccount(db, { userId: user1.id });
-  const account2 = await insertLedgerAccount(db, { userId: user2.id });
+  const { account: account1, user: user1 } = await insertAccountWithUser(db);
+  const { account: account2 } = await insertAccountWithUser(db);
   await insertTransaction(db, { accountId: account1.id });
   await insertTransaction(db, { accountId: account2.id });
 
@@ -95,8 +92,7 @@ test('list — isolates by user via account join', async ({ db }) => {
 });
 
 test('list — includes tags via transaction_tags', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, { accountId: account.id });
   const tag = await insertTag(db, { userId: user.id });
 
@@ -115,13 +111,10 @@ test('list — includes tags via transaction_tags', async ({ db }) => {
 });
 
 test('list — returns payeeName when payee is active', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
-  const payee = await insertPayee(db, {
-    name: 'Active Payee',
-    userId: user.id,
+  const { account } = await insertTransactionWithRelations(db, {
+    payee: { name: 'Active Payee' },
+    withPayee: true,
   });
-  await insertTransaction(db, { accountId: account.id, payeeId: payee.id });
 
   // Mirrors listTransactions relational query with payee join
   const rows = await db.query.transactions.findMany({
@@ -138,14 +131,10 @@ test('list — returns payeeName when payee is active', async ({ db }) => {
 test('list — suppresses payeeName when payee is soft-deleted', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
-  const payee = await insertPayee(db, {
-    deletedAt: new Date(),
-    name: 'Deleted Payee',
-    userId: user.id,
+  const { account, payee } = await insertTransactionWithRelations(db, {
+    payee: { deletedAt: new Date(), name: 'Deleted Payee' },
+    withPayee: true,
   });
-  await insertTransaction(db, { accountId: account.id, payeeId: payee.id });
 
   const rows = await db.query.transactions.findMany({
     where: (t, { and: a }) =>
@@ -157,12 +146,11 @@ test('list — suppresses payeeName when payee is soft-deleted', async ({
   const payeeName = resolvePayeeName(rows[0]);
   expect(payeeName).toBeNull();
   // But the payeeId FK is still present
-  expect(rows[0].payeeId).toBe(payee.id);
+  expect(rows[0].payeeId).toBe(payee!.id);
 });
 
 test('list — returns null payeeName when no payee linked', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account } = await insertAccountWithUser(db);
   await insertTransaction(db, { accountId: account.id });
 
   const rows = await db.query.transactions.findMany({
@@ -178,8 +166,7 @@ test('list — returns null payeeName when no payee linked', async ({ db }) => {
 });
 
 test('list — ordered by transactionAt DESC', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account } = await insertAccountWithUser(db);
 
   const older = new Date('2024-01-15');
   const newer = new Date('2024-06-15');
@@ -211,8 +198,7 @@ test('list — ordered by transactionAt DESC', async ({ db }) => {
 // ---------------------------------------------------------------------------
 
 test('create — inserts with required fields', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const now = new Date();
 
   const [txn] = await db
@@ -236,8 +222,7 @@ test('create — inserts with required fields', async ({ db }) => {
 });
 
 test('create — inserts with payee', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
 
   const [payee] = await db
     .insert(payees)
@@ -268,8 +253,7 @@ test('create — inserts with payee', async ({ db }) => {
 });
 
 test('create — inserts with tags', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const now = new Date();
 
   const [txn] = await db
@@ -308,8 +292,7 @@ test('create — inserts with tags', async ({ db }) => {
 });
 
 test('create — writes audit log', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const now = new Date();
 
   const [txn] = await db
@@ -335,8 +318,7 @@ test('create — writes audit log', async ({ db }) => {
 });
 
 test('create — stores null categoryId when omitted', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const now = new Date();
 
   const [txn] = await db
@@ -356,8 +338,7 @@ test('create — stores null categoryId when omitted', async ({ db }) => {
 });
 
 test('create — stores categoryId when provided', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const category = await insertCategory(db, { userId: user.id });
   const now = new Date();
 
@@ -379,8 +360,7 @@ test('create — stores categoryId when provided', async ({ db }) => {
 });
 
 test('create — links payee to transaction', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const payee = await insertPayee(db, { userId: user.id });
   const now = new Date();
 
@@ -402,8 +382,7 @@ test('create — links payee to transaction', async ({ db }) => {
 });
 
 test('create — links multiple tags via transactionTags', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const tag1 = await insertTag(db, { userId: user.id });
   const tag2 = await insertTag(db, { userId: user.id });
   const now = new Date();
@@ -440,8 +419,7 @@ test('create — links multiple tags via transactionTags', async ({ db }) => {
 test('create — transactionTags rejects duplicate (transactionId, tagId)', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const tag = await insertTag(db, { userId: user.id });
   const txn = await insertTransaction(db, { accountId: account.id });
 
@@ -461,9 +439,8 @@ test('create — transactionTags rejects duplicate (transactionId, tagId)', asyn
 });
 
 test('create — rejects non-owned account via join', async ({ db }) => {
-  const owner = await insertUser(db);
-  const other = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: owner.id });
+  const { account } = await insertAccountWithUser(db);
+  const { user: other } = await insertAccountWithUser(db);
 
   // Verify account doesn't belong to "other" user
   const accountCheck = await db
@@ -486,8 +463,7 @@ test('create — rejects non-owned account via join', async ({ db }) => {
 test('create — inline payee: inserts new payee with normalized name', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const now = new Date();
   const newPayeeName = '  Acme Corp  ';
   const normalizedName = newPayeeName.trim().toLowerCase();
@@ -524,8 +500,7 @@ test('create — inline payee: inserts new payee with normalized name', async ({
 test('create — inline payee: reuses existing on normalized match', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const now = new Date();
 
   // Pre-insert the payee
@@ -581,7 +556,7 @@ test('create — inline payee: reuses existing on normalized match', async ({
 test('create — inline payee: re-creates after soft-delete (partial index)', async ({
   db,
 }) => {
-  const user = await insertUser(db);
+  const { user } = await insertAccountWithUser(db);
 
   // Soft-deleted payee with matching name
   await insertPayee(db, {
@@ -617,8 +592,7 @@ test('create — inline payee: re-creates after soft-delete (partial index)', as
 test('create — inline tags: creates new tags within transaction', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const now = new Date();
   const newTagNames = ['groceries', 'personal'];
 
@@ -665,8 +639,7 @@ test('create — inline tags: creates new tags within transaction', async ({
 test('create — inline tags: reuses existing tag on exact match', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const now = new Date();
 
   // Pre-insert a tag
@@ -727,8 +700,7 @@ test('create — inline tags: reuses existing tag on exact match', async ({
 });
 
 test('create — inline tags: deduplicates via Set', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const tag = await insertTag(db, { userId: user.id });
   const now = new Date();
 
@@ -769,8 +741,7 @@ test('create — inline tags: deduplicates via Set', async ({ db }) => {
 test('create — inline tags: skips empty and whitespace-only names', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const now = new Date();
   // Mirrors server fn line 113: if (!trimmed) continue
   const newTagNames = ['valid-tag', '', '   ', 'another-tag'];
@@ -822,8 +793,7 @@ test('create — inline tags: skips empty and whitespace-only names', async ({
 test('create — inline tags: Set dedup across tagIds and newTagNames', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const now = new Date();
 
   // Pre-insert a tag that will overlap with newTagNames
@@ -890,10 +860,8 @@ test('create — inline tags: Set dedup across tagIds and newTagNames', async ({
 test('create — soft-deleted account excluded by notDeleted filter', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, {
-    deletedAt: new Date(),
-    userId: user.id,
+  const { account, user } = await insertAccountWithUser(db, {
+    account: { deletedAt: new Date() },
   });
 
   // Mirrors server fn account ownership check (lines 27-34)
@@ -916,8 +884,7 @@ test('create — soft-deleted account excluded by notDeleted filter', async ({
 // ---------------------------------------------------------------------------
 
 test('update — updates fields', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, {
     accountId: account.id,
     description: 'Old Description',
@@ -933,8 +900,7 @@ test('update — updates fields', async ({ db }) => {
 });
 
 test('update — tag sync deletes and re-inserts', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, { accountId: account.id });
   const tag1 = await insertTag(db, { userId: user.id });
   const tag2 = await insertTag(db, { userId: user.id });
@@ -974,8 +940,7 @@ test('update — tag sync deletes and re-inserts', async ({ db }) => {
 test('update — inline payee: inserts new payee with normalized name', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, { accountId: account.id });
   const newPayeeName = '  New Vendor  ';
 
@@ -1005,8 +970,7 @@ test('update — inline payee: inserts new payee with normalized name', async ({
 test('update — inline payee: reuses existing on normalized match', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, { accountId: account.id });
 
   const existing = await insertPayee(db, {
@@ -1054,8 +1018,7 @@ test('update — inline payee: reuses existing on normalized match', async ({
 // ---------------------------------------------------------------------------
 
 test('update — inline tags: creates new tags during update', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, { accountId: account.id });
   const existingTag = await insertTag(db, { userId: user.id });
 
@@ -1111,8 +1074,7 @@ test('update — inline tags: creates new tags during update', async ({ db }) =>
 test('update — inline tags: reuses existing tag on exact match', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, { accountId: account.id });
 
   const existingTag = await insertTag(db, {
@@ -1165,8 +1127,7 @@ test('update — inline tags: reuses existing tag on exact match', async ({
 test('update — inline tags: deduplicates tagIds + newTagNames via Set', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, { accountId: account.id });
 
   const existingTag = await insertTag(db, {
@@ -1220,8 +1181,7 @@ test('update — inline tags: deduplicates tagIds + newTagNames via Set', async 
 });
 
 test('update — tag removal: empty tagIds clears all tags', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, { accountId: account.id });
   const tag = await insertTag(db, { userId: user.id });
 
@@ -1245,8 +1205,7 @@ test('update — tag removal: empty tagIds clears all tags', async ({ db }) => {
 });
 
 test('update — partial update preserves existing tags', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, { accountId: account.id });
   const tag = await insertTag(db, { userId: user.id });
 
@@ -1272,10 +1231,9 @@ test('update — partial update preserves existing tags', async ({ db }) => {
 });
 
 test('update — account transfer rejects non-owned account', async ({ db }) => {
-  const owner = await insertUser(db);
-  const other = await insertUser(db);
-  const ownerAccount = await insertLedgerAccount(db, { userId: owner.id });
-  const otherAccount = await insertLedgerAccount(db, { userId: other.id });
+  const { account: ownerAccount, user: owner } =
+    await insertAccountWithUser(db);
+  const { account: otherAccount } = await insertAccountWithUser(db);
   await insertTransaction(db, { accountId: ownerAccount.id });
 
   // Verify the other user's account is not visible to owner
@@ -1296,8 +1254,7 @@ test('update — account transfer rejects non-owned account', async ({ db }) => 
 test('update — account transfer rejects soft-deleted account', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const activeAccount = await insertLedgerAccount(db, { userId: user.id });
+  const { account: activeAccount, user } = await insertAccountWithUser(db);
   const deletedAccount = await insertLedgerAccount(db, {
     deletedAt: new Date(),
     userId: user.id,
@@ -1319,8 +1276,7 @@ test('update — account transfer rejects soft-deleted account', async ({
 });
 
 test('update — writes audit log', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, {
     accountId: account.id,
     description: 'Before update',
@@ -1344,8 +1300,7 @@ test('update — writes audit log', async ({ db }) => {
 test('update — transactionAt coercion sets both transactionAt and postedAt', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, {
     accountId: account.id,
     postedAt: new Date('2024-01-01'),
@@ -1371,8 +1326,7 @@ test('update — transactionAt coercion sets both transactionAt and postedAt', a
 test('update — omitting transactionAt preserves existing dates', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const originalDate = new Date('2024-03-20');
   const txn = await insertTransaction(db, {
     accountId: account.id,
@@ -1393,8 +1347,7 @@ test('update — omitting transactionAt preserves existing dates', async ({
 });
 
 test('update — soft-deleted transaction is not found', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, {
     accountId: account.id,
     deletedAt: new Date(),
@@ -1421,8 +1374,7 @@ test('update — soft-deleted transaction is not found', async ({ db }) => {
 // ---------------------------------------------------------------------------
 
 test('delete — soft deletes', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, { accountId: account.id });
 
   await db
@@ -1440,8 +1392,7 @@ test('delete — soft deletes', async ({ db }) => {
 });
 
 test('delete — writes audit log', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, { accountId: account.id });
 
   await db
@@ -1459,9 +1410,8 @@ test('delete — writes audit log', async ({ db }) => {
 });
 
 test('delete — ownership check via account join', async ({ db }) => {
-  const owner = await insertUser(db);
-  const other = await insertUser(db);
-  const ownerAccount = await insertLedgerAccount(db, { userId: owner.id });
+  const { account: ownerAccount } = await insertAccountWithUser(db);
+  const { user: other } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, { accountId: ownerAccount.id });
 
   // Attempt to find transaction through other user's accounts
@@ -1479,8 +1429,7 @@ test('delete — ownership check via account join', async ({ db }) => {
 test('delete — already-deleted transaction is excluded by notDeleted filter', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, { accountId: account.id });
 
   // First soft-delete
@@ -1508,8 +1457,7 @@ test('delete — already-deleted transaction is excluded by notDeleted filter', 
 test('delete — transaction tags remain in DB after soft-delete', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, { accountId: account.id });
   const tag = await insertTag(db, { userId: user.id });
 
@@ -1534,8 +1482,7 @@ test('delete — transaction tags remain in DB after soft-delete', async ({
 });
 
 test('update — sets category on transaction', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const category = await insertCategory(db, {
     type: 'expense',
     userId: user.id,
@@ -1552,8 +1499,7 @@ test('update — sets category on transaction', async ({ db }) => {
 });
 
 test('update — sets payee on transaction', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const payee = await insertPayee(db, { userId: user.id });
   const txn = await insertTransaction(db, { accountId: account.id });
 
@@ -1567,8 +1513,7 @@ test('update — sets payee on transaction', async ({ db }) => {
 });
 
 test('update — changes direction', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, {
     accountId: account.id,
     direction: 'debit',
@@ -1584,8 +1529,7 @@ test('update — changes direction', async ({ db }) => {
 });
 
 test('update — multiple fields in one operation', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
   const category = await insertCategory(db, {
     type: 'expense',
     userId: user.id,
@@ -1620,9 +1564,8 @@ test('update — multiple fields in one operation', async ({ db }) => {
 });
 
 test('update — ownership check via account join', async ({ db }) => {
-  const owner = await insertUser(db);
-  const other = await insertUser(db);
-  const ownerAccount = await insertLedgerAccount(db, { userId: owner.id });
+  const { account: ownerAccount } = await insertAccountWithUser(db);
+  const { user: other } = await insertAccountWithUser(db);
   const txn = await insertTransaction(db, { accountId: ownerAccount.id });
 
   const result = await db
@@ -1637,15 +1580,9 @@ test('update — ownership check via account join', async ({ db }) => {
 });
 
 test('update — clears categoryId to null', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
-  const category = await insertCategory(db, {
-    type: 'expense',
-    userId: user.id,
-  });
-  const txn = await insertTransaction(db, {
-    accountId: account.id,
-    categoryId: category.id,
+  const { transaction: txn, user } = await insertTransactionWithRelations(db, {
+    category: { type: 'expense' },
+    withCategory: true,
   });
 
   const [updated] = await db
@@ -1664,9 +1601,8 @@ test('update — clears categoryId to null', async ({ db }) => {
 test('create — cross-user categoryId accepted by DB (no ownership FK)', async ({
   db,
 }) => {
-  const userA = await insertUser(db);
-  const userB = await insertUser(db);
-  const accountA = await insertLedgerAccount(db, { userId: userA.id });
+  const { account: accountA, user: userA } = await insertAccountWithUser(db);
+  const { user: userB } = await insertAccountWithUser(db);
   const categoryB = await insertCategory(db, {
     type: 'expense',
     userId: userB.id,
@@ -1700,9 +1636,8 @@ test('create — cross-user categoryId accepted by DB (no ownership FK)', async 
 test('create — cross-user payeeId accepted by DB (no ownership FK)', async ({
   db,
 }) => {
-  const userA = await insertUser(db);
-  const userB = await insertUser(db);
-  const accountA = await insertLedgerAccount(db, { userId: userA.id });
+  const { account: accountA, user: userA } = await insertAccountWithUser(db);
+  const { user: userB } = await insertAccountWithUser(db);
   const payeeB = await insertPayee(db, { userId: userB.id });
 
   const [txn] = await db
@@ -1732,9 +1667,8 @@ test('create — cross-user payeeId accepted by DB (no ownership FK)', async ({
 test('create — cross-user tagId accepted by DB (no ownership FK)', async ({
   db,
 }) => {
-  const userA = await insertUser(db);
-  const userB = await insertUser(db);
-  const accountA = await insertLedgerAccount(db, { userId: userA.id });
+  const { account: accountA, user: userA } = await insertAccountWithUser(db);
+  const { user: userB } = await insertAccountWithUser(db);
   const tagB = await insertTag(db, { userId: userB.id });
   const txn = await insertTransaction(db, { accountId: accountA.id });
 

@@ -4,7 +4,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 
 import * as schema from '@/db/schema';
 import { FAKER_SEED } from '~test/factories/base';
-import { createFullTransaction } from '~test/scenarios/full-transaction';
+import { insertTransactionWithRelations } from '~test/factories/transaction-with-relations.factory';
 import { createMonthlySpending } from '~test/scenarios/monthly-spending';
 import { createMultiAccountUser } from '~test/scenarios/multi-account-user';
 import { seedBaseCategories } from '~test/seed/base-categories';
@@ -60,13 +60,23 @@ async function main() {
   }
 
   if (profile === 'minimal') {
-    const ctx = await createFullTransaction(db);
+    const ctx = await insertTransactionWithRelations(db, {
+      account: { type: 'checking' },
+      category: { type: 'expense' },
+      withCategory: true,
+      withPayee: true,
+    });
     await seedBaseCategories(db, ctx.user.id);
     console.log('Created: 1 full transaction chain + base categories');
   }
 
   if (profile === 'standard' || profile === 'stress') {
-    const fullTxn = await createFullTransaction(db);
+    const fullTxn = await insertTransactionWithRelations(db, {
+      account: { type: 'checking' },
+      category: { type: 'expense' },
+      withCategory: true,
+      withPayee: true,
+    });
     await seedBaseCategories(db, fullTxn.user.id);
 
     const multiAcct = await createMultiAccountUser(db);

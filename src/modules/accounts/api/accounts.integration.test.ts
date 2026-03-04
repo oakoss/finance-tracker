@@ -12,7 +12,8 @@ import {
 import { notDeleted } from '@/lib/audit/soft-delete';
 import { expectAuditLogEntry, expectPgError } from '~test/assertions';
 import { insertAccountBalanceSnapshot } from '~test/factories/account-balance-snapshot.factory';
-import { insertAccountTerms } from '~test/factories/account-terms.factory';
+import { insertAccountTermsWithAccount } from '~test/factories/account-terms-with-account.factory';
+import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
 import { insertCreditCardCatalog } from '~test/factories/credit-card-catalog.factory';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
 import { insertUser } from '~test/factories/user.factory';
@@ -39,12 +40,10 @@ function latestBalanceSubquery(db: Db) {
 test('list — returns active accounts for user with terms and latest balance', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, {
-    type: 'credit_card',
-    userId: user.id,
+  const { account, user } = await insertAccountTermsWithAccount(db, {
+    account: { type: 'credit_card' },
+    terms: { aprBps: 1999 },
   });
-  await insertAccountTerms(db, { accountId: account.id, aprBps: 1999 });
   await insertAccountBalanceSnapshot(db, {
     accountId: account.id,
     balanceCents: 50_000,
@@ -91,10 +90,8 @@ test('list — excludes soft-deleted accounts', async ({ db }) => {
 });
 
 test('list — does not return other users accounts', async ({ db }) => {
-  const user1 = await insertUser(db);
-  const user2 = await insertUser(db);
-  await insertLedgerAccount(db, { userId: user1.id });
-  await insertLedgerAccount(db, { userId: user2.id });
+  const { user: user1 } = await insertAccountWithUser(db);
+  await insertAccountWithUser(db);
 
   const rows = await db
     .select()
@@ -113,8 +110,7 @@ test('list — does not return other users accounts', async ({ db }) => {
 test('list — returns latestBalanceCents from most recent snapshot', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account } = await insertAccountWithUser(db);
 
   await Promise.all([
     insertAccountBalanceSnapshot(db, {
@@ -152,8 +148,7 @@ test('list — returns latestBalanceCents from most recent snapshot', async ({
 test('list — returns null latestBalanceCents when no snapshots', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account } = await insertAccountWithUser(db);
 
   const latestBalance = latestBalanceSubquery(db);
 
@@ -263,8 +258,7 @@ test('create — inserts account with terms for credit card', async ({ db }) => 
 });
 
 test('create — inserts initial balance snapshot', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
 
   const [snapshot] = await db
     .insert(accountBalanceSnapshots)
@@ -308,13 +302,9 @@ test('create — writes audit log', async ({ db }) => {
 test('create — rejects duplicate accountTerms for same account', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, {
-    type: 'credit_card',
-    userId: user.id,
+  const { account, user } = await insertAccountTermsWithAccount(db, {
+    account: { type: 'credit_card' },
   });
-
-  await insertAccountTerms(db, { accountId: account.id });
 
   await expectPgError(
     () =>
@@ -334,10 +324,8 @@ test('create — rejects duplicate accountTerms for same account', async ({
 // ---------------------------------------------------------------------------
 
 test('update — updates account fields', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, {
-    name: 'Old Name',
-    userId: user.id,
+  const { account, user } = await insertAccountWithUser(db, {
+    account: { name: 'Old Name' },
   });
 
   const [updated] = await db
@@ -357,10 +345,8 @@ test('update — updates account fields', async ({ db }) => {
 test('update — upserts terms on account without existing terms', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, {
-    type: 'credit_card',
-    userId: user.id,
+  const { account, user } = await insertAccountWithUser(db, {
+    account: { type: 'credit_card' },
   });
 
   const [terms] = await db
@@ -388,17 +374,9 @@ test('update — upserts terms on account without existing terms', async ({
 });
 
 test('update — updates existing terms (update branch)', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, {
-    type: 'credit_card',
-    userId: user.id,
-  });
-
-  await insertAccountTerms(db, {
-    accountId: account.id,
-    aprBps: 1500,
-    dueDay: 10,
-    statementDay: 25,
+  const { account, user } = await insertAccountTermsWithAccount(db, {
+    account: { type: 'credit_card' },
+    terms: { aprBps: 1500, dueDay: 10, statementDay: 25 },
   });
 
   await db
@@ -418,9 +396,8 @@ test('update — updates existing terms (update branch)', async ({ db }) => {
 });
 
 test('update — rejects non-owner', async ({ db }) => {
-  const owner = await insertUser(db);
+  const { account } = await insertAccountWithUser(db);
   const other = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: owner.id });
 
   const result = await db
     .update(ledgerAccounts)
@@ -437,10 +414,8 @@ test('update — rejects non-owner', async ({ db }) => {
 });
 
 test('update — soft-deleted account returns zero rows', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, {
-    deletedAt: new Date(),
-    userId: user.id,
+  const { account, user } = await insertAccountWithUser(db, {
+    account: { deletedAt: new Date() },
   });
 
   const result = await db
@@ -461,8 +436,7 @@ test('update — soft-deleted account returns zero rows', async ({ db }) => {
 test('update — openedAt coercion: string → Date, falsy → null', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
 
   // Date field accepts a Date instance
   const [withDate] = await db
@@ -491,8 +465,7 @@ test('update — openedAt coercion: string → Date, falsy → null', async ({
 // ---------------------------------------------------------------------------
 
 test('delete — soft deletes account', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
 
   await db
     .update(ledgerAccounts)
@@ -514,9 +487,8 @@ test('delete — soft deletes account', async ({ db }) => {
 });
 
 test('delete — rejects non-owner', async ({ db }) => {
-  const owner = await insertUser(db);
+  const { account } = await insertAccountWithUser(db);
   const other = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: owner.id });
 
   const result = await db
     .update(ledgerAccounts)
@@ -540,12 +512,9 @@ test('delete — rejects non-owner', async ({ db }) => {
 });
 
 test('delete — cascade soft-deletes accountTerms', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, {
-    type: 'credit_card',
-    userId: user.id,
+  const { account, user } = await insertAccountTermsWithAccount(db, {
+    account: { type: 'credit_card' },
   });
-  await insertAccountTerms(db, { accountId: account.id });
 
   const now = new Date();
 
@@ -583,10 +552,8 @@ test('delete — cascade soft-deletes accountTerms', async ({ db }) => {
 test('delete — already-soft-deleted account returns zero rows', async ({
   db,
 }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, {
-    deletedAt: new Date(),
-    userId: user.id,
+  const { account, user } = await insertAccountWithUser(db, {
+    account: { deletedAt: new Date() },
   });
 
   const result = await db
@@ -605,8 +572,7 @@ test('delete — already-soft-deleted account returns zero rows', async ({
 });
 
 test('delete — writes audit log', async ({ db }) => {
-  const user = await insertUser(db);
-  const account = await insertLedgerAccount(db, { userId: user.id });
+  const { account, user } = await insertAccountWithUser(db);
 
   await db
     .update(ledgerAccounts)

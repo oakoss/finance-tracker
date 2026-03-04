@@ -1,19 +1,26 @@
 import { expect } from 'vitest';
 
+import { insertTransactionWithRelations } from '~test/factories/transaction-with-relations.factory';
 import { test } from '~test/integration-setup';
-import { createFullTransaction } from '~test/scenarios/full-transaction';
 import { createMonthlySpending } from '~test/scenarios/monthly-spending';
 import { createMultiAccountUser } from '~test/scenarios/multi-account-user';
 
-test('createFullTransaction — creates complete chain', async ({ db }) => {
-  const ctx = await createFullTransaction(db);
+test('insertTransactionWithRelations — creates complete chain', async ({
+  db,
+}) => {
+  const ctx = await insertTransactionWithRelations(db, {
+    account: { type: 'checking' },
+    category: { type: 'expense' },
+    withCategory: true,
+    withPayee: true,
+  });
   expect(ctx.user.id).toBeDefined();
   expect(ctx.account.userId).toBe(ctx.user.id);
-  expect(ctx.category.userId).toBe(ctx.user.id);
-  expect(ctx.payee.userId).toBe(ctx.user.id);
+  expect(ctx.category!.userId).toBe(ctx.user.id);
+  expect(ctx.payee!.userId).toBe(ctx.user.id);
   expect(ctx.transaction.accountId).toBe(ctx.account.id);
-  expect(ctx.transaction.categoryId).toBe(ctx.category.id);
-  expect(ctx.transaction.payeeId).toBe(ctx.payee.id);
+  expect(ctx.transaction.categoryId).toBe(ctx.category!.id);
+  expect(ctx.transaction.payeeId).toBe(ctx.payee!.id);
 });
 
 test('createMultiAccountUser — creates three account types', async ({ db }) => {

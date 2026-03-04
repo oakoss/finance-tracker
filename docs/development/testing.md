@@ -65,10 +65,16 @@ singleton).
 Available factories: `User`, `LedgerAccount`, `Category`, `Payee`,
 `Tag`, `Transaction`, `Transfer`.
 
+Composite factories reduce multi-step setup to a single call:
+
+- `insertAccountWithUser(db)`: user + account
+- `insertCategoryWithUser(db)`: user + category
+- `insertAccountTermsWithAccount(db)`: user + account + terms
+- `insertTransactionWithRelations(db, { withCategory, withPayee })`:
+  user + account + optional category/payee + transaction
+
 Scenario builders in `test/scenarios/` compose multiple factories:
 
-- `createFullTransaction(db)`: user + account + category + payee +
-  transaction
 - `createMultiAccountUser(db)`: user with checking, savings, and
   credit card accounts
 - `createMonthlySpending(db)`: user + account + 5 categories +
