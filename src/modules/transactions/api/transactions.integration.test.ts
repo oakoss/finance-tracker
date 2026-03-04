@@ -1475,3 +1475,184 @@ test('delete — ownership check via account join', async ({ db }) => {
 
   expect(result).toHaveLength(0);
 });
+
+test('delete — already-deleted transaction is excluded by notDeleted filter', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const txn = await insertTransaction(db, { accountId: account.id });
+
+  // First soft-delete
+  await db
+    .update(transactions)
+    .set({ deletedAt: new Date(), deletedById: user.id })
+    .where(eq(transactions.id, txn.id));
+
+  // Second attempt mirrors service: ownership join + notDeleted filter
+  const result = await db
+    .select()
+    .from(transactions)
+    .innerJoin(ledgerAccounts, eq(ledgerAccounts.id, transactions.accountId))
+    .where(
+      and(
+        eq(transactions.id, txn.id),
+        eq(ledgerAccounts.userId, user.id),
+        notDeleted(transactions.deletedAt),
+      ),
+    );
+
+  expect(result).toHaveLength(0);
+});
+
+test('delete — transaction tags remain in DB after soft-delete', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const txn = await insertTransaction(db, { accountId: account.id });
+  const tag = await insertTag(db, { userId: user.id });
+
+  await db
+    .insert(transactionTags)
+    .values({ tagId: tag.id, transactionId: txn.id });
+
+  // Soft-delete the transaction
+  await db
+    .update(transactions)
+    .set({ deletedAt: new Date(), deletedById: user.id })
+    .where(eq(transactions.id, txn.id));
+
+  // Tag association rows still exist
+  const tagRows = await db
+    .select()
+    .from(transactionTags)
+    .where(eq(transactionTags.transactionId, txn.id));
+
+  expect(tagRows).toHaveLength(1);
+  expect(tagRows[0].tagId).toBe(tag.id);
+});
+
+test('update — sets category on transaction', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const category = await insertCategory(db, {
+    type: 'expense',
+    userId: user.id,
+  });
+  const txn = await insertTransaction(db, { accountId: account.id });
+
+  const [updated] = await db
+    .update(transactions)
+    .set({ categoryId: category.id, updatedById: user.id })
+    .where(eq(transactions.id, txn.id))
+    .returning();
+
+  expect(updated.categoryId).toBe(category.id);
+});
+
+test('update — sets payee on transaction', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const payee = await insertPayee(db, { userId: user.id });
+  const txn = await insertTransaction(db, { accountId: account.id });
+
+  const [updated] = await db
+    .update(transactions)
+    .set({ payeeId: payee.id, updatedById: user.id })
+    .where(eq(transactions.id, txn.id))
+    .returning();
+
+  expect(updated.payeeId).toBe(payee.id);
+});
+
+test('update — changes direction', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const txn = await insertTransaction(db, {
+    accountId: account.id,
+    direction: 'debit',
+  });
+
+  const [updated] = await db
+    .update(transactions)
+    .set({ direction: 'credit', updatedById: user.id })
+    .where(eq(transactions.id, txn.id))
+    .returning();
+
+  expect(updated.direction).toBe('credit');
+});
+
+test('update — multiple fields in one operation', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const category = await insertCategory(db, {
+    type: 'expense',
+    userId: user.id,
+  });
+  const payee = await insertPayee(db, { userId: user.id });
+  const txn = await insertTransaction(db, {
+    accountId: account.id,
+    amountCents: 1000,
+    description: 'Original',
+    direction: 'debit',
+  });
+
+  const [updated] = await db
+    .update(transactions)
+    .set({
+      amountCents: 5000,
+      categoryId: category.id,
+      description: 'Updated',
+      direction: 'credit',
+      payeeId: payee.id,
+      updatedById: user.id,
+    })
+    .where(eq(transactions.id, txn.id))
+    .returning();
+
+  expect(updated.amountCents).toBe(5000);
+  expect(updated.categoryId).toBe(category.id);
+  expect(updated.description).toBe('Updated');
+  expect(updated.direction).toBe('credit');
+  expect(updated.payeeId).toBe(payee.id);
+  expect(updated.updatedById).toBe(user.id);
+});
+
+test('update — ownership check via account join', async ({ db }) => {
+  const owner = await insertUser(db);
+  const other = await insertUser(db);
+  const ownerAccount = await insertLedgerAccount(db, { userId: owner.id });
+  const txn = await insertTransaction(db, { accountId: ownerAccount.id });
+
+  const result = await db
+    .select()
+    .from(transactions)
+    .innerJoin(ledgerAccounts, eq(ledgerAccounts.id, transactions.accountId))
+    .where(
+      and(eq(transactions.id, txn.id), eq(ledgerAccounts.userId, other.id)),
+    );
+
+  expect(result).toHaveLength(0);
+});
+
+test('update — clears categoryId to null', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const category = await insertCategory(db, {
+    type: 'expense',
+    userId: user.id,
+  });
+  const txn = await insertTransaction(db, {
+    accountId: account.id,
+    categoryId: category.id,
+  });
+
+  const [updated] = await db
+    .update(transactions)
+    .set({ categoryId: null, updatedById: user.id })
+    .where(eq(transactions.id, txn.id))
+    .returning();
+
+  expect(updated.categoryId).toBeNull();
+});
