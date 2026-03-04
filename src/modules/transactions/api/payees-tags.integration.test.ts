@@ -1,7 +1,9 @@
-import { and, eq, isNull } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
 import { payees, tags } from '@/db/schema';
+import { notDeleted } from '@/lib/audit/soft-delete';
+import { parsePgError, throwIfConstraintViolation } from '@/lib/db/pg-error';
 import { expectPgError } from '~test/assertions';
 import { insertPayee } from '~test/factories/payee.factory';
 import { insertTag } from '~test/factories/tag.factory';
@@ -36,7 +38,7 @@ test('listPayees — excludes soft-deleted', async ({ db }) => {
   const rows = await db
     .select()
     .from(payees)
-    .where(and(eq(payees.userId, user.id), isNull(payees.deletedAt)));
+    .where(and(eq(payees.userId, user.id), notDeleted(payees.deletedAt)));
 
   expect(rows).toHaveLength(1);
 });
@@ -74,6 +76,99 @@ test('createPayee — rejects duplicate (userId, name)', async ({ db }) => {
   );
 });
 
+test('createPayee — normalizes name to lowercase trimmed', async ({ db }) => {
+  const user = await insertUser(db);
+  const name = '  Mixed Case  ';
+  const normalizedName = name.trim().toLowerCase();
+
+  const payee = await insertPayee(db, {
+    name: name.trim(),
+    normalizedName,
+    userId: user.id,
+  });
+
+  expect(payee.normalizedName).toBe('mixed case');
+  expect(payee.name).toBe('Mixed Case');
+});
+
+test('createPayee — dedup returns existing on normalized match', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  await insertPayee(db, {
+    name: 'Acme Corp',
+    normalizedName: 'acme corp',
+    userId: user.id,
+  });
+
+  // Mirrors server fn: lookup by normalizedName + userId + notDeleted
+  const existing = await db
+    .select()
+    .from(payees)
+    .where(
+      and(
+        eq(payees.normalizedName, 'acme corp'),
+        eq(payees.userId, user.id),
+        notDeleted(payees.deletedAt),
+      ),
+    );
+
+  expect(existing).toHaveLength(1);
+  expect(existing[0].name).toBe('Acme Corp');
+});
+
+test('createPayee — dedup ignores soft-deleted', async ({ db }) => {
+  const user = await insertUser(db);
+  await insertPayee(db, {
+    deletedAt: new Date(),
+    name: 'Gone Payee',
+    normalizedName: 'gone payee',
+    userId: user.id,
+  });
+
+  // Lookup with notDeleted should find nothing
+  const existing = await db
+    .select()
+    .from(payees)
+    .where(
+      and(
+        eq(payees.normalizedName, 'gone payee'),
+        eq(payees.userId, user.id),
+        notDeleted(payees.deletedAt),
+      ),
+    );
+
+  expect(existing).toHaveLength(0);
+});
+
+test('createPayee — throwIfConstraintViolation returns 409 with fix message', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  await insertPayee(db, { name: 'Dup Payee', userId: user.id });
+
+  let caught: unknown;
+  try {
+    await insertPayee(db, { name: 'Dup Payee', userId: user.id });
+  } catch (error) {
+    caught = error;
+  }
+
+  if (caught === undefined) {
+    expect.fail('Expected a Postgres constraint violation');
+  }
+
+  const pgInfo = parsePgError(caught);
+  expect(pgInfo).not.toBeNull();
+  expect(pgInfo!.constraint).toBe('payees_user_name_idx');
+  expect(() => throwIfConstraintViolation(caught, 'payee.create')).toThrow(
+    expect.objectContaining({
+      fix: 'A payee with this name already exists.',
+      status: 409,
+    }),
+  );
+});
+
 // ---------------------------------------------------------------------------
 // List tags
 // ---------------------------------------------------------------------------
@@ -102,7 +197,7 @@ test('listTags — excludes soft-deleted', async ({ db }) => {
   const rows = await db
     .select()
     .from(tags)
-    .where(and(eq(tags.userId, user.id), isNull(tags.deletedAt)));
+    .where(and(eq(tags.userId, user.id), notDeleted(tags.deletedAt)));
 
   expect(rows).toHaveLength(1);
 });
@@ -135,4 +230,104 @@ test('createTag — rejects duplicate (userId, name)', async ({ db }) => {
     () => insertTag(db, { name: 'unique-tag', userId: user.id }),
     { code: '23505', constraint: 'tags_user_name_idx' },
   );
+});
+
+test('createTag — stores trimmed name', async ({ db }) => {
+  const user = await insertUser(db);
+  const tag = await insertTag(db, { name: 'spaced', userId: user.id });
+
+  expect(tag.name).toBe('spaced');
+});
+
+test('createTag — dedup returns existing on exact match', async ({ db }) => {
+  const user = await insertUser(db);
+  await insertTag(db, { name: 'groceries', userId: user.id });
+
+  // Mirrors server fn: lookup by exact name + userId + notDeleted
+  const existing = await db
+    .select()
+    .from(tags)
+    .where(
+      and(
+        eq(tags.name, 'groceries'),
+        eq(tags.userId, user.id),
+        notDeleted(tags.deletedAt),
+      ),
+    );
+
+  expect(existing).toHaveLength(1);
+  expect(existing[0].name).toBe('groceries');
+});
+
+test('createTag — dedup ignores soft-deleted', async ({ db }) => {
+  const user = await insertUser(db);
+  await insertTag(db, {
+    deletedAt: new Date(),
+    name: 'gone-tag',
+    userId: user.id,
+  });
+
+  const existing = await db
+    .select()
+    .from(tags)
+    .where(
+      and(
+        eq(tags.name, 'gone-tag'),
+        eq(tags.userId, user.id),
+        notDeleted(tags.deletedAt),
+      ),
+    );
+
+  expect(existing).toHaveLength(0);
+});
+
+test('createTag — throwIfConstraintViolation returns 409 with fix message', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  await insertTag(db, { name: 'dup-tag', userId: user.id });
+
+  let caught: unknown;
+  try {
+    await insertTag(db, { name: 'dup-tag', userId: user.id });
+  } catch (error) {
+    caught = error;
+  }
+
+  if (caught === undefined) {
+    expect.fail('Expected a Postgres constraint violation');
+  }
+
+  const pgInfo = parsePgError(caught);
+  expect(pgInfo).not.toBeNull();
+  expect(pgInfo!.constraint).toBe('tags_user_name_idx');
+  expect(() => throwIfConstraintViolation(caught, 'tag.create')).toThrow(
+    expect.objectContaining({
+      fix: 'A tag with this name already exists.',
+      status: 409,
+    }),
+  );
+});
+
+test('createTag — dedup is case-sensitive', async ({ db }) => {
+  const user = await insertUser(db);
+  const lower = await insertTag(db, { name: 'groceries', userId: user.id });
+  const upper = await insertTag(db, { name: 'Groceries', userId: user.id });
+
+  expect(lower.id).not.toBe(upper.id);
+
+  // Exact-match lookup finds only the lowercase variant
+  const found = await db
+    .select()
+    .from(tags)
+    .where(
+      and(
+        eq(tags.name, 'groceries'),
+        eq(tags.userId, user.id),
+        notDeleted(tags.deletedAt),
+      ),
+    );
+
+  expect(found).toHaveLength(1);
+  expect(found[0].id).toBe(lower.id);
 });

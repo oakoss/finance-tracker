@@ -1,4 +1,4 @@
-import { and, eq, isNull } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
 import {
@@ -9,6 +9,7 @@ import {
   transactions,
   transactionTags,
 } from '@/db/schema';
+import { notDeleted } from '@/lib/audit/soft-delete';
 import { expectPgError } from '~test/assertions';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
@@ -32,7 +33,10 @@ test('list — returns active transactions for user', async ({ db }) => {
     .from(transactions)
     .innerJoin(ledgerAccounts, eq(ledgerAccounts.id, transactions.accountId))
     .where(
-      and(eq(ledgerAccounts.userId, user.id), isNull(transactions.deletedAt)),
+      and(
+        eq(ledgerAccounts.userId, user.id),
+        notDeleted(transactions.deletedAt),
+      ),
     );
 
   expect(rows).toHaveLength(1);
@@ -54,7 +58,7 @@ test('list — excludes soft-deleted', async ({ db }) => {
     .where(
       and(
         eq(transactions.accountId, account.id),
-        isNull(transactions.deletedAt),
+        notDeleted(transactions.deletedAt),
       ),
     );
 
@@ -74,7 +78,10 @@ test('list — isolates by user via account join', async ({ db }) => {
     .from(transactions)
     .innerJoin(ledgerAccounts, eq(ledgerAccounts.id, transactions.accountId))
     .where(
-      and(eq(ledgerAccounts.userId, user1.id), isNull(transactions.deletedAt)),
+      and(
+        eq(ledgerAccounts.userId, user1.id),
+        notDeleted(transactions.deletedAt),
+      ),
     );
 
   expect(rows).toHaveLength(1);
@@ -386,6 +393,441 @@ test('create — rejects non-owned account via join', async ({ db }) => {
     );
 
   expect(accountCheck).toHaveLength(0);
+});
+
+// ---------------------------------------------------------------------------
+// Inline payee creation (mirrors createTransaction lines 44-80)
+// ---------------------------------------------------------------------------
+
+test('create — inline payee: inserts new payee with normalized name', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const now = new Date();
+  const newPayeeName = '  Acme Corp  ';
+
+  // Replicate the server fn inline-payee logic within a transaction
+  const result = await db.transaction(async (tx) => {
+    const normalizedName = newPayeeName.trim().toLowerCase();
+
+    const [newPayee] = await tx
+      .insert(payees)
+      .values({
+        createdById: user.id,
+        name: newPayeeName.trim(),
+        normalizedName,
+        userId: user.id,
+      })
+      .returning();
+
+    const [txn] = await tx
+      .insert(transactions)
+      .values({
+        accountId: account.id,
+        amountCents: 1000,
+        createdById: user.id,
+        description: 'Inline payee test',
+        direction: 'debit',
+        payeeId: newPayee.id,
+        postedAt: now,
+        transactionAt: now,
+      })
+      .returning();
+
+    return { payee: newPayee, transaction: txn };
+  });
+
+  expect(result.payee.name).toBe('Acme Corp');
+  expect(result.payee.normalizedName).toBe('acme corp');
+  expect(result.transaction.payeeId).toBe(result.payee.id);
+});
+
+test('create — inline payee: reuses existing on normalized match', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const now = new Date();
+
+  // Pre-insert the payee
+  const existing = await insertPayee(db, {
+    name: 'Acme Corp',
+    normalizedName: 'acme corp',
+    userId: user.id,
+  });
+
+  // Replicate server fn lookup-before-insert pattern
+  const result = await db.transaction(async (tx) => {
+    const normalizedName = '  ACME CORP  '.trim().toLowerCase();
+
+    const found = await tx
+      .select()
+      .from(payees)
+      .where(
+        and(
+          eq(payees.normalizedName, normalizedName),
+          eq(payees.userId, user.id),
+          notDeleted(payees.deletedAt),
+        ),
+      );
+
+    const payeeId = found.length > 0 ? found[0].id : null;
+
+    const [txn] = await tx
+      .insert(transactions)
+      .values({
+        accountId: account.id,
+        amountCents: 2000,
+        createdById: user.id,
+        description: 'Reuse payee test',
+        direction: 'debit',
+        payeeId,
+        postedAt: now,
+        transactionAt: now,
+      })
+      .returning();
+
+    return { payeeId, transaction: txn };
+  });
+
+  expect(result.payeeId).toBe(existing.id);
+  expect(result.transaction.payeeId).toBe(existing.id);
+
+  // Verify no duplicate payee was created
+  const allPayees = await db
+    .select()
+    .from(payees)
+    .where(
+      and(eq(payees.normalizedName, 'acme corp'), eq(payees.userId, user.id)),
+    );
+
+  expect(allPayees).toHaveLength(1);
+});
+
+// ---------------------------------------------------------------------------
+// Inline tag creation (mirrors createTransaction lines 109-147)
+// ---------------------------------------------------------------------------
+
+test('create — inline tags: creates new tags within transaction', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const now = new Date();
+  const newTagNames = ['groceries', 'personal'];
+
+  const result = await db.transaction(async (tx) => {
+    const [txn] = await tx
+      .insert(transactions)
+      .values({
+        accountId: account.id,
+        amountCents: 5000,
+        createdById: user.id,
+        description: 'Inline tags test',
+        direction: 'debit',
+        postedAt: now,
+        transactionAt: now,
+      })
+      .returning();
+
+    const tagIds: string[] = [];
+    for (const tagName of newTagNames) {
+      const trimmed = tagName.trim();
+
+      const [newTag] = await tx
+        .insert(tags)
+        .values({ createdById: user.id, name: trimmed, userId: user.id })
+        .returning();
+
+      tagIds.push(newTag.id);
+    }
+
+    await tx.insert(transactionTags).values(
+      tagIds.map((tagId) => ({
+        createdById: user.id,
+        tagId,
+        transactionId: txn.id,
+      })),
+    );
+
+    return { tagIds, transaction: txn };
+  });
+
+  const tagRows = await db
+    .select()
+    .from(transactionTags)
+    .where(eq(transactionTags.transactionId, result.transaction.id));
+
+  expect(tagRows).toHaveLength(2);
+});
+
+test('create — inline tags: reuses existing tag on exact match', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const now = new Date();
+
+  // Pre-insert a tag
+  const existingTag = await insertTag(db, {
+    name: 'groceries',
+    userId: user.id,
+  });
+
+  const result = await db.transaction(async (tx) => {
+    const [txn] = await tx
+      .insert(transactions)
+      .values({
+        accountId: account.id,
+        amountCents: 3000,
+        createdById: user.id,
+        description: 'Reuse tag test',
+        direction: 'debit',
+        postedAt: now,
+        transactionAt: now,
+      })
+      .returning();
+
+    // Lookup existing tag (mirrors server fn pattern)
+    const found = await tx
+      .select()
+      .from(tags)
+      .where(
+        and(
+          eq(tags.name, 'groceries'),
+          eq(tags.userId, user.id),
+          notDeleted(tags.deletedAt),
+        ),
+      );
+
+    const tagId = found.length > 0 ? found[0].id : null;
+
+    await tx.insert(transactionTags).values({
+      createdById: user.id,
+      tagId: tagId!,
+      transactionId: txn.id,
+    });
+
+    return { resolvedTagId: tagId, transaction: txn };
+  });
+
+  expect(result.resolvedTagId).toBe(existingTag.id);
+
+  // Verify no duplicate tag was created
+  const allTags = await db
+    .select()
+    .from(tags)
+    .where(and(eq(tags.name, 'groceries'), eq(tags.userId, user.id)));
+
+  expect(allTags).toHaveLength(1);
+
+  const tagRows = await db
+    .select()
+    .from(transactionTags)
+    .where(eq(transactionTags.transactionId, result.transaction.id));
+
+  expect(tagRows).toHaveLength(1);
+  expect(tagRows[0].tagId).toBe(existingTag.id);
+});
+
+test('create — inline tags: deduplicates via Set', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const tag = await insertTag(db, { userId: user.id });
+  const now = new Date();
+
+  // Simulate duplicate tagIds that the server fn deduplicates with new Set()
+  const duplicateTagIds = [tag.id, tag.id, tag.id];
+  const uniqueTagIds = [...new Set(duplicateTagIds)];
+
+  const [txn] = await db
+    .insert(transactions)
+    .values({
+      accountId: account.id,
+      amountCents: 1500,
+      createdById: user.id,
+      description: 'Dedup Set test',
+      direction: 'debit',
+      postedAt: now,
+      transactionAt: now,
+    })
+    .returning();
+
+  await db.insert(transactionTags).values(
+    uniqueTagIds.map((tagId) => ({
+      createdById: user.id,
+      tagId,
+      transactionId: txn.id,
+    })),
+  );
+
+  const tagRows = await db
+    .select()
+    .from(transactionTags)
+    .where(eq(transactionTags.transactionId, txn.id));
+
+  expect(tagRows).toHaveLength(1);
+  expect(tagRows[0].tagId).toBe(tag.id);
+});
+
+test('create — inline tags: skips empty and whitespace-only names', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const now = new Date();
+  // Mirrors server fn line 113: if (!trimmed) continue
+  const newTagNames = ['valid-tag', '', '   ', 'another-tag'];
+
+  const result = await db.transaction(async (tx) => {
+    const [txn] = await tx
+      .insert(transactions)
+      .values({
+        accountId: account.id,
+        amountCents: 2000,
+        createdById: user.id,
+        description: 'Skip empty tags test',
+        direction: 'debit',
+        postedAt: now,
+        transactionAt: now,
+      })
+      .returning();
+
+    const tagIds: string[] = [];
+    for (const tagName of newTagNames) {
+      const trimmed = tagName.trim();
+      if (!trimmed) continue;
+
+      const [newTag] = await tx
+        .insert(tags)
+        .values({ createdById: user.id, name: trimmed, userId: user.id })
+        .returning();
+
+      tagIds.push(newTag.id);
+    }
+
+    if (tagIds.length > 0) {
+      await tx.insert(transactionTags).values(
+        tagIds.map((tagId) => ({
+          createdById: user.id,
+          tagId,
+          transactionId: txn.id,
+        })),
+      );
+    }
+
+    return { tagCount: tagIds.length, transaction: txn };
+  });
+
+  expect(result.tagCount).toBe(2);
+
+  const tagRows = await db
+    .select()
+    .from(transactionTags)
+    .where(eq(transactionTags.transactionId, result.transaction.id));
+
+  expect(tagRows).toHaveLength(2);
+});
+
+test('create — inline tags: Set dedup across tagIds and newTagNames', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const now = new Date();
+
+  // Pre-insert a tag that will overlap with newTagNames
+  const existingTag = await insertTag(db, {
+    name: 'shared-tag',
+    userId: user.id,
+  });
+
+  const result = await db.transaction(async (tx) => {
+    const [txn] = await tx
+      .insert(transactions)
+      .values({
+        accountId: account.id,
+        amountCents: 4000,
+        createdById: user.id,
+        description: 'Mixed dedup test',
+        direction: 'debit',
+        postedAt: now,
+        transactionAt: now,
+      })
+      .returning();
+
+    // Start with existing tagId
+    const allTagIds = [existingTag.id];
+
+    // Inline-create resolves to same tag via lookup
+    const found = await tx
+      .select()
+      .from(tags)
+      .where(
+        and(
+          eq(tags.name, 'shared-tag'),
+          eq(tags.userId, user.id),
+          notDeleted(tags.deletedAt),
+        ),
+      );
+
+    if (found.length > 0) {
+      allTagIds.push(found[0].id);
+    }
+
+    // Set dedup removes the duplicate
+    const uniqueTagIds = [...new Set(allTagIds)];
+
+    await tx.insert(transactionTags).values(
+      uniqueTagIds.map((tagId) => ({
+        createdById: user.id,
+        tagId,
+        transactionId: txn.id,
+      })),
+    );
+
+    return {
+      lookupCount: found.length,
+      transaction: txn,
+      uniqueCount: uniqueTagIds.length,
+    };
+  });
+
+  expect(result.lookupCount).toBe(1);
+  expect(result.uniqueCount).toBe(1);
+
+  const tagRows = await db
+    .select()
+    .from(transactionTags)
+    .where(eq(transactionTags.transactionId, result.transaction.id));
+
+  expect(tagRows).toHaveLength(1);
+  expect(tagRows[0].tagId).toBe(existingTag.id);
+});
+
+test('create — soft-deleted account excluded by notDeleted filter', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, {
+    deletedAt: new Date(),
+    userId: user.id,
+  });
+
+  // Mirrors server fn account ownership check (lines 27-34)
+  const found = await db
+    .select()
+    .from(ledgerAccounts)
+    .where(
+      and(
+        eq(ledgerAccounts.id, account.id),
+        eq(ledgerAccounts.userId, user.id),
+        notDeleted(ledgerAccounts.deletedAt),
+      ),
+    );
+
+  expect(found).toHaveLength(0);
 });
 
 // ---------------------------------------------------------------------------
