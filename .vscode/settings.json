@@ -1,4 +1,7 @@
 {
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
   "eslint.workingDirectories": [
     {
       "mode": "auto"
@@ -14,13 +17,7 @@
     "**/routeTree.gen.ts": true,
     "pnpm-lock.yaml": true
   },
-  "search.exclude": {
-    "**/.tanstack/**/*": true,
-    "**/routeTree.gen.ts": true,
-    "pnpm-lock.yaml": true
-  },
-  "typescript.enablePromptUseWorkspaceTsdk": true,
-  "typescript.preferences.autoImportFileExcludePatterns": [
+  "js/ts.preferences.autoImportFileExcludePatterns": [
     "@base-ui/react",
     "@react-email/components",
     "^lucide-react/dist/lucide-react.suffixed$",
@@ -29,6 +26,13 @@
     "recharts",
     "sonner"
   ],
-  "typescript.preferences.importModuleSpecifier": "non-relative",
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "js/ts.preferences.autoImportSpecifierExcludeRegexes": ["^(node:)?os$"],
+  "js/ts.preferences.importModuleSpecifier": "non-relative",
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+  "search.exclude": {
+    "**/.tanstack/**/*": true,
+    "**/routeTree.gen.ts": true,
+    "pnpm-lock.yaml": true
+  }
 }
