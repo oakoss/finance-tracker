@@ -55,7 +55,6 @@ function validatePassword(value: string): string[] | undefined {
 
 const passwordValidators = {
   onBlur: ({ value }: { value: string }) => validatePassword(value),
-  onChange: ({ value }: { value: string }) => validatePassword(value),
   onSubmit: ({ value }: { value: string }) => validatePassword(value),
 };
 
@@ -127,7 +126,7 @@ function SignUpForm() {
                   {m['auth.signup.nameLabel']()}
                 </FieldLabel>
                 <Input
-                  disabled={form.state.isSubmitting}
+                  autoComplete="name"
                   id="name"
                   name={field.name}
                   type="text"
@@ -147,7 +146,7 @@ function SignUpForm() {
                   {m['auth.signup.emailLabel']()}
                 </FieldLabel>
                 <Input
-                  disabled={form.state.isSubmitting}
+                  autoComplete="email"
                   id="email"
                   name={field.name}
                   type="email"
@@ -190,7 +189,7 @@ function SignUpForm() {
                   </TooltipProvider>
                 </div>
                 <PasswordInput
-                  disabled={form.state.isSubmitting}
+                  autoComplete="new-password"
                   id="password"
                   name={field.name}
                   value={field.state.value}

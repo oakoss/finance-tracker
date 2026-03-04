@@ -22,7 +22,7 @@ function validateField(
 function fieldValidators(schema: (value: string) => unknown) {
   const validate = ({ value }: { value: string }) =>
     validateField(schema, value);
-  return { onBlur: validate, onChange: validate, onSubmit: validate };
+  return { onBlur: validate, onSubmit: validate };
 }
 
 export { fieldValidators, validateField };

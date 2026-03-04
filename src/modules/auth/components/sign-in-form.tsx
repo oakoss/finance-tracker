@@ -97,7 +97,7 @@ function SignInForm({ redirect }: SignInFormProps) {
                   {m['auth.login.emailLabel']()}
                 </FieldLabel>
                 <Input
-                  disabled={form.state.isSubmitting}
+                  autoComplete="email"
                   id="email"
                   name={field.name}
                   type="email"
@@ -120,7 +120,7 @@ function SignInForm({ redirect }: SignInFormProps) {
                   {m['auth.login.passwordLabel']()}
                 </FieldLabel>
                 <PasswordInput
-                  disabled={form.state.isSubmitting}
+                  autoComplete="current-password"
                   id="password"
                   name={field.name}
                   value={field.state.value}
