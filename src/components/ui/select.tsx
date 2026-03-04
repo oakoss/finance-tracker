@@ -11,7 +11,7 @@ const Select = SelectPrimitive.Root;
 function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
   return (
     <SelectPrimitive.Group
-      className={cn('scroll-my-1 p-1', className)}
+      className={cn('scroll-my-1', className)}
       data-slot="select-group"
       {...props}
     />
@@ -58,7 +58,7 @@ function SelectTrigger({
 
 function SelectContent({
   align = 'center',
-  alignItemWithTrigger = true,
+  alignItemWithTrigger = false,
   alignOffset = 0,
   children,
   className,
@@ -90,7 +90,9 @@ function SelectContent({
           {...props}
         >
           <SelectScrollUpButton />
-          <SelectPrimitive.List>{children}</SelectPrimitive.List>
+          <SelectPrimitive.List className="p-1">
+            {children}
+          </SelectPrimitive.List>
           <SelectScrollDownButton />
         </SelectPrimitive.Popup>
       </SelectPrimitive.Positioner>

@@ -121,6 +121,10 @@ Never use `force` to paper over real issues.
 - `pressSequentially()` types one character at a time with optional
   delay. Use only when the page has special per-keystroke handling
   (e.g., autocomplete, debounced search).
+- **Combobox inputs must use `pressSequentially()`**. `fill()` sets
+  the value instantly, which causes the dropdown list to re-render
+  and detach the "Create …" option before Playwright can click it.
+  Always `click()` the input first, then `pressSequentially()`.
 
 ```ts
 // Default — fast and reliable
@@ -129,6 +133,12 @@ await page.getByLabel('Email').fill('user@example.com');
 // Per-keystroke — only when the page needs it
 // delay is milliseconds between each keypress (optional, default 0)
 await page.getByLabel('Search').pressSequentially('react', { delay: 50 });
+
+// Combobox — click first, then type sequentially
+const input = field.getByRole('combobox');
+await input.click();
+await input.pressSequentially('New item', { delay: 50 });
+await page.getByRole('option', { name: /Create "New item"/i }).click();
 ```
 
 **Checkboxes and radio buttons:**

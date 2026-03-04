@@ -9,7 +9,10 @@ import {
   transactions,
   transactionTags,
 } from '@/db/schema';
+import { expectPgError } from '~test/assertions';
+import { insertCategory } from '~test/factories/category.factory';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
+import { insertPayee } from '~test/factories/payee.factory';
 import { insertTag } from '~test/factories/tag.factory';
 import { insertTransaction } from '~test/factories/transaction.factory';
 import { insertUser } from '~test/factories/user.factory';
@@ -238,6 +241,132 @@ test('create — writes audit log', async ({ db }) => {
   expect(logs).toHaveLength(1);
   expect(logs[0].action).toBe('create');
   expect(logs[0].actorId).toBe(user.id);
+});
+
+test('create — stores null categoryId when omitted', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const now = new Date();
+
+  const [txn] = await db
+    .insert(transactions)
+    .values({
+      accountId: account.id,
+      amountCents: 1000,
+      createdById: user.id,
+      description: 'No category',
+      direction: 'debit',
+      postedAt: now,
+      transactionAt: now,
+    })
+    .returning();
+
+  expect(txn.categoryId).toBeNull();
+});
+
+test('create — stores categoryId when provided', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const category = await insertCategory(db, { userId: user.id });
+  const now = new Date();
+
+  const [txn] = await db
+    .insert(transactions)
+    .values({
+      accountId: account.id,
+      amountCents: 2500,
+      categoryId: category.id,
+      createdById: user.id,
+      description: 'With category',
+      direction: 'debit',
+      postedAt: now,
+      transactionAt: now,
+    })
+    .returning();
+
+  expect(txn.categoryId).toBe(category.id);
+});
+
+test('create — links payee to transaction', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const payee = await insertPayee(db, { userId: user.id });
+  const now = new Date();
+
+  const [txn] = await db
+    .insert(transactions)
+    .values({
+      accountId: account.id,
+      amountCents: 3000,
+      createdById: user.id,
+      description: 'Linked payee',
+      direction: 'debit',
+      payeeId: payee.id,
+      postedAt: now,
+      transactionAt: now,
+    })
+    .returning();
+
+  expect(txn.payeeId).toBe(payee.id);
+});
+
+test('create — links multiple tags via transactionTags', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const tag1 = await insertTag(db, { userId: user.id });
+  const tag2 = await insertTag(db, { userId: user.id });
+  const now = new Date();
+
+  const [txn] = await db
+    .insert(transactions)
+    .values({
+      accountId: account.id,
+      amountCents: 4000,
+      createdById: user.id,
+      description: 'Multi-tag',
+      direction: 'debit',
+      postedAt: now,
+      transactionAt: now,
+    })
+    .returning();
+
+  await db.insert(transactionTags).values([
+    { tagId: tag1.id, transactionId: txn.id },
+    { tagId: tag2.id, transactionId: txn.id },
+  ]);
+
+  const rows = await db
+    .select()
+    .from(transactionTags)
+    .where(eq(transactionTags.transactionId, txn.id));
+
+  expect(rows).toHaveLength(2);
+  const tagIds = rows.map((r) => r.tagId);
+  expect(tagIds).toContain(tag1.id);
+  expect(tagIds).toContain(tag2.id);
+});
+
+test('create — transactionTags rejects duplicate (transactionId, tagId)', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const tag = await insertTag(db, { userId: user.id });
+  const txn = await insertTransaction(db, { accountId: account.id });
+
+  await db.insert(transactionTags).values({
+    tagId: tag.id,
+    transactionId: txn.id,
+  });
+
+  await expectPgError(
+    () =>
+      db.insert(transactionTags).values({
+        tagId: tag.id,
+        transactionId: txn.id,
+      }),
+    { code: '23505', constraint: 'transaction_tags_unique_idx' },
+  );
 });
 
 test('create — rejects non-owned account via join', async ({ db }) => {
