@@ -231,3 +231,68 @@
     font-family: var(--font-mono);
   }
 }
+
+/*
+ * ── Autofill & Password Manager Overrides ───────────────────────────
+ * Covers 1Password, LastPass, Chrome, Safari, Edge, and Firefox.
+ * Bitwarden, Dashlane, Keeper, NordPass rely on browser-native
+ * autofill so the :-webkit-autofill / :autofill rules handle them.
+ */
+
+/* 1Password: injects data-com-onepassword-filled="light"|"dark".
+   Theme detection breaks on oklch() (Tailwind v4), always picking
+   "light" — giving a light blue background in dark mode.
+   1Password sets background-color via inline JS !important which beats
+   CSS !important. background-image paints on top regardless. */
+input[data-com-onepassword-filled],
+textarea[data-com-onepassword-filled],
+select[data-com-onepassword-filled] {
+  background-image: linear-gradient(var(--card), var(--card)) !important;
+  color: var(--foreground) !important;
+  -webkit-text-fill-color: var(--foreground) !important;
+}
+
+/* LastPass: hides injected icon overlays and form containers. */
+[data-lastpass-icon-root] {
+  display: none !important;
+}
+
+/* Chrome / Safari / Edge — UA autofill uses background-color !important
+   which author styles cannot override. background-image paints on top of
+   background-color in the CSS painting model, sidestepping the cascade. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:active,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+select:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--foreground) !important;
+  background-image: linear-gradient(var(--card), var(--card)) !important;
+  -webkit-box-shadow: 0 0 0 9999px var(--card) inset !important;
+  box-shadow: 0 0 0 9999px var(--card) inset !important;
+  caret-color: var(--foreground);
+  transition: background-color 9999999s ease-in-out 0s !important;
+}
+
+/* Firefox — standard :autofill (no vendor prefix needed). */
+input:autofill,
+input:autofill:hover,
+input:autofill:focus,
+input:autofill:active,
+textarea:autofill,
+textarea:autofill:hover,
+textarea:autofill:focus,
+textarea:autofill:active,
+select:autofill,
+select:autofill:hover,
+select:autofill:focus,
+select:autofill:active {
+  background-color: var(--card) !important;
+  color: var(--foreground) !important;
+}
