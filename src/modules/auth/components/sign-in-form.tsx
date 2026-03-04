@@ -159,10 +159,11 @@ function SignInForm({ redirect }: SignInFormProps) {
           </form.Subscribe>
         </form>
 
-        <SocialSignIn
-          disabled={form.state.isSubmitting}
-          onError={setServerError}
-        />
+        <form.Subscribe selector={(state) => state.isSubmitting}>
+          {(isSubmitting) => (
+            <SocialSignIn disabled={isSubmitting} onError={setServerError} />
+          )}
+        </form.Subscribe>
 
         <p className="text-center text-sm text-muted-foreground">
           {m['auth.login.noAccount']()}{' '}
