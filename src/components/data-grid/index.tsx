@@ -152,7 +152,7 @@ function DataGrid<TData extends object>({
       cellBorder: false,
       columnsDraggable: false,
       columnsMovable: false,
-      columnsPinnable: false,
+      columnsPinnable: true,
       columnsResizable: false,
       columnsVisibility: false,
       dense: false,
@@ -204,7 +204,7 @@ function DataGridContainer({
   return (
     <div
       className={cn(
-        'w-full overflow-hidden',
+        'w-full overflow-x-auto',
         border && 'border-border rounded-2xl border',
         className,
       )}

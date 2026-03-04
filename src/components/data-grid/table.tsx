@@ -68,7 +68,7 @@ function DataGridTableBase({ children }: { children: ReactNode }) {
       style={
         props.tableLayout?.columnsResizable
           ? { width: table.getTotalSize() }
-          : undefined
+          : { minWidth: table.getTotalSize() }
       }
     >
       {children}
@@ -252,6 +252,12 @@ function DataGridTableBodyRowSkeletonCell<TData>({
   column: Column<TData>;
 }) {
   const { props, table } = useDataGrid();
+
+  const isPinned = column.getIsPinned();
+  const isLastLeftPinned =
+    isPinned === 'left' && column.getIsLastColumn('left');
+  const isFirstRightPinned =
+    isPinned === 'right' && column.getIsFirstColumn('right');
   const bodyCellSpacing = bodyCellSpacingVariants({
     size: props.tableLayout?.dense ? 'dense' : 'default',
   });
@@ -268,17 +274,24 @@ function DataGridTableBodyRowSkeletonCell<TData>({
         column.columnDef.meta?.cellClassName,
         props.tableLayout?.columnsPinnable &&
           column.getCanPin() &&
-          '[&[data-pinned][data-last-col]]:border-border data-pinned:bg-background/90 data-pinned:backdrop-blur-xs" [&[data-pinned=left][data-last-col=left]]:border-e! [&[data-pinned=right][data-last-col=right]]:border-s!',
+          '[&[data-pinned][data-last-col]]:border-border data-pinned:bg-background/90 data-pinned:backdrop-blur-xs [&[data-pinned=left][data-last-col=left]]:border-e! [&[data-pinned=right][data-last-col=right]]:border-s!',
         column.getIndex() === 0 ||
           column.getIndex() === table.getVisibleFlatColumns().length - 1
           ? props.tableClassNames?.edgeCell
           : '',
       )}
-      style={
-        props.tableLayout?.columnsResizable
-          ? { width: column.getSize() }
-          : undefined
+      data-last-col={
+        isLastLeftPinned ? 'left' : isFirstRightPinned ? 'right' : undefined
       }
+      data-pinned={isPinned === false ? undefined : isPinned}
+      style={{
+        ...(props.tableLayout?.columnsResizable && {
+          width: column.getSize(),
+        }),
+        ...(props.tableLayout?.columnsPinnable &&
+          column.getCanPin() &&
+          getPinningStyles(column)),
+      }}
     >
       {children}
     </td>
@@ -383,7 +396,7 @@ function DataGridTableBodyRowCell<TData>({
         cell.column.columnDef.meta?.cellClassName,
         props.tableLayout?.columnsPinnable &&
           column.getCanPin() &&
-          '[&[data-pinned][data-last-col]]:border-border data-pinned:bg-background/90 data-pinned:backdrop-blur-xs" [&[data-pinned=left][data-last-col=left]]:border-e! [&[data-pinned=right][data-last-col=right]]:border-s!',
+          '[&[data-pinned][data-last-col]]:border-border data-pinned:bg-background/90 data-pinned:backdrop-blur-xs [&[data-pinned=left][data-last-col=left]]:border-e! [&[data-pinned=right][data-last-col=right]]:border-s!',
         column.getIndex() === 0 ||
           column.getIndex() === row.getVisibleCells().length - 1
           ? props.tableClassNames?.edgeCell

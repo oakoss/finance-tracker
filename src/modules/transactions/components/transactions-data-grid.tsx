@@ -29,6 +29,7 @@ export function TransactionsDataGrid({
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
+      columnPinning: { left: ['description'], right: ['actions'] },
       pagination: { pageIndex: 0, pageSize: 25 },
     },
   });

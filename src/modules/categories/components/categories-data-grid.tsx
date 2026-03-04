@@ -29,6 +29,7 @@ export function CategoriesDataGrid({
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
+      columnPinning: { left: ['name'], right: ['actions'] },
       pagination: { pageIndex: 0, pageSize: 25 },
     },
   });

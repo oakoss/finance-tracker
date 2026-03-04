@@ -23,6 +23,7 @@ export function AccountsDataGrid({ data, isLoading }: AccountsDataGridProps) {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
+      columnPinning: { left: ['account_name'], right: ['actions'] },
       pagination: { pageIndex: 0, pageSize: 25 },
     },
   });
