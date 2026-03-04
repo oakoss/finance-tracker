@@ -17,9 +17,12 @@ export async function expectPgError(
   let caught: unknown;
   try {
     await fn();
-    expect.fail('Expected a Postgres constraint violation');
   } catch (error) {
     caught = error;
+  }
+
+  if (caught === undefined) {
+    expect.fail('Expected a Postgres constraint violation');
   }
 
   const pg = parsePgError(caught);
