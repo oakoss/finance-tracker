@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX IF NOT EXISTS "account_terms_account_id_idx" ON "account_terms" USING btree ("account_id");

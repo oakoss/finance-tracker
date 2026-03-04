@@ -22,6 +22,20 @@
       "when": 1771913621062,
       "tag": "0002_closed_weapon_omega",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1772606568651,
+      "tag": "0003_charming_loners",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1772607562316,
+      "tag": "0004_cooing_la_nuit",
+      "breakpoints": true
     }
   ]
 }

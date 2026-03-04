@@ -42,7 +42,9 @@ export const payees = pgTable(
   },
   (table) => [
     index('payees_user_id_idx').on(table.userId),
-    uniqueIndex('payees_user_name_idx').on(table.userId, table.name),
+    uniqueIndex('payees_user_name_idx')
+      .on(table.userId, table.name)
+      .where(sql`${table.deletedAt} is null`),
     index('payees_user_active_idx')
       .on(table.userId)
       .where(sql`${table.deletedAt} is null`),
@@ -63,7 +65,9 @@ export const tags = pgTable(
   },
   (table) => [
     index('tags_user_id_idx').on(table.userId),
-    uniqueIndex('tags_user_name_idx').on(table.userId, table.name),
+    uniqueIndex('tags_user_name_idx')
+      .on(table.userId, table.name)
+      .where(sql`${table.deletedAt} is null`),
     index('tags_user_active_idx')
       .on(table.userId)
       .where(sql`${table.deletedAt} is null`),

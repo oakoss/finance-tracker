@@ -22,7 +22,7 @@ test('listPayees — returns active payees ordered by name', async ({ db }) => {
   const rows = await db
     .select()
     .from(payees)
-    .where(eq(payees.userId, user.id))
+    .where(and(eq(payees.userId, user.id), notDeleted(payees.deletedAt)))
     .orderBy(payees.name);
 
   expect(rows).toHaveLength(2);
@@ -117,7 +117,9 @@ test('createPayee — dedup returns existing on normalized match', async ({
   expect(existing[0].name).toBe('Acme Corp');
 });
 
-test('createPayee — dedup ignores soft-deleted', async ({ db }) => {
+test('createPayee — re-creates after soft-delete (partial index)', async ({
+  db,
+}) => {
   const user = await insertUser(db);
   await insertPayee(db, {
     deletedAt: new Date(),
@@ -126,19 +128,15 @@ test('createPayee — dedup ignores soft-deleted', async ({ db }) => {
     userId: user.id,
   });
 
-  // Lookup with notDeleted should find nothing
-  const existing = await db
-    .select()
-    .from(payees)
-    .where(
-      and(
-        eq(payees.normalizedName, 'gone payee'),
-        eq(payees.userId, user.id),
-        notDeleted(payees.deletedAt),
-      ),
-    );
+  // Partial unique index allows re-creation with the same name
+  const fresh = await insertPayee(db, {
+    name: 'Gone Payee',
+    normalizedName: 'gone payee',
+    userId: user.id,
+  });
 
-  expect(existing).toHaveLength(0);
+  expect(fresh.name).toBe('Gone Payee');
+  expect(fresh.deletedAt).toBeNull();
 });
 
 test('createPayee — throwIfConstraintViolation returns 409 with fix message', async ({
@@ -181,7 +179,7 @@ test('listTags — returns active tags ordered by name', async ({ db }) => {
   const rows = await db
     .select()
     .from(tags)
-    .where(eq(tags.userId, user.id))
+    .where(and(eq(tags.userId, user.id), notDeleted(tags.deletedAt)))
     .orderBy(tags.name);
 
   expect(rows).toHaveLength(2);
@@ -259,7 +257,9 @@ test('createTag — dedup returns existing on exact match', async ({ db }) => {
   expect(existing[0].name).toBe('groceries');
 });
 
-test('createTag — dedup ignores soft-deleted', async ({ db }) => {
+test('createTag — re-creates after soft-delete (partial index)', async ({
+  db,
+}) => {
   const user = await insertUser(db);
   await insertTag(db, {
     deletedAt: new Date(),
@@ -267,18 +267,11 @@ test('createTag — dedup ignores soft-deleted', async ({ db }) => {
     userId: user.id,
   });
 
-  const existing = await db
-    .select()
-    .from(tags)
-    .where(
-      and(
-        eq(tags.name, 'gone-tag'),
-        eq(tags.userId, user.id),
-        notDeleted(tags.deletedAt),
-      ),
-    );
+  // Partial unique index allows re-creation with the same name
+  const fresh = await insertTag(db, { name: 'gone-tag', userId: user.id });
 
-  expect(existing).toHaveLength(0);
+  expect(fresh.name).toBe('gone-tag');
+  expect(fresh.deletedAt).toBeNull();
 });
 
 test('createTag — throwIfConstraintViolation returns 409 with fix message', async ({

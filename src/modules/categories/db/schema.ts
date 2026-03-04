@@ -39,7 +39,9 @@ export const categories = pgTable(
   },
   (table) => [
     index('categories_user_id_idx').on(table.userId),
-    uniqueIndex('categories_user_name_idx').on(table.userId, table.name),
+    uniqueIndex('categories_user_name_idx')
+      .on(table.userId, table.name)
+      .where(sql`${table.deletedAt} is null`),
     index('categories_user_active_idx')
       .on(table.userId)
       .where(sql`${table.deletedAt} is null`),

@@ -1,8 +1,7 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, getTableName } from 'drizzle-orm';
 import { expect } from 'vitest';
 
 import {
-  auditLogs,
   ledgerAccounts,
   payees,
   tags,
@@ -10,7 +9,7 @@ import {
   transactionTags,
 } from '@/db/schema';
 import { notDeleted } from '@/lib/audit/soft-delete';
-import { expectPgError } from '~test/assertions';
+import { expectAuditLogEntry, expectPgError } from '~test/assertions';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
 import { insertPayee } from '~test/factories/payee.factory';
@@ -18,6 +17,13 @@ import { insertTag } from '~test/factories/tag.factory';
 import { insertTransaction } from '~test/factories/transaction.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
+
+/** Mirrors listTransactions payeeName suppression: null when payee is soft-deleted */
+function resolvePayeeName(row: {
+  payee: { deletedAt: Date | null; name: string } | null;
+}): string | null {
+  return row.payee?.deletedAt === null ? row.payee.name : null;
+}
 
 // ---------------------------------------------------------------------------
 // List transactions
@@ -106,6 +112,98 @@ test('list — includes tags via transaction_tags', async ({ db }) => {
 
   expect(tagRows).toHaveLength(1);
   expect(tagRows[0].tagId).toBe(tag.id);
+});
+
+test('list — returns payeeName when payee is active', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const payee = await insertPayee(db, {
+    name: 'Active Payee',
+    userId: user.id,
+  });
+  await insertTransaction(db, { accountId: account.id, payeeId: payee.id });
+
+  // Mirrors listTransactions relational query with payee join
+  const rows = await db.query.transactions.findMany({
+    where: (t, { and: a }) =>
+      a(eq(t.accountId, account.id), notDeleted(t.deletedAt)),
+    with: { payee: { columns: { deletedAt: true, name: true } } },
+  });
+
+  expect(rows).toHaveLength(1);
+  const payeeName = resolvePayeeName(rows[0]);
+  expect(payeeName).toBe('Active Payee');
+});
+
+test('list — suppresses payeeName when payee is soft-deleted', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const payee = await insertPayee(db, {
+    deletedAt: new Date(),
+    name: 'Deleted Payee',
+    userId: user.id,
+  });
+  await insertTransaction(db, { accountId: account.id, payeeId: payee.id });
+
+  const rows = await db.query.transactions.findMany({
+    where: (t, { and: a }) =>
+      a(eq(t.accountId, account.id), notDeleted(t.deletedAt)),
+    with: { payee: { columns: { deletedAt: true, name: true } } },
+  });
+
+  expect(rows).toHaveLength(1);
+  const payeeName = resolvePayeeName(rows[0]);
+  expect(payeeName).toBeNull();
+  // But the payeeId FK is still present
+  expect(rows[0].payeeId).toBe(payee.id);
+});
+
+test('list — returns null payeeName when no payee linked', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  await insertTransaction(db, { accountId: account.id });
+
+  const rows = await db.query.transactions.findMany({
+    where: (t, { and: a }) =>
+      a(eq(t.accountId, account.id), notDeleted(t.deletedAt)),
+    with: { payee: { columns: { deletedAt: true, name: true } } },
+  });
+
+  expect(rows).toHaveLength(1);
+  expect(rows[0].payee).toBeNull();
+  const payeeName = resolvePayeeName(rows[0]);
+  expect(payeeName).toBeNull();
+});
+
+test('list — ordered by transactionAt DESC', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+
+  const older = new Date('2024-01-15');
+  const newer = new Date('2024-06-15');
+
+  const first = await insertTransaction(db, {
+    accountId: account.id,
+    description: 'Older',
+    transactionAt: older,
+  });
+  const second = await insertTransaction(db, {
+    accountId: account.id,
+    description: 'Newer',
+    transactionAt: newer,
+  });
+
+  const rows = await db.query.transactions.findMany({
+    orderBy: (t, { desc }) => desc(t.transactionAt),
+    where: (t, { and: a }) =>
+      a(eq(t.accountId, account.id), notDeleted(t.deletedAt)),
+  });
+
+  expect(rows).toHaveLength(2);
+  expect(rows[0].id).toBe(second.id);
+  expect(rows[1].id).toBe(first.id);
 });
 
 // ---------------------------------------------------------------------------
@@ -227,27 +325,13 @@ test('create — writes audit log', async ({ db }) => {
     })
     .returning();
 
-  await db.insert(auditLogs).values({
+  await expectAuditLogEntry(db, {
     action: 'create',
     actorId: user.id,
     afterData: txn as unknown as Record<string, unknown>,
     recordId: txn.id,
-    tableName: 'transactions',
+    tableName: getTableName(transactions),
   });
-
-  const logs = await db
-    .select()
-    .from(auditLogs)
-    .where(
-      and(
-        eq(auditLogs.recordId, txn.id),
-        eq(auditLogs.tableName, 'transactions'),
-      ),
-    );
-
-  expect(logs).toHaveLength(1);
-  expect(logs[0].action).toBe('create');
-  expect(logs[0].actorId).toBe(user.id);
 });
 
 test('create — stores null categoryId when omitted', async ({ db }) => {
@@ -503,6 +587,38 @@ test('create — inline payee: reuses existing on normalized match', async ({
     );
 
   expect(allPayees).toHaveLength(1);
+});
+
+test('create — inline payee: re-creates after soft-delete (partial index)', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+
+  // Soft-deleted payee with matching name
+  await insertPayee(db, {
+    deletedAt: new Date(),
+    name: 'Gone Corp',
+    normalizedName: 'gone corp',
+    userId: user.id,
+  });
+
+  // Partial unique index allows inserting a new payee with the same name
+  const fresh = await insertPayee(db, {
+    name: 'Gone Corp',
+    normalizedName: 'gone corp',
+    userId: user.id,
+  });
+
+  expect(fresh.name).toBe('Gone Corp');
+  expect(fresh.deletedAt).toBeNull();
+
+  const all = await db
+    .select()
+    .from(payees)
+    .where(
+      and(eq(payees.normalizedName, 'gone corp'), eq(payees.userId, user.id)),
+    );
+  expect(all).toHaveLength(2);
 });
 
 // ---------------------------------------------------------------------------
@@ -887,6 +1003,480 @@ test('update — tag sync deletes and re-inserts', async ({ db }) => {
 });
 
 // ---------------------------------------------------------------------------
+// Update — inline payee creation (mirrors updateTransaction lines 83-116)
+// ---------------------------------------------------------------------------
+
+test('update — inline payee: inserts new payee with normalized name', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const txn = await insertTransaction(db, { accountId: account.id });
+  const newPayeeName = '  New Vendor  ';
+
+  const result = await db.transaction(async (tx) => {
+    const normalizedName = newPayeeName.trim().toLowerCase();
+
+    const [newPayee] = await tx
+      .insert(payees)
+      .values({
+        createdById: user.id,
+        name: newPayeeName.trim(),
+        normalizedName,
+        userId: user.id,
+      })
+      .returning();
+
+    const [updated] = await tx
+      .update(transactions)
+      .set({ payeeId: newPayee.id, updatedById: user.id })
+      .where(eq(transactions.id, txn.id))
+      .returning();
+
+    return { payee: newPayee, transaction: updated };
+  });
+
+  expect(result.payee.name).toBe('New Vendor');
+  expect(result.payee.normalizedName).toBe('new vendor');
+  expect(result.transaction.payeeId).toBe(result.payee.id);
+});
+
+test('update — inline payee: reuses existing on normalized match', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const txn = await insertTransaction(db, { accountId: account.id });
+
+  const existing = await insertPayee(db, {
+    name: 'Acme Corp',
+    normalizedName: 'acme corp',
+    userId: user.id,
+  });
+
+  const result = await db.transaction(async (tx) => {
+    const normalizedName = '  ACME CORP  '.trim().toLowerCase();
+
+    const found = await tx
+      .select()
+      .from(payees)
+      .where(
+        and(
+          eq(payees.normalizedName, normalizedName),
+          eq(payees.userId, user.id),
+          notDeleted(payees.deletedAt),
+        ),
+      );
+
+    const payeeId = found.length > 0 ? found[0].id : null;
+
+    const [updated] = await tx
+      .update(transactions)
+      .set({ payeeId, updatedById: user.id })
+      .where(eq(transactions.id, txn.id))
+      .returning();
+
+    return { payeeId, transaction: updated };
+  });
+
+  expect(result.payeeId).toBe(existing.id);
+  expect(result.transaction.payeeId).toBe(existing.id);
+
+  const allPayees = await db
+    .select()
+    .from(payees)
+    .where(
+      and(eq(payees.normalizedName, 'acme corp'), eq(payees.userId, user.id)),
+    );
+
+  expect(allPayees).toHaveLength(1);
+});
+
+// ---------------------------------------------------------------------------
+// Update — inline tag creation (mirrors updateTransaction lines 145-197)
+// ---------------------------------------------------------------------------
+
+test('update — inline tags: creates new tags during update', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const txn = await insertTransaction(db, { accountId: account.id });
+  const existingTag = await insertTag(db, { userId: user.id });
+
+  // Link initial tag
+  await db.insert(transactionTags).values({
+    createdById: user.id,
+    tagId: existingTag.id,
+    transactionId: txn.id,
+  });
+
+  const newTagNames = ['new-tag-a', 'new-tag-b'];
+
+  const result = await db.transaction(async (tx) => {
+    // Delete-and-reinsert pattern from updateTransaction
+    await tx
+      .delete(transactionTags)
+      .where(eq(transactionTags.transactionId, txn.id));
+
+    const allTagIds: string[] = [];
+
+    for (const tagName of newTagNames) {
+      const trimmed = tagName.trim();
+      if (!trimmed) continue;
+
+      const [newTag] = await tx
+        .insert(tags)
+        .values({ createdById: user.id, name: trimmed, userId: user.id })
+        .returning();
+
+      allTagIds.push(newTag.id);
+    }
+
+    if (allTagIds.length > 0) {
+      const uniqueTagIds = [...new Set(allTagIds)];
+      await tx.insert(transactionTags).values(
+        uniqueTagIds.map((tagId) => ({
+          createdById: user.id,
+          tagId,
+          transactionId: txn.id,
+        })),
+      );
+    }
+
+    return { tagCount: allTagIds.length };
+  });
+
+  expect(result.tagCount).toBe(2);
+
+  const tagRows = await db
+    .select()
+    .from(transactionTags)
+    .where(eq(transactionTags.transactionId, txn.id));
+
+  expect(tagRows).toHaveLength(2);
+
+  // Old tag should have been removed by delete-reinsert
+  const tagIdSet = new Set(tagRows.map((r) => r.tagId));
+  expect(tagIdSet.has(existingTag.id)).toBe(false);
+});
+
+test('update — inline tags: reuses existing tag on exact match', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const txn = await insertTransaction(db, { accountId: account.id });
+
+  const existingTag = await insertTag(db, {
+    name: 'groceries',
+    userId: user.id,
+  });
+
+  const result = await db.transaction(async (tx) => {
+    await tx
+      .delete(transactionTags)
+      .where(eq(transactionTags.transactionId, txn.id));
+
+    const allTagIds: string[] = [];
+
+    // Lookup existing tag (mirrors server fn pattern)
+    const found = await tx
+      .select()
+      .from(tags)
+      .where(
+        and(
+          eq(tags.name, 'groceries'),
+          eq(tags.userId, user.id),
+          notDeleted(tags.deletedAt),
+        ),
+      );
+
+    if (found.length > 0) {
+      allTagIds.push(found[0].id);
+    }
+
+    if (allTagIds.length > 0) {
+      await tx.insert(transactionTags).values(
+        allTagIds.map((tagId) => ({
+          createdById: user.id,
+          tagId,
+          transactionId: txn.id,
+        })),
+      );
+    }
+
+    return { resolvedTagId: allTagIds[0] };
+  });
+
+  expect(result.resolvedTagId).toBe(existingTag.id);
+
+  // No duplicate tag created
+  const allTags = await db
+    .select()
+    .from(tags)
+    .where(and(eq(tags.name, 'groceries'), eq(tags.userId, user.id)));
+
+  expect(allTags).toHaveLength(1);
+});
+
+test('update — inline tags: deduplicates tagIds + newTagNames via Set', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const txn = await insertTransaction(db, { accountId: account.id });
+
+  const existingTag = await insertTag(db, {
+    name: 'shared-tag',
+    userId: user.id,
+  });
+
+  const result = await db.transaction(async (tx) => {
+    await tx
+      .delete(transactionTags)
+      .where(eq(transactionTags.transactionId, txn.id));
+
+    // tagIds contains the existing tag
+    const allTagIds = [existingTag.id];
+
+    // newTagNames resolves to the same tag via lookup
+    const found = await tx
+      .select()
+      .from(tags)
+      .where(
+        and(
+          eq(tags.name, 'shared-tag'),
+          eq(tags.userId, user.id),
+          notDeleted(tags.deletedAt),
+        ),
+      );
+
+    if (found.length > 0) {
+      allTagIds.push(found[0].id);
+    }
+
+    const uniqueTagIds = [...new Set(allTagIds)];
+
+    await tx.insert(transactionTags).values(
+      uniqueTagIds.map((tagId) => ({
+        createdById: user.id,
+        tagId,
+        transactionId: txn.id,
+      })),
+    );
+
+    return { lookupCount: found.length, uniqueCount: uniqueTagIds.length };
+  });
+
+  expect(result.lookupCount).toBe(1);
+  expect(result.uniqueCount).toBe(1);
+
+  const tagRows = await db
+    .select()
+    .from(transactionTags)
+    .where(eq(transactionTags.transactionId, txn.id));
+
+  expect(tagRows).toHaveLength(1);
+  expect(tagRows[0].tagId).toBe(existingTag.id);
+});
+
+test('update — tag removal: empty tagIds clears all tags', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const txn = await insertTransaction(db, { accountId: account.id });
+  const tag = await insertTag(db, { userId: user.id });
+
+  await db.insert(transactionTags).values({
+    createdById: user.id,
+    tagId: tag.id,
+    transactionId: txn.id,
+  });
+
+  // Mirrors updateTransaction: tagIds=[] triggers delete, no re-insert
+  await db
+    .delete(transactionTags)
+    .where(eq(transactionTags.transactionId, txn.id));
+
+  const tagRows = await db
+    .select()
+    .from(transactionTags)
+    .where(eq(transactionTags.transactionId, txn.id));
+
+  expect(tagRows).toHaveLength(0);
+});
+
+test('update — partial update preserves existing tags', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const txn = await insertTransaction(db, { accountId: account.id });
+  const tag = await insertTag(db, { userId: user.id });
+
+  await db.insert(transactionTags).values({
+    createdById: user.id,
+    tagId: tag.id,
+    transactionId: txn.id,
+  });
+
+  // Update only description — neither tagIds nor newTagNames provided
+  await db
+    .update(transactions)
+    .set({ description: 'Updated description', updatedById: user.id })
+    .where(eq(transactions.id, txn.id));
+
+  const tagRows = await db
+    .select()
+    .from(transactionTags)
+    .where(eq(transactionTags.transactionId, txn.id));
+
+  expect(tagRows).toHaveLength(1);
+  expect(tagRows[0].tagId).toBe(tag.id);
+});
+
+test('update — account transfer rejects non-owned account', async ({ db }) => {
+  const owner = await insertUser(db);
+  const other = await insertUser(db);
+  const ownerAccount = await insertLedgerAccount(db, { userId: owner.id });
+  const otherAccount = await insertLedgerAccount(db, { userId: other.id });
+  await insertTransaction(db, { accountId: ownerAccount.id });
+
+  // Verify the other user's account is not visible to owner
+  const found = await db
+    .select()
+    .from(ledgerAccounts)
+    .where(
+      and(
+        eq(ledgerAccounts.id, otherAccount.id),
+        eq(ledgerAccounts.userId, owner.id),
+        notDeleted(ledgerAccounts.deletedAt),
+      ),
+    );
+
+  expect(found).toHaveLength(0);
+});
+
+test('update — account transfer rejects soft-deleted account', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const activeAccount = await insertLedgerAccount(db, { userId: user.id });
+  const deletedAccount = await insertLedgerAccount(db, {
+    deletedAt: new Date(),
+    userId: user.id,
+  });
+  await insertTransaction(db, { accountId: activeAccount.id });
+
+  const found = await db
+    .select()
+    .from(ledgerAccounts)
+    .where(
+      and(
+        eq(ledgerAccounts.id, deletedAccount.id),
+        eq(ledgerAccounts.userId, user.id),
+        notDeleted(ledgerAccounts.deletedAt),
+      ),
+    );
+
+  expect(found).toHaveLength(0);
+});
+
+test('update — writes audit log', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const txn = await insertTransaction(db, {
+    accountId: account.id,
+    description: 'Before update',
+  });
+
+  await db
+    .update(transactions)
+    .set({ description: 'After update', updatedById: user.id })
+    .where(eq(transactions.id, txn.id));
+
+  await expectAuditLogEntry(db, {
+    action: 'update',
+    actorId: user.id,
+    afterData: { description: 'After update' } as Record<string, unknown>,
+    beforeData: { description: 'Before update' } as Record<string, unknown>,
+    recordId: txn.id,
+    tableName: getTableName(transactions),
+  });
+});
+
+test('update — transactionAt coercion sets both transactionAt and postedAt', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const txn = await insertTransaction(db, {
+    accountId: account.id,
+    postedAt: new Date('2024-01-01'),
+    transactionAt: new Date('2024-01-01'),
+  });
+
+  const newDate = new Date('2024-06-15');
+
+  const [updated] = await db
+    .update(transactions)
+    .set({
+      postedAt: newDate,
+      transactionAt: newDate,
+      updatedById: user.id,
+    })
+    .where(eq(transactions.id, txn.id))
+    .returning();
+
+  expect(updated.transactionAt).toEqual(newDate);
+  expect(updated.postedAt).toEqual(newDate);
+});
+
+test('update — omitting transactionAt preserves existing dates', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const originalDate = new Date('2024-03-20');
+  const txn = await insertTransaction(db, {
+    accountId: account.id,
+    postedAt: originalDate,
+    transactionAt: originalDate,
+  });
+
+  // Update only description, no transactionAt
+  const [updated] = await db
+    .update(transactions)
+    .set({ description: 'Updated desc', updatedById: user.id })
+    .where(eq(transactions.id, txn.id))
+    .returning();
+
+  expect(updated.transactionAt).toEqual(originalDate);
+  expect(updated.postedAt).toEqual(originalDate);
+  expect(updated.description).toBe('Updated desc');
+});
+
+test('update — soft-deleted transaction is not found', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const txn = await insertTransaction(db, {
+    accountId: account.id,
+    deletedAt: new Date(),
+  });
+
+  // Mirrors ensureFound in updateTransaction: notDeleted filter excludes it
+  const result = await db
+    .select()
+    .from(transactions)
+    .innerJoin(ledgerAccounts, eq(ledgerAccounts.id, transactions.accountId))
+    .where(
+      and(
+        eq(transactions.id, txn.id),
+        eq(ledgerAccounts.userId, user.id),
+        notDeleted(transactions.deletedAt),
+      ),
+    );
+
+  expect(result).toHaveLength(0);
+});
+
+// ---------------------------------------------------------------------------
 // Delete transaction (soft delete)
 // ---------------------------------------------------------------------------
 
@@ -907,6 +1497,25 @@ test('delete — soft deletes', async ({ db }) => {
 
   expect(deleted.deletedAt).toBeInstanceOf(Date);
   expect(deleted.deletedById).toBe(user.id);
+});
+
+test('delete — writes audit log', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const txn = await insertTransaction(db, { accountId: account.id });
+
+  await db
+    .update(transactions)
+    .set({ deletedAt: new Date(), deletedById: user.id })
+    .where(eq(transactions.id, txn.id));
+
+  await expectAuditLogEntry(db, {
+    action: 'delete',
+    actorId: user.id,
+    beforeData: txn as unknown as Record<string, unknown>,
+    recordId: txn.id,
+    tableName: getTableName(transactions),
+  });
 });
 
 test('delete — ownership check via account join', async ({ db }) => {
