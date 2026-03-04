@@ -1,5 +1,13 @@
 import { useForm } from '@tanstack/react-form';
 
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from '@/components/ui/combobox';
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
@@ -15,6 +23,8 @@ import {
 } from '@/modules/accounts/db/schema';
 import { createAccountBaseSchema } from '@/modules/accounts/types';
 import { m } from '@/paraglide/messages';
+
+const CURRENCY_CODES = Intl.supportedValuesOf('currency');
 
 // Derive form validation from the server schema. Only pick fields
 // whose form-state type matches the server type. Fields like
@@ -78,6 +88,16 @@ export function AccountForm({
   isSubmitting,
   onSubmit,
 }: AccountFormProps) {
+  const accountTypeItems = Object.fromEntries(
+    accountTypeEnum.enumValues.map((t) => [t, m[`accounts.type.${t}`]()]),
+  );
+  const ownerTypeItems = Object.fromEntries(
+    accountOwnerTypeEnum.enumValues.map((t) => [
+      t,
+      m[`accounts.ownerType.${t}`](),
+    ]),
+  );
+
   const form = useForm({
     defaultValues: { ...DEFAULT_VALUES, ...defaultValues },
     onSubmit: ({ value }) => onSubmit(value),
@@ -124,6 +144,7 @@ export function AccountForm({
               <FieldLabel>{m['accounts.form.type']()}</FieldLabel>
               <Select
                 disabled={isSubmitting}
+                items={accountTypeItems}
                 value={field.state.value}
                 onValueChange={(v) => {
                   if (v) field.handleChange(v);
@@ -135,7 +156,7 @@ export function AccountForm({
                 <SelectContent>
                   {accountTypeEnum.enumValues.map((t) => (
                     <SelectItem key={t} value={t}>
-                      {m[`accounts.type.${t}`]()}
+                      {accountTypeItems[t]}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -146,19 +167,33 @@ export function AccountForm({
 
         <form.Field name="currency">
           {(field) => (
-            <Field>
-              <FieldLabel htmlFor="currency">
-                {m['accounts.form.currency']()}
-              </FieldLabel>
-              <Input
-                disabled={isSubmitting}
-                id="currency"
-                name={field.name}
-                placeholder="USD"
+            <Field data-invalid={field.state.meta.errors.length > 0}>
+              <FieldLabel>{m['accounts.form.currency']()}</FieldLabel>
+              <Combobox
                 value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
+                onValueChange={(v) => {
+                  if (v) field.handleChange(v);
+                }}
+              >
+                <ComboboxInput
+                  disabled={isSubmitting}
+                  placeholder="USD"
+                  onBlur={field.handleBlur}
+                />
+                <ComboboxContent>
+                  <ComboboxList>
+                    <ComboboxEmpty>
+                      {m['filters.noResultsFound']()}
+                    </ComboboxEmpty>
+                    {CURRENCY_CODES.map((code) => (
+                      <ComboboxItem key={code} value={code}>
+                        {code}
+                      </ComboboxItem>
+                    ))}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
+              <FieldError errors={field.state.meta.errors} />
             </Field>
           )}
         </form.Field>
@@ -171,6 +206,7 @@ export function AccountForm({
               <FieldLabel>{m['accounts.form.ownerType']()}</FieldLabel>
               <Select
                 disabled={isSubmitting}
+                items={ownerTypeItems}
                 value={field.state.value}
                 onValueChange={(v) => {
                   if (v) field.handleChange(v);
@@ -182,7 +218,7 @@ export function AccountForm({
                 <SelectContent>
                   {accountOwnerTypeEnum.enumValues.map((t) => (
                     <SelectItem key={t} value={t}>
-                      {m[`accounts.ownerType.${t}`]()}
+                      {ownerTypeItems[t]}
                     </SelectItem>
                   ))}
                 </SelectContent>

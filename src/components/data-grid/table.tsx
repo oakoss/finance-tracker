@@ -442,7 +442,7 @@ function DataGridTableLoader() {
 
   return (
     <div className="absolute top-1/2 left-1/2 -translate-1/2">
-      <div className="text-muted-foreground bg-card rounded-2xl text-sm flex items-center gap-2 border px-4 py-2 leading-none font-medium">
+      <div className="text-muted-foreground bg-card rounded-xl text-sm flex items-center gap-2 border px-4 py-2 leading-none font-medium">
         <Spinner className="-ml-1 size-5" />
         {props.loadingMessage ?? m['dataGrid.table.loading']()}
       </div>
