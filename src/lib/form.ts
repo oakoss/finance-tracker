@@ -16,8 +16,8 @@ function validateField(
 }
 
 /**
- * Build TanStack Form field-level validators (onBlur, onChange,
- * onSubmit) from an ArkType schema.
+ * Build TanStack Form field-level validators (onBlur, onSubmit)
+ * from an ArkType schema.
  */
 function fieldValidators(schema: (value: string) => unknown) {
   const validate = ({ value }: { value: string }) =>
@@ -25,4 +25,14 @@ function fieldValidators(schema: (value: string) => unknown) {
   return { onBlur: validate, onSubmit: validate };
 }
 
-export { fieldValidators, validateField };
+/**
+ * Map enum values to display labels for the Select `items` prop.
+ */
+function toSelectItems<T extends string>(
+  values: readonly T[],
+  labelFn: (value: T) => string,
+): Record<string, string> {
+  return Object.fromEntries(values.map((v) => [v, labelFn(v)]));
+}
+
+export { fieldValidators, toSelectItems, validateField };

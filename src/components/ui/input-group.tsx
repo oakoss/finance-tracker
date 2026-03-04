@@ -47,20 +47,24 @@ function InputGroupAddon({
   align = 'inline-start',
   className,
   ...props
-}: React.ComponentProps<'button'> &
-  VariantProps<typeof inputGroupAddonVariants>) {
+}: React.ComponentProps<'div'> & VariantProps<typeof inputGroupAddonVariants>) {
   return (
-    <button
+    <div
       className={cn(inputGroupAddonVariants({ align }), className)}
       data-align={align}
       data-slot="input-group-addon"
-      tabIndex={-1}
-      type="button"
-      onClick={(e) => {
-        if ((e.target as HTMLElement).closest('button')) {
-          return;
-        }
-        e.currentTarget.parentElement?.querySelector('input')?.focus();
+      onMouseDown={(e) => {
+        const target = e.target as HTMLElement;
+        const isInteractive = target.closest(
+          "button, a, input, select, textarea, [role='button'], [role='combobox'], [role='listbox'], [data-slot='select-trigger']",
+        );
+        if (isInteractive) return;
+        e.preventDefault();
+        const parent = e.currentTarget.parentElement;
+        const input = parent?.querySelector<
+          HTMLInputElement | HTMLTextAreaElement
+        >('input, textarea');
+        input?.focus();
       }}
       {...props}
     />

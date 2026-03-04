@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import { toSelectItems } from '@/lib/form';
 import { transactionDirectionEnum } from '@/modules/transactions/db/schema';
 import { createTransactionSchema } from '@/modules/transactions/types';
 import { m } from '@/paraglide/messages';
@@ -138,6 +139,21 @@ export function TransactionForm({
       (n) => n.toLowerCase() === tagSearch.trim().toLowerCase(),
     );
 
+  const directionItems = toSelectItems(
+    transactionDirectionEnum.enumValues,
+    (d) => m[`transactions.direction.${d}`](),
+  );
+  const accountSelectLabel = m['transactions.form.accountId']();
+  const accountItems = Object.fromEntries([
+    ['', accountSelectLabel],
+    ...accounts.map((a) => [a.account.id, a.account.name]),
+  ]);
+  const categoryNoneLabel = m['transactions.form.categoryNone']();
+  const categoryItems = Object.fromEntries([
+    ['__none__', categoryNoneLabel],
+    ...categories.map((c) => [c.id, c.name] as const),
+  ]);
+
   const {
     payeeId: _defaultPayeeId,
     tagIds: _defaultTagIds,
@@ -193,21 +209,27 @@ export function TransactionForm({
         <form.Field name="direction">
           {(field) => (
             <Field>
-              <FieldLabel>{m['transactions.form.direction']()}</FieldLabel>
+              <FieldLabel htmlFor="transaction-direction">
+                {m['transactions.form.direction']()}
+              </FieldLabel>
               <Select
                 disabled={isSubmitting}
+                items={directionItems}
                 value={field.state.value}
                 onValueChange={(v) => {
-                  if (v) field.handleChange(v);
+                  if (v) {
+                    field.handleChange(v);
+                    field.handleBlur();
+                  }
                 }}
               >
-                <SelectTrigger>
+                <SelectTrigger id="transaction-direction">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {transactionDirectionEnum.enumValues.map((d) => (
                     <SelectItem key={d} value={d}>
-                      {m[`transactions.direction.${d}`]()}
+                      {directionItems[d]}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -281,15 +303,21 @@ export function TransactionForm({
         <form.Field name="accountId">
           {(field) => (
             <Field data-invalid={field.state.meta.errors.length > 0}>
-              <FieldLabel>{m['transactions.form.accountId']()}</FieldLabel>
+              <FieldLabel htmlFor="transaction-account">
+                {m['transactions.form.accountId']()}
+              </FieldLabel>
               <Select
                 disabled={isSubmitting}
+                items={accountItems}
                 value={field.state.value}
                 onValueChange={(v) => {
-                  if (v) field.handleChange(v);
+                  if (v) {
+                    field.handleChange(v);
+                    field.handleBlur();
+                  }
                 }}
               >
-                <SelectTrigger>
+                <SelectTrigger id="transaction-account">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -308,25 +336,25 @@ export function TransactionForm({
         <form.Field name="categoryId">
           {(field) => (
             <Field>
-              <FieldLabel>{m['transactions.form.categoryId']()}</FieldLabel>
+              <FieldLabel htmlFor="transaction-category">
+                {m['transactions.form.categoryId']()}
+              </FieldLabel>
               <Select
                 disabled={isSubmitting}
-                value={field.state.value}
+                items={categoryItems}
+                value={field.state.value ?? '__none__'}
                 onValueChange={(v) => {
                   field.handleChange(
                     v === '__none__' ? undefined : (v ?? undefined),
                   );
+                  field.handleBlur();
                 }}
               >
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={m['transactions.form.categoryNone']()}
-                  />
+                <SelectTrigger id="transaction-category">
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="__none__">
-                    {m['transactions.form.categoryNone']()}
-                  </SelectItem>
+                  <SelectItem value="__none__">{categoryNoneLabel}</SelectItem>
                   {categories.map((c) => (
                     <SelectItem key={c.id} value={c.id}>
                       {c.name}

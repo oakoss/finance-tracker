@@ -200,6 +200,13 @@ export default defineConfig(
       '@eslint-react/hooks-extra/no-direct-set-state-in-use-effect': 'off',
       '@eslint-react/no-context-provider': 'off',
       '@eslint-react/no-nested-component-definitions': 'off',
+      'jsx-a11y/no-static-element-interactions': [
+        'error',
+        {
+          allowExpressionValues: true,
+          handlers: ['onClick', 'onKeyDown', 'onKeyPress', 'onKeyUp'],
+        },
+      ],
       'perfectionist/sort-jsx-props': [
         'error',
         {

@@ -525,7 +525,7 @@ values like `"checking"` that should display as "Checking"),
 `SelectValue` cannot resolve the label because the popup items
 are in a Portal and may not mount until the user opens it.
 
-Pass an `items` record to `Select.Root` mapping values to labels.
+Pass an `items` record to `Select` mapping values to labels.
 `SelectValue` reads from this map directly.
 
 ```tsx
@@ -544,7 +544,7 @@ import { m } from '@/paraglide/messages';
 const SIZES = ['sm', 'md', 'lg'] as const;
 
 export function SelectEnumExample() {
-  // Build the value-to-label map once per render.
+  // Rebuild the value-to-label map every render.
   // Paraglide message calls must happen at render time for i18n reactivity.
   const sizeItems = Object.fromEntries(
     SIZES.map((s) => [s, m[`sizes.${s}`]()]),
@@ -564,7 +564,10 @@ export function SelectEnumExample() {
             items={sizeItems}
             value={field.state.value}
             onValueChange={(v) => {
-              if (v) field.handleChange(v);
+              if (v) {
+                field.handleChange(v);
+                field.handleBlur();
+              }
             }}
           >
             <SelectTrigger>
@@ -593,13 +596,16 @@ Key points:
   i18n calls.
 - The `label` prop on `SelectItem` is for keyboard text
   navigation only — it does not control the trigger display.
+- Call `field.handleBlur()` after `field.handleChange()` inside
+  `onValueChange`. Select triggers don't fire a native blur event
+  when a value is picked, so the field's `onBlur` validators
+  would never run otherwise.
 
 ## Combobox in forms
 
 Use Combobox for closed lists that benefit from filtering (e.g.
-currency codes). The `InputGroup` fieldset needs `m-0 p-0
-overflow-hidden` (already applied at the component level) to
-prevent alignment issues.
+currency codes). No extra classes are needed on `InputGroup` —
+alignment resets are built in.
 
 ```tsx
 import {

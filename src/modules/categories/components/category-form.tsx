@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { toSelectItems } from '@/lib/form';
 import { categoryTypeEnum } from '@/modules/categories/db/schema';
 import { createCategorySchema } from '@/modules/categories/types';
 import { m } from '@/paraglide/messages';
@@ -52,11 +53,20 @@ export function CategoryForm({
     },
   });
 
+  const categoryTypeItems = toSelectItems(categoryTypeEnum.enumValues, (t) =>
+    m[`categories.type.${t}`](),
+  );
+
   // Only show top-level categories (those without a parent) as valid
   // parents — enforces single-level nesting. Exclude self when editing.
   const parentOptions = categories.filter(
     (c) => !c.parentId && c.id !== editId,
   );
+  const noneLabel = m['categories.form.parentNone']();
+  const parentItems = Object.fromEntries([
+    ['__none__', noneLabel],
+    ...parentOptions.map((c) => [c.id, c.name] as const),
+  ]);
 
   return (
     <form
@@ -91,21 +101,27 @@ export function CategoryForm({
       <form.Field name="type">
         {(field) => (
           <Field>
-            <FieldLabel>{m['categories.form.type']()}</FieldLabel>
+            <FieldLabel htmlFor="category-type">
+              {m['categories.form.type']()}
+            </FieldLabel>
             <Select
               disabled={isSubmitting}
+              items={categoryTypeItems}
               value={field.state.value}
               onValueChange={(v) => {
-                if (v) field.handleChange(v);
+                if (v) {
+                  field.handleChange(v);
+                  field.handleBlur();
+                }
               }}
             >
-              <SelectTrigger>
+              <SelectTrigger id="category-type">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {categoryTypeEnum.enumValues.map((t) => (
                   <SelectItem key={t} value={t}>
-                    {m[`categories.type.${t}`]()}
+                    {categoryTypeItems[t]}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -117,23 +133,25 @@ export function CategoryForm({
       <form.Field name="parentId">
         {(field) => (
           <Field>
-            <FieldLabel>{m['categories.form.parent']()}</FieldLabel>
+            <FieldLabel htmlFor="category-parent">
+              {m['categories.form.parent']()}
+            </FieldLabel>
             <Select
               disabled={isSubmitting}
-              value={field.state.value}
-              onValueChange={(v) =>
+              items={parentItems}
+              value={field.state.value ?? '__none__'}
+              onValueChange={(v) => {
                 field.handleChange(
                   v === '__none__' ? undefined : (v ?? undefined),
-                )
-              }
+                );
+                field.handleBlur();
+              }}
             >
-              <SelectTrigger>
-                <SelectValue placeholder={m['categories.form.parentNone']()} />
+              <SelectTrigger id="category-parent">
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__none__">
-                  {m['categories.form.parentNone']()}
-                </SelectItem>
+                <SelectItem value="__none__">{noneLabel}</SelectItem>
                 {parentOptions.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     {c.name}

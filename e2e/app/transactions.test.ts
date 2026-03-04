@@ -25,6 +25,9 @@ test.describe(
     });
 
     test('create, edit, and delete a transaction', async ({ page }) => {
+      const name = `E2E Txn ${Date.now()}`;
+      const renamed = `${name} Renamed`;
+
       await page.goto('/transactions');
 
       // Create transaction
@@ -36,25 +39,21 @@ test.describe(
         page.getByRole('heading', { name: /create transaction/i }),
       ).toBeVisible();
 
-      await page.getByLabel(/description/i).fill('E2E Test Transaction');
+      await page.getByLabel(/description/i).fill(name);
       await page.getByLabel(/amount/i).fill('42.50');
 
       // Select first account
-      await page
-        .locator('[data-slot="select-trigger"]')
-        .filter({ hasText: /account/i })
-        .first()
-        .click();
+      await page.getByLabel('Account').click();
       await page.getByRole('option').first().click();
 
       await page.getByRole('button', { name: /create/i }).click();
 
       await expect(page.getByText('Transaction created')).toBeVisible();
-      await expect(page.getByText('E2E Test Transaction')).toBeVisible();
+      await expect(page.getByText(name)).toBeVisible();
 
       // Edit transaction
       const row = page.getByRole('row', {
-        name: /E2E Test Transaction/i,
+        name: new RegExp(name, 'i'),
       });
       await row.getByRole('button', { name: /actions/i }).click();
       await page.getByRole('menuitem', { name: /edit/i }).click();
@@ -64,15 +63,15 @@ test.describe(
       ).toBeVisible();
 
       await page.getByLabel(/description/i).clear();
-      await page.getByLabel(/description/i).fill('E2E Renamed Txn');
+      await page.getByLabel(/description/i).fill(renamed);
       await page.getByRole('button', { name: /save/i }).click();
 
       await expect(page.getByText('Transaction updated')).toBeVisible();
-      await expect(page.getByText('E2E Renamed Txn')).toBeVisible();
+      await expect(page.getByText(renamed)).toBeVisible();
 
       // Delete transaction
       const updatedRow = page.getByRole('row', {
-        name: /E2E Renamed Txn/i,
+        name: new RegExp(renamed, 'i'),
       });
       await updatedRow.getByRole('button', { name: /actions/i }).click();
       await page.getByRole('menuitem', { name: /delete/i }).click();
@@ -81,14 +80,14 @@ test.describe(
         page.getByRole('heading', { name: /delete transaction/i }),
       ).toBeVisible();
 
-      await page.getByRole('textbox').fill('E2E Renamed Txn');
+      await page.getByRole('textbox').fill(renamed);
       await page
         .getByRole('button', { name: /delete/i })
         .last()
         .click();
 
       await expect(page.getByText('Transaction deleted')).toBeVisible();
-      await expect(page.getByText('E2E Renamed Txn')).toBeHidden();
+      await expect(page.getByText(renamed)).toBeHidden();
     });
   },
 );

@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { toSelectItems } from '@/lib/form';
 import {
   accountOwnerTypeEnum,
   accountTypeEnum,
@@ -89,14 +90,11 @@ export function AccountForm({
   isSubmitting,
   onSubmit,
 }: AccountFormProps) {
-  const accountTypeItems = Object.fromEntries(
-    accountTypeEnum.enumValues.map((t) => [t, m[`accounts.type.${t}`]()]),
+  const accountTypeItems = toSelectItems(accountTypeEnum.enumValues, (t) =>
+    m[`accounts.type.${t}`](),
   );
-  const ownerTypeItems = Object.fromEntries(
-    accountOwnerTypeEnum.enumValues.map((t) => [
-      t,
-      m[`accounts.ownerType.${t}`](),
-    ]),
+  const ownerTypeItems = toSelectItems(accountOwnerTypeEnum.enumValues, (t) =>
+    m[`accounts.ownerType.${t}`](),
   );
 
   const form = useForm({
@@ -142,16 +140,21 @@ export function AccountForm({
         <form.Field name="type">
           {(field) => (
             <Field>
-              <FieldLabel>{m['accounts.form.type']()}</FieldLabel>
+              <FieldLabel htmlFor="account-type">
+                {m['accounts.form.type']()}
+              </FieldLabel>
               <Select
                 disabled={isSubmitting}
                 items={accountTypeItems}
                 value={field.state.value}
                 onValueChange={(v) => {
-                  if (v) field.handleChange(v);
+                  if (v) {
+                    field.handleChange(v);
+                    field.handleBlur();
+                  }
                 }}
               >
-                <SelectTrigger>
+                <SelectTrigger id="account-type">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -169,7 +172,9 @@ export function AccountForm({
         <form.Field name="currency">
           {(field) => (
             <Field data-invalid={field.state.meta.errors.length > 0}>
-              <FieldLabel>{m['accounts.form.currency']()}</FieldLabel>
+              <FieldLabel htmlFor="account-currency">
+                {m['accounts.form.currency']()}
+              </FieldLabel>
               <Combobox
                 value={field.state.value}
                 onValueChange={(v) => {
@@ -178,6 +183,7 @@ export function AccountForm({
               >
                 <ComboboxInput
                   disabled={isSubmitting}
+                  id="account-currency"
                   placeholder="USD"
                   onBlur={field.handleBlur}
                 />
@@ -204,16 +210,21 @@ export function AccountForm({
         <form.Field name="ownerType">
           {(field) => (
             <Field>
-              <FieldLabel>{m['accounts.form.ownerType']()}</FieldLabel>
+              <FieldLabel htmlFor="owner-type">
+                {m['accounts.form.ownerType']()}
+              </FieldLabel>
               <Select
                 disabled={isSubmitting}
                 items={ownerTypeItems}
                 value={field.state.value}
                 onValueChange={(v) => {
-                  if (v) field.handleChange(v);
+                  if (v) {
+                    field.handleChange(v);
+                    field.handleBlur();
+                  }
                 }}
               >
-                <SelectTrigger>
+                <SelectTrigger id="owner-type">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
