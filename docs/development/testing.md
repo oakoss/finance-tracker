@@ -129,6 +129,21 @@ a real Postgres database. They require Docker Compose to be running
 4. Integration tests run in parallel (`pool: 'forks'`) — each file
    gets its own connection and transaction, so no cross-file conflicts.
 
+### Service layer testing
+
+Service functions (`services/*.ts`) contain business logic extracted
+from API handlers. They are the primary target for integration tests.
+
+**Caveat:** Mutating services call `database.transaction()` internally,
+which conflicts with the test fixture's `BEGIN`/`ROLLBACK` isolation.
+Before writing service-level integration tests, the transaction nesting
+problem must be resolved (see TREK-147). Read-only services like
+`listTransactionsService` can be tested directly with the `db` fixture.
+
+Server function handlers (`api/*.ts`) are thin wrappers — they handle
+auth, validation, logging, and error mapping. Test them via E2E tests,
+not integration tests.
+
 ### Writing integration tests
 
 Uses `test.extend` fixtures for composable, type-safe DB access:
@@ -147,6 +162,13 @@ test('inserts a user', async ({ db }) => {
 
 The `db` fixture is test-scoped. Each file opens one connection inside
 a `BEGIN`/`ROLLBACK`, and each test gets its own `SAVEPOINT`.
+
+**Never call `db.transaction()`** inside integration tests. Drizzle
+issues real `BEGIN`/`COMMIT` SQL which commits the fixture's outer
+transaction and breaks savepoint cleanup (you'll see
+`ROLLBACK TO SAVEPOINT can only be used in transaction blocks` warnings
+and test isolation failures). The fixture's `db` is already
+transactional — just run queries directly on it.
 
 ### Key files
 

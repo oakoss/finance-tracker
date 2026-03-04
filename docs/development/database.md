@@ -35,6 +35,31 @@ Conventions for money, timestamps, and audit columns are defined in
 - For audit fields (`createdById`, `updatedById`, `deletedById`), prefer `onDelete: 'set null'` to preserve history.
 - For core domain data, prefer soft deletes over cascades.
 
+## Upsert / Dedup Pattern
+
+Use `onConflictDoUpdate` with a no-op `set` when you need
+"find-or-create" semantics. This avoids TOCTOU races (SELECT then
+INSERT) and returns the row via `RETURNING` whether it was inserted
+or already existed.
+
+```ts
+const [row] = await tx
+  .insert(payees)
+  .values({ createdById: userId, name, normalizedName, userId })
+  .onConflictDoUpdate({
+    set: { normalizedName: sql`excluded.normalized_name` },
+    target: [payees.userId, payees.name],
+    targetWhere: sql`${payees.deletedAt} is null`,
+  })
+  .returning({ id: payees.id });
+```
+
+- `target` + `targetWhere` must match a unique/partial-unique index.
+- The `set` must touch at least one column (Postgres requires it);
+  use a no-op like `col = excluded.col`.
+- This works for batch inserts too — pass an array to `.values()`.
+- See `resolve-payee.ts` and `resolve-tags.ts` for real examples.
+
 ## Safety Guidelines
 
 - Always include `.where()` for `db.update()` and `db.delete()` statements.

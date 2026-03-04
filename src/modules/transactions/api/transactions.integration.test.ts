@@ -490,41 +490,35 @@ test('create — inline payee: inserts new payee with normalized name', async ({
   const account = await insertLedgerAccount(db, { userId: user.id });
   const now = new Date();
   const newPayeeName = '  Acme Corp  ';
+  const normalizedName = newPayeeName.trim().toLowerCase();
 
-  // Replicate the server fn inline-payee logic within a transaction
-  const result = await db.transaction(async (tx) => {
-    const normalizedName = newPayeeName.trim().toLowerCase();
+  const [newPayee] = await db
+    .insert(payees)
+    .values({
+      createdById: user.id,
+      name: newPayeeName.trim(),
+      normalizedName,
+      userId: user.id,
+    })
+    .returning();
 
-    const [newPayee] = await tx
-      .insert(payees)
-      .values({
-        createdById: user.id,
-        name: newPayeeName.trim(),
-        normalizedName,
-        userId: user.id,
-      })
-      .returning();
+  const [txn] = await db
+    .insert(transactions)
+    .values({
+      accountId: account.id,
+      amountCents: 1000,
+      createdById: user.id,
+      description: 'Inline payee test',
+      direction: 'debit',
+      payeeId: newPayee.id,
+      postedAt: now,
+      transactionAt: now,
+    })
+    .returning();
 
-    const [txn] = await tx
-      .insert(transactions)
-      .values({
-        accountId: account.id,
-        amountCents: 1000,
-        createdById: user.id,
-        description: 'Inline payee test',
-        direction: 'debit',
-        payeeId: newPayee.id,
-        postedAt: now,
-        transactionAt: now,
-      })
-      .returning();
-
-    return { payee: newPayee, transaction: txn };
-  });
-
-  expect(result.payee.name).toBe('Acme Corp');
-  expect(result.payee.normalizedName).toBe('acme corp');
-  expect(result.transaction.payeeId).toBe(result.payee.id);
+  expect(newPayee.name).toBe('Acme Corp');
+  expect(newPayee.normalizedName).toBe('acme corp');
+  expect(txn.payeeId).toBe(newPayee.id);
 });
 
 test('create — inline payee: reuses existing on normalized match', async ({
@@ -541,42 +535,37 @@ test('create — inline payee: reuses existing on normalized match', async ({
     userId: user.id,
   });
 
-  // Replicate server fn lookup-before-insert pattern
-  const result = await db.transaction(async (tx) => {
-    const normalizedName = '  ACME CORP  '.trim().toLowerCase();
+  const normalizedName = '  ACME CORP  '.trim().toLowerCase();
 
-    const found = await tx
-      .select()
-      .from(payees)
-      .where(
-        and(
-          eq(payees.normalizedName, normalizedName),
-          eq(payees.userId, user.id),
-          notDeleted(payees.deletedAt),
-        ),
-      );
+  const found = await db
+    .select()
+    .from(payees)
+    .where(
+      and(
+        eq(payees.normalizedName, normalizedName),
+        eq(payees.userId, user.id),
+        notDeleted(payees.deletedAt),
+      ),
+    );
 
-    const payeeId = found.length > 0 ? found[0].id : null;
+  const payeeId = found.length > 0 ? found[0].id : null;
 
-    const [txn] = await tx
-      .insert(transactions)
-      .values({
-        accountId: account.id,
-        amountCents: 2000,
-        createdById: user.id,
-        description: 'Reuse payee test',
-        direction: 'debit',
-        payeeId,
-        postedAt: now,
-        transactionAt: now,
-      })
-      .returning();
+  const [txn] = await db
+    .insert(transactions)
+    .values({
+      accountId: account.id,
+      amountCents: 2000,
+      createdById: user.id,
+      description: 'Reuse payee test',
+      direction: 'debit',
+      payeeId,
+      postedAt: now,
+      transactionAt: now,
+    })
+    .returning();
 
-    return { payeeId, transaction: txn };
-  });
-
-  expect(result.payeeId).toBe(existing.id);
-  expect(result.transaction.payeeId).toBe(existing.id);
+  expect(payeeId).toBe(existing.id);
+  expect(txn.payeeId).toBe(existing.id);
 
   // Verify no duplicate payee was created
   const allPayees = await db
@@ -633,47 +622,43 @@ test('create — inline tags: creates new tags within transaction', async ({
   const now = new Date();
   const newTagNames = ['groceries', 'personal'];
 
-  const result = await db.transaction(async (tx) => {
-    const [txn] = await tx
-      .insert(transactions)
-      .values({
-        accountId: account.id,
-        amountCents: 5000,
-        createdById: user.id,
-        description: 'Inline tags test',
-        direction: 'debit',
-        postedAt: now,
-        transactionAt: now,
-      })
+  const [txn] = await db
+    .insert(transactions)
+    .values({
+      accountId: account.id,
+      amountCents: 5000,
+      createdById: user.id,
+      description: 'Inline tags test',
+      direction: 'debit',
+      postedAt: now,
+      transactionAt: now,
+    })
+    .returning();
+
+  const tagIds: string[] = [];
+  for (const tagName of newTagNames) {
+    const trimmed = tagName.trim();
+
+    const [newTag] = await db
+      .insert(tags)
+      .values({ createdById: user.id, name: trimmed, userId: user.id })
       .returning();
 
-    const tagIds: string[] = [];
-    for (const tagName of newTagNames) {
-      const trimmed = tagName.trim();
+    tagIds.push(newTag.id);
+  }
 
-      const [newTag] = await tx
-        .insert(tags)
-        .values({ createdById: user.id, name: trimmed, userId: user.id })
-        .returning();
-
-      tagIds.push(newTag.id);
-    }
-
-    await tx.insert(transactionTags).values(
-      tagIds.map((tagId) => ({
-        createdById: user.id,
-        tagId,
-        transactionId: txn.id,
-      })),
-    );
-
-    return { tagIds, transaction: txn };
-  });
+  await db.insert(transactionTags).values(
+    tagIds.map((tagId) => ({
+      createdById: user.id,
+      tagId,
+      transactionId: txn.id,
+    })),
+  );
 
   const tagRows = await db
     .select()
     .from(transactionTags)
-    .where(eq(transactionTags.transactionId, result.transaction.id));
+    .where(eq(transactionTags.transactionId, txn.id));
 
   expect(tagRows).toHaveLength(2);
 });
@@ -691,44 +676,39 @@ test('create — inline tags: reuses existing tag on exact match', async ({
     userId: user.id,
   });
 
-  const result = await db.transaction(async (tx) => {
-    const [txn] = await tx
-      .insert(transactions)
-      .values({
-        accountId: account.id,
-        amountCents: 3000,
-        createdById: user.id,
-        description: 'Reuse tag test',
-        direction: 'debit',
-        postedAt: now,
-        transactionAt: now,
-      })
-      .returning();
-
-    // Lookup existing tag (mirrors server fn pattern)
-    const found = await tx
-      .select()
-      .from(tags)
-      .where(
-        and(
-          eq(tags.name, 'groceries'),
-          eq(tags.userId, user.id),
-          notDeleted(tags.deletedAt),
-        ),
-      );
-
-    const tagId = found.length > 0 ? found[0].id : null;
-
-    await tx.insert(transactionTags).values({
+  const [txn] = await db
+    .insert(transactions)
+    .values({
+      accountId: account.id,
+      amountCents: 3000,
       createdById: user.id,
-      tagId: tagId!,
-      transactionId: txn.id,
-    });
+      description: 'Reuse tag test',
+      direction: 'debit',
+      postedAt: now,
+      transactionAt: now,
+    })
+    .returning();
 
-    return { resolvedTagId: tagId, transaction: txn };
+  const found = await db
+    .select()
+    .from(tags)
+    .where(
+      and(
+        eq(tags.name, 'groceries'),
+        eq(tags.userId, user.id),
+        notDeleted(tags.deletedAt),
+      ),
+    );
+
+  const tagId = found.length > 0 ? found[0].id : null;
+
+  await db.insert(transactionTags).values({
+    createdById: user.id,
+    tagId: tagId!,
+    transactionId: txn.id,
   });
 
-  expect(result.resolvedTagId).toBe(existingTag.id);
+  expect(tagId).toBe(existingTag.id);
 
   // Verify no duplicate tag was created
   const allTags = await db
@@ -741,7 +721,7 @@ test('create — inline tags: reuses existing tag on exact match', async ({
   const tagRows = await db
     .select()
     .from(transactionTags)
-    .where(eq(transactionTags.transactionId, result.transaction.id));
+    .where(eq(transactionTags.transactionId, txn.id));
 
   expect(tagRows).toHaveLength(1);
   expect(tagRows[0].tagId).toBe(existingTag.id);
@@ -796,52 +776,48 @@ test('create — inline tags: skips empty and whitespace-only names', async ({
   // Mirrors server fn line 113: if (!trimmed) continue
   const newTagNames = ['valid-tag', '', '   ', 'another-tag'];
 
-  const result = await db.transaction(async (tx) => {
-    const [txn] = await tx
-      .insert(transactions)
-      .values({
-        accountId: account.id,
-        amountCents: 2000,
-        createdById: user.id,
-        description: 'Skip empty tags test',
-        direction: 'debit',
-        postedAt: now,
-        transactionAt: now,
-      })
+  const [txn] = await db
+    .insert(transactions)
+    .values({
+      accountId: account.id,
+      amountCents: 2000,
+      createdById: user.id,
+      description: 'Skip empty tags test',
+      direction: 'debit',
+      postedAt: now,
+      transactionAt: now,
+    })
+    .returning();
+
+  const tagIds: string[] = [];
+  for (const tagName of newTagNames) {
+    const trimmed = tagName.trim();
+    if (!trimmed) continue;
+
+    const [newTag] = await db
+      .insert(tags)
+      .values({ createdById: user.id, name: trimmed, userId: user.id })
       .returning();
 
-    const tagIds: string[] = [];
-    for (const tagName of newTagNames) {
-      const trimmed = tagName.trim();
-      if (!trimmed) continue;
+    tagIds.push(newTag.id);
+  }
 
-      const [newTag] = await tx
-        .insert(tags)
-        .values({ createdById: user.id, name: trimmed, userId: user.id })
-        .returning();
+  if (tagIds.length > 0) {
+    await db.insert(transactionTags).values(
+      tagIds.map((tagId) => ({
+        createdById: user.id,
+        tagId,
+        transactionId: txn.id,
+      })),
+    );
+  }
 
-      tagIds.push(newTag.id);
-    }
-
-    if (tagIds.length > 0) {
-      await tx.insert(transactionTags).values(
-        tagIds.map((tagId) => ({
-          createdById: user.id,
-          tagId,
-          transactionId: txn.id,
-        })),
-      );
-    }
-
-    return { tagCount: tagIds.length, transaction: txn };
-  });
-
-  expect(result.tagCount).toBe(2);
+  expect(tagIds).toHaveLength(2);
 
   const tagRows = await db
     .select()
     .from(transactionTags)
-    .where(eq(transactionTags.transactionId, result.transaction.id));
+    .where(eq(transactionTags.transactionId, txn.id));
 
   expect(tagRows).toHaveLength(2);
 });
@@ -859,64 +835,56 @@ test('create — inline tags: Set dedup across tagIds and newTagNames', async ({
     userId: user.id,
   });
 
-  const result = await db.transaction(async (tx) => {
-    const [txn] = await tx
-      .insert(transactions)
-      .values({
-        accountId: account.id,
-        amountCents: 4000,
-        createdById: user.id,
-        description: 'Mixed dedup test',
-        direction: 'debit',
-        postedAt: now,
-        transactionAt: now,
-      })
-      .returning();
+  const [txn] = await db
+    .insert(transactions)
+    .values({
+      accountId: account.id,
+      amountCents: 4000,
+      createdById: user.id,
+      description: 'Mixed dedup test',
+      direction: 'debit',
+      postedAt: now,
+      transactionAt: now,
+    })
+    .returning();
 
-    // Start with existing tagId
-    const allTagIds = [existingTag.id];
+  // Start with existing tagId
+  const allTagIds = [existingTag.id];
 
-    // Inline-create resolves to same tag via lookup
-    const found = await tx
-      .select()
-      .from(tags)
-      .where(
-        and(
-          eq(tags.name, 'shared-tag'),
-          eq(tags.userId, user.id),
-          notDeleted(tags.deletedAt),
-        ),
-      );
-
-    if (found.length > 0) {
-      allTagIds.push(found[0].id);
-    }
-
-    // Set dedup removes the duplicate
-    const uniqueTagIds = [...new Set(allTagIds)];
-
-    await tx.insert(transactionTags).values(
-      uniqueTagIds.map((tagId) => ({
-        createdById: user.id,
-        tagId,
-        transactionId: txn.id,
-      })),
+  // Inline-create resolves to same tag via lookup
+  const found = await db
+    .select()
+    .from(tags)
+    .where(
+      and(
+        eq(tags.name, 'shared-tag'),
+        eq(tags.userId, user.id),
+        notDeleted(tags.deletedAt),
+      ),
     );
 
-    return {
-      lookupCount: found.length,
-      transaction: txn,
-      uniqueCount: uniqueTagIds.length,
-    };
-  });
+  if (found.length > 0) {
+    allTagIds.push(found[0].id);
+  }
 
-  expect(result.lookupCount).toBe(1);
-  expect(result.uniqueCount).toBe(1);
+  // Set dedup removes the duplicate
+  const uniqueTagIds = [...new Set(allTagIds)];
+
+  await db.insert(transactionTags).values(
+    uniqueTagIds.map((tagId) => ({
+      createdById: user.id,
+      tagId,
+      transactionId: txn.id,
+    })),
+  );
+
+  expect(found).toHaveLength(1);
+  expect(uniqueTagIds).toHaveLength(1);
 
   const tagRows = await db
     .select()
     .from(transactionTags)
-    .where(eq(transactionTags.transactionId, result.transaction.id));
+    .where(eq(transactionTags.transactionId, txn.id));
 
   expect(tagRows).toHaveLength(1);
   expect(tagRows[0].tagId).toBe(existingTag.id);
@@ -1014,31 +982,27 @@ test('update — inline payee: inserts new payee with normalized name', async ({
   const txn = await insertTransaction(db, { accountId: account.id });
   const newPayeeName = '  New Vendor  ';
 
-  const result = await db.transaction(async (tx) => {
-    const normalizedName = newPayeeName.trim().toLowerCase();
+  const normalizedName = newPayeeName.trim().toLowerCase();
 
-    const [newPayee] = await tx
-      .insert(payees)
-      .values({
-        createdById: user.id,
-        name: newPayeeName.trim(),
-        normalizedName,
-        userId: user.id,
-      })
-      .returning();
+  const [newPayee] = await db
+    .insert(payees)
+    .values({
+      createdById: user.id,
+      name: newPayeeName.trim(),
+      normalizedName,
+      userId: user.id,
+    })
+    .returning();
 
-    const [updated] = await tx
-      .update(transactions)
-      .set({ payeeId: newPayee.id, updatedById: user.id })
-      .where(eq(transactions.id, txn.id))
-      .returning();
+  const [updated] = await db
+    .update(transactions)
+    .set({ payeeId: newPayee.id, updatedById: user.id })
+    .where(eq(transactions.id, txn.id))
+    .returning();
 
-    return { payee: newPayee, transaction: updated };
-  });
-
-  expect(result.payee.name).toBe('New Vendor');
-  expect(result.payee.normalizedName).toBe('new vendor');
-  expect(result.transaction.payeeId).toBe(result.payee.id);
+  expect(newPayee.name).toBe('New Vendor');
+  expect(newPayee.normalizedName).toBe('new vendor');
+  expect(updated.payeeId).toBe(newPayee.id);
 });
 
 test('update — inline payee: reuses existing on normalized match', async ({
@@ -1054,33 +1018,29 @@ test('update — inline payee: reuses existing on normalized match', async ({
     userId: user.id,
   });
 
-  const result = await db.transaction(async (tx) => {
-    const normalizedName = '  ACME CORP  '.trim().toLowerCase();
+  const normalizedName = '  ACME CORP  '.trim().toLowerCase();
 
-    const found = await tx
-      .select()
-      .from(payees)
-      .where(
-        and(
-          eq(payees.normalizedName, normalizedName),
-          eq(payees.userId, user.id),
-          notDeleted(payees.deletedAt),
-        ),
-      );
+  const found = await db
+    .select()
+    .from(payees)
+    .where(
+      and(
+        eq(payees.normalizedName, normalizedName),
+        eq(payees.userId, user.id),
+        notDeleted(payees.deletedAt),
+      ),
+    );
 
-    const payeeId = found.length > 0 ? found[0].id : null;
+  const payeeId = found.length > 0 ? found[0].id : null;
 
-    const [updated] = await tx
-      .update(transactions)
-      .set({ payeeId, updatedById: user.id })
-      .where(eq(transactions.id, txn.id))
-      .returning();
+  const [updated] = await db
+    .update(transactions)
+    .set({ payeeId, updatedById: user.id })
+    .where(eq(transactions.id, txn.id))
+    .returning();
 
-    return { payeeId, transaction: updated };
-  });
-
-  expect(result.payeeId).toBe(existing.id);
-  expect(result.transaction.payeeId).toBe(existing.id);
+  expect(payeeId).toBe(existing.id);
+  expect(updated.payeeId).toBe(existing.id);
 
   const allPayees = await db
     .select()
@@ -1111,41 +1071,37 @@ test('update — inline tags: creates new tags during update', async ({ db }) =>
 
   const newTagNames = ['new-tag-a', 'new-tag-b'];
 
-  const result = await db.transaction(async (tx) => {
-    // Delete-and-reinsert pattern from updateTransaction
-    await tx
-      .delete(transactionTags)
-      .where(eq(transactionTags.transactionId, txn.id));
+  // Delete-and-reinsert pattern from updateTransaction
+  await db
+    .delete(transactionTags)
+    .where(eq(transactionTags.transactionId, txn.id));
 
-    const allTagIds: string[] = [];
+  const allTagIds: string[] = [];
 
-    for (const tagName of newTagNames) {
-      const trimmed = tagName.trim();
-      if (!trimmed) continue;
+  for (const tagName of newTagNames) {
+    const trimmed = tagName.trim();
+    if (!trimmed) continue;
 
-      const [newTag] = await tx
-        .insert(tags)
-        .values({ createdById: user.id, name: trimmed, userId: user.id })
-        .returning();
+    const [newTag] = await db
+      .insert(tags)
+      .values({ createdById: user.id, name: trimmed, userId: user.id })
+      .returning();
 
-      allTagIds.push(newTag.id);
-    }
+    allTagIds.push(newTag.id);
+  }
 
-    if (allTagIds.length > 0) {
-      const uniqueTagIds = [...new Set(allTagIds)];
-      await tx.insert(transactionTags).values(
-        uniqueTagIds.map((tagId) => ({
-          createdById: user.id,
-          tagId,
-          transactionId: txn.id,
-        })),
-      );
-    }
+  if (allTagIds.length > 0) {
+    const uniqueTagIds = [...new Set(allTagIds)];
+    await db.insert(transactionTags).values(
+      uniqueTagIds.map((tagId) => ({
+        createdById: user.id,
+        tagId,
+        transactionId: txn.id,
+      })),
+    );
+  }
 
-    return { tagCount: allTagIds.length };
-  });
-
-  expect(result.tagCount).toBe(2);
+  expect(allTagIds).toHaveLength(2);
 
   const tagRows = await db
     .select()
@@ -1171,43 +1127,38 @@ test('update — inline tags: reuses existing tag on exact match', async ({
     userId: user.id,
   });
 
-  const result = await db.transaction(async (tx) => {
-    await tx
-      .delete(transactionTags)
-      .where(eq(transactionTags.transactionId, txn.id));
+  await db
+    .delete(transactionTags)
+    .where(eq(transactionTags.transactionId, txn.id));
 
-    const allTagIds: string[] = [];
+  const allTagIds: string[] = [];
 
-    // Lookup existing tag (mirrors server fn pattern)
-    const found = await tx
-      .select()
-      .from(tags)
-      .where(
-        and(
-          eq(tags.name, 'groceries'),
-          eq(tags.userId, user.id),
-          notDeleted(tags.deletedAt),
-        ),
-      );
+  const found = await db
+    .select()
+    .from(tags)
+    .where(
+      and(
+        eq(tags.name, 'groceries'),
+        eq(tags.userId, user.id),
+        notDeleted(tags.deletedAt),
+      ),
+    );
 
-    if (found.length > 0) {
-      allTagIds.push(found[0].id);
-    }
+  if (found.length > 0) {
+    allTagIds.push(found[0].id);
+  }
 
-    if (allTagIds.length > 0) {
-      await tx.insert(transactionTags).values(
-        allTagIds.map((tagId) => ({
-          createdById: user.id,
-          tagId,
-          transactionId: txn.id,
-        })),
-      );
-    }
+  if (allTagIds.length > 0) {
+    await db.insert(transactionTags).values(
+      allTagIds.map((tagId) => ({
+        createdById: user.id,
+        tagId,
+        transactionId: txn.id,
+      })),
+    );
+  }
 
-    return { resolvedTagId: allTagIds[0] };
-  });
-
-  expect(result.resolvedTagId).toBe(existingTag.id);
+  expect(allTagIds[0]).toBe(existingTag.id);
 
   // No duplicate tag created
   const allTags = await db
@@ -1230,45 +1181,41 @@ test('update — inline tags: deduplicates tagIds + newTagNames via Set', async 
     userId: user.id,
   });
 
-  const result = await db.transaction(async (tx) => {
-    await tx
-      .delete(transactionTags)
-      .where(eq(transactionTags.transactionId, txn.id));
+  await db
+    .delete(transactionTags)
+    .where(eq(transactionTags.transactionId, txn.id));
 
-    // tagIds contains the existing tag
-    const allTagIds = [existingTag.id];
+  // tagIds contains the existing tag
+  const allTagIds = [existingTag.id];
 
-    // newTagNames resolves to the same tag via lookup
-    const found = await tx
-      .select()
-      .from(tags)
-      .where(
-        and(
-          eq(tags.name, 'shared-tag'),
-          eq(tags.userId, user.id),
-          notDeleted(tags.deletedAt),
-        ),
-      );
-
-    if (found.length > 0) {
-      allTagIds.push(found[0].id);
-    }
-
-    const uniqueTagIds = [...new Set(allTagIds)];
-
-    await tx.insert(transactionTags).values(
-      uniqueTagIds.map((tagId) => ({
-        createdById: user.id,
-        tagId,
-        transactionId: txn.id,
-      })),
+  // newTagNames resolves to the same tag via lookup
+  const found = await db
+    .select()
+    .from(tags)
+    .where(
+      and(
+        eq(tags.name, 'shared-tag'),
+        eq(tags.userId, user.id),
+        notDeleted(tags.deletedAt),
+      ),
     );
 
-    return { lookupCount: found.length, uniqueCount: uniqueTagIds.length };
-  });
+  if (found.length > 0) {
+    allTagIds.push(found[0].id);
+  }
 
-  expect(result.lookupCount).toBe(1);
-  expect(result.uniqueCount).toBe(1);
+  const uniqueTagIds = [...new Set(allTagIds)];
+
+  await db.insert(transactionTags).values(
+    uniqueTagIds.map((tagId) => ({
+      createdById: user.id,
+      tagId,
+      transactionId: txn.id,
+    })),
+  );
+
+  expect(found).toHaveLength(1);
+  expect(uniqueTagIds).toHaveLength(1);
 
   const tagRows = await db
     .select()

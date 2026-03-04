@@ -100,11 +100,33 @@ SSR-safe persistence; memory covers the rest.
 
 `src/modules/` contains domain-specific code:
 
-- **auth**: `api/` (server functions), `db/` (generated schema, do
-  not edit, relations), `emails/` (React Email templates, rendering,
-  sending), `hooks/` (e.g., `use-sign-out.ts`), `middleware.ts`
-- **finance**: `db/` (schema, relations) for accounts, transactions,
-  categories, payees, imports, debt strategies, promotions, etc.
+```text
+src/modules/{module}/
+  api/           Server fns — auth, validation, error mapping, logging
+  services/      Business logic — orchestration, mutations, audit logging
+  lib/           Domain helpers — reusable DB utilities (resolve-payee, etc.)
+  db/            Schema + relations
+  types.ts       Validation schemas
+```
+
+- **`api/`** — thin handler: `requireUserId` -> call service -> log
+  -> return. No business logic.
+- **`services/`** — pure business logic: accepts `db: Db` + `userId`
+  \+ `data`, wraps in `db.transaction()`, does authorization checks,
+  mutations, audit logging. Tested directly in integration tests.
+- **`lib/`** — domain helpers that aren't full services (e.g.,
+  `resolve-payee`, `resolve-tags`). Accept `tx: DbOrTx`, no
+  transaction management.
+- **`db/`** — Drizzle schema and relations.
+
+Modules:
+
+- **auth**: `api/`, `db/` (generated schema, do not edit, relations),
+  `emails/` (React Email templates, rendering, sending), `hooks/`
+  (e.g., `use-sign-out.ts`), `lib/`, `middleware.ts`
+- **transactions**: `api/`, `services/`, `lib/`, `db/`, `types.ts`
+- **finance**: `db/` (schema, relations) for accounts, categories,
+  payees, imports, debt strategies, promotions, etc.
 - **todos**: `db/` (schema, relations), minimal example module
 
 Each module owns its Drizzle schema and relations in `{module}/db/`.
