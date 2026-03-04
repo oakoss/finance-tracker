@@ -6,6 +6,7 @@ import { createCategory } from '~test/factories/category.factory';
 import { createLedgerAccount } from '~test/factories/ledger-account.factory';
 import { createPayee } from '~test/factories/payee.factory';
 import { createTag } from '~test/factories/tag.factory';
+import { createTransactionTag } from '~test/factories/transaction-tag.factory';
 import { createTransaction } from '~test/factories/transaction.factory';
 import { createTransfer } from '~test/factories/transfer.factory';
 import { createUser } from '~test/factories/user.factory';
@@ -148,6 +149,26 @@ describe('createTransaction', () => {
     const txn = createTransaction({ amountCents: 5000, description: 'Test' });
     expect(txn.amountCents).toBe(5000);
     expect(txn.description).toBe('Test');
+  });
+});
+
+describe('createTransactionTag', () => {
+  it('returns a complete transaction tag object', () => {
+    const tt = createTransactionTag();
+    expect(tt).toHaveProperty('id');
+    expect(tt).toHaveProperty('tagId');
+    expect(tt).toHaveProperty('transactionId');
+    expect(tt).toHaveProperty('createdAt');
+    expect(tt).toHaveProperty('createdById');
+    expect(tt.deletedAt).toBeNull();
+  });
+
+  it('applies overrides', () => {
+    const tagId = fakeId();
+    const transactionId = fakeId();
+    const tt = createTransactionTag({ tagId, transactionId });
+    expect(tt.tagId).toBe(tagId);
+    expect(tt.transactionId).toBe(transactionId);
   });
 });
 

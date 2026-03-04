@@ -4,6 +4,7 @@ import { insertCategory } from '~test/factories/category.factory';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
 import { insertPayee } from '~test/factories/payee.factory';
 import { insertTag } from '~test/factories/tag.factory';
+import { insertTransactionTag } from '~test/factories/transaction-tag.factory';
 import { insertTransaction } from '~test/factories/transaction.factory';
 import { insertTransfer } from '~test/factories/transfer.factory';
 import { insertUser } from '~test/factories/user.factory';
@@ -65,6 +66,35 @@ test('insertTransaction — inserts linked to account', async ({ db }) => {
   expect(txn.id).toBeDefined();
   expect(txn.accountId).toBe(account.id);
   expect(txn.amountCents).toBeGreaterThan(0);
+});
+
+test('insertTransactionTag — inserts linking transaction and tag', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const txn = await insertTransaction(db, { accountId: account.id });
+  const tag = await insertTag(db, { userId: user.id });
+  const tt = await insertTransactionTag(db, {
+    tagId: tag.id,
+    transactionId: txn.id,
+  });
+  expect(tt.id).toBeDefined();
+  expect(tt.tagId).toBe(tag.id);
+  expect(tt.transactionId).toBe(txn.id);
+});
+
+test('insertTransactionTag — applies createdById override', async ({ db }) => {
+  const user = await insertUser(db);
+  const account = await insertLedgerAccount(db, { userId: user.id });
+  const txn = await insertTransaction(db, { accountId: account.id });
+  const tag = await insertTag(db, { userId: user.id });
+  const tt = await insertTransactionTag(db, {
+    createdById: user.id,
+    tagId: tag.id,
+    transactionId: txn.id,
+  });
+  expect(tt.createdById).toBe(user.id);
 });
 
 test('insertTransfer — inserts between two accounts', async ({ db }) => {
