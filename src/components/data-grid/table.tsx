@@ -227,8 +227,8 @@ function DataGridTableBodyRowSkeleton({ children }: { children: ReactNode }) {
   return (
     <tr
       className={cn(
-        'hover:bg-muted/40 data-[state=selected]:bg-muted/50',
-        props.onRowClick && 'cursor-pointer',
+        'data-[state=selected]:bg-muted/50',
+        props.onRowClick && 'cursor-pointer hover:bg-muted/40',
         !props.tableLayout?.stripped &&
           props.tableLayout?.rowBorder &&
           'border-border border-b [&:not(:last-child)>td]:border-b',
@@ -315,8 +315,8 @@ function DataGridTableBodyRow<TData>({
     <tr
       ref={dndRef}
       className={cn(
-        'hover:bg-muted/40 data-[state=selected]:bg-muted/50',
-        props.onRowClick && 'cursor-pointer',
+        'data-[state=selected]:bg-muted/50',
+        props.onRowClick && 'cursor-pointer hover:bg-muted/40',
         !props.tableLayout?.stripped &&
           props.tableLayout?.rowBorder &&
           'border-border border-b [&:not(:last-child)>td]:border-b',
