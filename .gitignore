@@ -38,3 +38,4 @@ todos.json
 # AI tooling
 .claude/plans/
 .claude/settings.local.json
+.playwright-mcp/
