@@ -70,6 +70,9 @@ test.describe(
       await expect(page.getByText('Transaction updated')).toBeVisible();
       await expect(page.getByText(renamed)).toBeVisible();
 
+      // Wait for toast to disappear so it doesn't intercept clicks on mobile
+      await expect(page.getByText('Transaction updated')).toBeHidden();
+
       // Delete transaction
       const updatedRow = page.getByRole('row', {
         name: new RegExp(renamed, 'i'),
