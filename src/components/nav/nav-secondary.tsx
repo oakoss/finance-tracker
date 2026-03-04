@@ -29,6 +29,7 @@ export function NavSecondary({
               <RouterSidebarMenuButton
                 activeProps={{ isActive: true }}
                 to={item.url}
+                tooltip={item.title}
               >
                 {item.icon}
                 <span>{item.title}</span>

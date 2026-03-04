@@ -1,5 +1,7 @@
 'use client';
 
+import { useTheme } from 'next-themes';
+
 import { Icons } from '@/components/icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -8,7 +10,12 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -18,6 +25,13 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { useSignOut } from '@/modules/auth/hooks/use-sign-out';
+import { m } from '@/paraglide/messages';
+
+function ThemeIcon({ theme }: { theme: string | undefined }) {
+  if (theme === 'dark') return <Icons.Moon />;
+  if (theme === 'light') return <Icons.Sun />;
+  return <Icons.Monitor />;
+}
 
 function getInitials(name: string): string {
   const initials = name
@@ -40,6 +54,7 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const { setTheme, theme } = useTheme();
   const handleSignOut = useSignOut();
 
   return (
@@ -51,11 +66,9 @@ export function NavUser({
               <SidebarMenuButton className="aria-expanded:bg-muted" size="lg" />
             }
           >
-            <Avatar className="size-8 rounded-lg">
+            <Avatar className="size-8 after:hidden">
               <AvatarImage alt={user.name} src={user.avatar} />
-              <AvatarFallback className="rounded-lg">
-                {getInitials(user.name)}
-              </AvatarFallback>
+              <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm/tight">
               <span className="truncate font-medium">{user.name}</span>
@@ -74,11 +87,9 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                  <Avatar className="size-8">
+                  <Avatar className="size-8 after:hidden">
                     <AvatarImage alt={user.name} src={user.avatar} />
-                    <AvatarFallback className="rounded-lg">
-                      {getInitials(user.name)}
-                    </AvatarFallback>
+                    <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm/tight">
                     <span className="truncate font-medium">{user.name}</span>
@@ -90,16 +101,32 @@ export function NavUser({
               </DropdownMenuLabel>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Icons.Settings />
-                Settings
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <ThemeIcon theme={theme} />
+                {m['nav.theme']()}
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent sideOffset={8}>
+                <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
+                  <DropdownMenuRadioItem value="light">
+                    <Icons.Sun />
+                    {m['nav.theme.light']()}
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="dark">
+                    <Icons.Moon />
+                    {m['nav.theme.dark']()}
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="system">
+                    <Icons.Monitor />
+                    {m['nav.theme.system']()}
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut}>
               <Icons.LogOut />
-              Sign out
+              {m['nav.signOut']()}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
