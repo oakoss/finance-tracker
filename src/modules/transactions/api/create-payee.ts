@@ -1,5 +1,4 @@
 import { createServerFn } from '@tanstack/react-start';
-import { type } from 'arktype';
 
 import { db } from '@/db';
 import { arkValidator } from '@/lib/form/validation';
@@ -8,10 +7,7 @@ import { hashId } from '@/lib/logging/hash';
 import { handleServerFnError } from '@/lib/server-fn/handle-error';
 import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
 import { createPayeeService } from '@/modules/transactions/services/create-payee';
-
-const createPayeeSchema = type({
-  name: '0 < string <= 200',
-});
+import { createPayeeSchema } from '@/modules/transactions/validators';
 
 export const createPayee = createServerFn({ method: 'POST' })
   .inputValidator(arkValidator(createPayeeSchema))

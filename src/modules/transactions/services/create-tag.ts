@@ -1,13 +1,10 @@
 import type { Db } from '@/db';
+import type { CreateTagInput } from '@/modules/transactions/validators';
 
 import { notDeleted } from '@/lib/audit/soft-delete';
 import { parsePgError } from '@/lib/db/pg-error';
 import { createError } from '@/lib/logging/evlog';
 import { tags } from '@/modules/transactions/db/schema';
-
-type CreateTagInput = {
-  name: string;
-};
 
 export async function createTagService(
   database: Db,

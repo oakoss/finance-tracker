@@ -1,5 +1,4 @@
 import { createServerFn } from '@tanstack/react-start';
-import { type } from 'arktype';
 
 import { db } from '@/db';
 import { arkValidator } from '@/lib/form/validation';
@@ -8,10 +7,7 @@ import { hashId } from '@/lib/logging/hash';
 import { handleServerFnError } from '@/lib/server-fn/handle-error';
 import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
 import { createTagService } from '@/modules/transactions/services/create-tag';
-
-const createTagSchema = type({
-  name: '0 < string <= 100',
-});
+import { createTagSchema } from '@/modules/transactions/validators';
 
 export const createTag = createServerFn({ method: 'POST' })
   .inputValidator(arkValidator(createTagSchema))
