@@ -236,10 +236,14 @@ several seconds to auto-dismiss. A toast triggered during
 when the test body runs, causing visibility assertions to fail or
 intercepting clicks on mobile viewports.
 
-Add cleanup in `beforeEach` to remove lingering toast DOM nodes:
+Add cleanup in `beforeEach` to remove lingering toast DOM nodes
+_before_ the test navigates to its target page:
 
 ```ts
 test.beforeEach(async ({ page }) => {
+  // ... setup that triggers toasts ...
+
+  // Remove toast DOM before navigating (safe because goto resets Sonner)
   await page.evaluate(() => {
     for (const el of document.querySelectorAll(
       'section[aria-label*="Notification"] > *',
@@ -250,10 +254,18 @@ test.beforeEach(async ({ page }) => {
 });
 ```
 
-`toast.dismiss()` lives inside the app's module graph and is not
-accessible from `page.evaluate()`, which runs in an isolated
-scope. Direct DOM removal is the reliable approach. Place the
-cleanup after any setup navigation so the DOM exists.
+DOM removal is only safe when followed by a full page navigation
+(`page.goto()`), which resets Sonner's internal React state. **Do
+not use DOM removal mid-test** — Sonner still tracks the toast
+internally and subsequent toasts may fail to render. To wait for a
+toast to clear mid-test, use `toBeHidden()` with a generous
+timeout:
+
+```ts
+await expect(page.getByText('Toast message')).toBeHidden({
+  timeout: 10_000,
+});
+```
 
 **Mocking browser APIs:** Use `addInitScript()` to override native
 APIs before the page loads (must be called before `goto()`):
