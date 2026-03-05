@@ -1,13 +1,11 @@
 import { createServerFn } from '@tanstack/react-start';
-import { and, asc, eq } from 'drizzle-orm';
 
 import { db } from '@/db';
-import { notDeleted } from '@/lib/audit/soft-delete';
-import { isExpectedError, toError } from '@/lib/form/validation';
-import { createError, log } from '@/lib/logging/evlog';
+import { log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
+import { handleServerFnError } from '@/lib/server-fn/handle-error';
 import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
-import { categories } from '@/modules/categories/db/schema';
+import { listCategoriesService } from '@/modules/categories/services/list-categories';
 
 export const listCategories = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
@@ -15,39 +13,21 @@ export const listCategories = createServerFn({ method: 'GET' })
     const userId = requireUserId(context);
 
     try {
-      const rows = await db
-        .select({
-          id: categories.id,
-          name: categories.name,
-          parentId: categories.parentId,
-          type: categories.type,
-        })
-        .from(categories)
-        .where(
-          and(eq(categories.userId, userId), notDeleted(categories.deletedAt)),
-        )
-        .orderBy(asc(categories.type), asc(categories.name));
+      const result = await listCategoriesService(db, userId);
 
       log.info({
         action: 'category.list',
-        outcome: { count: rows.length },
+        outcome: { count: result.length },
         user: { idHash: hashId(userId) },
       });
 
-      return rows;
+      return result;
     } catch (error) {
-      if (isExpectedError(error)) throw error;
-      log.error({
+      handleServerFnError(error, {
         action: 'category.list',
-        error: toError(error).message,
-        outcome: { success: false },
-        user: { idHash: hashId(userId) },
-      });
-      throw createError({
-        cause: toError(error),
         fix: 'Refresh the page. If the problem persists, contact support.',
         message: 'Failed to list categories.',
-        status: 500,
+        userId,
       });
     }
   });

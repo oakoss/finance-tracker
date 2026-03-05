@@ -1,20 +1,12 @@
 import { createServerFn } from '@tanstack/react-start';
-import { and, eq } from 'drizzle-orm';
 
 import { db } from '@/db';
-import { insertAuditLog } from '@/lib/audit/insert-audit-log';
-import { notDeleted } from '@/lib/audit/soft-delete';
-import { pgErrorFields, throwIfConstraintViolation } from '@/lib/db/pg-error';
-import {
-  arkValidator,
-  ensureFound,
-  isExpectedError,
-  toError,
-} from '@/lib/form/validation';
-import { createError, log } from '@/lib/logging/evlog';
+import { arkValidator } from '@/lib/form/validation';
+import { log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
+import { handleServerFnError } from '@/lib/server-fn/handle-error';
 import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
-import { categories } from '@/modules/categories/db/schema';
+import { deleteCategoryService } from '@/modules/categories/services/delete-category';
 import { deleteCategorySchema } from '@/modules/categories/validators';
 
 export const deleteCategory = createServerFn({ method: 'POST' })
@@ -24,63 +16,7 @@ export const deleteCategory = createServerFn({ method: 'POST' })
     const userId = requireUserId(context);
 
     try {
-      await db.transaction(async (tx) => {
-        const existing = await ensureFound(
-          tx.query.categories.findFirst({
-            where: (t, { and: a, eq: e }) =>
-              a(e(t.id, data.id), e(t.userId, userId), notDeleted(t.deletedAt)),
-          }),
-          'Category',
-        );
-
-        const now = new Date();
-
-        const [deleted] = await tx
-          .update(categories)
-          .set({
-            deletedAt: now,
-            deletedById: userId,
-          })
-          .where(
-            and(
-              eq(categories.id, data.id),
-              eq(categories.userId, userId),
-              notDeleted(categories.deletedAt),
-            ),
-          )
-          .returning();
-
-        if (!deleted) {
-          throw createError({
-            fix: 'Refresh the page. This category may have already been deleted.',
-            message: 'Category not found.',
-            status: 409,
-          });
-        }
-
-        // Nullify parentId on children of deleted category
-        await tx
-          .update(categories)
-          .set({
-            parentId: null,
-            updatedById: userId,
-          })
-          .where(
-            and(
-              eq(categories.parentId, data.id),
-              eq(categories.userId, userId),
-              notDeleted(categories.deletedAt),
-            ),
-          );
-
-        await insertAuditLog(tx, {
-          action: 'delete',
-          actorId: userId,
-          beforeData: existing as unknown as Record<string, unknown>,
-          entityId: data.id,
-          tableName: 'categories',
-        });
-      });
+      await deleteCategoryService(db, userId, data);
 
       log.info({
         action: 'category.delete',
@@ -90,20 +26,11 @@ export const deleteCategory = createServerFn({ method: 'POST' })
 
       return { success: true };
     } catch (error) {
-      if (isExpectedError(error)) throw error;
-      throwIfConstraintViolation(error, 'category.delete', hashId(userId));
-      log.error({
+      handleServerFnError(error, {
         action: 'category.delete',
-        error: toError(error).message,
-        outcome: { success: false },
-        user: { idHash: hashId(userId) },
-        ...pgErrorFields(error),
-      });
-      throw createError({
-        cause: toError(error),
         fix: 'Try again or contact support.',
         message: 'Failed to delete category.',
-        status: 500,
+        userId,
       });
     }
   });
