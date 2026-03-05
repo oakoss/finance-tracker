@@ -254,6 +254,39 @@ test('update — openedAt coercion: string to Date, null clears', async ({
   expect(cleared.openedAt).toBeNull();
 });
 
+test('update — updates currency', async ({ serviceDb }) => {
+  const { account, user } = await insertAccountWithUser(serviceDb, {
+    account: { currency: 'USD' },
+  });
+
+  const updated = await updateAccountService(asDb(serviceDb), user.id, {
+    currency: 'EUR',
+    id: account.id,
+  });
+
+  expect(updated.currency).toBe('EUR');
+});
+
+test('update — transitions status active to closed', async ({ serviceDb }) => {
+  const { account, user } = await insertAccountWithUser(serviceDb, {
+    account: { status: 'active' },
+  });
+
+  const closed = await updateAccountService(asDb(serviceDb), user.id, {
+    id: account.id,
+    status: 'closed',
+  });
+
+  expect(closed.status).toBe('closed');
+
+  const reopened = await updateAccountService(asDb(serviceDb), user.id, {
+    id: account.id,
+    status: 'active',
+  });
+
+  expect(reopened.status).toBe('active');
+});
+
 test('update — writes audit log with before/after', async ({ serviceDb }) => {
   const { account, user } = await insertAccountWithUser(serviceDb);
 
