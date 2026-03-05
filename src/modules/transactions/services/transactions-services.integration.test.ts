@@ -316,6 +316,50 @@ test('list — excludes soft-deleted transactions', async ({ db }) => {
   expect(rows).toHaveLength(0);
 });
 
+test('list — ordered by transactionAt DESC', async ({ db }) => {
+  const { account, user } = await insertAccountWithUser(db);
+
+  await createTransactionService(
+    asDb(db),
+    user.id,
+    validCreateInput(account.id, {
+      description: 'Older',
+      transactionAt: '2024-01-01',
+    }),
+  );
+  await createTransactionService(
+    asDb(db),
+    user.id,
+    validCreateInput(account.id, {
+      description: 'Newer',
+      transactionAt: '2024-06-15',
+    }),
+  );
+
+  const rows = await listTransactionsService(asDb(db), user.id);
+
+  expect(rows).toHaveLength(2);
+  expect(rows[0].description).toBe('Newer');
+  expect(rows[1].description).toBe('Older');
+});
+
+test('list — includes tags via junction table', async ({ db }) => {
+  const { account, user } = await insertAccountWithUser(db);
+  const tag = await insertTag(db, { name: 'groceries', userId: user.id });
+
+  await createTransactionService(
+    asDb(db),
+    user.id,
+    validCreateInput(account.id, { tagIds: [tag.id] }),
+  );
+
+  const rows = await listTransactionsService(asDb(db), user.id);
+
+  expect(rows).toHaveLength(1);
+  expect(rows[0].tags).toHaveLength(1);
+  expect(rows[0].tags[0].name).toBe('groceries');
+});
+
 test('list — suppresses deleted payee names', async ({ db }) => {
   const ctx = await insertTransactionWithRelations(db, { withPayee: true });
 
