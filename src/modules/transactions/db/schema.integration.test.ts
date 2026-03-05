@@ -8,13 +8,77 @@ import { insertCategory } from '~test/factories/category.factory';
 import { insertPayee } from '~test/factories/payee.factory';
 import { insertTag } from '~test/factories/tag.factory';
 import { insertTransaction } from '~test/factories/transaction.factory';
+import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
 
 // ---------------------------------------------------------------------------
-// DB constraint tests — verify raw schema behavior the service layer can't test
+// DB constraint tests — payees
 // ---------------------------------------------------------------------------
 
-test('create — transactionTags rejects duplicate (transactionId, tagId)', async ({
+test('payees — rejects duplicate (userId, name)', async ({ db }) => {
+  const user = await insertUser(db);
+  await insertPayee(db, { name: 'Unique Payee', userId: user.id });
+
+  await expectPgError(
+    () => insertPayee(db, { name: 'Unique Payee', userId: user.id }),
+    { code: '23505', constraint: 'payees_user_name_idx' },
+  );
+});
+
+test('payees — re-creates after soft-delete (partial index)', async ({
+  db,
+}) => {
+  const user = await insertUser(db);
+  await insertPayee(db, {
+    deletedAt: new Date(),
+    name: 'Gone Payee',
+    normalizedName: 'gone payee',
+    userId: user.id,
+  });
+
+  const fresh = await insertPayee(db, {
+    name: 'Gone Payee',
+    normalizedName: 'gone payee',
+    userId: user.id,
+  });
+
+  expect(fresh.name).toBe('Gone Payee');
+  expect(fresh.deletedAt).toBeNull();
+});
+
+// ---------------------------------------------------------------------------
+// DB constraint tests — tags
+// ---------------------------------------------------------------------------
+
+test('tags — rejects duplicate (userId, name)', async ({ db }) => {
+  const user = await insertUser(db);
+  await insertTag(db, { name: 'unique-tag', userId: user.id });
+
+  await expectPgError(
+    () => insertTag(db, { name: 'unique-tag', userId: user.id }),
+    { code: '23505', constraint: 'tags_user_name_idx' },
+  );
+});
+
+test('tags — re-creates after soft-delete (partial index)', async ({ db }) => {
+  const user = await insertUser(db);
+  await insertTag(db, {
+    deletedAt: new Date(),
+    name: 'gone-tag',
+    userId: user.id,
+  });
+
+  const fresh = await insertTag(db, { name: 'gone-tag', userId: user.id });
+
+  expect(fresh.name).toBe('gone-tag');
+  expect(fresh.deletedAt).toBeNull();
+});
+
+// ---------------------------------------------------------------------------
+// DB constraint tests — transactions
+// ---------------------------------------------------------------------------
+
+test('transactionTags — rejects duplicate (transactionId, tagId)', async ({
   db,
 }) => {
   const { account, user } = await insertAccountWithUser(db);
@@ -36,7 +100,7 @@ test('create — transactionTags rejects duplicate (transactionId, tagId)', asyn
   );
 });
 
-test('create — inline payee: re-creates after soft-delete (partial index)', async ({
+test('payees — partial index allows re-insert after soft-delete in transaction context', async ({
   db,
 }) => {
   const { user } = await insertAccountWithUser(db);
@@ -64,7 +128,7 @@ test('create — inline payee: re-creates after soft-delete (partial index)', as
   expect(all).toHaveLength(2);
 });
 
-test('delete — transaction tags remain in DB after soft-delete', async ({
+test('transactionTags — tags remain in DB after transaction soft-delete', async ({
   db,
 }) => {
   const { account, user } = await insertAccountWithUser(db);
@@ -91,12 +155,11 @@ test('delete — transaction tags remain in DB after soft-delete', async ({
 
 // ---------------------------------------------------------------------------
 // Cross-user resource linking (DB level)
-// DB FKs don't enforce ownership — service layer does (TREK-173).
-// These tests confirm the DB constraint gap still exists at the raw SQL level,
-// while resolvePayeeId/resolveTagIds/create+update services now reject it.
+// DB FKs don't enforce ownership — service layer does.
+// These tests confirm the DB constraint gap still exists at the raw SQL level.
 // ---------------------------------------------------------------------------
 
-test('create — cross-user categoryId accepted by DB (no ownership FK)', async ({
+test('transactions — cross-user categoryId accepted by DB (no ownership FK)', async ({
   db,
 }) => {
   const { account: accountA, user: userA } = await insertAccountWithUser(db);
@@ -129,7 +192,7 @@ test('create — cross-user categoryId accepted by DB (no ownership FK)', async 
   expect(owned).toBeUndefined();
 });
 
-test('create — cross-user payeeId accepted by DB (no ownership FK)', async ({
+test('transactions — cross-user payeeId accepted by DB (no ownership FK)', async ({
   db,
 }) => {
   const { account: accountA, user: userA } = await insertAccountWithUser(db);
@@ -159,7 +222,7 @@ test('create — cross-user payeeId accepted by DB (no ownership FK)', async ({
   expect(owned).toBeUndefined();
 });
 
-test('create — cross-user tagId accepted by DB (no ownership FK)', async ({
+test('transactions — cross-user tagId accepted by DB (no ownership FK)', async ({
   db,
 }) => {
   const { account: accountA, user: userA } = await insertAccountWithUser(db);

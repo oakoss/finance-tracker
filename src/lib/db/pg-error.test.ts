@@ -147,6 +147,24 @@ describe('throwIfConstraintViolation', () => {
     );
   });
 
+  it('throws 409 for payees_user_name_idx', () => {
+    const err = catchConstraintError({
+      code: '23505',
+      constraint: 'payees_user_name_idx',
+    });
+    expect(err.status).toBe(409);
+    expect(err.fix).toBe('A payee with this name already exists.');
+  });
+
+  it('throws 409 for tags_user_name_idx', () => {
+    const err = catchConstraintError({
+      code: '23505',
+      constraint: 'tags_user_name_idx',
+    });
+    expect(err.status).toBe(409);
+    expect(err.fix).toBe('A tag with this name already exists.');
+  });
+
   it('throws 409 for transactions_account_external_id_idx', () => {
     const err = catchConstraintError({
       code: '23505',

@@ -197,6 +197,16 @@ Server function handlers (`api/*.ts`) are thin wrappers — they handle
 auth, validation, logging, and error mapping. Test them via E2E tests,
 not integration tests.
 
+### Test placement
+
+| What you're testing                          | Where it lives                       |
+| -------------------------------------------- | ------------------------------------ |
+| Service business logic (CRUD, auth, audit)   | `services/*.integration.test.ts`     |
+| DB schema constraints (unique, FK, partial)  | `db/schema.integration.test.ts`      |
+| Domain helpers (resolve\*, format\*)         | `lib/*.integration.test.ts`          |
+| API handlers (auth, validation, error map)   | E2E tests                            |
+| `throwIfConstraintViolation` message mapping | `src/lib/db/pg-error.test.ts` (unit) |
+
 ### Writing integration tests
 
 Uses `test.extend` fixtures for composable, type-safe DB access:
