@@ -123,6 +123,9 @@ src/modules/{module}/
   and entity type aliases (`User`, `LedgerAccount`, etc.).
 - **`validators.ts`** — API contract schemas with business rules
   (create/update/delete input validation).
+- **`constants.ts`** — Shared constants used across subdirectories
+  within the module (e.g., channel names, enum values). Lives at
+  the module root, not nested in `hooks/` or `lib/`.
 
 Modules:
 

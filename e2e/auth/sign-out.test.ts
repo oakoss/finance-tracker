@@ -59,20 +59,7 @@ test.describe('sign out', { tag: '@auth' }, () => {
     });
   });
 
-  test('cross-tab sign-out via BroadcastChannel', async ({
-    context,
-    page,
-  }, testInfo) => {
-    // The useSignOut hook registers a BroadcastChannel listener via useEffect.
-    // On mobile, NavUser is inside the sidebar Sheet which may not mount its
-    // content until opened — so the listener isn't active after page load.
-    // eslint-disable-next-line playwright/no-skipped-test
-    test.skip(
-      testInfo.project.name.startsWith('iphone') ||
-        testInfo.project.name.startsWith('pixel'),
-      'Cross-tab BroadcastChannel not reliable on mobile sidebar Sheet',
-    );
-
+  test('cross-tab sign-out via BroadcastChannel', async ({ context, page }) => {
     await test.step('sign in on first tab', async () => {
       await signInViaUI(page);
     });

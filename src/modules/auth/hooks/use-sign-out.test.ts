@@ -12,15 +12,13 @@ vi.mock('@tanstack/react-router', () => ({
   }),
 }));
 
+const mockUseBroadcastChannel = vi.fn(
+  (..._args: unknown[]) =>
+    ({ isSupported: true, postMessage: mockPostMessage }) as const,
+);
+
 vi.mock('@/hooks/use-broadcast-channel', () => ({
-  useBroadcastChannel: (
-    _name: string,
-    options?: { onMessage?: (data: string) => void },
-  ) => {
-    // Store the onMessage handler so tests can invoke it
-    onMessageHandler = options?.onMessage ?? null;
-    return { isSupported: true, postMessage: mockPostMessage };
-  },
+  useBroadcastChannel: (...args: unknown[]) => mockUseBroadcastChannel(...args),
 }));
 
 vi.mock('@/lib/auth/client', () => ({
@@ -48,15 +46,13 @@ vi.mock('@/paraglide/messages', () => ({
   m: new Proxy({}, { get: (_target, key: string) => () => key }),
 }));
 
-let onMessageHandler: ((data: string) => void) | null = null;
-
 describe('useSignOut', () => {
   beforeEach(() => {
     mockNavigate.mockClear();
+    mockUseBroadcastChannel.mockClear();
     mockPostMessage.mockClear().mockReturnValue(true);
     mockSignOut.mockClear().mockResolvedValue({});
     mockToastWarning.mockClear();
-    onMessageHandler = null;
   });
 
   it('returns a signOut function', () => {
@@ -142,6 +138,15 @@ describe('useSignOut', () => {
     );
   });
 
+  it('does not register an onMessage handler (listener lives in useSignOutListener)', () => {
+    renderHook(() => useSignOut());
+    expect(mockUseBroadcastChannel).toHaveBeenCalledWith('auth');
+    expect(mockUseBroadcastChannel).not.toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ onMessage: expect.any(Function) }),
+    );
+  });
+
   it('warns when broadcast fails', async () => {
     const { clientLog } = await import('@/lib/logging/client-logger');
     mockPostMessage.mockReturnValue(false);
@@ -158,25 +163,5 @@ describe('useSignOut', () => {
     expect(clientLog.warn).toHaveBeenCalledWith(
       expect.objectContaining({ action: 'auth.signOut.broadcast' }),
     );
-  });
-
-  it('navigates to /sign-in when receiving sign-out from another tab', () => {
-    renderHook(() => useSignOut());
-
-    act(() => {
-      onMessageHandler?.('sign-out');
-    });
-
-    expect(mockNavigate).toHaveBeenCalledWith({ to: '/sign-in' });
-  });
-
-  it('ignores non-sign-out messages from broadcast channel', () => {
-    renderHook(() => useSignOut());
-
-    act(() => {
-      onMessageHandler?.('something-else');
-    });
-
-    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });
