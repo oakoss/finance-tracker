@@ -79,10 +79,11 @@ test.describe(
       await expect(page.getByText('Transaction updated')).toBeVisible();
       await expect(page.getByText(renamed)).toBeVisible();
 
-      // Wait for toast to disappear so it doesn't intercept clicks on mobile
-      await expect(page.getByText('Transaction updated')).toBeHidden({
-        timeout: 10_000,
-      });
+      // Dismiss toast so it doesn't intercept clicks on mobile
+      await page
+        .getByRole('button', { name: /close toast/i })
+        .first()
+        .click();
 
       // Delete transaction
       const updatedRow = page.getByRole('row', {
