@@ -142,8 +142,10 @@ a real Postgres database. They require Docker Compose to be running
    to point at it, runs Drizzle migrations, and resets all schema tables
    once for a clean baseline.
 2. **`test/integration-setup.ts`** exports a `test` fixture via
-   `test.extend` that provides a `db` wrapped in a transaction
-   (`BEGIN`/`ROLLBACK`) with per-test `SAVEPOINT`s.
+   `test.extend` with three fixtures: `fileDb` (file-scoped
+   Drizzle-managed transaction, rolled back via thrown error),
+   `db` (per-test `SAVEPOINT`), and `serviceDb` (nested transaction
+   for services that call `.transaction()` internally).
 3. Tests use `*.integration.test.ts` suffix and are picked up by the
    `integration` project in `vitest.config.ts`.
 4. Integration tests run in parallel (`pool: 'forks'`) — each file
@@ -154,11 +156,42 @@ a real Postgres database. They require Docker Compose to be running
 Service functions (`services/*.ts`) contain business logic extracted
 from API handlers. They are the primary target for integration tests.
 
-**Caveat:** Mutating services call `database.transaction()` internally,
-which conflicts with the test fixture's `BEGIN`/`ROLLBACK` isolation.
-Before writing service-level integration tests, the transaction nesting
-problem must be resolved (see TREK-147). Read-only services like
-`listTransactionsService` can be tested directly with the `db` fixture.
+Mutating services call `database.transaction()` internally. The
+`serviceDb` fixture wraps the test `db` in a Drizzle `.transaction()`,
+so services' nested `.transaction()` calls become savepoints instead
+of real `BEGIN`/`COMMIT` that would break fixture isolation.
+
+**Which fixture to use:**
+
+| Scenario                                | Fixture     |
+| --------------------------------------- | ----------- |
+| Mutating service (create/update/delete) | `serviceDb` |
+| Everything else (queries, read-only)    | `db`        |
+
+```ts
+import type { Db } from '@/db';
+
+import { type Db as TestDb } from '~test/factories/base';
+import { test } from '~test/integration-setup';
+
+const asDb = (db: TestDb) => db as unknown as Db;
+
+test('creates transaction', async ({ serviceDb }) => {
+  const result = await createTransactionService(asDb(serviceDb), userId, data);
+  expect(result.id).toBeDefined();
+});
+
+test('lists transactions', async ({ db }) => {
+  const rows = await listTransactionsService(asDb(db), userId);
+  expect(rows).toHaveLength(1);
+});
+```
+
+The `serviceDb` fixture uses a type assertion (`tx as unknown as Db`)
+because `NodePgTransaction` is not directly assignable to
+`NodePgDatabase` in TypeScript's structural type system. This is safe
+— `PgTransaction extends PgDatabase` at runtime, so all query methods
+are available.
 
 Server function handlers (`api/*.ts`) are thin wrappers — they handle
 auth, validation, logging, and error mapping. Test them via E2E tests,
@@ -181,14 +214,13 @@ test('inserts a user', async ({ db }) => {
 ```
 
 The `db` fixture is test-scoped. Each file opens one connection inside
-a `BEGIN`/`ROLLBACK`, and each test gets its own `SAVEPOINT`.
+a Drizzle-managed transaction (rolled back after all tests complete),
+and each test gets its own `SAVEPOINT`.
 
-**Never call `db.transaction()`** inside integration tests. Drizzle
-issues real `BEGIN`/`COMMIT` SQL which commits the fixture's outer
-transaction and breaks savepoint cleanup (you'll see
-`ROLLBACK TO SAVEPOINT can only be used in transaction blocks` warnings
-and test isolation failures). The fixture's `db` is already
-transactional — just run queries directly on it.
+**Do not call `db.transaction()` directly** in test bodies — use
+the `serviceDb` fixture instead when testing services that call
+`.transaction()` internally. The `serviceDb` wrapper ensures nested
+transactions become savepoints and preserves test isolation.
 
 ### Key files
 
