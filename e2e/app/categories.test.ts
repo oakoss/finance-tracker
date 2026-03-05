@@ -56,6 +56,6 @@ test.describe('categories CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
       .click();
 
     await expect(page.getByText('Category deleted')).toBeVisible();
-    await expect(page.getByText(renamed)).toBeHidden();
+    await expect(page.getByRole('table').getByText(renamed)).toBeHidden();
   });
 });
