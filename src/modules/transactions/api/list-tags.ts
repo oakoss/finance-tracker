@@ -1,13 +1,11 @@
 import { createServerFn } from '@tanstack/react-start';
-import { and, asc, eq } from 'drizzle-orm';
 
 import { db } from '@/db';
-import { notDeleted } from '@/lib/audit/soft-delete';
-import { isExpectedError, toError } from '@/lib/form/validation';
-import { createError, log } from '@/lib/logging/evlog';
+import { log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
+import { handleServerFnError } from '@/lib/server-fn/handle-error';
 import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
-import { tags } from '@/modules/transactions/db/schema';
+import { listTagsService } from '@/modules/transactions/services/list-tags';
 
 export const listTags = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
@@ -15,14 +13,7 @@ export const listTags = createServerFn({ method: 'GET' })
     const userId = requireUserId(context);
 
     try {
-      const rows = await db
-        .select({
-          id: tags.id,
-          name: tags.name,
-        })
-        .from(tags)
-        .where(and(eq(tags.userId, userId), notDeleted(tags.deletedAt)))
-        .orderBy(asc(tags.name));
+      const rows = await listTagsService(db, userId);
 
       log.info({
         action: 'tag.list',
@@ -32,18 +23,11 @@ export const listTags = createServerFn({ method: 'GET' })
 
       return rows;
     } catch (error) {
-      if (isExpectedError(error)) throw error;
-      log.error({
+      handleServerFnError(error, {
         action: 'tag.list',
-        error: toError(error).message,
-        outcome: { success: false },
-        user: { idHash: hashId(userId) },
-      });
-      throw createError({
-        cause: toError(error),
         fix: 'Refresh the page. If the problem persists, contact support.',
         message: 'Failed to list tags.',
-        status: 500,
+        userId,
       });
     }
   });

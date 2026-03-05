@@ -1,13 +1,11 @@
 import { createServerFn } from '@tanstack/react-start';
-import { and, asc, eq } from 'drizzle-orm';
 
 import { db } from '@/db';
-import { notDeleted } from '@/lib/audit/soft-delete';
-import { isExpectedError, toError } from '@/lib/form/validation';
-import { createError, log } from '@/lib/logging/evlog';
+import { log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
+import { handleServerFnError } from '@/lib/server-fn/handle-error';
 import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
-import { payees } from '@/modules/transactions/db/schema';
+import { listPayeesService } from '@/modules/transactions/services/list-payees';
 
 export const listPayees = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
@@ -15,14 +13,7 @@ export const listPayees = createServerFn({ method: 'GET' })
     const userId = requireUserId(context);
 
     try {
-      const rows = await db
-        .select({
-          id: payees.id,
-          name: payees.name,
-        })
-        .from(payees)
-        .where(and(eq(payees.userId, userId), notDeleted(payees.deletedAt)))
-        .orderBy(asc(payees.name));
+      const rows = await listPayeesService(db, userId);
 
       log.info({
         action: 'payee.list',
@@ -32,18 +23,11 @@ export const listPayees = createServerFn({ method: 'GET' })
 
       return rows;
     } catch (error) {
-      if (isExpectedError(error)) throw error;
-      log.error({
+      handleServerFnError(error, {
         action: 'payee.list',
-        error: toError(error).message,
-        outcome: { success: false },
-        user: { idHash: hashId(userId) },
-      });
-      throw createError({
-        cause: toError(error),
         fix: 'Refresh the page. If the problem persists, contact support.',
         message: 'Failed to list payees.',
-        status: 500,
+        userId,
       });
     }
   });
