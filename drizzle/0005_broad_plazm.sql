@@ -1,0 +1,2 @@
+CREATE TYPE "public"."account_min_payment_type" AS ENUM('percentage', 'fixed');--> statement-breakpoint
+ALTER TABLE "account_terms" ALTER COLUMN "min_payment_type" SET DATA TYPE "public"."account_min_payment_type" USING "min_payment_type"::"public"."account_min_payment_type";

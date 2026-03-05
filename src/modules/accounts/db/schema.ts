@@ -18,6 +18,11 @@ export const accountOwnerTypeEnum = pgEnum('account_owner_type', [
   'business',
 ]);
 
+export const accountMinPaymentTypeEnum = pgEnum('account_min_payment_type', [
+  'percentage',
+  'fixed',
+]);
+
 export const accountStatusEnum = pgEnum('account_status', ['active', 'closed']);
 
 export const accountTypeEnum = pgEnum('account_type', [
@@ -99,7 +104,7 @@ export const accountTerms = pgTable(
     id: uuid()
       .primaryKey()
       .default(sql`uuidv7()`),
-    minPaymentType: text(),
+    minPaymentType: accountMinPaymentTypeEnum(),
     minPaymentValue: integer(),
     statementDay: integer(),
     ...auditFields,

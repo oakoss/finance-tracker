@@ -2,6 +2,7 @@ import { type } from 'arktype';
 
 import { currencyCode, dateOrNull } from '@/lib/form/schema';
 import {
+  accountMinPaymentTypeEnum,
   accountOwnerTypeEnum,
   accountStatusEnum,
   accountTypeEnum,
@@ -9,14 +10,35 @@ import {
 import { ledgerAccountsDeleteSchema } from '@/modules/accounts/models';
 
 const termsSchema = type({
-  'aprBps?': 'number.integer | null',
+  'aprBps?': '0 <= number.integer <= 100000 | null',
   'dueDay?': '1 <= number.integer <= 28 | null',
-  'minPaymentType?': type.enumerated('percentage', 'fixed').or(type('null')),
-  'minPaymentValue?': 'number.integer | null',
+  'minPaymentType?': type
+    .enumerated(...accountMinPaymentTypeEnum.enumValues)
+    .or(type('null')),
+  'minPaymentValue?': 'number.integer >= 0 | null',
   'statementDay?': '1 <= number.integer <= 28 | null',
+}).narrow((data, ctx) => {
+  const hasType =
+    data.minPaymentType !== null && data.minPaymentType !== undefined;
+  const hasValue =
+    data.minPaymentValue !== null && data.minPaymentValue !== undefined;
+  if (hasType !== hasValue) {
+    ctx.mustBe('providing both minPaymentType and minPaymentValue, or neither');
+    return false;
+  }
+  if (
+    data.minPaymentType === 'percentage' &&
+    data.minPaymentValue !== null &&
+    data.minPaymentValue !== undefined &&
+    data.minPaymentValue > 10_000
+  ) {
+    ctx.mustBe('a percentage value of at most 10000 (100%)');
+    return false;
+  }
+  return true;
 });
 
-const TERMS_TYPES = ['credit_card', 'loan'] as const;
+const TERMS_TYPES: ReadonlySet<string> = new Set(['credit_card', 'loan']);
 
 export const createAccountBaseSchema = type({
   'accountNumberMask?': 'string | null',
@@ -32,10 +54,7 @@ export const createAccountBaseSchema = type({
 
 export const createAccountSchema = createAccountBaseSchema.narrow(
   (data, ctx) => {
-    if (
-      data.terms &&
-      !TERMS_TYPES.includes(data.type as (typeof TERMS_TYPES)[number])
-    ) {
+    if (data.terms && !TERMS_TYPES.has(data.type)) {
       ctx.mustBe('an account type that supports terms (credit_card or loan)');
       return false;
     }
@@ -60,11 +79,7 @@ export const updateAccountBaseSchema = type({
 
 export const updateAccountSchema = updateAccountBaseSchema.narrow(
   (data, ctx) => {
-    if (
-      data.terms &&
-      data.type &&
-      !TERMS_TYPES.includes(data.type as (typeof TERMS_TYPES)[number])
-    ) {
+    if (data.terms && data.type && !TERMS_TYPES.has(data.type)) {
       ctx.mustBe('an account type that supports terms (credit_card or loan)');
       return false;
     }

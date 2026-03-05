@@ -1,15 +1,21 @@
 import { type } from 'arktype';
 
-/** Required valid date string (non-empty, parseable by `Date.parse`). */
+const ISO_DATE_PREFIX = /^\d{4}-\d{2}-\d{2}/;
+
+function isValidDateString(s: string): boolean {
+  return ISO_DATE_PREFIX.test(s) && !Number.isNaN(Date.parse(s));
+}
+
+/** Required valid date string (non-empty, ISO-8601 prefix, parseable). */
 export const dateString = type('string > 0').narrow(
-  (s, ctx) => !Number.isNaN(Date.parse(s)) || ctx.mustBe('a valid date string'),
+  (s, ctx) => isValidDateString(s) || ctx.mustBe('a valid date string'),
 );
 
 /** Optional date string — empty string pipes to null. */
 export const dateOrNull = type('string | null')
   .narrow((s, ctx) => {
     if (s === null || s === '') return true;
-    return !Number.isNaN(Date.parse(s)) || ctx.mustBe('a valid date string');
+    return isValidDateString(s) || ctx.mustBe('a valid date string');
   })
   .pipe((s) => (s === '' ? null : s));
 
