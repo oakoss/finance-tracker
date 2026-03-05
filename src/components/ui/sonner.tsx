@@ -10,6 +10,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
 
   return (
     <Sonner
+      closeButton
       className="toaster group"
       icons={{
         error: <Icons.OctagonX className="size-4" />,
