@@ -57,3 +57,11 @@ No project-local wrapper is needed; use the `toast` export directly.
 | Success | 3-4 s    | Short, concise message         |
 | Error   | 6-8 s    | Include a short fix hint       |
 | Loading | Auto     | Dismisses when promise settles |
+
+## E2E testing
+
+Sonner toasts persist across client-side navigations and take
+several seconds to auto-dismiss. A toast from `beforeEach` setup
+can interfere with the test body. See the
+[E2E toast cleanup](e2e/README.md#writing-tests) section for the
+`beforeEach` cleanup pattern.

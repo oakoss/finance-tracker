@@ -229,6 +229,32 @@ only render after user interaction (which requires hydration).
 Forgetting this on page-level buttons causes flaky E2E tests
 and a UX bug on slow connections.
 
+**Toast cleanup between setup and test:** Sonner toasts are global
+React state that persists across client-side navigations and takes
+several seconds to auto-dismiss. A toast triggered during
+`beforeEach` setup (e.g., account creation) can still be visible
+when the test body runs, causing visibility assertions to fail or
+intercepting clicks on mobile viewports.
+
+Add cleanup in `beforeEach` to remove lingering toast DOM nodes:
+
+```ts
+test.beforeEach(async ({ page }) => {
+  await page.evaluate(() => {
+    for (const el of document.querySelectorAll(
+      'section[aria-label*="Notification"] > *',
+    )) {
+      el.remove();
+    }
+  });
+});
+```
+
+`toast.dismiss()` lives inside the app's module graph and is not
+accessible from `page.evaluate()`, which runs in an isolated
+scope. Direct DOM removal is the reliable approach. Place the
+cleanup after any setup navigation so the DOM exists.
+
 **Mocking browser APIs:** Use `addInitScript()` to override native
 APIs before the page loads (must be called before `goto()`):
 

@@ -22,6 +22,15 @@ test.describe(
         await page.getByRole('button', { name: /create/i }).click();
         await expect(page.getByText('Account created')).toBeVisible();
       }
+
+      // Dismiss any lingering toasts so they don't interfere with the test
+      await page.evaluate(() => {
+        for (const el of document.querySelectorAll(
+          'section[aria-label*="Notification"] > *',
+        )) {
+          el.remove();
+        }
+      });
     });
 
     test('create, edit, and delete a transaction', async ({ page }) => {
