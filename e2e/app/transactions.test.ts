@@ -79,8 +79,14 @@ test.describe(
       await expect(page.getByText('Transaction updated')).toBeVisible();
       await expect(page.getByText(renamed)).toBeVisible();
 
-      // Wait for toast to disappear so it doesn't intercept clicks on mobile
-      await expect(page.getByText('Transaction updated')).toBeHidden();
+      // Dismiss toast so it doesn't intercept clicks on mobile
+      await page.evaluate(() => {
+        for (const el of document.querySelectorAll(
+          'section[aria-label*="Notification"] > *',
+        )) {
+          el.remove();
+        }
+      });
 
       // Delete transaction
       const updatedRow = page.getByRole('row', {
