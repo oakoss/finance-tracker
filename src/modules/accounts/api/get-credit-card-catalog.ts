@@ -2,9 +2,9 @@ import { createServerFn } from '@tanstack/react-start';
 import { asc } from 'drizzle-orm';
 
 import { db } from '@/db';
-import { isExpectedError, toError } from '@/lib/form/validation';
-import { createError, log } from '@/lib/logging/evlog';
+import { log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
+import { handleServerFnError } from '@/lib/server-fn/handle-error';
 import { creditCardCatalog } from '@/modules/accounts/db/schema';
 import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
 
@@ -27,18 +27,11 @@ export const getCreditCardCatalog = createServerFn({ method: 'GET' })
 
       return rows;
     } catch (error) {
-      if (isExpectedError(error)) throw error;
-      log.error({
+      handleServerFnError(error, {
         action: 'creditCardCatalog.list',
-        error: toError(error).message,
-        outcome: { success: false },
-        user: { idHash: hashId(userId) },
-      });
-      throw createError({
-        cause: toError(error),
         fix: 'Refresh the page. If the problem persists, contact support.',
         message: 'Failed to load credit card catalog.',
-        status: 500,
+        userId,
       });
     }
   });

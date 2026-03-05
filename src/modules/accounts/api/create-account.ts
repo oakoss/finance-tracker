@@ -1,16 +1,11 @@
 import { createServerFn } from '@tanstack/react-start';
 
 import { db } from '@/db';
-import { insertAuditLog } from '@/lib/audit/insert-audit-log';
-import { pgErrorFields, throwIfConstraintViolation } from '@/lib/db/pg-error';
-import { arkValidator, isExpectedError, toError } from '@/lib/form/validation';
-import { createError, log } from '@/lib/logging/evlog';
+import { arkValidator } from '@/lib/form/validation';
+import { log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
-import {
-  accountBalanceSnapshots,
-  accountTerms,
-  ledgerAccounts,
-} from '@/modules/accounts/db/schema';
+import { handleServerFnError } from '@/lib/server-fn/handle-error';
+import { createAccountService } from '@/modules/accounts/services/create-account';
 import { createAccountSchema } from '@/modules/accounts/validators';
 import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
 
@@ -21,57 +16,7 @@ export const createAccount = createServerFn({ method: 'POST' })
     const userId = requireUserId(context);
 
     try {
-      const result = await db.transaction(async (tx) => {
-        const { initialBalanceCents, terms, ...accountData } = data;
-
-        const [account] = await tx
-          .insert(ledgerAccounts)
-          .values({
-            ...accountData,
-            createdById: userId,
-            openedAt: accountData.openedAt
-              ? new Date(accountData.openedAt)
-              : null,
-            userId,
-          })
-          .returning();
-
-        if (!account) {
-          throw createError({
-            fix: 'Try again. If the problem persists, contact support.',
-            message: 'Failed to create account.',
-            status: 500,
-          });
-        }
-
-        if (terms) {
-          await tx.insert(accountTerms).values({
-            ...terms,
-            accountId: account.id,
-            createdById: userId,
-          });
-        }
-
-        if (initialBalanceCents !== undefined) {
-          await tx.insert(accountBalanceSnapshots).values({
-            accountId: account.id,
-            balanceCents: initialBalanceCents,
-            createdById: userId,
-            recordedAt: new Date(),
-            source: 'manual',
-          });
-        }
-
-        await insertAuditLog(tx, {
-          action: 'create',
-          actorId: userId,
-          afterData: account as unknown as Record<string, unknown>,
-          entityId: account.id,
-          tableName: 'ledger_accounts',
-        });
-
-        return account;
-      });
+      const result = await createAccountService(db, userId, data);
 
       log.info({
         action: 'account.create',
@@ -81,20 +26,11 @@ export const createAccount = createServerFn({ method: 'POST' })
 
       return result;
     } catch (error) {
-      if (isExpectedError(error)) throw error;
-      throwIfConstraintViolation(error, 'account.create', hashId(userId));
-      log.error({
+      handleServerFnError(error, {
         action: 'account.create',
-        error: toError(error).message,
-        outcome: { success: false },
-        user: { idHash: hashId(userId) },
-        ...pgErrorFields(error),
-      });
-      throw createError({
-        cause: toError(error),
         fix: 'Try again. If the problem persists, contact support.',
         message: 'Failed to create account.',
-        status: 500,
+        userId,
       });
     }
   });
