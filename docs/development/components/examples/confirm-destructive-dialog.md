@@ -95,7 +95,9 @@ function DeleteCategoryButton({ categoryId }: { categoryId: string }) {
 - Dialog cannot be closed while `loading` (Escape and Cancel are blocked).
 - The component does not `await` `onConfirm`. For async operations,
   manage the `loading` prop externally to keep the dialog open.
-- The label displays the confirm phrase in `font-mono font-semibold`.
+- The label displays the confirm phrase in a `<code>` tag with a muted
+  background and `select-all`, making it visually distinct and
+  one-click selectable for copy-paste.
 - The input placeholder echoes the confirm phrase as a hint.
 
 ## i18n keys

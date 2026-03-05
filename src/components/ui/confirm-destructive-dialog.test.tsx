@@ -13,6 +13,7 @@ vi.mock('@/paraglide/messages', () => ({
         const messages: Record<string, (...args: unknown[]) => string> = {
           'actions.cancel': () => 'Cancel',
           'actions.delete': () => 'Delete',
+          'confirm.copied': () => 'Copied!',
           'confirm.typePhrasePrefix': () => 'Type',
           'confirm.typePhraseSuffix': () => 'to confirm',
         };
@@ -48,16 +49,20 @@ describe('ConfirmDestructiveDialog', () => {
     ).toBeInTheDocument();
   });
 
-  it('shows the confirm phrase in the label', async () => {
+  it('shows the confirm phrase in a styled code element', async () => {
     const user = userEvent.setup();
     render(<ConfirmDestructiveDialog {...defaultProps} />);
 
     await user.click(screen.getByRole('button', { name: 'Open' }));
 
-    expect(screen.getByText('DELETE')).toBeInTheDocument();
-    expect(screen.getByText('DELETE')).toHaveClass(
+    const phrase = screen.getByText('DELETE');
+    expect(phrase.tagName).toBe('CODE');
+    expect(phrase).toHaveClass(
       'font-mono',
       'font-semibold',
+      'bg-muted',
+      'select-all',
+      'cursor-copy',
     );
   });
 

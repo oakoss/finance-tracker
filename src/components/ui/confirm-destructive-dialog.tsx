@@ -13,6 +13,13 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { m } from '@/paraglide/messages';
 
 type ConfirmDestructiveDialogProps = {
@@ -42,6 +49,7 @@ function ConfirmDestructiveDialog({
   const isControlled = openProp !== undefined;
   const open = isControlled ? openProp : internalOpen;
   const [value, setValue] = React.useState('');
+  const { copied, copy } = useCopyToClipboard({ timeout: 1500 });
   const inputId = React.useId();
 
   const isMatch = confirmPhrase.length > 0 && value === confirmPhrase;
@@ -71,7 +79,23 @@ function ConfirmDestructiveDialog({
         <div className="flex flex-col gap-2" data-slot="confirm-field">
           <Label htmlFor={inputId}>
             {m['confirm.typePhrasePrefix']()}{' '}
-            <span className="font-mono font-semibold">{confirmPhrase}</span>{' '}
+            <TooltipProvider>
+              <Tooltip open={copied}>
+                <TooltipTrigger
+                  render={
+                    <code className="cursor-copy select-all rounded-sm bg-muted px-1.5 py-0.5 font-mono font-semibold" />
+                  }
+                  onClick={(e) => {
+                    e.preventDefault();
+                    copy(confirmPhrase);
+                  }}
+                  onMouseDown={(e) => e.preventDefault()}
+                >
+                  {confirmPhrase}
+                </TooltipTrigger>
+                <TooltipContent>{m['confirm.copied']()}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>{' '}
             {m['confirm.typePhraseSuffix']()}
           </Label>
           <Input
