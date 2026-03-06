@@ -26,6 +26,7 @@ import { Route as AppAccountsRouteImport } from './routes/_app/accounts'
 import { Route as DemoComponentsRouteRouteImport } from './routes/_demo/components/route'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as DemoComponentsLayoutRouteImport } from './routes/_demo/components/layout'
+import { Route as DemoComponentsFormsRouteImport } from './routes/_demo/components/forms'
 
 const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
@@ -108,6 +109,11 @@ const DemoComponentsLayoutRoute = DemoComponentsLayoutRouteImport.update({
   path: '/layout',
   getParentRoute: () => DemoComponentsRouteRoute,
 } as any)
+const DemoComponentsFormsRoute = DemoComponentsFormsRouteImport.update({
+  id: '/forms',
+  path: '/forms',
+  getParentRoute: () => DemoComponentsRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/dashboard': typeof DemoDashboardRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
+  '/components/forms': typeof DemoComponentsFormsRoute
   '/components/layout': typeof DemoComponentsLayoutRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -136,6 +143,7 @@ export interface FileRoutesByTo {
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/dashboard': typeof DemoDashboardRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
+  '/components/forms': typeof DemoComponentsFormsRoute
   '/components/layout': typeof DemoComponentsLayoutRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -156,6 +164,7 @@ export interface FileRoutesById {
   '/demo/dashboard': typeof DemoDashboardRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
   '/_public/': typeof PublicIndexRoute
+  '/_demo/components/forms': typeof DemoComponentsFormsRoute
   '/_demo/components/layout': typeof DemoComponentsLayoutRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -173,6 +182,7 @@ export interface FileRouteTypes {
     | '/demo/better-auth'
     | '/demo/dashboard'
     | '/demo/drizzle'
+    | '/components/forms'
     | '/components/layout'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
@@ -188,6 +198,7 @@ export interface FileRouteTypes {
     | '/demo/better-auth'
     | '/demo/dashboard'
     | '/demo/drizzle'
+    | '/components/forms'
     | '/components/layout'
     | '/api/auth/$'
   id:
@@ -207,6 +218,7 @@ export interface FileRouteTypes {
     | '/demo/dashboard'
     | '/demo/drizzle'
     | '/_public/'
+    | '/_demo/components/forms'
     | '/_demo/components/layout'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
@@ -343,6 +355,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoComponentsLayoutRouteImport
       parentRoute: typeof DemoComponentsRouteRoute
     }
+    '/_demo/components/forms': {
+      id: '/_demo/components/forms'
+      path: '/forms'
+      fullPath: '/components/forms'
+      preLoaderRoute: typeof DemoComponentsFormsRouteImport
+      parentRoute: typeof DemoComponentsRouteRoute
+    }
   }
 }
 
@@ -379,10 +398,12 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 )
 
 interface DemoComponentsRouteRouteChildren {
+  DemoComponentsFormsRoute: typeof DemoComponentsFormsRoute
   DemoComponentsLayoutRoute: typeof DemoComponentsLayoutRoute
 }
 
 const DemoComponentsRouteRouteChildren: DemoComponentsRouteRouteChildren = {
+  DemoComponentsFormsRoute: DemoComponentsFormsRoute,
   DemoComponentsLayoutRoute: DemoComponentsLayoutRoute,
 }
 

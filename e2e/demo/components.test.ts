@@ -2,8 +2,8 @@ import { expect, test } from '@playwright/test';
 
 const COMPONENT_PAGES = [
   'layout',
+  'forms',
   // Uncomment as pages are added:
-  // 'forms',
   // 'selections',
   // 'overlays',
   // 'data',

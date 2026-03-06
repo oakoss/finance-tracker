@@ -5,7 +5,8 @@ import { ModeToggle } from '@/components/mode-toggle';
 // Add entries here as component group pages are created.
 const NAV_ITEMS = [
   { label: 'Layout', to: '/components/layout' },
-  // { label: 'Forms', to: '/components/forms' },
+  { label: 'Forms', to: '/components/forms' },
+  // { label: 'Selections', to: '/components/selections' },
 ] as const;
 
 export const Route = createFileRoute('/_demo/components')({

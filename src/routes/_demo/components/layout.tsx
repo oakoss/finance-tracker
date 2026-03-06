@@ -1,5 +1,3 @@
-import type React from 'react';
-
 import { createFileRoute } from '@tanstack/react-router';
 
 import { Icons } from '@/components/icons';
@@ -37,40 +35,11 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Spinner } from '@/components/ui/spinner';
+import { Section, Subsection } from '@/routes/_demo/components/shared';
 
 export const Route = createFileRoute('/_demo/components/layout')({
   component: LayoutPage,
 });
-
-function Section({
-  children,
-  title,
-}: {
-  children: React.ReactNode;
-  title: string;
-}) {
-  return (
-    <section className="space-y-3">
-      <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
-      {children}
-    </section>
-  );
-}
-
-function Subsection({
-  children,
-  label,
-}: {
-  children: React.ReactNode;
-  label: string;
-}) {
-  return (
-    <div className="space-y-2">
-      <p className="text-sm text-muted-foreground">{label}</p>
-      <div className="flex flex-wrap items-center gap-2">{children}</div>
-    </div>
-  );
-}
 
 const BUTTON_VARIANTS = [
   'default',
