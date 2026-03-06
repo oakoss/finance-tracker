@@ -26,6 +26,7 @@ import { Route as AppAccountsRouteImport } from './routes/_app/accounts'
 import { Route as DemoComponentsRouteRouteImport } from './routes/_demo/components/route'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as DemoComponentsSelectionsRouteImport } from './routes/_demo/components/selections'
+import { Route as DemoComponentsOverlaysRouteImport } from './routes/_demo/components/overlays'
 import { Route as DemoComponentsLayoutRouteImport } from './routes/_demo/components/layout'
 import { Route as DemoComponentsFormsRouteImport } from './routes/_demo/components/forms'
 
@@ -111,6 +112,11 @@ const DemoComponentsSelectionsRoute =
     path: '/selections',
     getParentRoute: () => DemoComponentsRouteRoute,
   } as any)
+const DemoComponentsOverlaysRoute = DemoComponentsOverlaysRouteImport.update({
+  id: '/overlays',
+  path: '/overlays',
+  getParentRoute: () => DemoComponentsRouteRoute,
+} as any)
 const DemoComponentsLayoutRoute = DemoComponentsLayoutRouteImport.update({
   id: '/layout',
   path: '/layout',
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/demo/drizzle': typeof DemoDrizzleRoute
   '/components/forms': typeof DemoComponentsFormsRoute
   '/components/layout': typeof DemoComponentsLayoutRoute
+  '/components/overlays': typeof DemoComponentsOverlaysRoute
   '/components/selections': typeof DemoComponentsSelectionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -153,6 +160,7 @@ export interface FileRoutesByTo {
   '/demo/drizzle': typeof DemoDrizzleRoute
   '/components/forms': typeof DemoComponentsFormsRoute
   '/components/layout': typeof DemoComponentsLayoutRoute
+  '/components/overlays': typeof DemoComponentsOverlaysRoute
   '/components/selections': typeof DemoComponentsSelectionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -175,6 +183,7 @@ export interface FileRoutesById {
   '/_public/': typeof PublicIndexRoute
   '/_demo/components/forms': typeof DemoComponentsFormsRoute
   '/_demo/components/layout': typeof DemoComponentsLayoutRoute
+  '/_demo/components/overlays': typeof DemoComponentsOverlaysRoute
   '/_demo/components/selections': typeof DemoComponentsSelectionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -194,6 +203,7 @@ export interface FileRouteTypes {
     | '/demo/drizzle'
     | '/components/forms'
     | '/components/layout'
+    | '/components/overlays'
     | '/components/selections'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
@@ -211,6 +221,7 @@ export interface FileRouteTypes {
     | '/demo/drizzle'
     | '/components/forms'
     | '/components/layout'
+    | '/components/overlays'
     | '/components/selections'
     | '/api/auth/$'
   id:
@@ -232,6 +243,7 @@ export interface FileRouteTypes {
     | '/_public/'
     | '/_demo/components/forms'
     | '/_demo/components/layout'
+    | '/_demo/components/overlays'
     | '/_demo/components/selections'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
@@ -368,6 +380,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoComponentsSelectionsRouteImport
       parentRoute: typeof DemoComponentsRouteRoute
     }
+    '/_demo/components/overlays': {
+      id: '/_demo/components/overlays'
+      path: '/overlays'
+      fullPath: '/components/overlays'
+      preLoaderRoute: typeof DemoComponentsOverlaysRouteImport
+      parentRoute: typeof DemoComponentsRouteRoute
+    }
     '/_demo/components/layout': {
       id: '/_demo/components/layout'
       path: '/layout'
@@ -420,12 +439,14 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 interface DemoComponentsRouteRouteChildren {
   DemoComponentsFormsRoute: typeof DemoComponentsFormsRoute
   DemoComponentsLayoutRoute: typeof DemoComponentsLayoutRoute
+  DemoComponentsOverlaysRoute: typeof DemoComponentsOverlaysRoute
   DemoComponentsSelectionsRoute: typeof DemoComponentsSelectionsRoute
 }
 
 const DemoComponentsRouteRouteChildren: DemoComponentsRouteRouteChildren = {
   DemoComponentsFormsRoute: DemoComponentsFormsRoute,
   DemoComponentsLayoutRoute: DemoComponentsLayoutRoute,
+  DemoComponentsOverlaysRoute: DemoComponentsOverlaysRoute,
   DemoComponentsSelectionsRoute: DemoComponentsSelectionsRoute,
 }
 

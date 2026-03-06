@@ -5,7 +5,7 @@ const COMPONENT_PAGES = [
   'forms',
   'selections',
   // Uncomment as pages are added:
-  // 'overlays',
+  'overlays',
   // 'data',
   // 'navigation',
   // 'date',
