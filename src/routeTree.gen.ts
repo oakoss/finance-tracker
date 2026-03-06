@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PublicRouteRouteImport } from './routes/_public/route'
+import { Route as DemoRouteRouteImport } from './routes/_demo/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as AppRouteRouteImport } from './routes/_app/route'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
@@ -22,10 +23,16 @@ import { Route as AppTransactionsRouteImport } from './routes/_app/transactions'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppCategoriesRouteImport } from './routes/_app/categories'
 import { Route as AppAccountsRouteImport } from './routes/_app/accounts'
+import { Route as DemoComponentsRouteRouteImport } from './routes/_demo/components/route'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as DemoComponentsLayoutRouteImport } from './routes/_demo/components/layout'
 
 const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoRouteRoute = DemoRouteRouteImport.update({
+  id: '/_demo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRouteRoute = AuthRouteRouteImport.update({
@@ -86,14 +93,25 @@ const AppAccountsRoute = AppAccountsRouteImport.update({
   path: '/accounts',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const DemoComponentsRouteRoute = DemoComponentsRouteRouteImport.update({
+  id: '/components',
+  path: '/components',
+  getParentRoute: () => DemoRouteRoute,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DemoComponentsLayoutRoute = DemoComponentsLayoutRouteImport.update({
+  id: '/layout',
+  path: '/layout',
+  getParentRoute: () => DemoComponentsRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
+  '/components': typeof DemoComponentsRouteRouteWithChildren
   '/accounts': typeof AppAccountsRoute
   '/categories': typeof AppCategoriesRoute
   '/dashboard': typeof AppDashboardRoute
@@ -103,10 +121,12 @@ export interface FileRoutesByFullPath {
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/dashboard': typeof DemoDashboardRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
+  '/components/layout': typeof DemoComponentsLayoutRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
+  '/components': typeof DemoComponentsRouteRouteWithChildren
   '/accounts': typeof AppAccountsRoute
   '/categories': typeof AppCategoriesRoute
   '/dashboard': typeof AppDashboardRoute
@@ -116,13 +136,16 @@ export interface FileRoutesByTo {
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/dashboard': typeof DemoDashboardRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
+  '/components/layout': typeof DemoComponentsLayoutRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteRouteWithChildren
   '/_auth': typeof AuthRouteRouteWithChildren
+  '/_demo': typeof DemoRouteRouteWithChildren
   '/_public': typeof PublicRouteRouteWithChildren
+  '/_demo/components': typeof DemoComponentsRouteRouteWithChildren
   '/_app/accounts': typeof AppAccountsRoute
   '/_app/categories': typeof AppCategoriesRoute
   '/_app/dashboard': typeof AppDashboardRoute
@@ -133,12 +156,14 @@ export interface FileRoutesById {
   '/demo/dashboard': typeof DemoDashboardRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
   '/_public/': typeof PublicIndexRoute
+  '/_demo/components/layout': typeof DemoComponentsLayoutRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/components'
     | '/accounts'
     | '/categories'
     | '/dashboard'
@@ -148,10 +173,12 @@ export interface FileRouteTypes {
     | '/demo/better-auth'
     | '/demo/dashboard'
     | '/demo/drizzle'
+    | '/components/layout'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/components'
     | '/accounts'
     | '/categories'
     | '/dashboard'
@@ -161,12 +188,15 @@ export interface FileRouteTypes {
     | '/demo/better-auth'
     | '/demo/dashboard'
     | '/demo/drizzle'
+    | '/components/layout'
     | '/api/auth/$'
   id:
     | '__root__'
     | '/_app'
     | '/_auth'
+    | '/_demo'
     | '/_public'
+    | '/_demo/components'
     | '/_app/accounts'
     | '/_app/categories'
     | '/_app/dashboard'
@@ -177,12 +207,14 @@ export interface FileRouteTypes {
     | '/demo/dashboard'
     | '/demo/drizzle'
     | '/_public/'
+    | '/_demo/components/layout'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AppRouteRoute: typeof AppRouteRouteWithChildren
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
+  DemoRouteRoute: typeof DemoRouteRouteWithChildren
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
   DemoBetterAuthRoute: typeof DemoBetterAuthRoute
   DemoDashboardRoute: typeof DemoDashboardRoute
@@ -197,6 +229,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof PublicRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_demo': {
+      id: '/_demo'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof DemoRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
@@ -283,12 +322,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAccountsRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_demo/components': {
+      id: '/_demo/components'
+      path: '/components'
+      fullPath: '/components'
+      preLoaderRoute: typeof DemoComponentsRouteRouteImport
+      parentRoute: typeof DemoRouteRoute
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
       fullPath: '/api/auth/$'
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_demo/components/layout': {
+      id: '/_demo/components/layout'
+      path: '/layout'
+      fullPath: '/components/layout'
+      preLoaderRoute: typeof DemoComponentsLayoutRouteImport
+      parentRoute: typeof DemoComponentsRouteRoute
     }
   }
 }
@@ -325,6 +378,29 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
   AuthRouteRouteChildren,
 )
 
+interface DemoComponentsRouteRouteChildren {
+  DemoComponentsLayoutRoute: typeof DemoComponentsLayoutRoute
+}
+
+const DemoComponentsRouteRouteChildren: DemoComponentsRouteRouteChildren = {
+  DemoComponentsLayoutRoute: DemoComponentsLayoutRoute,
+}
+
+const DemoComponentsRouteRouteWithChildren =
+  DemoComponentsRouteRoute._addFileChildren(DemoComponentsRouteRouteChildren)
+
+interface DemoRouteRouteChildren {
+  DemoComponentsRouteRoute: typeof DemoComponentsRouteRouteWithChildren
+}
+
+const DemoRouteRouteChildren: DemoRouteRouteChildren = {
+  DemoComponentsRouteRoute: DemoComponentsRouteRouteWithChildren,
+}
+
+const DemoRouteRouteWithChildren = DemoRouteRoute._addFileChildren(
+  DemoRouteRouteChildren,
+)
+
 interface PublicRouteRouteChildren {
   PublicIndexRoute: typeof PublicIndexRoute
 }
@@ -340,6 +416,7 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AppRouteRoute: AppRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
+  DemoRouteRoute: DemoRouteRouteWithChildren,
   PublicRouteRoute: PublicRouteRouteWithChildren,
   DemoBetterAuthRoute: DemoBetterAuthRoute,
   DemoDashboardRoute: DemoDashboardRoute,
