@@ -129,7 +129,7 @@ function NumberFieldDecrement({
     <NumberFieldPrimitive.Decrement
       className={cn(
         numberFieldButtonVariants({ size }),
-        'rounded-s-4xl border-e-0',
+        'rounded-s-md border-e-0',
         className,
       )}
       data-slot="number-field-decrement"
@@ -161,7 +161,7 @@ function NumberFieldIncrement({
     <NumberFieldPrimitive.Increment
       className={cn(
         numberFieldButtonVariants({ size }),
-        'rounded-e-4xl border-s-0',
+        'rounded-e-md border-s-0',
         className,
       )}
       data-slot="number-field-increment"

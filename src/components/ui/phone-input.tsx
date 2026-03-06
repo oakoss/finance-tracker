@@ -144,7 +144,7 @@ function CountrySelect({
         render={
           <Button
             className={cn(
-              'rounded-s-4xl rounded-e-none flex gap-1 border-e-0 px-2.5 py-0 leading-none hover:bg-transparent focus:z-10 data-pressed:bg-transparent',
+              'rounded-s-lg rounded-e-none flex gap-1 border-e-0 px-2.5 py-0 leading-none hover:bg-transparent focus:z-10 data-pressed:bg-transparent',
               disabled && 'opacity-50',
             )}
             disabled={disabled}
@@ -219,12 +219,12 @@ function FlagPreview({ country, countryName }: FlagPreviewProps) {
   const label = countryName ?? country ?? 'Unknown country';
 
   return country && Flag ? (
-    <span className="bg-muted flex size-5 items-center justify-center overflow-hidden rounded-full">
+    <span className="flex size-5 shrink-0 items-center justify-center">
       <span className="sr-only">{label}</span>
       <Flag title={label} />
     </span>
   ) : (
-    <span className="bg-muted flex size-5 items-center justify-center overflow-hidden rounded-full">
+    <span className="bg-muted flex size-5 shrink-0 items-center justify-center rounded-full">
       <Icons.Globe className="text-muted-foreground size-4" />
     </span>
   );

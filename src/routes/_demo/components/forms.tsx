@@ -118,7 +118,6 @@ function FormsPage() {
             <Input placeholder="name@example.com" type="email" />
             <Input placeholder="https://example.com" type="url" />
             <Input placeholder="Search..." type="search" />
-            <Input type="file" />
           </div>
         </Subsection>
 
@@ -136,7 +135,7 @@ function FormsPage() {
           <Textarea className="max-w-sm" placeholder="Type your message..." />
         </Subsection>
 
-        <Subsection label="States">
+        <Subsection className="block" label="States">
           <div className="max-w-sm space-y-3">
             <Textarea placeholder="Default" />
             <Textarea disabled placeholder="Disabled" />
@@ -204,7 +203,7 @@ function FormsPage() {
               <Switch defaultChecked />
               <FieldLabel>On</FieldLabel>
             </Field>
-            <Field orientation="horizontal">
+            <Field data-disabled="true" orientation="horizontal">
               <Switch disabled />
               <FieldLabel>Disabled</FieldLabel>
             </Field>
@@ -216,29 +215,29 @@ function FormsPage() {
         <Subsection label="Default">
           <RadioGroup defaultValue="comfortable">
             <Field orientation="horizontal">
-              <RadioGroupItem value="default" />
-              <FieldLabel>Default</FieldLabel>
+              <RadioGroupItem id="radio-default" value="default" />
+              <FieldLabel htmlFor="radio-default">Default</FieldLabel>
             </Field>
             <Field orientation="horizontal">
-              <RadioGroupItem value="comfortable" />
-              <FieldLabel>Comfortable</FieldLabel>
+              <RadioGroupItem id="radio-comfortable" value="comfortable" />
+              <FieldLabel htmlFor="radio-comfortable">Comfortable</FieldLabel>
             </Field>
             <Field orientation="horizontal">
-              <RadioGroupItem value="compact" />
-              <FieldLabel>Compact</FieldLabel>
+              <RadioGroupItem id="radio-compact" value="compact" />
+              <FieldLabel htmlFor="radio-compact">Compact</FieldLabel>
             </Field>
           </RadioGroup>
         </Subsection>
 
         <Subsection label="Disabled">
           <RadioGroup disabled defaultValue="option-1">
-            <Field orientation="horizontal">
-              <RadioGroupItem value="option-1" />
-              <FieldLabel>Option 1</FieldLabel>
+            <Field data-disabled="true" orientation="horizontal">
+              <RadioGroupItem id="radio-disabled-1" value="option-1" />
+              <FieldLabel htmlFor="radio-disabled-1">Option 1</FieldLabel>
             </Field>
-            <Field orientation="horizontal">
-              <RadioGroupItem value="option-2" />
-              <FieldLabel>Option 2</FieldLabel>
+            <Field data-disabled="true" orientation="horizontal">
+              <RadioGroupItem id="radio-disabled-2" value="option-2" />
+              <FieldLabel htmlFor="radio-disabled-2">Option 2</FieldLabel>
             </Field>
           </RadioGroup>
         </Subsection>
