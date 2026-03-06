@@ -25,6 +25,7 @@ import { Route as AppCategoriesRouteImport } from './routes/_app/categories'
 import { Route as AppAccountsRouteImport } from './routes/_app/accounts'
 import { Route as DemoComponentsRouteRouteImport } from './routes/_demo/components/route'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as DemoComponentsSelectionsRouteImport } from './routes/_demo/components/selections'
 import { Route as DemoComponentsLayoutRouteImport } from './routes/_demo/components/layout'
 import { Route as DemoComponentsFormsRouteImport } from './routes/_demo/components/forms'
 
@@ -104,6 +105,12 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DemoComponentsSelectionsRoute =
+  DemoComponentsSelectionsRouteImport.update({
+    id: '/selections',
+    path: '/selections',
+    getParentRoute: () => DemoComponentsRouteRoute,
+  } as any)
 const DemoComponentsLayoutRoute = DemoComponentsLayoutRouteImport.update({
   id: '/layout',
   path: '/layout',
@@ -129,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/demo/drizzle': typeof DemoDrizzleRoute
   '/components/forms': typeof DemoComponentsFormsRoute
   '/components/layout': typeof DemoComponentsLayoutRoute
+  '/components/selections': typeof DemoComponentsSelectionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
@@ -145,6 +153,7 @@ export interface FileRoutesByTo {
   '/demo/drizzle': typeof DemoDrizzleRoute
   '/components/forms': typeof DemoComponentsFormsRoute
   '/components/layout': typeof DemoComponentsLayoutRoute
+  '/components/selections': typeof DemoComponentsSelectionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
@@ -166,6 +175,7 @@ export interface FileRoutesById {
   '/_public/': typeof PublicIndexRoute
   '/_demo/components/forms': typeof DemoComponentsFormsRoute
   '/_demo/components/layout': typeof DemoComponentsLayoutRoute
+  '/_demo/components/selections': typeof DemoComponentsSelectionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
@@ -184,6 +194,7 @@ export interface FileRouteTypes {
     | '/demo/drizzle'
     | '/components/forms'
     | '/components/layout'
+    | '/components/selections'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -200,6 +211,7 @@ export interface FileRouteTypes {
     | '/demo/drizzle'
     | '/components/forms'
     | '/components/layout'
+    | '/components/selections'
     | '/api/auth/$'
   id:
     | '__root__'
@@ -220,6 +232,7 @@ export interface FileRouteTypes {
     | '/_public/'
     | '/_demo/components/forms'
     | '/_demo/components/layout'
+    | '/_demo/components/selections'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
@@ -348,6 +361,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_demo/components/selections': {
+      id: '/_demo/components/selections'
+      path: '/selections'
+      fullPath: '/components/selections'
+      preLoaderRoute: typeof DemoComponentsSelectionsRouteImport
+      parentRoute: typeof DemoComponentsRouteRoute
+    }
     '/_demo/components/layout': {
       id: '/_demo/components/layout'
       path: '/layout'
@@ -400,11 +420,13 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 interface DemoComponentsRouteRouteChildren {
   DemoComponentsFormsRoute: typeof DemoComponentsFormsRoute
   DemoComponentsLayoutRoute: typeof DemoComponentsLayoutRoute
+  DemoComponentsSelectionsRoute: typeof DemoComponentsSelectionsRoute
 }
 
 const DemoComponentsRouteRouteChildren: DemoComponentsRouteRouteChildren = {
   DemoComponentsFormsRoute: DemoComponentsFormsRoute,
   DemoComponentsLayoutRoute: DemoComponentsLayoutRoute,
+  DemoComponentsSelectionsRoute: DemoComponentsSelectionsRoute,
 }
 
 const DemoComponentsRouteRouteWithChildren =

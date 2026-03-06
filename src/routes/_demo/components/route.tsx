@@ -6,7 +6,8 @@ import { ModeToggle } from '@/components/mode-toggle';
 const NAV_ITEMS = [
   { label: 'Layout', to: '/components/layout' },
   { label: 'Forms', to: '/components/forms' },
-  // { label: 'Selections', to: '/components/selections' },
+  { label: 'Selections', to: '/components/selections' },
+  // { label: 'Overlays', to: '/components/overlays' },
 ] as const;
 
 export const Route = createFileRoute('/_demo/components')({
