@@ -2,6 +2,7 @@
 
 import { Autocomplete as AutocompletePrimitive } from '@base-ui/react/autocomplete';
 import { cva, type VariantProps } from 'class-variance-authority';
+import * as React from 'react';
 
 import { Icons } from '@/components/icons';
 import {
@@ -12,6 +13,9 @@ import {
 } from '@/components/ui/input-group';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+
+const AutocompleteAnchorContext =
+  React.createContext<React.RefObject<HTMLElement | null> | null>(null);
 
 const inputVariants = cva(
   'outline-none flex w-full text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [[readonly]]:bg-muted/80 [[readonly]]:cursor-not-allowed text-sm',
@@ -29,7 +33,17 @@ const inputVariants = cva(
   },
 );
 
-const Autocomplete = AutocompletePrimitive.Root;
+function Autocomplete({
+  ...props
+}: React.ComponentProps<typeof AutocompletePrimitive.Root>) {
+  const anchorRef = React.useRef<HTMLElement | null>(null);
+
+  return (
+    <AutocompleteAnchorContext.Provider value={anchorRef}>
+      <AutocompletePrimitive.Root {...props} />
+    </AutocompleteAnchorContext.Provider>
+  );
+}
 
 function AutocompleteValue({ ...props }: AutocompletePrimitive.Value.Props) {
   return (
@@ -50,8 +64,13 @@ function AutocompleteInput({
     showClear?: boolean;
     showTrigger?: boolean;
   }) {
+  const anchorRef = React.use(AutocompleteAnchorContext);
+
   return (
-    <InputGroup className={cn('w-full', className)}>
+    <InputGroup
+      ref={anchorRef as React.Ref<HTMLFieldSetElement>}
+      className={cn('w-full', className)}
+    >
       <AutocompletePrimitive.Input
         render={
           <InputGroupInput
@@ -139,7 +158,7 @@ function AutocompleteList({
     >
       <AutocompletePrimitive.List
         className={cn(
-          'no-scrollbar max-h-[min(calc(--spacing(72)---spacing(9)),calc(var(--available-height)---spacing(9)))] scroll-py-1 p-1 data-empty:p-0 overflow-y-auto overscroll-contain',
+          'no-scrollbar max-h-[min(calc(--spacing(72)---spacing(9)),calc(var(--available-height)---spacing(9)))] scroll-py-1 p-1 overflow-y-auto overscroll-contain',
           className,
         )}
         data-slot="autocomplete-list"
@@ -180,7 +199,7 @@ function AutocompleteItem({
   return (
     <AutocompletePrimitive.Item
       className={cn(
-        "text-foreground data-highlighted:text-foreground data-highlighted:before:bg-accent gap-2.5 rounded-xl px-3 py-2 text-sm data-highlighted:before:rounded-lg [&_svg:not([class*='size-'])]:size-4 relative flex cursor-default items-center outline-hidden transition-colors select-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:relative data-highlighted:z-0 data-highlighted:before:absolute data-highlighted:before:inset-0 data-highlighted:before:z-[-1] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([role=img]):not([class*=text-])]:opacity-60",
+        "data-highlighted:bg-accent data-highlighted:text-accent-foreground not-data-[variant=destructive]:data-highlighted:**:text-accent-foreground gap-2 rounded-md py-1 pr-8 pl-1.5 text-sm [&_svg:not([class*='size-'])]:size-4 relative flex w-full cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         className,
       )}
       data-slot="autocomplete-item"
@@ -209,28 +228,28 @@ function AutocompleteContent({
   sideOffset = 4,
   ...props
 }: AutocompleteContentProps) {
+  const anchorRef = React.use(AutocompleteAnchorContext);
+
   return (
     <AutocompletePortal>
       {showBackdrop ? <AutocompleteBackdrop /> : null}
       <AutocompletePositioner
         align={align}
         alignOffset={alignOffset}
-        anchor={anchor}
+        anchor={anchor ?? anchorRef}
         side={side}
         sideOffset={sideOffset}
       >
-        <div className="relative flex max-h-full">
-          <AutocompletePrimitive.Popup
-            className={cn(
-              'bg-popover text-popover-foreground rounded-2xl shadow-2xl ring-foreground/5 flex max-h-[min(var(--available-height),24rem)] w-(--anchor-width) max-w-(--available-width) origin-(--transform-origin) scroll-py-2 flex-col overscroll-contain py-0.5 ring-1 transition-[scale,opacity] has-data-starting-style:scale-98 has-data-starting-style:opacity-0 has-data-[side=none]:scale-100 has-data-[side=none]:transition-none',
-              className,
-            )}
-            data-slot="autocomplete-popup"
-            {...props}
-          >
-            {children}
-          </AutocompletePrimitive.Popup>
-        </div>
+        <AutocompletePrimitive.Popup
+          className={cn(
+            'bg-popover text-popover-foreground data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ring-foreground/10 overflow-hidden rounded-lg shadow-md ring-1 duration-100 data-[side=inline-start]:slide-in-from-right-2 data-[side=inline-end]:slide-in-from-left-2 relative max-h-(--available-height) w-(--anchor-width) min-w-(--anchor-width) max-w-(--available-width) origin-(--transform-origin)',
+            className,
+          )}
+          data-slot="autocomplete-popup"
+          {...props}
+        >
+          {children}
+        </AutocompletePrimitive.Popup>
       </AutocompletePositioner>
     </AutocompletePortal>
   );

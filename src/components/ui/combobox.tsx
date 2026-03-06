@@ -67,7 +67,7 @@ function ComboboxInput({
       <InputGroupAddon align="inline-end">
         {showTrigger && (
           <InputGroupButton
-            className="group-has-data-[slot=combobox-clear]/input-group:hidden data-pressed:bg-transparent"
+            className="group-has-data-[slot=combobox-clear]/input-group:hidden data-pressed:bg-transparent focus-visible:ring-0 focus-visible:border-transparent"
             data-slot="input-group-button"
             disabled={disabled}
             render={<ComboboxTrigger />}
@@ -88,7 +88,7 @@ function ComboboxContent({
   anchor,
   className,
   side = 'bottom',
-  sideOffset = 6,
+  sideOffset = 4,
   ...props
 }: ComboboxPrimitive.Popup.Props &
   Pick<
