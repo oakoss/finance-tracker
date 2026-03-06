@@ -225,7 +225,7 @@ function LayoutPage() {
       </Section>
 
       <Section title="Banner">
-        <div className="space-y-3 overflow-hidden rounded-lg border">
+        <div className="overflow-hidden rounded-lg border [&>*:last-child]:border-b-0">
           {BANNER_VARIANTS.map((v) => (
             <Banner key={v} variant={v}>
               <Icons.CircleAlert />
