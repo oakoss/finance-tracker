@@ -14,9 +14,6 @@ import { Route as DemoRouteRouteImport } from './routes/_demo/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as AppRouteRouteImport } from './routes/_app/route'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
-import { Route as DemoDrizzleRouteImport } from './routes/demo/drizzle'
-import { Route as DemoDashboardRouteImport } from './routes/demo/dashboard'
-import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as AppTransactionsRouteImport } from './routes/_app/transactions'
@@ -27,6 +24,7 @@ import { Route as DemoComponentsRouteRouteImport } from './routes/_demo/componen
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as DemoComponentsSelectionsRouteImport } from './routes/_demo/components/selections'
 import { Route as DemoComponentsOverlaysRouteImport } from './routes/_demo/components/overlays'
+import { Route as DemoComponentsNavigationRouteImport } from './routes/_demo/components/navigation'
 import { Route as DemoComponentsLayoutRouteImport } from './routes/_demo/components/layout'
 import { Route as DemoComponentsFormsRouteImport } from './routes/_demo/components/forms'
 import { Route as DemoComponentsDataRouteImport } from './routes/_demo/components/data'
@@ -51,21 +49,6 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => PublicRouteRoute,
-} as any)
-const DemoDrizzleRoute = DemoDrizzleRouteImport.update({
-  id: '/demo/drizzle',
-  path: '/demo/drizzle',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoDashboardRoute = DemoDashboardRouteImport.update({
-  id: '/demo/dashboard',
-  path: '/demo/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoBetterAuthRoute = DemoBetterAuthRouteImport.update({
-  id: '/demo/better-auth',
-  path: '/demo/better-auth',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthSignUpRoute = AuthSignUpRouteImport.update({
   id: '/sign-up',
@@ -118,6 +101,12 @@ const DemoComponentsOverlaysRoute = DemoComponentsOverlaysRouteImport.update({
   path: '/overlays',
   getParentRoute: () => DemoComponentsRouteRoute,
 } as any)
+const DemoComponentsNavigationRoute =
+  DemoComponentsNavigationRouteImport.update({
+    id: '/navigation',
+    path: '/navigation',
+    getParentRoute: () => DemoComponentsRouteRoute,
+  } as any)
 const DemoComponentsLayoutRoute = DemoComponentsLayoutRouteImport.update({
   id: '/layout',
   path: '/layout',
@@ -143,12 +132,10 @@ export interface FileRoutesByFullPath {
   '/transactions': typeof AppTransactionsRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
-  '/demo/better-auth': typeof DemoBetterAuthRoute
-  '/demo/dashboard': typeof DemoDashboardRoute
-  '/demo/drizzle': typeof DemoDrizzleRoute
   '/components/data': typeof DemoComponentsDataRoute
   '/components/forms': typeof DemoComponentsFormsRoute
   '/components/layout': typeof DemoComponentsLayoutRoute
+  '/components/navigation': typeof DemoComponentsNavigationRoute
   '/components/overlays': typeof DemoComponentsOverlaysRoute
   '/components/selections': typeof DemoComponentsSelectionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -162,12 +149,10 @@ export interface FileRoutesByTo {
   '/transactions': typeof AppTransactionsRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
-  '/demo/better-auth': typeof DemoBetterAuthRoute
-  '/demo/dashboard': typeof DemoDashboardRoute
-  '/demo/drizzle': typeof DemoDrizzleRoute
   '/components/data': typeof DemoComponentsDataRoute
   '/components/forms': typeof DemoComponentsFormsRoute
   '/components/layout': typeof DemoComponentsLayoutRoute
+  '/components/navigation': typeof DemoComponentsNavigationRoute
   '/components/overlays': typeof DemoComponentsOverlaysRoute
   '/components/selections': typeof DemoComponentsSelectionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -185,13 +170,11 @@ export interface FileRoutesById {
   '/_app/transactions': typeof AppTransactionsRoute
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
-  '/demo/better-auth': typeof DemoBetterAuthRoute
-  '/demo/dashboard': typeof DemoDashboardRoute
-  '/demo/drizzle': typeof DemoDrizzleRoute
   '/_public/': typeof PublicIndexRoute
   '/_demo/components/data': typeof DemoComponentsDataRoute
   '/_demo/components/forms': typeof DemoComponentsFormsRoute
   '/_demo/components/layout': typeof DemoComponentsLayoutRoute
+  '/_demo/components/navigation': typeof DemoComponentsNavigationRoute
   '/_demo/components/overlays': typeof DemoComponentsOverlaysRoute
   '/_demo/components/selections': typeof DemoComponentsSelectionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -207,12 +190,10 @@ export interface FileRouteTypes {
     | '/transactions'
     | '/sign-in'
     | '/sign-up'
-    | '/demo/better-auth'
-    | '/demo/dashboard'
-    | '/demo/drizzle'
     | '/components/data'
     | '/components/forms'
     | '/components/layout'
+    | '/components/navigation'
     | '/components/overlays'
     | '/components/selections'
     | '/api/auth/$'
@@ -226,12 +207,10 @@ export interface FileRouteTypes {
     | '/transactions'
     | '/sign-in'
     | '/sign-up'
-    | '/demo/better-auth'
-    | '/demo/dashboard'
-    | '/demo/drizzle'
     | '/components/data'
     | '/components/forms'
     | '/components/layout'
+    | '/components/navigation'
     | '/components/overlays'
     | '/components/selections'
     | '/api/auth/$'
@@ -248,13 +227,11 @@ export interface FileRouteTypes {
     | '/_app/transactions'
     | '/_auth/sign-in'
     | '/_auth/sign-up'
-    | '/demo/better-auth'
-    | '/demo/dashboard'
-    | '/demo/drizzle'
     | '/_public/'
     | '/_demo/components/data'
     | '/_demo/components/forms'
     | '/_demo/components/layout'
+    | '/_demo/components/navigation'
     | '/_demo/components/overlays'
     | '/_demo/components/selections'
     | '/api/auth/$'
@@ -265,9 +242,6 @@ export interface RootRouteChildren {
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   DemoRouteRoute: typeof DemoRouteRouteWithChildren
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
-  DemoBetterAuthRoute: typeof DemoBetterAuthRoute
-  DemoDashboardRoute: typeof DemoDashboardRoute
-  DemoDrizzleRoute: typeof DemoDrizzleRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
@@ -307,27 +281,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof PublicIndexRouteImport
       parentRoute: typeof PublicRouteRoute
-    }
-    '/demo/drizzle': {
-      id: '/demo/drizzle'
-      path: '/demo/drizzle'
-      fullPath: '/demo/drizzle'
-      preLoaderRoute: typeof DemoDrizzleRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/dashboard': {
-      id: '/demo/dashboard'
-      path: '/demo/dashboard'
-      fullPath: '/demo/dashboard'
-      preLoaderRoute: typeof DemoDashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/better-auth': {
-      id: '/demo/better-auth'
-      path: '/demo/better-auth'
-      fullPath: '/demo/better-auth'
-      preLoaderRoute: typeof DemoBetterAuthRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/_auth/sign-up': {
       id: '/_auth/sign-up'
@@ -399,6 +352,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoComponentsOverlaysRouteImport
       parentRoute: typeof DemoComponentsRouteRoute
     }
+    '/_demo/components/navigation': {
+      id: '/_demo/components/navigation'
+      path: '/navigation'
+      fullPath: '/components/navigation'
+      preLoaderRoute: typeof DemoComponentsNavigationRouteImport
+      parentRoute: typeof DemoComponentsRouteRoute
+    }
     '/_demo/components/layout': {
       id: '/_demo/components/layout'
       path: '/layout'
@@ -459,6 +419,7 @@ interface DemoComponentsRouteRouteChildren {
   DemoComponentsDataRoute: typeof DemoComponentsDataRoute
   DemoComponentsFormsRoute: typeof DemoComponentsFormsRoute
   DemoComponentsLayoutRoute: typeof DemoComponentsLayoutRoute
+  DemoComponentsNavigationRoute: typeof DemoComponentsNavigationRoute
   DemoComponentsOverlaysRoute: typeof DemoComponentsOverlaysRoute
   DemoComponentsSelectionsRoute: typeof DemoComponentsSelectionsRoute
 }
@@ -467,6 +428,7 @@ const DemoComponentsRouteRouteChildren: DemoComponentsRouteRouteChildren = {
   DemoComponentsDataRoute: DemoComponentsDataRoute,
   DemoComponentsFormsRoute: DemoComponentsFormsRoute,
   DemoComponentsLayoutRoute: DemoComponentsLayoutRoute,
+  DemoComponentsNavigationRoute: DemoComponentsNavigationRoute,
   DemoComponentsOverlaysRoute: DemoComponentsOverlaysRoute,
   DemoComponentsSelectionsRoute: DemoComponentsSelectionsRoute,
 }
@@ -503,9 +465,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRouteRoute: AuthRouteRouteWithChildren,
   DemoRouteRoute: DemoRouteRouteWithChildren,
   PublicRouteRoute: PublicRouteRouteWithChildren,
-  DemoBetterAuthRoute: DemoBetterAuthRoute,
-  DemoDashboardRoute: DemoDashboardRoute,
-  DemoDrizzleRoute: DemoDrizzleRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

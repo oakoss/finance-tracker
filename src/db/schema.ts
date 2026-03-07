@@ -18,8 +18,6 @@ export * from '@/modules/rules/db/relations';
 export * from '@/modules/rules/db/schema';
 export * from '@/modules/statements/db/relations';
 export * from '@/modules/statements/db/schema';
-export * from '@/modules/todos/db/relations';
-export * from '@/modules/todos/db/schema';
 export * from '@/modules/transactions/db/relations';
 export * from '@/modules/transactions/db/schema';
 export * from '@/modules/transfers/db/relations';
