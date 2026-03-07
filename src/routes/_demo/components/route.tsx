@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { label: 'Forms', to: '/components/forms' },
   { label: 'Selections', to: '/components/selections' },
   { label: 'Overlays', to: '/components/overlays' },
+  { label: 'Data', to: '/components/data' },
 ] as const;
 
 export const Route = createFileRoute('/_demo/components')({

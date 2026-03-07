@@ -29,6 +29,7 @@ import { Route as DemoComponentsSelectionsRouteImport } from './routes/_demo/com
 import { Route as DemoComponentsOverlaysRouteImport } from './routes/_demo/components/overlays'
 import { Route as DemoComponentsLayoutRouteImport } from './routes/_demo/components/layout'
 import { Route as DemoComponentsFormsRouteImport } from './routes/_demo/components/forms'
+import { Route as DemoComponentsDataRouteImport } from './routes/_demo/components/data'
 
 const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
@@ -127,6 +128,11 @@ const DemoComponentsFormsRoute = DemoComponentsFormsRouteImport.update({
   path: '/forms',
   getParentRoute: () => DemoComponentsRouteRoute,
 } as any)
+const DemoComponentsDataRoute = DemoComponentsDataRouteImport.update({
+  id: '/data',
+  path: '/data',
+  getParentRoute: () => DemoComponentsRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
@@ -140,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/dashboard': typeof DemoDashboardRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
+  '/components/data': typeof DemoComponentsDataRoute
   '/components/forms': typeof DemoComponentsFormsRoute
   '/components/layout': typeof DemoComponentsLayoutRoute
   '/components/overlays': typeof DemoComponentsOverlaysRoute
@@ -158,6 +165,7 @@ export interface FileRoutesByTo {
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/dashboard': typeof DemoDashboardRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
+  '/components/data': typeof DemoComponentsDataRoute
   '/components/forms': typeof DemoComponentsFormsRoute
   '/components/layout': typeof DemoComponentsLayoutRoute
   '/components/overlays': typeof DemoComponentsOverlaysRoute
@@ -181,6 +189,7 @@ export interface FileRoutesById {
   '/demo/dashboard': typeof DemoDashboardRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
   '/_public/': typeof PublicIndexRoute
+  '/_demo/components/data': typeof DemoComponentsDataRoute
   '/_demo/components/forms': typeof DemoComponentsFormsRoute
   '/_demo/components/layout': typeof DemoComponentsLayoutRoute
   '/_demo/components/overlays': typeof DemoComponentsOverlaysRoute
@@ -201,6 +210,7 @@ export interface FileRouteTypes {
     | '/demo/better-auth'
     | '/demo/dashboard'
     | '/demo/drizzle'
+    | '/components/data'
     | '/components/forms'
     | '/components/layout'
     | '/components/overlays'
@@ -219,6 +229,7 @@ export interface FileRouteTypes {
     | '/demo/better-auth'
     | '/demo/dashboard'
     | '/demo/drizzle'
+    | '/components/data'
     | '/components/forms'
     | '/components/layout'
     | '/components/overlays'
@@ -241,6 +252,7 @@ export interface FileRouteTypes {
     | '/demo/dashboard'
     | '/demo/drizzle'
     | '/_public/'
+    | '/_demo/components/data'
     | '/_demo/components/forms'
     | '/_demo/components/layout'
     | '/_demo/components/overlays'
@@ -401,6 +413,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoComponentsFormsRouteImport
       parentRoute: typeof DemoComponentsRouteRoute
     }
+    '/_demo/components/data': {
+      id: '/_demo/components/data'
+      path: '/data'
+      fullPath: '/components/data'
+      preLoaderRoute: typeof DemoComponentsDataRouteImport
+      parentRoute: typeof DemoComponentsRouteRoute
+    }
   }
 }
 
@@ -437,6 +456,7 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 )
 
 interface DemoComponentsRouteRouteChildren {
+  DemoComponentsDataRoute: typeof DemoComponentsDataRoute
   DemoComponentsFormsRoute: typeof DemoComponentsFormsRoute
   DemoComponentsLayoutRoute: typeof DemoComponentsLayoutRoute
   DemoComponentsOverlaysRoute: typeof DemoComponentsOverlaysRoute
@@ -444,6 +464,7 @@ interface DemoComponentsRouteRouteChildren {
 }
 
 const DemoComponentsRouteRouteChildren: DemoComponentsRouteRouteChildren = {
+  DemoComponentsDataRoute: DemoComponentsDataRoute,
   DemoComponentsFormsRoute: DemoComponentsFormsRoute,
   DemoComponentsLayoutRoute: DemoComponentsLayoutRoute,
   DemoComponentsOverlaysRoute: DemoComponentsOverlaysRoute,
