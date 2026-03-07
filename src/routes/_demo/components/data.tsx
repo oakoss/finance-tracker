@@ -63,6 +63,7 @@ import {
   TimelineSeparator,
   TimelineTitle,
 } from '@/components/ui/timeline';
+import { Timestamp } from '@/components/ui/timestamp';
 import { Section, Subsection } from '@/routes/_demo/components/shared';
 
 export const Route = createFileRoute('/_demo/components/data')({
@@ -433,6 +434,16 @@ function DataPage() {
               </Button>
             </div>
           </Stepper>
+        </Subsection>
+      </Section>
+
+      <Section title="Timestamp">
+        <Subsection label="Current date">
+          <Timestamp value={new Date()} />
+        </Subsection>
+
+        <Subsection label="From string">
+          <Timestamp value="2026-01-15T14:30:00Z" />
         </Subsection>
       </Section>
 

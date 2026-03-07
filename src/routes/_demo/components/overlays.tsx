@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import * as React from 'react';
+import { toast } from 'sonner';
 
 import { Icons } from '@/components/icons';
 import {
@@ -15,6 +16,17 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from '@/components/ui/command';
+import { ConfirmDestructiveDialog } from '@/components/ui/confirm-destructive-dialog';
 import {
   ContextMenu,
   ContextMenuCheckboxItem,
@@ -102,6 +114,18 @@ import { Section, Subsection } from '@/routes/_demo/components/shared';
 export const Route = createFileRoute('/_demo/components/overlays')({
   component: OverlaysPage,
 });
+
+const TOAST_VARIANTS = [
+  { fn: toast, label: 'Default', message: 'Default toast message' },
+  {
+    fn: toast.success,
+    label: 'Success',
+    message: 'Operation completed successfully',
+  },
+  { fn: toast.error, label: 'Error', message: 'Something went wrong' },
+  { fn: toast.warning, label: 'Warning', message: 'Please review your input' },
+  { fn: toast.info, label: 'Info', message: 'New update available' },
+] as const;
 
 function OverlaysPage() {
   const [cmCheckboxOne, setCmCheckboxOne] = React.useState(true);
@@ -498,6 +522,95 @@ function OverlaysPage() {
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
+        </Subsection>
+      </Section>
+
+      <Section title="Command">
+        <Subsection className="block max-w-sm" label="Inline">
+          <Command className="rounded-lg border">
+            <CommandInput placeholder="Type a command or search..." />
+            <CommandList>
+              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandGroup heading="Suggestions">
+                <CommandItem>
+                  <Icons.Calendar />
+                  Calendar
+                </CommandItem>
+                <CommandItem>
+                  <Icons.Search />
+                  Search transactions
+                </CommandItem>
+                <CommandItem>
+                  <Icons.Settings />
+                  Settings
+                </CommandItem>
+              </CommandGroup>
+              <CommandSeparator />
+              <CommandGroup heading="Actions">
+                <CommandItem>
+                  <Icons.Plus />
+                  New transaction
+                  <CommandShortcut>Ctrl+N</CommandShortcut>
+                </CommandItem>
+                <CommandItem>
+                  <Icons.Upload />
+                  Import CSV
+                  <CommandShortcut>Ctrl+I</CommandShortcut>
+                </CommandItem>
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </Subsection>
+      </Section>
+
+      <Section title="ConfirmDestructiveDialog">
+        <Subsection label="Default">
+          <ConfirmDestructiveDialog
+            confirmPhrase="delete my account"
+            description="This action cannot be undone. All data will be permanently removed."
+            title="Delete account"
+            trigger={<Button variant="destructive">Delete account</Button>}
+            onConfirm={() => toast.success('Confirmed!')}
+          />
+        </Subsection>
+      </Section>
+
+      <Section title="Toast (Sonner)">
+        <Subsection label="Variants">
+          {TOAST_VARIANTS.map(({ fn, label, message }) => (
+            <Button key={label} variant="outline" onClick={() => fn(message)}>
+              {label}
+            </Button>
+          ))}
+        </Subsection>
+
+        <Subsection label="With description">
+          <Button
+            variant="outline"
+            onClick={() =>
+              toast.success('Transaction saved', {
+                description: 'Your transaction has been recorded.',
+              })
+            }
+          >
+            With description
+          </Button>
+        </Subsection>
+
+        <Subsection label="With action">
+          <Button
+            variant="outline"
+            onClick={() =>
+              toast('Transaction deleted', {
+                action: {
+                  label: 'Undo',
+                  onClick: () => toast.info('Undone!'),
+                },
+              })
+            }
+          >
+            With action
+          </Button>
         </Subsection>
       </Section>
 

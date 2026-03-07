@@ -8,6 +8,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Badge } from '@/components/ui/badge';
 import {
   Banner,
@@ -26,15 +27,30 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
 import { Kbd, KbdGroup } from '@/components/ui/kbd';
+import { RouterLink } from '@/components/ui/link';
 import {
   Progress,
   ProgressLabel,
   ProgressValue,
 } from '@/components/ui/progress';
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '@/components/ui/resizable';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Spinner } from '@/components/ui/spinner';
+import { Toggle } from '@/components/ui/toggle';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Section, Subsection } from '@/routes/_demo/components/shared';
 
 export const Route = createFileRoute('/_demo/components/layout')({
@@ -80,6 +96,12 @@ const ALERT_VARIANTS = [
 ] as const;
 
 const BANNER_VARIANTS = ['info', 'success', 'warning', 'destructive'] as const;
+
+const ASPECT_RATIOS = [
+  { label: '16:9', maxWidth: 'max-w-xs', ratio: 16 / 9 },
+  { label: '4:3', maxWidth: 'max-w-xs', ratio: 4 / 3 },
+  { label: '1:1', maxWidth: 'max-w-50', ratio: 1 },
+];
 
 function LayoutPage() {
   return (
@@ -318,6 +340,210 @@ function LayoutPage() {
             <Kbd>Shift</Kbd>
             <Kbd>P</Kbd>
           </KbdGroup>
+        </Subsection>
+      </Section>
+
+      <Section title="Toggle">
+        <Subsection label="Default">
+          <Toggle aria-label="Toggle bold">
+            <Icons.Star />
+          </Toggle>
+          <Toggle aria-label="Toggle italic">
+            <Icons.Circle />
+          </Toggle>
+          <Toggle aria-label="Toggle underline">
+            <Icons.Check />
+          </Toggle>
+        </Subsection>
+
+        <Subsection label="Outline variant">
+          <Toggle aria-label="Toggle bold" variant="outline">
+            <Icons.Star />
+          </Toggle>
+          <Toggle aria-label="Toggle italic" variant="outline">
+            <Icons.Circle />
+          </Toggle>
+        </Subsection>
+
+        <Subsection label="Sizes">
+          <Toggle aria-label="Small" size="sm">
+            <Icons.Star />
+          </Toggle>
+          <Toggle aria-label="Default">
+            <Icons.Star />
+          </Toggle>
+          <Toggle aria-label="Large" size="lg">
+            <Icons.Star />
+          </Toggle>
+        </Subsection>
+      </Section>
+
+      <Section title="ToggleGroup">
+        <Subsection label="Default">
+          <ToggleGroup defaultValue={['bold']}>
+            <ToggleGroupItem value="bold">
+              <Icons.Star />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="italic">
+              <Icons.Circle />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="underline">
+              <Icons.Check />
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </Subsection>
+
+        <Subsection label="Outline variant">
+          <ToggleGroup defaultValue={['center']} variant="outline">
+            <ToggleGroupItem value="left">
+              <Icons.ArrowLeft />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="center">
+              <Icons.ArrowUp />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="right">
+              <Icons.ArrowRight />
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </Subsection>
+
+        <Subsection label="With spacing">
+          <ToggleGroup defaultValue={['bold']} spacing={1}>
+            <ToggleGroupItem value="bold">
+              <Icons.Star />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="italic">
+              <Icons.Circle />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="underline">
+              <Icons.Check />
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </Subsection>
+      </Section>
+
+      <Section title="Resizable">
+        <Subsection className="block" label="Horizontal">
+          <ResizablePanelGroup
+            className="max-w-lg rounded-lg border"
+            orientation="horizontal"
+          >
+            <ResizablePanel defaultSize={50}>
+              <div className="flex h-24 items-center justify-center text-sm">
+                Panel A
+              </div>
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={50}>
+              <div className="flex h-24 items-center justify-center text-sm">
+                Panel B
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </Subsection>
+
+        <Subsection className="block" label="Vertical">
+          <ResizablePanelGroup
+            className="max-w-lg rounded-lg border"
+            orientation="vertical"
+          >
+            <ResizablePanel defaultSize={50}>
+              <div className="flex h-16 items-center justify-center text-sm">
+                Top
+              </div>
+            </ResizablePanel>
+            <ResizableHandle />
+            <ResizablePanel defaultSize={50}>
+              <div className="flex h-16 items-center justify-center text-sm">
+                Bottom
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </Subsection>
+      </Section>
+
+      <Section title="AspectRatio">
+        {ASPECT_RATIOS.map(({ label, maxWidth, ratio }) => (
+          <Subsection key={label} className={`block ${maxWidth}`} label={label}>
+            <AspectRatio
+              className="bg-muted flex items-center justify-center rounded-lg"
+              ratio={ratio}
+            >
+              <span className="text-muted-foreground text-sm">{label}</span>
+            </AspectRatio>
+          </Subsection>
+        ))}
+      </Section>
+
+      <Section title="Empty">
+        <Subsection className="block max-w-md" label="Default">
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="prominent">
+                <Icons.Wallet />
+              </EmptyMedia>
+              <EmptyTitle>No transactions</EmptyTitle>
+              <EmptyDescription>
+                You have not added any transactions yet. Get started by creating
+                your first one.
+              </EmptyDescription>
+            </EmptyHeader>
+            <Button size="sm">
+              <Icons.Plus data-icon="inline-start" />
+              Add transaction
+            </Button>
+          </Empty>
+        </Subsection>
+
+        <Subsection
+          className="block max-w-md"
+          label="Size sm with icon variant"
+        >
+          <Empty size="sm">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Icons.Search />
+              </EmptyMedia>
+              <EmptyTitle>No results found</EmptyTitle>
+              <EmptyDescription>
+                Try adjusting your search or filter criteria.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        </Subsection>
+      </Section>
+
+      <Section title="RouterLink">
+        <Subsection label="Variants">
+          <RouterLink to="/components/layout">default</RouterLink>
+          <RouterLink to="/components/layout" variant="muted">
+            muted
+          </RouterLink>
+          <RouterLink to="/components/layout" variant="subtle">
+            subtle
+          </RouterLink>
+          <RouterLink to="/components/layout" variant="nav">
+            nav
+          </RouterLink>
+          <RouterLink to="/components/layout" variant="destructive">
+            destructive
+          </RouterLink>
+        </Subsection>
+
+        <Subsection label="External with icon">
+          <RouterLink external showExternalIcon to="https://example.com">
+            External link
+          </RouterLink>
+        </Subsection>
+
+        <Subsection label="Sizes">
+          <RouterLink size="sm" to="/components/layout">
+            small
+          </RouterLink>
+          <RouterLink to="/components/layout">default</RouterLink>
+          <RouterLink size="lg" to="/components/layout">
+            large
+          </RouterLink>
         </Subsection>
       </Section>
     </div>

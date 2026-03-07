@@ -1,6 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router';
+import * as React from 'react';
 
+import { Icons } from '@/components/icons';
+import { Calendar } from '@/components/ui/calendar';
 import { Checkbox } from '@/components/ui/checkbox';
+import { DatePicker } from '@/components/ui/date-picker';
 import {
   Field,
   FieldContent,
@@ -14,6 +18,20 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+  InputGroupText,
+  InputGroupTextarea,
+} from '@/components/ui/input-group';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from '@/components/ui/input-otp';
+import {
   NumberField,
   NumberFieldDecrement,
   NumberFieldGroup,
@@ -23,6 +41,8 @@ import {
 import { PasswordInput } from '@/components/ui/password-input';
 import { PhoneInput } from '@/components/ui/phone-input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Rating } from '@/components/ui/rating';
+import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Section, Subsection } from '@/routes/_demo/components/shared';
@@ -31,7 +51,13 @@ export const Route = createFileRoute('/_demo/components/forms')({
   component: FormsPage,
 });
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const noop = () => {};
+
 function FormsPage() {
+  const [ratingValue, setRatingValue] = React.useState(3);
+  const [dateValue, setDateValue] = React.useState('');
+
   return (
     <div className="space-y-10">
       <Section title="Field">
@@ -339,6 +365,158 @@ function FormsPage() {
               />
             </Field>
           </FieldGroup>
+        </Subsection>
+      </Section>
+
+      <Section title="InputGroup">
+        <Subsection label="With icon addon">
+          <div className="max-w-sm">
+            <InputGroup>
+              <InputGroupAddon>
+                <InputGroupText>
+                  <Icons.Search />
+                </InputGroupText>
+              </InputGroupAddon>
+              <InputGroupInput placeholder="Search..." />
+            </InputGroup>
+          </div>
+        </Subsection>
+
+        <Subsection label="With button addon">
+          <div className="max-w-sm">
+            <InputGroup>
+              <InputGroupInput placeholder="Enter URL..." />
+              <InputGroupAddon align="inline-end">
+                <InputGroupButton variant="outline">Copy</InputGroupButton>
+              </InputGroupAddon>
+            </InputGroup>
+          </div>
+        </Subsection>
+
+        <Subsection label="With text addon">
+          <div className="max-w-sm">
+            <InputGroup>
+              <InputGroupAddon>
+                <InputGroupText>$</InputGroupText>
+              </InputGroupAddon>
+              <InputGroupInput placeholder="0.00" type="number" />
+              <InputGroupAddon align="inline-end">
+                <InputGroupText>USD</InputGroupText>
+              </InputGroupAddon>
+            </InputGroup>
+          </div>
+        </Subsection>
+
+        <Subsection className="block" label="With textarea">
+          <div className="max-w-sm">
+            <InputGroup>
+              <InputGroupTextarea placeholder="Write a note..." rows={3} />
+              <InputGroupAddon align="block-end">
+                <InputGroupButton variant="outline">Send</InputGroupButton>
+              </InputGroupAddon>
+            </InputGroup>
+          </div>
+        </Subsection>
+      </Section>
+
+      <Section title="InputOTP">
+        <Subsection label="6 digits">
+          <InputOTP maxLength={6}>
+            <InputOTPGroup>
+              <InputOTPSlot index={0} />
+              <InputOTPSlot index={1} />
+              <InputOTPSlot index={2} />
+            </InputOTPGroup>
+            <InputOTPSeparator />
+            <InputOTPGroup>
+              <InputOTPSlot index={3} />
+              <InputOTPSlot index={4} />
+              <InputOTPSlot index={5} />
+            </InputOTPGroup>
+          </InputOTP>
+        </Subsection>
+
+        <Subsection label="4 digits">
+          <InputOTP maxLength={4}>
+            <InputOTPGroup>
+              <InputOTPSlot index={0} />
+              <InputOTPSlot index={1} />
+              <InputOTPSlot index={2} />
+              <InputOTPSlot index={3} />
+            </InputOTPGroup>
+          </InputOTP>
+        </Subsection>
+      </Section>
+
+      <Section title="Slider">
+        <Subsection className="block max-w-sm" label="Default">
+          <Slider defaultValue={[50]} />
+        </Subsection>
+
+        <Subsection className="block max-w-sm" label="Range">
+          <Slider defaultValue={[25, 75]} />
+        </Subsection>
+
+        <Subsection className="block max-w-sm" label="Disabled">
+          <Slider disabled defaultValue={[40]} />
+        </Subsection>
+      </Section>
+
+      <Section title="Rating">
+        <Subsection label="Read-only">
+          <Rating rating={3.5} />
+        </Subsection>
+
+        <Subsection label="With value">
+          <Rating showValue rating={4.2} />
+        </Subsection>
+
+        <Subsection label="Editable">
+          <Rating
+            editable
+            showValue
+            rating={ratingValue}
+            onRatingChange={setRatingValue}
+          />
+        </Subsection>
+
+        <Subsection label="Sizes">
+          <Rating rating={4} size="sm" />
+          <Rating rating={4} />
+          <Rating rating={4} size="lg" />
+        </Subsection>
+      </Section>
+
+      <Section title="DatePicker">
+        <Subsection label="Default">
+          <div className="max-w-sm">
+            <DatePicker
+              placeholder="Pick a date"
+              value={dateValue}
+              onValueChange={setDateValue}
+            />
+          </div>
+        </Subsection>
+
+        <Subsection label="Disabled">
+          <div className="max-w-sm">
+            <DatePicker
+              disabled
+              placeholder="Pick a date"
+              value=""
+              onValueChange={noop}
+            />
+          </div>
+        </Subsection>
+      </Section>
+
+      <Section title="Calendar">
+        <Subsection className="block" label="Single select">
+          <Calendar mode="single" />
+        </Subsection>
+
+        <Subsection className="block" label="Range select">
+          <Calendar mode="range" />
         </Subsection>
       </Section>
     </div>
