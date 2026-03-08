@@ -39,7 +39,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import { Section, Subsection } from '@/routes/_demo/components/shared';
+import { Section, Subsection } from '@/routes/_demo/components/-shared';
 
 export const Route = createFileRoute('/_demo/components/navigation')({
   component: NavigationPage,

@@ -109,7 +109,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Section, Subsection } from '@/routes/_demo/components/shared';
+import { Section, Subsection } from '@/routes/_demo/components/-shared';
 
 export const Route = createFileRoute('/_demo/components/overlays')({
   component: OverlaysPage,

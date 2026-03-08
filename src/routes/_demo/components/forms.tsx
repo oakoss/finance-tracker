@@ -45,7 +45,7 @@ import { Rating } from '@/components/ui/rating';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { Section, Subsection } from '@/routes/_demo/components/shared';
+import { Section, Subsection } from '@/routes/_demo/components/-shared';
 
 export const Route = createFileRoute('/_demo/components/forms')({
   component: FormsPage,

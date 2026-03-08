@@ -121,7 +121,10 @@ export default defineConfig(
             kebabCase: true,
             pascalCase: false,
           },
-          ignore: [String.raw`^\$.*\.tsx?$`], // Allow parameter files starting with $
+          ignore: [
+            String.raw`^\$.*\.tsx?$`, // TanStack Router parameter files ($param)
+            String.raw`^-.*\.tsx?$`, // TanStack Router ignored route files (-shared)
+          ],
         },
       ],
       'unicorn/no-null': 'off',

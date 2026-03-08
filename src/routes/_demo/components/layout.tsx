@@ -51,7 +51,7 @@ import { Separator } from '@/components/ui/separator';
 import { Spinner } from '@/components/ui/spinner';
 import { Toggle } from '@/components/ui/toggle';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Section, Subsection } from '@/routes/_demo/components/shared';
+import { Section, Subsection } from '@/routes/_demo/components/-shared';
 
 export const Route = createFileRoute('/_demo/components/layout')({
   component: LayoutPage,

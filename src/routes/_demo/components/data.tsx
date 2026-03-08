@@ -64,7 +64,7 @@ import {
   TimelineTitle,
 } from '@/components/ui/timeline';
 import { Timestamp } from '@/components/ui/timestamp';
-import { Section, Subsection } from '@/routes/_demo/components/shared';
+import { Section, Subsection } from '@/routes/_demo/components/-shared';
 
 export const Route = createFileRoute('/_demo/components/data')({
   component: DataPage,
