@@ -38,7 +38,9 @@ export async function expectToast(
 
   const closeBtn = toast.locator('[data-close-button]');
   if (await closeBtn.isVisible().catch(() => false)) {
-    await closeBtn.click();
+    await closeBtn.click({ timeout: 2000 }).catch(() => {
+      // Toast may animate away before click completes — safe to ignore
+    });
   }
 
   await toast
