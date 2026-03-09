@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { clickRowAction, confirmDelete } from '~e2e/fixtures/table-actions';
+
 test.describe('categories CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
   test('create, edit, and delete a category', async ({ page }) => {
     const name = `E2E Cat ${Date.now()}`;
@@ -24,8 +26,7 @@ test.describe('categories CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
 
     // Edit category
     const row = page.getByRole('row', { name: new RegExp(name, 'i') });
-    await row.getByRole('button', { name: /actions/i }).click();
-    await page.getByRole('menuitem', { name: /edit/i }).click();
+    await clickRowAction(page, row, /edit/i);
 
     await expect(
       page.getByRole('heading', { name: /edit category/i }),
@@ -42,18 +43,13 @@ test.describe('categories CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
     const updatedRow = page.getByRole('row', {
       name: new RegExp(renamed, 'i'),
     });
-    await updatedRow.getByRole('button', { name: /actions/i }).click();
-    await page.getByRole('menuitem', { name: /delete/i }).click();
+    await clickRowAction(page, updatedRow, /delete/i);
 
     await expect(
       page.getByRole('heading', { name: /delete category/i }),
     ).toBeVisible();
 
-    await page.getByRole('textbox').fill(renamed);
-    await page
-      .getByRole('button', { name: /delete/i })
-      .last()
-      .click();
+    await confirmDelete(page, renamed);
 
     await expect(page.getByText('Category deleted')).toBeVisible();
     await expect(page.getByRole('table').getByText(renamed)).toBeHidden();

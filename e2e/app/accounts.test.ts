@@ -1,5 +1,12 @@
 import { expect, test } from '@playwright/test';
 
+import {
+  clickRowAction,
+  confirmDelete,
+  dismissToast,
+  isEmptyState,
+} from '~e2e/fixtures/table-actions';
+
 test.describe('accounts CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
   test('create, edit, and delete an account', async ({ page }) => {
     const name = `E2E Acct ${Date.now()}`;
@@ -29,8 +36,7 @@ test.describe('accounts CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
     await expect(row.getByText('Savings')).toBeVisible();
 
     // Edit account — rename and change type to checking
-    await row.getByRole('button', { name: /actions/i }).click();
-    await page.getByRole('menuitem', { name: /edit/i }).click();
+    await clickRowAction(page, row, /edit/i);
 
     await expect(
       page.getByRole('heading', { name: /edit account/i }),
@@ -52,24 +58,16 @@ test.describe('accounts CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
     await expect(updatedRow.getByText('Checking')).toBeVisible();
 
     // Dismiss toast so it doesn't intercept clicks on mobile
-    await page
-      .getByRole('button', { name: /close toast/i })
-      .first()
-      .click();
+    await dismissToast(page);
 
     // Delete account
-    await updatedRow.getByRole('button', { name: /actions/i }).click();
-    await page.getByRole('menuitem', { name: /delete/i }).click();
+    await clickRowAction(page, updatedRow, /delete/i);
 
     await expect(
       page.getByRole('heading', { name: /delete account/i }),
     ).toBeVisible();
 
-    await page.getByRole('textbox').fill(renamed);
-    await page
-      .getByRole('button', { name: /delete/i })
-      .last()
-      .click();
+    await confirmDelete(page, renamed);
 
     await expect(page.getByText('Account deleted')).toBeVisible();
     await expect(page.getByRole('table').getByText(renamed)).toBeHidden();
@@ -110,15 +108,8 @@ test.describe('accounts CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
     const freshPage = await context.newPage();
     await freshPage.goto('/accounts');
 
-    const emptyState = freshPage.getByText(/no accounts yet/i);
     // eslint-disable-next-line playwright/no-conditional-in-test
-    if (
-      !(await emptyState.isVisible({ timeout: 3000 }).catch((error: Error) => {
-        if (error.name === 'TimeoutError' || error.message.includes('Timeout'))
-          return false;
-        throw error;
-      }))
-    ) {
+    if (!(await isEmptyState(freshPage, /no accounts yet/i))) {
       await freshPage.close();
       return;
     }

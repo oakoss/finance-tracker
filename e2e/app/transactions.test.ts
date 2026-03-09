@@ -1,5 +1,13 @@
 import { expect, type Page, test } from '@playwright/test';
 
+import { createViaCombobox } from '~e2e/fixtures/combobox';
+import {
+  clickRowAction,
+  confirmDelete,
+  dismissToast,
+  isEmptyState,
+} from '~e2e/fixtures/table-actions';
+
 /** Create an isolated account for the test and return its name. */
 async function createTestAccount(page: Page): Promise<string> {
   const name = `E2E TxnAcct ${Date.now()}`;
@@ -62,8 +70,7 @@ test.describe(
       const row = page.getByRole('row', {
         name: new RegExp(name, 'i'),
       });
-      await row.getByRole('button', { name: /actions/i }).click();
-      await page.getByRole('menuitem', { name: /edit/i }).click();
+      await clickRowAction(page, row, /edit/i);
 
       await expect(
         page.getByRole('heading', { name: /edit transaction/i }),
@@ -77,27 +84,19 @@ test.describe(
       await expect(page.getByText(renamed)).toBeVisible();
 
       // Dismiss toast so it doesn't intercept clicks on mobile
-      await page
-        .getByRole('button', { name: /close toast/i })
-        .first()
-        .click();
+      await dismissToast(page);
 
       // Delete transaction
       const updatedRow = page.getByRole('row', {
         name: new RegExp(renamed, 'i'),
       });
-      await updatedRow.getByRole('button', { name: /actions/i }).click();
-      await page.getByRole('menuitem', { name: /delete/i }).click();
+      await clickRowAction(page, updatedRow, /delete/i);
 
       await expect(
         page.getByRole('heading', { name: /delete transaction/i }),
       ).toBeVisible();
 
-      await page.getByRole('textbox').fill(renamed);
-      await page
-        .getByRole('button', { name: /delete/i })
-        .last()
-        .click();
+      await confirmDelete(page, renamed);
 
       await expect(page.getByText('Transaction deleted')).toBeVisible();
       await expect(page.getByRole('table').getByText(renamed)).toBeHidden();
@@ -120,15 +119,7 @@ test.describe(
       await selectAccount(page, accountName);
 
       // Create new payee via combobox
-      const payeeField = page
-        .locator('[data-slot="field"]')
-        .filter({ has: page.getByText('Payee', { exact: true }) });
-      const payeeInput = payeeField.getByRole('combobox');
-      await payeeInput.click();
-      await payeeInput.pressSequentially(payeeName, { delay: 50 });
-      await page
-        .getByRole('option', { name: new RegExp(`Create "${payeeName}"`, 'i') })
-        .click();
+      await createViaCombobox(page, 'Payee', payeeName);
 
       await page.getByRole('button', { name: /create/i }).click();
       await expect(page.getByText('Transaction created')).toBeVisible();
@@ -151,15 +142,7 @@ test.describe(
       await selectAccount(page, accountName);
 
       // Create new tag via combobox
-      const tagsField = page
-        .locator('[data-slot="field"]')
-        .filter({ has: page.getByText('Tags', { exact: true }) });
-      const tagInput = tagsField.getByRole('combobox');
-      await tagInput.click();
-      await tagInput.pressSequentially(tagName, { delay: 50 });
-      await page
-        .getByRole('option', { name: new RegExp(`Create "${tagName}"`, 'i') })
-        .click();
+      await createViaCombobox(page, 'Tags', tagName);
 
       // Verify badge appears
       await expect(page.getByText(tagName)).toBeVisible();
@@ -197,20 +180,8 @@ test.describe(
       await freshPage.goto('/transactions');
 
       // Skip if transactions already exist from parallel tests
-      const emptyState = freshPage.getByText(/no transactions yet/i);
       // eslint-disable-next-line playwright/no-conditional-in-test
-      if (
-        !(await emptyState
-          .isVisible({ timeout: 3000 })
-          .catch((error: Error) => {
-            if (
-              error.name === 'TimeoutError' ||
-              error.message.includes('Timeout')
-            )
-              return false;
-            throw error;
-          }))
-      ) {
+      if (!(await isEmptyState(freshPage, /no transactions yet/i))) {
         await freshPage.close();
         return;
       }
