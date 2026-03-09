@@ -45,6 +45,31 @@ return render;
 
 Use `mergeProps` to safely combine handlers and classes.
 
+## Trigger composition
+
+Trigger components (`DialogTrigger`, `CollapsibleTrigger`,
+`PopoverTrigger`, etc.) render a `<button>` by default. Nesting a
+`<Button>` as a child creates invalid HTML (`<button>` inside
+`<button>`) and causes hydration errors.
+
+Use the `render` prop to replace the trigger's element:
+
+```tsx
+// Wrong — nested buttons
+<CollapsibleTrigger>
+  <Button size="sm" variant="outline">Toggle</Button>
+</CollapsibleTrigger>
+
+// Right — single button
+<CollapsibleTrigger render={<Button size="sm" variant="outline" />}>
+  Toggle
+</CollapsibleTrigger>
+```
+
+This applies to all trigger components: `DialogTrigger`,
+`AlertDialogTrigger`, `PopoverTrigger`, `DropdownMenuTrigger`,
+`TooltipTrigger`, `SheetTrigger`, `CollapsibleTrigger`.
+
 ## Base UI escape hatches
 
 - `event.preventBaseUIHandler()` stops Base UI default handlers.

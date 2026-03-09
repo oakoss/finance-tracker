@@ -219,10 +219,8 @@ function LayoutPage() {
 
       <Section title="Collapsible">
         <Collapsible className="max-w-md space-y-2">
-          <CollapsibleTrigger>
-            <Button size="sm" variant="outline">
-              Toggle content
-            </Button>
+          <CollapsibleTrigger render={<Button size="sm" variant="outline" />}>
+            Toggle content
           </CollapsibleTrigger>
           <CollapsibleContent>
             <div className="rounded-md border p-3 text-sm">
