@@ -1,39 +1,38 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
+
+/** Create an isolated account for the test and return its name. */
+async function createTestAccount(page: Page): Promise<string> {
+  const name = `E2E TxnAcct ${Date.now()}`;
+
+  await page.goto('/accounts');
+  await page
+    .getByRole('button', { name: /add account/i })
+    .first()
+    .click();
+  await page.getByLabel(/account name/i).fill(name);
+  await page.getByRole('button', { name: /create/i }).click();
+  await expect(page.getByText('Account created')).toBeVisible();
+
+  return name;
+}
+
+/** Open the Account select and pick the option by name. */
+async function selectAccount(page: Page, accountName: string): Promise<void> {
+  await page.getByLabel('Account').click();
+  const option = page.getByRole('option', {
+    name: new RegExp(accountName, 'i'),
+  });
+  // On small viewports the select popup may need scrolling
+  await option.scrollIntoViewIfNeeded();
+  await option.click();
+}
 
 test.describe(
   'transactions CRUD',
   { tag: ['@smoke', '@authenticated'] },
   () => {
-    test.beforeEach(async ({ page }) => {
-      // Ensure at least one account exists for the transaction form
-      await page.goto('/accounts');
-
-      const hasAccount = await page
-        .getByRole('row')
-        .filter({ hasText: /checking|savings|credit/i })
-        .count();
-
-      if (hasAccount === 0) {
-        await page
-          .getByRole('button', { name: /add account/i })
-          .first()
-          .click();
-        await page.getByLabel(/account name/i).fill('E2E Checking');
-        await page.getByRole('button', { name: /create/i }).click();
-        await expect(page.getByText('Account created')).toBeVisible();
-      }
-
-      // Dismiss any lingering toasts so they don't interfere with the test
-      await page.evaluate(() => {
-        for (const el of document.querySelectorAll(
-          'section[aria-label*="Notification"] > *',
-        )) {
-          el.remove();
-        }
-      });
-    });
-
     test('create, edit, and delete a transaction', async ({ page }) => {
+      const accountName = await createTestAccount(page);
       const name = `E2E Txn ${Date.now()}`;
       const renamed = `${name} Renamed`;
 
@@ -52,9 +51,7 @@ test.describe(
       await page.getByLabel(/description/i).fill(name);
       await page.getByLabel(/amount/i).fill('42.50');
 
-      // Select first account
-      await page.getByLabel('Account').click();
-      await page.getByRole('option').first().click();
+      await selectAccount(page, accountName);
 
       await page.getByRole('button', { name: /create/i }).click();
 
@@ -89,6 +86,15 @@ test.describe(
       const updatedRow = page.getByRole('row', {
         name: new RegExp(renamed, 'i'),
       });
+      // Hide the TanStack devtools badge — on small viewports it overlaps
+      // the last row's actions button when many parallel tests add rows
+      const devtoolsBadge = page.getByRole('button', {
+        name: /tanstack devtools/i,
+      });
+      // eslint-disable-next-line playwright/no-conditional-in-test -- devtools badge is absent in prod
+      if (await devtoolsBadge.isVisible({ timeout: 1000 }).catch(() => false)) {
+        await devtoolsBadge.evaluate((el) => el.remove());
+      }
       await updatedRow.getByRole('button', { name: /actions/i }).click();
       await page.getByRole('menuitem', { name: /delete/i }).click();
 
@@ -107,6 +113,7 @@ test.describe(
     });
 
     test('creates transaction with new payee', async ({ page }) => {
+      const accountName = await createTestAccount(page);
       const payeeName = `E2E Payee ${Date.now()}`;
       const desc = `Txn Payee ${Date.now()}`;
 
@@ -119,9 +126,7 @@ test.describe(
       await page.getByLabel(/description/i).fill(desc);
       await page.getByLabel(/amount/i).fill('10.00');
 
-      // Select account
-      await page.getByLabel('Account').click();
-      await page.getByRole('option').first().click();
+      await selectAccount(page, accountName);
 
       // Create new payee via combobox
       const payeeField = page
@@ -139,6 +144,7 @@ test.describe(
     });
 
     test('creates transaction with new tag', async ({ page }) => {
+      const accountName = await createTestAccount(page);
       const tagName = `e2e-tag-${Date.now()}`;
       const desc = `Txn Tag ${Date.now()}`;
 
@@ -151,9 +157,7 @@ test.describe(
       await page.getByLabel(/description/i).fill(desc);
       await page.getByLabel(/amount/i).fill('15.00');
 
-      // Select account
-      await page.getByLabel('Account').click();
-      await page.getByRole('option').first().click();
+      await selectAccount(page, accountName);
 
       // Create new tag via combobox
       const tagsField = page
@@ -174,6 +178,7 @@ test.describe(
     });
 
     test('saves a credit transaction', async ({ page }) => {
+      const accountName = await createTestAccount(page);
       const desc = `Credit Txn ${Date.now()}`;
 
       await page.goto('/transactions');
@@ -185,9 +190,7 @@ test.describe(
       await page.getByLabel(/description/i).fill(desc);
       await page.getByLabel(/amount/i).fill('100.00');
 
-      // Select account
-      await page.getByLabel('Account').click();
-      await page.getByRole('option').first().click();
+      await selectAccount(page, accountName);
 
       // Change direction to credit
       await page.getByLabel('Direction').click();
@@ -199,11 +202,10 @@ test.describe(
     });
 
     test('empty state CTA opens create dialog', async ({ context }) => {
-      // Use a fresh page with no pre-seeded data to guarantee empty state
       const freshPage = await context.newPage();
       await freshPage.goto('/transactions');
 
-      // Skip if transactions already exist (seeded by beforeEach account setup)
+      // Skip if transactions already exist from parallel tests
       const emptyState = freshPage.getByText(/no transactions yet/i);
       // eslint-disable-next-line playwright/no-conditional-in-test
       if (
