@@ -17,6 +17,7 @@ import { RootErrorBoundary } from '@/components/errors/root-error-boundary';
 import { DefaultShell } from '@/components/layouts/shells/default-shell';
 import { Toaster } from '@/components/ui/sonner';
 import { appConfig } from '@/configs/app';
+import { useAutomatedBrowser } from '@/hooks/use-automated-browser';
 import { useHydratedAttribute } from '@/hooks/use-hydrated';
 import { devtoolsPlugins } from '@/lib/devtools';
 import { getLocale } from '@/paraglide/runtime';
@@ -105,6 +106,7 @@ function RootError(props: ErrorComponentProps) {
 
 function RootComponent() {
   useHydratedAttribute();
+  const isAutomated = useAutomatedBrowser();
 
   return (
     <ThemeProvider
@@ -117,12 +119,14 @@ function RootComponent() {
         <Outlet />
       </div>
       <Toaster />
-      <TanStackDevtools
-        config={{
-          position: 'bottom-right',
-        }}
-        plugins={devtoolsPlugins}
-      />
+      {!isAutomated && (
+        <TanStackDevtools
+          config={{
+            position: 'bottom-right',
+          }}
+          plugins={devtoolsPlugins}
+        />
+      )}
     </ThemeProvider>
   );
 }

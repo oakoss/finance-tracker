@@ -1,11 +1,6 @@
 import { useEffect, useSyncExternalStore } from 'react';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function -- no-op unsubscribe
-function noop() {}
-
-function emptySubscribe() {
-  return noop;
-}
+import { emptySubscribe } from '@/lib/utils';
 
 /**
  * Returns `false` during SSR and the initial hydration render pass,

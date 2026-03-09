@@ -86,15 +86,6 @@ test.describe(
       const updatedRow = page.getByRole('row', {
         name: new RegExp(renamed, 'i'),
       });
-      // Hide the TanStack devtools badge — on small viewports it overlaps
-      // the last row's actions button when many parallel tests add rows
-      const devtoolsBadge = page.getByRole('button', {
-        name: /tanstack devtools/i,
-      });
-      // eslint-disable-next-line playwright/no-conditional-in-test -- devtools badge is absent in prod
-      if (await devtoolsBadge.isVisible({ timeout: 1000 }).catch(() => false)) {
-        await devtoolsBadge.evaluate((el) => el.remove());
-      }
       await updatedRow.getByRole('button', { name: /actions/i }).click();
       await page.getByRole('menuitem', { name: /delete/i }).click();
 
