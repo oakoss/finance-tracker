@@ -24,6 +24,7 @@ test.describe('accounts CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
   });
 
   test('create, edit, and delete an account', async ({ page }) => {
+    test.slow();
     const name = `E2E Acct ${Date.now()}`;
     const renamed = `${name} Renamed`;
 

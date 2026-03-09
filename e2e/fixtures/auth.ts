@@ -5,16 +5,59 @@ import {
   E2E_USER_COUNT,
   e2eEmail,
 } from '~e2e/fixtures/constants';
+import { expectToast } from '~e2e/fixtures/table-actions';
 
 /**
- * Worker-scoped auth fixture. Each Playwright worker logs in as its
- * own E2E user (`e2e-worker-{parallelIndex}@test.local`) and saves
- * the storageState to a per-worker file. This isolates server-side
- * data between parallel workers.
+ * Module-level account cache keyed on `parallelIndex`. The account is
+ * created on the first test that requests it within a worker process;
+ * subsequent tests skip creation and reuse the cached name. A `null`
+ * entry means creation failed — subsequent tests get a clear error.
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type -- Playwright fixture pattern: no test-scoped additions
-export const test = base.extend<{}, { workerStorageState: string }>({
+const workerAccountNames = new Map<number, string | null>();
+
+/**
+ * Auth fixture bundle. Provides `workerStorageState` (worker-scoped:
+ * per-worker login and session persistence) and `testAccountName`
+ * (test-scoped with module-level cache: lazily-created account for
+ * transaction tests).
+ */
+export const test = base.extend<
+  { testAccountName: string },
+  { workerStorageState: string }
+>({
   storageState: ({ workerStorageState }, use) => use(workerStorageState),
+
+  testAccountName: async ({ page }, use, workerInfo) => {
+    const id = workerInfo.parallelIndex;
+    const cached = workerAccountNames.get(id);
+
+    if (cached === null) {
+      throw new Error(
+        `Worker ${id} account creation failed in a previous test. ` +
+          'Remaining tests in this worker cannot proceed.',
+      );
+    }
+
+    if (cached === undefined) {
+      const name = `E2E W${id} Acct ${Date.now()}`;
+      try {
+        await page.goto('/accounts');
+        await page
+          .getByRole('button', { name: /add account/i })
+          .first()
+          .click();
+        await page.getByLabel(/account name/i).fill(name);
+        await page.getByRole('button', { name: /create/i }).click();
+        await expectToast(page, 'Account created');
+        workerAccountNames.set(id, name);
+      } catch (error) {
+        workerAccountNames.set(id, null);
+        throw error;
+      }
+    }
+
+    await use(workerAccountNames.get(id)!);
+  },
 
   workerStorageState: [
     async ({ browser }, use, workerInfo) => {

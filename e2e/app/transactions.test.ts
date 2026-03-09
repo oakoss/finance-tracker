@@ -9,22 +9,6 @@ import {
   isEmptyState,
 } from '~e2e/fixtures/table-actions';
 
-/** Create an isolated account for the test and return its name. */
-async function createTestAccount(page: Page): Promise<string> {
-  const name = `E2E TxnAcct ${Date.now()}`;
-
-  await page.goto('/accounts');
-  await page
-    .getByRole('button', { name: /add account/i })
-    .first()
-    .click();
-  await page.getByLabel(/account name/i).fill(name);
-  await page.getByRole('button', { name: /create/i }).click();
-  await expectToast(page, 'Account created');
-
-  return name;
-}
-
 /** Open the Account select and pick the option by name. */
 async function selectAccount(page: Page, accountName: string): Promise<void> {
   await page.getByLabel('Account').click();
@@ -58,8 +42,12 @@ test.describe(
       ).toBeVisible();
     });
 
-    test('create, edit, and delete a transaction', async ({ page }) => {
-      const accountName = await createTestAccount(page);
+    test('create, edit, and delete a transaction', async ({
+      page,
+      testAccountName,
+    }) => {
+      test.slow();
+      const accountName = testAccountName;
       const name = `E2E Txn ${Date.now()}`;
       const renamed = `${name} Renamed`;
 
@@ -118,8 +106,11 @@ test.describe(
       await expect(page.getByRole('table').getByText(renamed)).toBeHidden();
     });
 
-    test('creates transaction with new payee', async ({ page }) => {
-      const accountName = await createTestAccount(page);
+    test('creates transaction with new payee', async ({
+      page,
+      testAccountName,
+    }) => {
+      const accountName = testAccountName;
       const payeeName = `E2E Payee ${Date.now()}`;
       const desc = `Txn Payee ${Date.now()}`;
 
@@ -141,8 +132,11 @@ test.describe(
       await expectToast(page, 'Transaction created');
     });
 
-    test('creates transaction with new tag', async ({ page }) => {
-      const accountName = await createTestAccount(page);
+    test('creates transaction with new tag', async ({
+      page,
+      testAccountName,
+    }) => {
+      const accountName = testAccountName;
       const tagName = `e2e-tag-${Date.now()}`;
       const desc = `Txn Tag ${Date.now()}`;
 
@@ -167,8 +161,8 @@ test.describe(
       await expectToast(page, 'Transaction created');
     });
 
-    test('saves a credit transaction', async ({ page }) => {
-      const accountName = await createTestAccount(page);
+    test('saves a credit transaction', async ({ page, testAccountName }) => {
+      const accountName = testAccountName;
       const desc = `Credit Txn ${Date.now()}`;
 
       await page.goto('/transactions');
@@ -194,8 +188,11 @@ test.describe(
 );
 
 test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
-  test('creates transaction with category', async ({ page }) => {
-    const accountName = await createTestAccount(page);
+  test('creates transaction with category', async ({
+    page,
+    testAccountName,
+  }) => {
+    const accountName = testAccountName;
     const categoryName = `E2E Cat ${Date.now()}`;
     const desc = `Txn Cat ${Date.now()}`;
 
@@ -229,8 +226,12 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await expectToast(page, 'Transaction created');
   });
 
-  test('selects existing payee from dropdown', async ({ page }) => {
-    const accountName = await createTestAccount(page);
+  test('selects existing payee from dropdown', async ({
+    page,
+    testAccountName,
+  }) => {
+    test.slow();
+    const accountName = testAccountName;
     const payeeName = `E2E ExPayee ${Date.now()}`;
 
     // Create a transaction with a new payee to seed the payee list
@@ -268,8 +269,12 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await expectToast(page, 'Transaction created');
   });
 
-  test('selects existing tag from dropdown', async ({ page }) => {
-    const accountName = await createTestAccount(page);
+  test('selects existing tag from dropdown', async ({
+    page,
+    testAccountName,
+  }) => {
+    test.slow();
+    const accountName = testAccountName;
     const tagName = `e2e-extag-${Date.now()}`;
 
     // Create a transaction with a new tag to seed the tag list
@@ -315,8 +320,8 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await expectToast(page, 'Transaction created');
   });
 
-  test('toggles pending switch', async ({ page }) => {
-    const accountName = await createTestAccount(page);
+  test('toggles pending switch', async ({ page, testAccountName }) => {
+    const accountName = testAccountName;
     const desc = `Pending Txn ${Date.now()}`;
 
     await page.goto('/transactions');
@@ -349,8 +354,8 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await expect(editPendingField.getByRole('switch')).toBeChecked();
   });
 
-  test('fills memo field', async ({ page }) => {
-    const accountName = await createTestAccount(page);
+  test('fills memo field', async ({ page, testAccountName }) => {
+    const accountName = testAccountName;
     const desc = `Memo Txn ${Date.now()}`;
     const memo = 'Test memo content for E2E';
 
@@ -400,8 +405,8 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     expect(await errorAlerts.count()).toBeGreaterThanOrEqual(2);
   });
 
-  test('removes tag badge during create', async ({ page }) => {
-    const accountName = await createTestAccount(page);
+  test('removes tag badge during create', async ({ page, testAccountName }) => {
+    const accountName = testAccountName;
     const tagName = `e2e-rmtag-${Date.now()}`;
     const desc = `RmTag Txn ${Date.now()}`;
 

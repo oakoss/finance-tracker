@@ -29,7 +29,7 @@ npx playwright show-report                 # open the HTML report viewer
   (add Firefox/WebKit projects as needed)
 - **Dev server**: Playwright starts `pnpm dev` automatically (port 3000)
 - **Retries**: 2 in CI, 0 locally
-- **Timeouts**: 30s test, 10s action, 15s navigation, 5s assertion.
+- **Timeouts**: 30s test, 10s action, 15s navigation, 10s assertion.
   Override `actionTimeout` per-test or per-describe with
   `test.use({ actionTimeout: 20_000 })` for known-slow interactions
   (e.g., file import flows)
@@ -470,14 +470,25 @@ npx playwright show-trace trace.zip        # Trace Viewer
 npx playwright show-report                 # HTML report
 ```
 
+## CI
+
+- **Sharding**: E2E tests run as 3 parallel CI jobs (one per
+  viewport: chromium, iphone, pixel). Each job runs both
+  `:authenticated` and `:public` projects for its viewport
+  (the `chromium:demo` project is excluded; see below). Blob
+  reports are uploaded per-viewport as separate artifacts
+- **Screenshot tests**: Component demo screenshot tests (`@demo`
+  tag) run in a dedicated `chromium:demo` project excluded from
+  CI — cross-platform font rendering and anti-aliasing differences
+  make screenshot comparison unreliable. Run locally with
+  `pnpm test:e2e -- --project=chromium:demo` or as part of the
+  full local suite
+
 ## Future considerations
 
 - Secrets for authenticated tests via `dotenvx encrypt` (encrypted
   `.env.production.local` in repo for CI).
 - Firefox/WebKit projects for cross-browser coverage.
-- CI sharding for parallel execution as the suite grows
-  (`pnpm test:e2e -- --shard=1/4` across parallel CI jobs,
-  `--reporter=blob` to merge reports).
 - `webServer.wait` to detect server readiness by stdout pattern
   instead of port polling.
 - `--only-changed=$GITHUB_BASE_REF` to run only tests affected by

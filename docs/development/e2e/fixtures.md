@@ -2,6 +2,29 @@
 
 [Back to E2E Testing](README.md)
 
+## Project fixtures
+
+### `testAccountName`
+
+A test-scoped fixture with worker-level caching for transaction
+tests. The account is created via the UI on the first test that
+requests it within a worker process; subsequent tests reuse the
+cached name. It cannot be `{ scope: 'worker' }` because it
+depends on `page`, which is test-scoped.
+
+```ts
+import { expect, test } from '~e2e/fixtures/auth';
+
+test('creates a transaction', async ({ page, testAccountName }) => {
+  // testAccountName is already created — use it directly
+  await selectAccount(page, testAccountName);
+});
+```
+
+Tests that don't need an account (empty state, validation) should
+omit `testAccountName` from their destructuring to avoid triggering
+the lazy creation.
+
 ## Fixture basics
 
 Fixtures provide reusable setup/teardown logic injected into tests

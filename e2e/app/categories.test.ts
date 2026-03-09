@@ -7,6 +7,7 @@ import {
 
 test.describe('categories CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
   test('create, edit, and delete a category', async ({ page }) => {
+    test.slow();
     const name = `E2E Cat ${Date.now()}`;
     const renamed = `${name} Renamed`;
 

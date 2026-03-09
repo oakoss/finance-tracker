@@ -8,6 +8,7 @@ export async function clickRowAction(
 ): Promise<void> {
   const actionsBtn = row.getByRole('button', { name: /actions/i });
   await actionsBtn.scrollIntoViewIfNeeded();
+  await expect(actionsBtn).toBeInViewport();
   await actionsBtn.click();
   await page.getByRole('menuitem', { name: action }).click();
 }

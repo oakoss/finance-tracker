@@ -35,8 +35,16 @@ export default defineConfig({
     },
     {
       dependencies: ['db-setup'],
-      grepInvert: /@authenticated/,
+      grepInvert: [/@authenticated/, /@demo/],
       name: 'chromium:public',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: { cookies: [], origins: [] },
+      },
+    },
+    {
+      grep: /@demo/,
+      name: 'chromium:demo',
       use: {
         ...devices['Desktop Chrome'],
         storageState: { cookies: [], origins: [] },
@@ -54,7 +62,7 @@ export default defineConfig({
     },
     {
       dependencies: ['db-setup'],
-      grepInvert: /@authenticated/,
+      grepInvert: [/@authenticated/, /@demo/],
       name: 'iphone:public',
       use: {
         ...iPhone,
@@ -73,7 +81,7 @@ export default defineConfig({
     },
     {
       dependencies: ['db-setup'],
-      grepInvert: /@authenticated/,
+      grepInvert: [/@authenticated/, /@demo/],
       name: 'pixel:public',
       use: {
         ...pixel,

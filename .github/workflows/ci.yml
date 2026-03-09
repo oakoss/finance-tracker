@@ -92,7 +92,11 @@ jobs:
 
   e2e-tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        viewport: [chromium, iphone, pixel]
     services:
       postgres:
         image: postgres:18-alpine
@@ -130,13 +134,16 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
       - name: Install Playwright browsers
         run: pnpm exec playwright install chromium --with-deps
-      - name: E2E tests
-        run: pnpm test:e2e
+      - name: E2E tests (${{ matrix.viewport }})
+        run: |
+          pnpm test:e2e \
+            --project="${{ matrix.viewport }}:authenticated" \
+            --project="${{ matrix.viewport }}:public"
       - name: Upload blob report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          name: playwright-blob-report
+          name: playwright-blob-report-${{ matrix.viewport }}
           path: blob-report/
           retention-days: 14
 
