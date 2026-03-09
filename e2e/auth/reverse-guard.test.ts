@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '~e2e/fixtures/auth';
 
 test.describe(
   'reverse auth guard',

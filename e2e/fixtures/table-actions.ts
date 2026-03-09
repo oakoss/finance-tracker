@@ -1,4 +1,4 @@
-import type { Locator, Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 
 /** Click a row's actions menu and select a menu item. */
 export async function clickRowAction(
@@ -6,7 +6,9 @@ export async function clickRowAction(
   row: Locator,
   action: RegExp,
 ): Promise<void> {
-  await row.getByRole('button', { name: /actions/i }).click();
+  const actionsBtn = row.getByRole('button', { name: /actions/i });
+  await actionsBtn.scrollIntoViewIfNeeded();
+  await actionsBtn.click();
   await page.getByRole('menuitem', { name: action }).click();
 }
 
@@ -22,12 +24,27 @@ export async function confirmDelete(
     .click();
 }
 
-/** Dismiss the first visible toast notification. */
-export async function dismissToast(page: Page): Promise<void> {
-  await page
-    .getByRole('button', { name: /close toast/i })
-    .first()
-    .click();
+/**
+ * Assert a Sonner toast appeared with the given text, then dismiss it.
+ * Tolerates the toast auto-dismissing before the close button can be clicked.
+ */
+export async function expectToast(
+  page: Page,
+  text: string | RegExp,
+): Promise<void> {
+  const toast = page.locator('[data-sonner-toast]').filter({ hasText: text });
+  await expect(toast).toBeVisible();
+
+  const closeBtn = toast.locator('[data-close-button]');
+  if (await closeBtn.isVisible().catch(() => false)) {
+    await closeBtn.click();
+  }
+
+  await toast
+    .waitFor({ state: 'hidden', timeout: 3000 })
+    .catch((error: Error) => {
+      if (error.name !== 'TimeoutError') throw error;
+    });
 }
 
 /**

@@ -2,61 +2,95 @@
 
 [Back to E2E Testing](README.md)
 
-## Authentication via storageState
+## Per-worker authentication
 
-Auth is handled by a Playwright setup project that logs in once and
-saves session state to `playwright/.auth/user.json`. Authenticated
-test projects depend on the setup project and reuse the saved
-storageState.
+Each Playwright worker authenticates as its own E2E user
+(`e2e-worker-{parallelIndex}@test.local`) via a worker-scoped
+fixture in `e2e/fixtures/auth.ts`. This isolates server-side data
+between parallel workers, preventing test interference when CRUD
+tests create/delete data concurrently.
 
-A `db-setup` project runs before auth setup to ensure the E2E user
-and seed data exist in the database. This prevents cascade failures
-when the DB is empty (e.g., after `docker:reset && db:migrate`).
-The seed functions are idempotent — repeated runs are safe.
+A `db-setup` project seeds all worker users and cleans their data
+before any tests run. The seed functions are idempotent.
 
 **Important:** Add `playwright/.auth/` to `.gitignore` — these
 files contain cookies and session tokens that must not be committed.
 
-**`e2e/setup/auth.setup.ts`**: runs once before authenticated tests:
+**`e2e/fixtures/auth.ts`** — worker-scoped auth fixture:
 
 ```ts
-import { expect, test as setup } from '@playwright/test';
+import { test as base, expect } from '@playwright/test';
 
-import { E2E_EMAIL, E2E_PASSWORD } from '~e2e/fixtures/constants';
+import {
+  E2E_PASSWORD,
+  E2E_USER_COUNT,
+  e2eEmail,
+} from '~e2e/fixtures/constants';
 
-setup('authenticate', async ({ page }) => {
-  await page.goto('/sign-in');
-  // Button is disabled until hydrated — wait for enabled to ensure
-  // React event handlers are attached before filling inputs.
-  await expect(page.getByRole('button', { name: 'Sign in' })).toBeEnabled();
-  await page.getByLabel('Email').fill(E2E_EMAIL);
-  await page.getByLabel('Password', { exact: true }).fill(E2E_PASSWORD);
-  await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page).toHaveURL('/dashboard', { timeout: 15_000 });
-  await expect(page.getByRole('heading', { name: /welcome/i })).toBeVisible();
-  await page.context().storageState({ path: 'playwright/.auth/user.json' });
+export const test = base.extend<{}, { workerStorageState: string }>({
+  storageState: ({ workerStorageState }, use) => use(workerStorageState),
+
+  workerStorageState: [
+    async ({ browser }, use, workerInfo) => {
+      const id = workerInfo.parallelIndex;
+
+      // Guard: fail fast if workers exceed seeded user count
+      if (id >= E2E_USER_COUNT) {
+        throw new Error(
+          `Worker ${id} exceeds E2E_USER_COUNT (${E2E_USER_COUNT}).`,
+        );
+      }
+
+      const authFile = `playwright/.auth/worker-${id}.json`;
+
+      // Pass baseURL from project config (browser.newContext doesn't inherit it)
+      const baseURL = workerInfo.project.use.baseURL;
+      const context = await browser.newContext(baseURL ? { baseURL } : {});
+      try {
+        const page = await context.newPage();
+        await page.goto('/sign-in');
+        await page.getByLabel('Email').fill(e2eEmail(id));
+        await page.getByLabel('Password', { exact: true }).fill(E2E_PASSWORD);
+        await page.getByRole('button', { name: 'Sign in' }).click();
+        await expect(page).toHaveURL('/dashboard', { timeout: 15_000 });
+
+        await context.storageState({ path: authFile });
+      } finally {
+        await context.close();
+      }
+      await use(authFile);
+    },
+    { scope: 'worker' },
+  ],
 });
+export { expect } from '@playwright/test';
 ```
 
-**`playwright.config.ts`** (projects use `grep`/`grepInvert` on
-`@authenticated` to split auth vs public tests):
+Authenticated test files import `test` and `expect` from
+`~e2e/fixtures/auth` instead of `@playwright/test`:
 
 ```ts
-// Strip defaultBrowserType so iPhone uses Chromium instead of WebKit
-// (avoids requiring a WebKit install). Pixel already defaults to Chromium.
-const { defaultBrowserType: _iphone, ...iPhone } = devices['iPhone 15 Pro Max'];
-const { defaultBrowserType: _pixel, ...pixel } = devices['Pixel 7'];
+import { expect, test } from '~e2e/fixtures/auth';
+```
 
+Public/auth test files (`e2e/auth/*.test.ts`, `e2e/demo/*.test.ts`)
+keep importing from `@playwright/test` — they don't use
+authenticated state or manage their own login flows.
+
+**`playwright.config.ts`** — authenticated projects depend only on
+`db-setup` (no separate `setup` project). The worker fixture handles
+auth automatically:
+
+```ts
 projects: [
   { name: 'db-setup', testDir: 'e2e/setup', testMatch: 'db.setup.ts' },
-  { dependencies: ['db-setup'], name: 'setup', testDir: 'e2e/setup', testMatch: 'auth.setup.ts' },
 
   // Desktop
   {
-    dependencies: ['setup'],
+    dependencies: ['db-setup'],
     grep: /@authenticated/,
     name: 'chromium:authenticated',
-    use: { ...devices['Desktop Chrome'], storageState: 'playwright/.auth/user.json' },
+    use: { ...devices['Desktop Chrome'] },
   },
   {
     dependencies: ['db-setup'],
@@ -64,34 +98,7 @@ projects: [
     name: 'chromium:public',
     use: { ...devices['Desktop Chrome'], storageState: { cookies: [], origins: [] } },
   },
-
-  // iPhone (Chromium with iPhone viewport/UA)
-  {
-    dependencies: ['setup'],
-    grep: /@authenticated/,
-    name: 'iphone:authenticated',
-    use: { ...iPhone, storageState: 'playwright/.auth/user.json' },
-  },
-  {
-    dependencies: ['db-setup'],
-    grepInvert: /@authenticated/,
-    name: 'iphone:public',
-    use: { ...iPhone, storageState: { cookies: [], origins: [] } },
-  },
-
-  // Pixel (Chromium with Pixel viewport/UA)
-  {
-    dependencies: ['setup'],
-    grep: /@authenticated/,
-    name: 'pixel:authenticated',
-    use: { ...pixel, storageState: 'playwright/.auth/user.json' },
-  },
-  {
-    dependencies: ['db-setup'],
-    grepInvert: /@authenticated/,
-    name: 'pixel:public',
-    use: { ...pixel, storageState: { cookies: [], origins: [] } },
-  },
+  // ... iPhone and Pixel projects follow the same pattern
 ],
 ```
 
@@ -111,9 +118,9 @@ test.describe('redirects when signed out', () => {
 });
 ```
 
-**Multiple roles:** Create separate setup tests per role (admin,
-user) saving to distinct files (`admin.json`, `user.json`). Apply
-with `test.use({ storageState })` per describe block.
+**Multiple roles:** Create separate worker fixtures per role (admin,
+user) saving to distinct files. Apply with `test.use({ storageState })`
+per describe block.
 
 **Two roles in one test:** When testing interactions between two
 authenticated users (e.g., admin approves a request created by a
@@ -144,40 +151,6 @@ test('admin approves user request', async ({ browser }) => {
   await adminCtx.close();
 });
 ```
-
-**Per-worker accounts for parallel isolation:** When parallel tests
-modify shared server-side state (e.g., deleting accounts), a single
-shared session causes conflicts. Use `parallelIndex` to give each
-worker its own account:
-
-```ts
-import path from 'node:path';
-
-import { test as setup } from '@playwright/test';
-
-setup('authenticate', async ({ page }, testInfo) => {
-  const id = testInfo.parallelIndex;
-  await page.goto('/sign-in');
-  await page.getByLabel('Email').fill(`e2e-worker-${id}@test.local`);
-  await page.getByLabel('Password', { exact: true }).fill('E2ePassword1!');
-  await page.getByRole('button', { name: 'Sign in' }).click();
-  await page.waitForURL('/dashboard');
-
-  const authFile = path.resolve(
-    testInfo.project.outputDir,
-    `.auth/worker-${id}.json`,
-  );
-  await page.context().storageState({ path: authFile });
-});
-```
-
-Auth files are written to `testInfo.project.outputDir` because
-Playwright automatically deletes `outputDir` before each test run,
-preventing stale auth files from accumulating.
-
-This requires seeding one E2E user per worker. Not needed yet
-(our tests don't modify shared state in parallel), but planned
-for when CRUD tests run concurrently.
 
 **Session storage:** `storageState` persists cookies and localStorage.
 Session storage is not persisted;
@@ -270,11 +243,10 @@ Manually created contexts must be explicitly closed with
 `ctx.close()`. The auto-provided `context` fixture is cleaned up
 automatically by Playwright.
 
-Import `test` and `expect` from `@playwright/test` directly.
+Authenticated tests import `test` and `expect` from
+`~e2e/fixtures/auth`. Public tests import from `@playwright/test`.
 Import `waitForHydration` from `~e2e/fixtures` only when needed
-(see hydration section in README.md). Future custom fixtures
-(e.g., `authenticated.fixture.ts`) will export an extended `test`
-from `e2e/fixtures/`.
+(see hydration section in README.md).
 
 ## Page Object Model (POM)
 

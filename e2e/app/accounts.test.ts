@@ -1,13 +1,28 @@
-import { expect, test } from '@playwright/test';
-
+import { expect, test } from '~e2e/fixtures/auth';
 import {
   clickRowAction,
   confirmDelete,
-  dismissToast,
+  expectToast,
   isEmptyState,
 } from '~e2e/fixtures/table-actions';
 
 test.describe('accounts CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
+  test('empty state CTA opens create dialog', async ({ page }) => {
+    await page.goto('/accounts');
+
+    // Skip if accounts exist from other tests on this worker
+    // eslint-disable-next-line playwright/no-conditional-in-test
+    if (!(await isEmptyState(page, /no accounts yet/i))) return;
+
+    await page
+      .getByRole('button', { name: /add account/i })
+      .first()
+      .click();
+    await expect(
+      page.getByRole('heading', { name: /create account/i }),
+    ).toBeVisible();
+  });
+
   test('create, edit, and delete an account', async ({ page }) => {
     const name = `E2E Acct ${Date.now()}`;
     const renamed = `${name} Renamed`;
@@ -28,7 +43,7 @@ test.describe('accounts CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
     await page.getByRole('option', { name: /savings/i }).click();
     await page.getByRole('button', { name: /create/i }).click();
 
-    await expect(page.getByText('Account created')).toBeVisible();
+    await expectToast(page, 'Account created');
     await expect(page.getByText(name)).toBeVisible();
 
     // Verify type badge shows in table
@@ -48,7 +63,7 @@ test.describe('accounts CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
     await page.getByRole('option', { name: /checking/i }).click();
     await page.getByRole('button', { name: /save/i }).click();
 
-    await expect(page.getByText('Account updated')).toBeVisible();
+    await expectToast(page, 'Account updated');
     await expect(page.getByText(renamed)).toBeVisible();
 
     // Verify type changed in table
@@ -56,9 +71,6 @@ test.describe('accounts CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
       name: new RegExp(renamed, 'i'),
     });
     await expect(updatedRow.getByText('Checking')).toBeVisible();
-
-    // Dismiss toast so it doesn't intercept clicks on mobile
-    await dismissToast(page);
 
     // Delete account
     await clickRowAction(page, updatedRow, /delete/i);
@@ -69,7 +81,7 @@ test.describe('accounts CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
 
     await confirmDelete(page, renamed);
 
-    await expect(page.getByText('Account deleted')).toBeVisible();
+    await expectToast(page, 'Account deleted');
     await expect(page.getByRole('table').getByText(renamed)).toBeHidden();
   });
 
@@ -85,7 +97,7 @@ test.describe('accounts CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
       .click();
     await page.getByLabel(/account name/i).fill(name);
     await page.getByRole('button', { name: /create/i }).click();
-    await expect(page.getByText('Account created')).toBeVisible();
+    await expectToast(page, 'Account created');
 
     // Navigate to transactions and open create dialog
     await page.goto('/transactions');
@@ -102,25 +114,5 @@ test.describe('accounts CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
     await expect(
       page.getByRole('option', { name: new RegExp(name, 'i') }),
     ).toBeVisible();
-  });
-
-  test('empty state CTA opens create dialog', async ({ context }) => {
-    const freshPage = await context.newPage();
-    await freshPage.goto('/accounts');
-
-    // eslint-disable-next-line playwright/no-conditional-in-test
-    if (!(await isEmptyState(freshPage, /no accounts yet/i))) {
-      await freshPage.close();
-      return;
-    }
-
-    await freshPage
-      .getByRole('button', { name: /add account/i })
-      .first()
-      .click();
-    await expect(
-      freshPage.getByRole('heading', { name: /create account/i }),
-    ).toBeVisible();
-    await freshPage.close();
   });
 });

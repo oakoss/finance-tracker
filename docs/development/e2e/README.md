@@ -49,11 +49,12 @@ npx playwright show-report                 # open the HTML report viewer
   scoped to `e2e/**/*`
 - **`forbidOnly`**: enabled in CI — prevents accidentally committed
   `test.only()` from skipping the suite
-- **Workers**: 1 in CI (shared `storageState` file would race with
-  parallel workers), unlimited locally
+- **Workers**: Fixed to `E2E_USER_COUNT` (currently 6) — each worker
+  needs its own seeded E2E user
 - **UI mode caveat**: `pnpm test:e2e:ui` does not run setup projects
-  automatically. Run `pnpm test:e2e -- --project=setup` first to
-  generate `playwright/.auth/user.json`, then open UI mode
+  automatically. Run `pnpm test:e2e -- --project=db-setup` first to
+  seed worker users, then open UI mode (the worker fixture handles
+  auth automatically)
 - **Browser management**: `npx playwright install chromium` downloads
   the browser binary. Use `--with-deps` to also install OS-level
   system dependencies in CI. Use `--only-shell` in CI for a smaller
@@ -84,13 +85,12 @@ npx playwright show-report                 # open the HTML report viewer
 ```text
 e2e/
   setup/
-    db.setup.ts              # seeds E2E user + catalog (no browser)
-    auth.setup.ts            # storageState setup project
+    db.setup.ts              # seeds worker users + catalog (no browser)
   fixtures/
+    auth.ts                  # worker-scoped auth fixture (per-worker login)
     index.ts                 # waitForHydration helper (body[data-hydrated])
-    constants.ts             # shared E2E credentials
+    constants.ts             # shared E2E credentials + worker helpers
     mailpit.ts               # email assertion helpers
-    authenticated.fixture.ts # test.extend with auth context (planned)
   app/
     dashboard.test.ts        # @smoke @a11y @authenticated
     shell.test.ts            # @smoke @a11y
@@ -103,7 +103,7 @@ e2e/
     sign-in.test.ts          # @smoke @auth @a11y
     sign-up.test.ts          # @smoke @auth @a11y
     sign-out.test.ts         # @auth
-  .auth/                     # gitignored
+  .auth/                     # gitignored (per-worker auth state files)
 ```
 
 Feature folders generally correspond to `src/modules/`, plus an
@@ -160,7 +160,9 @@ from the HTML reporter — useful for internal tracking metadata.
 ## Writing tests
 
 Tests live in `e2e/` and use Playwright's test runner (not Vitest).
-Import `test`/`expect` from `@playwright/test` directly.
+Authenticated tests import `test`/`expect` from `~e2e/fixtures/auth`
+(worker-scoped auth fixture). Public tests import from
+`@playwright/test` directly.
 
 **Test isolation:** Each test runs in its own `BrowserContext` — an
 isolated incognito-equivalent with separate cookies, localStorage,
@@ -305,12 +307,23 @@ point. Use this to extend an existing test interactively.
 "Pick Locator" (highlights elements and copies the best locator).
 
 ```ts
+// Authenticated test — uses worker-scoped auth fixture
+import { expect, test } from '~e2e/fixtures/auth';
+
+test.describe('feature', { tag: '@authenticated' }, () => {
+  test('example', async ({ page }) => {
+    await page.goto('/dashboard');
+    await expect(page.getByRole('heading', { name: /welcome/i })).toBeVisible();
+  });
+});
+```
+
+```ts
+// Public test — no auth needed
 import { expect, test } from '@playwright/test';
 
 test('example', async ({ page }) => {
   await page.goto('/sign-in');
-  // No waitForHydration needed — the sign-in button is disabled
-  // until hydrated, and Playwright auto-waits for enabled state.
   await page.getByRole('button', { name: 'Sign in' }).click();
 });
 ```

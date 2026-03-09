@@ -4,28 +4,29 @@ import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
 
 import * as schema from '@/db/schema';
-import { E2E_EMAIL } from '~e2e/fixtures/constants';
+import { E2E_USER_COUNT, e2eEmail } from '~e2e/fixtures/constants';
 import { seedCreditCardCatalog } from '~test/seed/credit-card-catalog';
-import { seedE2eUser } from '~test/seed/e2e-user';
+import { seedE2eUser, seedE2eWorkerUsers } from '~test/seed/e2e-user';
 
 config({ convention: 'flow', quiet: true });
 
 /**
- * Wipe ledger accounts and categories owned by the E2E user so every
+ * Wipe ledger accounts and categories owned by an E2E user so every
  * suite run starts from a clean slate. FK cascades handle child rows
  * (transactions, transaction_tags, account_terms, balance_snapshots).
  */
-async function cleanE2eUserData(db: ReturnType<typeof drizzle>): Promise<void> {
+async function cleanE2eUserData(
+  db: ReturnType<typeof drizzle>,
+  email: string,
+): Promise<void> {
   const [user] = await db
     .select({ id: schema.users.id })
     .from(schema.users)
-    .where(eq(schema.users.email, E2E_EMAIL))
+    .where(eq(schema.users.email, email))
     .limit(1);
 
   if (!user) {
-    console.warn(
-      `[db.setup] E2E user not found (${E2E_EMAIL}), skipping cleanup`,
-    );
+    console.warn(`[db.setup] E2E user not found (${email}), skipping cleanup`);
     return;
   }
 
@@ -50,7 +51,10 @@ setup('ensure e2e seed data', async () => {
   try {
     await seedCreditCardCatalog(db);
     await seedE2eUser(db);
-    await cleanE2eUserData(db);
+    await seedE2eWorkerUsers(db, E2E_USER_COUNT);
+    for (let i = 0; i < E2E_USER_COUNT; i++) {
+      await cleanE2eUserData(db, e2eEmail(i));
+    }
   } finally {
     await db.$client.end();
   }

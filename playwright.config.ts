@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+import { E2E_USER_COUNT } from '~e2e/fixtures/constants';
+
 const PORT = 3000;
 const BASE_URL = `http://localhost:${PORT}`;
 
@@ -25,17 +27,10 @@ export default defineConfig({
     },
     {
       dependencies: ['db-setup'],
-      name: 'setup',
-      testDir: 'e2e/setup',
-      testMatch: 'auth.setup.ts',
-    },
-    {
-      dependencies: ['setup'],
       grep: /@authenticated/,
       name: 'chromium:authenticated',
       use: {
         ...devices['Desktop Chrome'],
-        storageState: 'playwright/.auth/user.json',
       },
     },
     {
@@ -50,12 +45,11 @@ export default defineConfig({
 
     // iPhone (Chromium with iPhone viewport/UA)
     {
-      dependencies: ['setup'],
+      dependencies: ['db-setup'],
       grep: /@authenticated/,
       name: 'iphone:authenticated',
       use: {
         ...iPhone,
-        storageState: 'playwright/.auth/user.json',
       },
     },
     {
@@ -70,12 +64,11 @@ export default defineConfig({
 
     // Pixel (Chromium with Pixel viewport/UA)
     {
-      dependencies: ['setup'],
+      dependencies: ['db-setup'],
       grep: /@authenticated/,
       name: 'pixel:authenticated',
       use: {
         ...pixel,
-        storageState: 'playwright/.auth/user.json',
       },
     },
     {
@@ -106,5 +99,5 @@ export default defineConfig({
     timeout: 120_000,
     url: BASE_URL,
   },
-  ...(process.env.CI ? { workers: 1 } : {}),
+  workers: E2E_USER_COUNT,
 });

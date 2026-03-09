@@ -272,6 +272,10 @@ export default defineConfig(
     extends: [playwright.configs['flat/recommended']],
     files: ['e2e/**/*'],
     rules: {
+      'playwright/expect-expect': [
+        'warn',
+        { assertFunctionNames: ['expect', 'expectToast'] },
+      ],
       'playwright/no-standalone-expect': 'error',
     },
   },
