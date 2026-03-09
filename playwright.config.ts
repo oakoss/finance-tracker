@@ -102,10 +102,10 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
   webServer: {
-    command: 'pnpm dev',
+    command: process.env.CI ? 'pnpm start' : 'pnpm dev',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
     url: BASE_URL,
   },
-  workers: E2E_USER_COUNT,
+  workers: process.env.CI ? 2 : E2E_USER_COUNT,
 });

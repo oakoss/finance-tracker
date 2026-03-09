@@ -27,7 +27,8 @@ npx playwright show-report                 # open the HTML report viewer
   in parallel, not just files
 - **Browser**: Chromium desktop + iPhone 15 Pro Max + Pixel 7
   (add Firefox/WebKit projects as needed)
-- **Dev server**: Playwright starts `pnpm dev` automatically (port 3000)
+- **Dev server**: Playwright starts `pnpm dev` locally or
+  `pnpm start` (production build) in CI (port 3000)
 - **Retries**: 2 in CI, 0 locally
 - **Timeouts**: 30s test, 10s action, 15s navigation, 10s assertion.
   Override `actionTimeout` per-test or per-describe with
@@ -49,8 +50,8 @@ npx playwright show-report                 # open the HTML report viewer
   scoped to `e2e/**/*`
 - **`forbidOnly`**: enabled in CI — prevents accidentally committed
   `test.only()` from skipping the suite
-- **Workers**: Fixed to `E2E_USER_COUNT` (currently 6) — each worker
-  needs its own seeded E2E user
+- **Workers**: 6 locally (`E2E_USER_COUNT`), 2 in CI. Each
+  worker uses its own seeded E2E user
 - **UI mode caveat**: `pnpm test:e2e:ui` does not run setup projects
   automatically. Run `pnpm test:e2e -- --project=db-setup` first to
   seed worker users, then open UI mode (the worker fixture handles
@@ -477,12 +478,18 @@ npx playwright show-report                 # HTML report
   `:authenticated` and `:public` projects for its viewport
   (the `chromium:demo` project is excluded; see below). Blob
   reports are uploaded per-viewport as separate artifacts
+- **Fail-fast on PRs**: On pull requests, a preliminary
+  `--only-changed=$GITHUB_BASE_REF` run executes only test files
+  affected by the diff before the full suite. This gives faster
+  feedback when changed tests fail
+- **Production build**: CI builds then serves the production
+  bundle to test against the real build and eliminate Vite dev
+  overhead (HMR, file watchers, on-demand compilation)
+- **Workers**: CI uses 2 workers to reduce CPU contention on
+  shared runners; locally uses 6 (`E2E_USER_COUNT`)
 - **Screenshot tests**: Component demo screenshot tests (`@demo`
   tag) run in a dedicated `chromium:demo` project excluded from
-  CI — cross-platform font rendering and anti-aliasing differences
-  make screenshot comparison unreliable. Run locally with
-  `pnpm test:e2e -- --project=chromium:demo` or as part of the
-  full local suite
+  CI. Run locally with `pnpm test:e2e -- --project=chromium:demo`
 
 ## Future considerations
 
@@ -491,8 +498,6 @@ npx playwright show-report                 # HTML report
 - Firefox/WebKit projects for cross-browser coverage.
 - `webServer.wait` to detect server readiness by stdout pattern
   instead of port polling.
-- `--only-changed=$GITHUB_BASE_REF` to run only tests affected by
-  changed files (requires `fetch-depth: 0` for non-shallow clone).
 - Deployment-triggered testing via GitHub Actions
   `deployment_status` event with `PLAYWRIGHT_TEST_BASE_URL` env var
   pointing at the preview/staging URL.
