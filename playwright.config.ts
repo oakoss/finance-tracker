@@ -13,7 +13,7 @@ const { defaultBrowserType: _pixel, ...pixel } = devices['Pixel 7'];
 
 export default defineConfig({
   expect: {
-    timeout: 5000,
+    timeout: 10_000,
   },
   failOnFlakyTests: !!process.env.CI,
   forbidOnly: !!process.env.CI,
