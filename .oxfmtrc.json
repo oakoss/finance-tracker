@@ -2,7 +2,9 @@
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "singleQuote": true,
   "printWidth": 80,
-  "sortPackageJson": {},
+  "sortPackageJson": {
+    "sortScripts": true
+  },
   "sortImports": {
     "groups": [
       "side_effect",
