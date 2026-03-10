@@ -157,6 +157,9 @@ export default defineConfig(
     extends: [
       pluginReact.configs['recommended-type-checked'],
       reactHooks.configs.flat.recommended,
+      react.configs.flat.recommended,
+      react.configs.flat['jsx-runtime'],
+      jsxA11y.flatConfigs.recommended,
     ],
     files: ['**/*.{jsx,tsx}'],
     languageOptions: {
@@ -164,14 +167,7 @@ export default defineConfig(
         ecmaFeatures: { jsx: true },
       },
     },
-    plugins: {
-      'jsx-a11y': jsxA11y,
-      react,
-    },
     rules: {
-      ...react.configs.recommended.rules,
-      ...react.configs['jsx-runtime'].rules,
-      ...jsxA11y.flatConfigs.recommended.rules,
       '@eslint-react/hooks-extra/no-direct-set-state-in-use-effect': 'off',
       '@eslint-react/no-context-provider': 'off',
       '@eslint-react/no-nested-component-definitions': 'off',
