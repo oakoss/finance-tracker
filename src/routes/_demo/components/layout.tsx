@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { useState } from 'react';
 
 import { Icons } from '@/components/icons';
 import {
@@ -48,6 +49,11 @@ import {
 } from '@/components/ui/resizable';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import {
+  Sortable,
+  SortableItem,
+  SortableItemHandle,
+} from '@/components/ui/sortable';
 import { Spinner } from '@/components/ui/spinner';
 import { Toggle } from '@/components/ui/toggle';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -511,6 +517,8 @@ function LayoutPage() {
         </Subsection>
       </Section>
 
+      <SortableDemo />
+
       <Section title="RouterLink">
         <Subsection label="Variants">
           <RouterLink to="/components/layout">default</RouterLink>
@@ -545,5 +553,44 @@ function LayoutPage() {
         </Subsection>
       </Section>
     </div>
+  );
+}
+
+type SortableTask = { id: string; label: string };
+
+const INITIAL_TASKS: SortableTask[] = [
+  { id: '1', label: 'Review pull request' },
+  { id: '2', label: 'Update documentation' },
+  { id: '3', label: 'Fix failing tests' },
+  { id: '4', label: 'Deploy to staging' },
+];
+
+function SortableDemo() {
+  const [tasks, setTasks] = useState<SortableTask[]>(INITIAL_TASKS);
+
+  return (
+    <Section title="Sortable">
+      <Subsection className="block" label="Vertical list with drag handles">
+        <Sortable
+          className="max-w-md space-y-1"
+          getItemValue={(item) => item.id}
+          value={tasks}
+          onValueChange={setTasks}
+        >
+          {tasks.map((task) => (
+            <SortableItem
+              key={task.id}
+              className="flex items-center gap-2 rounded-md border bg-background px-3 py-2"
+              value={task.id}
+            >
+              <SortableItemHandle className="text-muted-foreground">
+                <Icons.GripVertical className="size-4" />
+              </SortableItemHandle>
+              <span className="text-sm">{task.label}</span>
+            </SortableItem>
+          ))}
+        </Sortable>
+      </Subsection>
+    </Section>
   );
 }

@@ -27,6 +27,7 @@ import { Route as DemoComponentsOverlaysRouteImport } from './routes/_demo/compo
 import { Route as DemoComponentsNavigationRouteImport } from './routes/_demo/components/navigation'
 import { Route as DemoComponentsLayoutRouteImport } from './routes/_demo/components/layout'
 import { Route as DemoComponentsFormsRouteImport } from './routes/_demo/components/forms'
+import { Route as DemoComponentsDateRouteImport } from './routes/_demo/components/date'
 import { Route as DemoComponentsDataRouteImport } from './routes/_demo/components/data'
 
 const PublicRouteRoute = PublicRouteRouteImport.update({
@@ -117,6 +118,11 @@ const DemoComponentsFormsRoute = DemoComponentsFormsRouteImport.update({
   path: '/forms',
   getParentRoute: () => DemoComponentsRouteRoute,
 } as any)
+const DemoComponentsDateRoute = DemoComponentsDateRouteImport.update({
+  id: '/date',
+  path: '/date',
+  getParentRoute: () => DemoComponentsRouteRoute,
+} as any)
 const DemoComponentsDataRoute = DemoComponentsDataRouteImport.update({
   id: '/data',
   path: '/data',
@@ -133,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
   '/components/data': typeof DemoComponentsDataRoute
+  '/components/date': typeof DemoComponentsDateRoute
   '/components/forms': typeof DemoComponentsFormsRoute
   '/components/layout': typeof DemoComponentsLayoutRoute
   '/components/navigation': typeof DemoComponentsNavigationRoute
@@ -150,6 +157,7 @@ export interface FileRoutesByTo {
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
   '/components/data': typeof DemoComponentsDataRoute
+  '/components/date': typeof DemoComponentsDateRoute
   '/components/forms': typeof DemoComponentsFormsRoute
   '/components/layout': typeof DemoComponentsLayoutRoute
   '/components/navigation': typeof DemoComponentsNavigationRoute
@@ -172,6 +180,7 @@ export interface FileRoutesById {
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/_public/': typeof PublicIndexRoute
   '/_demo/components/data': typeof DemoComponentsDataRoute
+  '/_demo/components/date': typeof DemoComponentsDateRoute
   '/_demo/components/forms': typeof DemoComponentsFormsRoute
   '/_demo/components/layout': typeof DemoComponentsLayoutRoute
   '/_demo/components/navigation': typeof DemoComponentsNavigationRoute
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/components/data'
+    | '/components/date'
     | '/components/forms'
     | '/components/layout'
     | '/components/navigation'
@@ -208,6 +218,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/components/data'
+    | '/components/date'
     | '/components/forms'
     | '/components/layout'
     | '/components/navigation'
@@ -229,6 +240,7 @@ export interface FileRouteTypes {
     | '/_auth/sign-up'
     | '/_public/'
     | '/_demo/components/data'
+    | '/_demo/components/date'
     | '/_demo/components/forms'
     | '/_demo/components/layout'
     | '/_demo/components/navigation'
@@ -373,6 +385,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoComponentsFormsRouteImport
       parentRoute: typeof DemoComponentsRouteRoute
     }
+    '/_demo/components/date': {
+      id: '/_demo/components/date'
+      path: '/date'
+      fullPath: '/components/date'
+      preLoaderRoute: typeof DemoComponentsDateRouteImport
+      parentRoute: typeof DemoComponentsRouteRoute
+    }
     '/_demo/components/data': {
       id: '/_demo/components/data'
       path: '/data'
@@ -417,6 +436,7 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 
 interface DemoComponentsRouteRouteChildren {
   DemoComponentsDataRoute: typeof DemoComponentsDataRoute
+  DemoComponentsDateRoute: typeof DemoComponentsDateRoute
   DemoComponentsFormsRoute: typeof DemoComponentsFormsRoute
   DemoComponentsLayoutRoute: typeof DemoComponentsLayoutRoute
   DemoComponentsNavigationRoute: typeof DemoComponentsNavigationRoute
@@ -426,6 +446,7 @@ interface DemoComponentsRouteRouteChildren {
 
 const DemoComponentsRouteRouteChildren: DemoComponentsRouteRouteChildren = {
   DemoComponentsDataRoute: DemoComponentsDataRoute,
+  DemoComponentsDateRoute: DemoComponentsDateRoute,
   DemoComponentsFormsRoute: DemoComponentsFormsRoute,
   DemoComponentsLayoutRoute: DemoComponentsLayoutRoute,
   DemoComponentsNavigationRoute: DemoComponentsNavigationRoute,

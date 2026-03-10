@@ -4,11 +4,10 @@ const COMPONENT_PAGES = [
   'layout',
   'forms',
   'selections',
-  // Uncomment as pages are added:
   'overlays',
   'data',
-  // 'navigation',
-  // 'date',
+  'navigation',
+  'date',
 ] as const;
 
 test.describe('component demo pages', { tag: ['@demo'] }, () => {

@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { createFileRoute } from '@tanstack/react-router';
 
 import { Icons } from '@/components/icons';
@@ -39,6 +41,20 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@/components/ui/sidebar';
 import { Section, Subsection } from '@/routes/_demo/components/-shared';
 
 export const Route = createFileRoute('/_demo/components/navigation')({
@@ -72,6 +88,13 @@ const NAV_MENU_FEATURES = [
     icon: Icons.CircleCheck,
     title: 'Budgets',
   },
+];
+
+const SIDEBAR_NAV = [
+  { active: true, icon: Icons.LayoutDashboard, title: 'Dashboard' },
+  { active: false, icon: Icons.Wallet, title: 'Accounts' },
+  { active: false, icon: Icons.ArrowLeftRight, title: 'Transactions' },
+  { active: false, icon: Icons.Tag, title: 'Categories' },
 ];
 
 function NavigationPage() {
@@ -240,6 +263,95 @@ function NavigationPage() {
               </MenubarContent>
             </MenubarMenu>
           </Menubar>
+        </Subsection>
+      </Section>
+
+      <Section title="Sidebar">
+        <Subsection className="block" label="Default (non-collapsible)">
+          <SidebarProvider
+            className="min-h-0! max-w-xs"
+            style={
+              {
+                '--sidebar-width': '16rem',
+              } as React.CSSProperties
+            }
+          >
+            <Sidebar collapsible="none">
+              <SidebarHeader>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton>
+                      <Icons.Logo className="size-5!" />
+                      <span className="font-semibold">Finance Tracker</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarHeader>
+              <SidebarContent>
+                <SidebarGroup>
+                  <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      {SIDEBAR_NAV.map((item) => (
+                        <SidebarMenuItem key={item.title}>
+                          <SidebarMenuButton isActive={item.active}>
+                            <item.icon className="size-4" />
+                            <span>{item.title}</span>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      ))}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+              </SidebarContent>
+              <SidebarFooter>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton>
+                      <Icons.Settings className="size-4" />
+                      <span>Settings</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarFooter>
+            </Sidebar>
+          </SidebarProvider>
+        </Subsection>
+
+        <Subsection className="block" label="With toggle trigger">
+          <SidebarProvider
+            className="min-h-0! max-w-sm"
+            style={
+              {
+                '--sidebar-width': '14rem',
+              } as React.CSSProperties
+            }
+          >
+            <Sidebar>
+              <SidebarContent>
+                <SidebarGroup>
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      {SIDEBAR_NAV.map((item) => (
+                        <SidebarMenuItem key={item.title}>
+                          <SidebarMenuButton
+                            isActive={item.active}
+                            tooltip={item.title}
+                          >
+                            <item.icon className="size-4" />
+                            <span>{item.title}</span>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      ))}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+              </SidebarContent>
+            </Sidebar>
+            <div className="p-2">
+              <SidebarTrigger />
+            </div>
+          </SidebarProvider>
         </Subsection>
       </Section>
 
