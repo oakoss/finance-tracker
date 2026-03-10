@@ -5,11 +5,10 @@
     "moduleResolution": "bundler",
     "noEmit": true,
     "strict": true,
-    "baseUrl": "..",
     "paths": {
-      "@/*": ["./src/*"],
-      "~e2e/*": ["./e2e/*"],
-      "~test/*": ["./test/*"]
+      "@/*": ["../src/*"],
+      "~e2e/*": ["../e2e/*"],
+      "~test/*": ["../test/*"]
     }
   },
   "include": ["./**/*.ts"]

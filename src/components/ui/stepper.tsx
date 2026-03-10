@@ -91,11 +91,11 @@ function Stepper({
   const [activeStep, setActiveStep] = useState(defaultValue);
   const [triggerNodes, setTriggerNodes] = useState<HTMLButtonElement[]>([]);
 
-  const childArray = Array.isArray(children)
-    ? children
-    : (children
-      ? [children]
-      : []);
+  const childArray = (() => {
+    if (Array.isArray(children)) return children;
+    if (children) return [children];
+    return [];
+  })();
   const stepsCount = childArray.filter((child) => {
     return (
       isValidElement(child) &&
@@ -199,12 +199,11 @@ function StepperItem({
 }: StepperItemProps) {
   const { activeStep } = useStepper();
 
-  const state: StepState =
-    completed || step < activeStep
-      ? 'completed'
-      : (activeStep === step
-        ? 'active'
-        : 'inactive');
+  const state: StepState = (() => {
+    if (completed || step < activeStep) return 'completed';
+    if (activeStep === step) return 'active';
+    return 'inactive';
+  })();
 
   const isLoading = loading && step === activeStep;
 
@@ -334,7 +333,11 @@ function StepperTrigger({
       disabled={isDisabled}
       id={id}
       role="tab"
-      tabIndex={typeof tabIndex === 'number' ? tabIndex : (isSelected ? 0 : -1)}
+      tabIndex={(() => {
+        if (typeof tabIndex === 'number') return tabIndex;
+        if (isSelected) return 0;
+        return -1;
+      })()}
       onClick={() => setActiveStep(step)}
       onKeyDown={handleKeyDown}
       {...props}

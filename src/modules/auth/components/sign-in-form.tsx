@@ -57,7 +57,7 @@ function SignInForm({ redirect }: SignInFormProps) {
           );
         } else {
           const to =
-            redirect && redirect.startsWith('/') && !redirect.startsWith('//')
+            redirect?.startsWith('/') && !redirect.startsWith('//')
               ? redirect
               : '/dashboard';
           void navigate({ to });

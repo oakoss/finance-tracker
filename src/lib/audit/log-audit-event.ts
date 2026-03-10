@@ -26,7 +26,7 @@ export function logAuditEvent(params: {
         error: error instanceof Error ? error.message : String(error),
       });
     } catch (innerError) {
-      // eslint-disable-next-line no-console -- evlog is broken; last resort
+      // evlog itself has failed; console is the last resort
       console.error('[audit] logging system failure:', innerError);
     }
   }

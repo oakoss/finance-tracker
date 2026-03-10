@@ -26,7 +26,7 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
     });
   }
 
-  return await next({ context: { session } });
+  return next({ context: { session } });
 });
 
 export function requireUserId(context: {

@@ -46,7 +46,6 @@ export const test = base.extend<IntegrationFixtures>({
   // File-scoped: one connection + Drizzle-managed transaction per file.
   // Thrown RollbackOnPurpose forces ROLLBACK instead of COMMIT.
   fileDb: [
-    // eslint-disable-next-line no-empty-pattern
     async ({}, use) => {
       const rawDb = await createTestDb();
       try {

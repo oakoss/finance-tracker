@@ -5,9 +5,9 @@ import js from '@eslint/js';
 import pluginQuery from '@tanstack/eslint-plugin-query';
 import pluginRouter from '@tanstack/eslint-plugin-router';
 import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
-import importX from 'eslint-plugin-import-x';
 // @ts-ignore
 import jsxA11y from 'eslint-plugin-jsx-a11y';
+import oxlint from 'eslint-plugin-oxlint';
 import perfectionist from 'eslint-plugin-perfectionist';
 import playwright from 'eslint-plugin-playwright';
 import react from 'eslint-plugin-react';
@@ -43,16 +43,10 @@ export default defineConfig(
   {
     extends: [js.configs.recommended, unicorn.configs.recommended],
     plugins: {
-      // @ts-expect-error -- types are missing
-      'import-x': importX,
       perfectionist,
     },
     rules: {
       eqeqeq: 'error',
-      'import-x/first': 'error',
-      'import-x/newline-after-import': 'error',
-      'import-x/no-duplicates': ['error', { 'prefer-inline': true }],
-      'import-x/no-relative-parent-imports': 'error',
       'no-console': 'warn',
       'perfectionist/sort-exports': [
         'error',
@@ -173,7 +167,6 @@ export default defineConfig(
     plugins: {
       'jsx-a11y': jsxA11y,
       react,
-      'react-hooks': reactHooks,
     },
     rules: {
       ...react.configs.recommended.rules,
@@ -207,6 +200,7 @@ export default defineConfig(
       'react/jsx-no-bind': 'off',
       'react/jsx-no-constructed-context-values': 'off',
       'react/jsx-no-useless-fragment': 'off',
+      'react/jsx-uses-vars': 'off',
       'react/no-danger': 'off',
       'react/prop-types': 'off',
     },
@@ -430,4 +424,5 @@ export default defineConfig(
       ],
     },
   },
+  ...oxlint.buildFromOxlintConfigFile('./.oxlintrc.json'),
 );

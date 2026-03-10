@@ -67,11 +67,11 @@ function FilterInput<T = unknown>({
 
       setIsValid(valid);
       setValidationMessage(
-        valid
-          ? ''
-          : (customMessage.length > 0
-            ? customMessage
-            : m['filters.validation.invalid']()),
+        (() => {
+          if (valid) return '';
+          if (customMessage.length > 0) return customMessage;
+          return m['filters.validation.invalid']();
+        })(),
       );
     } else {
       setIsValid(true);

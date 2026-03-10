@@ -90,10 +90,8 @@ export const useFileUpload = (
         if (file.size > maxSize) {
           return `File "${file.name}" exceeds the maximum size of ${formatBytes(maxSize)}.`;
         }
-      } else {
-        if (file.size > maxSize) {
-          return `File "${file.name}" exceeds the maximum size of ${formatBytes(maxSize)}.`;
-        }
+      } else if (file.size > maxSize) {
+        return `File "${file.name}" exceeds the maximum size of ${formatBytes(maxSize)}.`;
       }
 
       if (accept !== '*') {

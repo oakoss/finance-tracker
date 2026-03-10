@@ -6,17 +6,20 @@ Code style, conventions, and structure expectations.
 
 - oxfmt (`pnpm format`): `singleQuote: true`, import sorting, Tailwind
   class sorting.
-- ESLint (`pnpm lint`): max warnings = 0.
+- oxlint + ESLint (`pnpm lint`): oxlint runs first (native Rust rules),
+  then ESLint for remaining rules. Max warnings = 0. Once ESLint is
+  fully removed, add `--report-unused-disable-directives-severity error`
+  to the oxlint command to catch stale disable comments.
 - Markdown lint (`pnpm lint:md`).
-- `sort-keys-plus`: Object keys must be alphabetically sorted (all
-  files, objects with 3+ keys, case-insensitive).
+- `perfectionist/sort-objects`: Object keys must be alphabetically
+  sorted (case-insensitive).
 
 ## Imports
 
 - Absolute imports via `@/`.
 - **No barrel files** -- import from concrete module paths.
 - oxfmt `sortImports` enforces ordering at format-time.
-- No parent relative imports (`import-x/no-relative-parent-imports`).
+- No parent relative imports (`import/no-relative-parent-imports`).
 
 ## Naming and Structure
 
@@ -70,8 +73,8 @@ type(scope): subject
 
 `lefthook.yml` runs hooks on commit:
 
-- **`pre-commit`** (parallel): typecheck, lint, lint-md, format.
-  Auto-fixes staged files via `stage_fixed: true`.
+- **`pre-commit`** (parallel): typecheck, oxlint, lint, lint-md,
+  format. Auto-fixes staged files via `stage_fixed: true`.
 - **`commit-msg`**: commitlint validates the message format.
 
 ## Generated Files

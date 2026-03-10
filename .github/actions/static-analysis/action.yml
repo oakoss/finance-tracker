@@ -73,10 +73,14 @@ runs:
       if: steps.docs.outputs.docs_only != 'true'
       shell: bash
       run: pnpm format:check
-    - name: Lint
+    - name: oxlint
       if: steps.docs.outputs.docs_only != 'true'
       shell: bash
-      run: pnpm lint
+      run: pnpm exec oxlint -c .oxlintrc.json --format=github
+    - name: ESLint
+      if: steps.docs.outputs.docs_only != 'true'
+      shell: bash
+      run: pnpm exec eslint --max-warnings 0 --cache --cache-location node_modules/.cache/eslint/.eslintcache .
     - name: Markdown lint
       shell: bash
       run: pnpm lint:md

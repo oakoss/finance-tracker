@@ -160,9 +160,10 @@ function DataGridTableHeadRowCell<TData>({
           ? props.tableClassNames?.edgeCell
           : '',
       )}
-      data-last-col={
-        isLastLeftPinned ? 'left' : (isFirstRightPinned ? 'right' : undefined)
-      }
+      data-last-col={(() => {
+        if (isLastLeftPinned) return 'left';
+        if (isFirstRightPinned) return 'right';
+      })()}
       data-pinned={isPinned === false ? undefined : isPinned}
       style={{
         ...((props.tableLayout?.width === 'fixed' ||
@@ -280,9 +281,10 @@ function DataGridTableBodyRowSkeletonCell<TData>({
           ? props.tableClassNames?.edgeCell
           : '',
       )}
-      data-last-col={
-        isLastLeftPinned ? 'left' : (isFirstRightPinned ? 'right' : undefined)
-      }
+      data-last-col={(() => {
+        if (isLastLeftPinned) return 'left';
+        if (isFirstRightPinned) return 'right';
+      })()}
       data-pinned={isPinned === false ? undefined : isPinned}
       style={{
         ...(props.tableLayout?.columnsResizable && {
@@ -402,9 +404,10 @@ function DataGridTableBodyRowCell<TData>({
           ? props.tableClassNames?.edgeCell
           : '',
       )}
-      data-last-col={
-        isLastLeftPinned ? 'left' : (isFirstRightPinned ? 'right' : undefined)
-      }
+      data-last-col={(() => {
+        if (isLastLeftPinned) return 'left';
+        if (isFirstRightPinned) return 'right';
+      })()}
       data-pinned={isPinned === false ? undefined : isPinned}
       style={{
         ...(props.tableLayout?.columnsResizable && {

@@ -50,6 +50,13 @@ PostgreSQL/Drizzle, Better Auth, Tailwind CSS v4/shadcn.
 | Production start  | `pnpm start`                                          |
 | Clean all         | `pnpm clean`                                          |
 
+## Linting
+
+oxlint runs first (native Rust), then ESLint for remaining rules.
+Use `oxlint-disable-next-line` for rules owned by oxlint,
+`eslint-disable-next-line` for ESLint-only rules. Config:
+`.oxlintrc.json` (oxlint), `eslint.config.js` (ESLint).
+
 ## Rules That Cause Failures
 
 These are enforced by tooling and will reject code if violated:

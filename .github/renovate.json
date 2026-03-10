@@ -30,6 +30,14 @@
       "automerge": false
     },
     {
+      "matchPackageNames": [
+        "oxlint",
+        "eslint-plugin-oxlint",
+        "oxlint-tsgolint"
+      ],
+      "groupName": "oxlint"
+    },
+    {
       "matchDepTypes": ["peerDependencies"],
       "rangeStrategy": "widen"
     }

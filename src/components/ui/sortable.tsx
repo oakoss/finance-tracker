@@ -194,11 +194,11 @@ function Sortable<T>({
   const overlayContent = useMemo(() => {
     if (!activeId) return null;
 
-    const childArray = Array.isArray(children)
-      ? children
-      : (children
-        ? [children]
-        : []);
+    const childArray = (() => {
+      if (Array.isArray(children)) return children;
+      if (children) return [children];
+      return [];
+    })();
     const matched = childArray.find((child) => {
       return (
         isValidElement(child) &&
@@ -372,12 +372,11 @@ function SortableOverlay({
   const { activeId, modifiers } = use(SortableInternalContext);
   const isClient = typeof document !== 'undefined';
 
-  const content =
-    activeId && children
-      ? (typeof children === 'function'
-        ? children({ value: activeId })
-        : children)
-      : null;
+  const content = (() => {
+    if (!activeId || !children) return null;
+    if (typeof children === 'function') return children({ value: activeId });
+    return children;
+  })();
 
   if (!isClient) return null;
 

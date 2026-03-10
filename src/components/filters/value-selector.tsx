@@ -157,11 +157,15 @@ function SelectOptionsPopover<T = unknown>({
                     const option = allFilteredOptions[highlightedIndex];
                     if (option) {
                       const isSelected = effectiveValues.includes(option.value);
-                      const next = isSelected
-                        ? effectiveValues.filter((v) => v !== option.value)
-                        : (isMultiSelect
-                          ? ([...effectiveValues, option.value] as T[])
-                          : ([option.value] as T[]));
+                      const next = (() => {
+                        if (isSelected)
+                          return effectiveValues.filter(
+                            (v) => v !== option.value,
+                          );
+                        if (isMultiSelect)
+                          return [...effectiveValues, option.value] as T[];
+                        return [option.value] as T[];
+                      })();
 
                       if (
                         !isSelected &&
@@ -337,11 +341,13 @@ function SelectOptionsPopover<T = unknown>({
                       ))}
                     </div>
                   )}
-                  {selectedOptions.length === 1
-                    ? selectedOptions[0].label
-                    : (selectedOptions.length > 1
-                      ? `${selectedOptions.length} ${m['filters.selectedCount']()}`
-                      : m['filters.select']())}
+                  {(() => {
+                    if (selectedOptions.length === 1)
+                      return selectedOptions[0].label;
+                    if (selectedOptions.length > 1)
+                      return `${selectedOptions.length} ${m['filters.selectedCount']()}`;
+                    return m['filters.select']();
+                  })()}
                 </>
               )}
             </div>

@@ -16,13 +16,11 @@ function RemoveButton({
   return (
     <Button
       className={className}
-      size={
-        context.size === 'sm'
-          ? 'icon-sm'
-          : context.size === 'lg'
-            ? 'icon-lg'
-            : 'icon'
-      }
+      size={(() => {
+        if (context.size === 'sm') return 'icon-sm';
+        if (context.size === 'lg') return 'icon-lg';
+        return 'icon';
+      })()}
       variant="outline"
       {...props}
     >

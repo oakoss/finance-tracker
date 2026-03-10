@@ -9,6 +9,12 @@ pre-commit:
     typecheck:
       glob: '*.{ts,tsx}'
       run: pnpm typecheck --pretty false
+    oxlint:
+      glob: '*.{ts,tsx,js,jsx,cjs,mjs}'
+      exclude:
+        - '**/*.gen.ts'
+      run: pnpm oxlint -c .oxlintrc.json --fix {staged_files}
+      stage_fixed: true
     lint:
       glob: '*.{ts,tsx,js,jsx,cjs,mjs}'
       exclude:

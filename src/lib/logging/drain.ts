@@ -21,7 +21,6 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
   const otlpEndpoint = process.env.OTEL_EXPORTER_OTLP_ENDPOINT;
 
   if (!otlpEndpoint) {
-    // eslint-disable-next-line no-console
     console.warn(
       '[evlog] OTEL_EXPORTER_OTLP_ENDPOINT is not set — logs will not be drained to SigNoz.',
     );
@@ -49,7 +48,6 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
     },
     maxBufferSize: 1000,
     onDropped: (events, error) => {
-      // eslint-disable-next-line no-console
       console.error(
         `[evlog] dropped ${events.length} event(s) after retries exhausted`,
         error,

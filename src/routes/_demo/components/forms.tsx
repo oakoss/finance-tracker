@@ -51,7 +51,7 @@ export const Route = createFileRoute('/_demo/components/forms')({
   component: FormsPage,
 });
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
+// oxlint-disable-next-line no-empty-function -- intentional no-op
 const noop = () => {};
 
 function FormsPage() {

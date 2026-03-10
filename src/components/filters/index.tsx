@@ -396,11 +396,9 @@ function Filters<T = unknown>({
                               onOpenChange={(open) => {
                                 if (open) {
                                   setOpenSubMenu(fieldKey);
-                                } else {
-                                  if (openSubMenu === fieldKey) {
-                                    setOpenSubMenu(null);
-                                    setActiveMenu('root');
-                                  }
+                                } else if (openSubMenu === fieldKey) {
+                                  setOpenSubMenu(null);
+                                  setActiveMenu('root');
                                 }
                               }}
                             >

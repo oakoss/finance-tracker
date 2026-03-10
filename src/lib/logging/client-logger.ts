@@ -48,7 +48,6 @@ const ensureClientLogger = (): void => {
   } catch (error) {
     // Logger failed to initialize. Flag stays true to prevent retry loops.
     // Falls back to console so the failure is observable in DevTools.
-    // eslint-disable-next-line no-console
     console.error('[client-logger] Failed to initialize:', error);
   }
 };

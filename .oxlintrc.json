@@ -1,0 +1,241 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["unicorn", "import", "typescript", "react", "jsx-a11y"],
+  "categories": {
+    "correctness": "error"
+  },
+  "ignorePatterns": [
+    "node_modules",
+    "dist",
+    ".nitro",
+    ".output",
+    ".tanstack",
+    "blob-report",
+    "coverage",
+    "playwright-report",
+    "test-results",
+    "storybook-static",
+    "**/paraglide",
+    "**/*.gen.ts"
+  ],
+  "rules": {
+    "eqeqeq": "error",
+    "no-console": "warn",
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "import/first": "error",
+    "import/no-duplicates": [
+      "error",
+      {
+        "prefer-inline": true
+      }
+    ],
+    "import/no-cycle": ["error", { "maxDepth": 3 }],
+    "import/no-relative-parent-imports": "error",
+    "unicorn/filename-case": [
+      "error",
+      {
+        "cases": {
+          "camelCase": false,
+          "kebabCase": true,
+          "pascalCase": false
+        },
+        "ignore": ["^\\$.*\\.tsx?$", "^-.*\\.tsx?$"]
+      }
+    ],
+    "array-callback-return": "error",
+    "no-accumulating-spread": "error",
+    "no-case-declarations": "error",
+    "no-constructor-return": "error",
+    "no-else-return": "error",
+    "no-empty": "error",
+    "no-empty-function": "error",
+    "no-extra-bind": "error",
+    "no-fallthrough": "error",
+    "no-lonely-if": "error",
+    "no-promise-executor-return": "error",
+    "no-prototype-builtins": "error",
+    "no-regex-spaces": "error",
+    "no-self-compare": "error",
+    "no-unexpected-multiline": "error",
+    "no-useless-concat": "error",
+    "no-useless-constructor": "error",
+    "no-useless-return": "error",
+    "no-var": "error",
+    "prefer-const": "error",
+    "prefer-rest-params": "error",
+    "prefer-spread": "error",
+    "preserve-caught-error": "error",
+    "import/no-absolute-path": "error",
+    "import/no-empty-named-blocks": "error",
+    "import/no-self-import": "error",
+    "unicorn/consistent-function-scoping": "error",
+    "unicorn/escape-case": "error",
+    "unicorn/no-array-reverse": "error",
+    "unicorn/no-array-sort": "error",
+    "unicorn/no-instanceof-builtins": "error",
+    "unicorn/no-null": "off",
+    "unicorn/no-typeof-undefined": "error",
+    "unicorn/no-unreadable-iife": "error",
+    "unicorn/no-useless-promise-resolve-reject": "error",
+    "unicorn/no-useless-switch-case": "error",
+    "unicorn/prefer-array-find": "error",
+    "unicorn/prefer-array-flat-map": "error",
+    "unicorn/prefer-array-some": "error",
+    "unicorn/prefer-class-fields": "error",
+    "unicorn/prefer-date-now": "error",
+    "unicorn/prefer-regexp-test": "error",
+    "unicorn/prefer-set-has": "error",
+    "unicorn/prefer-string-replace-all": "error",
+    "unicorn/prevent-abbreviations": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.{ts,tsx}"],
+      "plugins": ["typescript"],
+      "rules": {
+        "typescript/adjacent-overload-signatures": "error",
+        "typescript/array-type": "error",
+        "typescript/await-thenable": "error",
+        "typescript/ban-ts-comment": "error",
+        "typescript/ban-tslint-comment": "error",
+        "typescript/class-literal-property-style": "error",
+        "typescript/consistent-generic-constructors": "error",
+        "typescript/consistent-indexed-object-style": "error",
+        "typescript/consistent-type-assertions": "error",
+        "typescript/consistent-type-definitions": ["error", "type"],
+        "typescript/consistent-type-exports": "error",
+        "typescript/consistent-type-imports": [
+          "error",
+          {
+            "fixStyle": "inline-type-imports"
+          }
+        ],
+        "typescript/dot-notation": "error",
+        "typescript/no-array-constructor": "error",
+        "typescript/no-array-delete": "error",
+        "typescript/no-base-to-string": "error",
+        "typescript/no-confusing-non-null-assertion": "error",
+        "typescript/no-deprecated": "error",
+        "typescript/no-duplicate-type-constituents": "error",
+        "typescript/no-empty-object-type": "error",
+        "typescript/no-explicit-any": "off",
+        "typescript/no-floating-promises": "error",
+        "typescript/no-for-in-array": "error",
+        "typescript/no-implied-eval": "error",
+        "typescript/no-inferrable-types": "error",
+        "typescript/no-namespace": "error",
+        "typescript/no-misused-promises": [
+          "error",
+          {
+            "checksVoidReturn": {
+              "attributes": false
+            }
+          }
+        ],
+        "typescript/no-redundant-type-constituents": "error",
+        "typescript/no-require-imports": "error",
+        "typescript/no-unnecessary-boolean-literal-compare": "error",
+        "typescript/no-unnecessary-condition": "off",
+        "typescript/no-unnecessary-template-expression": "error",
+        "typescript/no-unnecessary-type-arguments": "error",
+        "typescript/no-unnecessary-type-assertion": "error",
+        "typescript/no-unnecessary-type-constraint": "error",
+        "typescript/no-unsafe-enum-comparison": "error",
+        "typescript/no-unsafe-argument": "off",
+        "typescript/no-unsafe-assignment": "off",
+        "typescript/no-unsafe-call": "off",
+        "typescript/no-unsafe-member-access": "off",
+        "typescript/no-unsafe-function-type": "error",
+        "typescript/no-unsafe-return": "off",
+        "typescript/no-unsafe-unary-minus": "error",
+        "typescript/non-nullable-type-assertion-style": "error",
+        "typescript/only-throw-error": "off",
+        "typescript/prefer-find": "error",
+        "typescript/prefer-for-of": "error",
+        "typescript/prefer-function-type": "error",
+        "typescript/prefer-includes": "error",
+        "typescript/prefer-nullish-coalescing": "error",
+        "typescript/prefer-optional-chain": "error",
+        "typescript/prefer-promise-reject-errors": "error",
+        "typescript/prefer-regexp-exec": "error",
+        "typescript/prefer-return-this-type": "error",
+        "typescript/prefer-string-starts-ends-with": "error",
+        "typescript/require-await": "error",
+        "typescript/restrict-plus-operands": "error",
+        "typescript/restrict-template-expressions": "off",
+        "typescript/return-await": "error",
+        "typescript/unbound-method": "error"
+      }
+    },
+    {
+      "files": ["**/*.{jsx,tsx}"],
+      "plugins": ["react", "jsx-a11y"],
+      "rules": {
+        "jsx-a11y/no-static-element-interactions": [
+          "error",
+          {
+            "allowExpressionValues": true,
+            "handlers": ["onClick", "onKeyDown", "onKeyPress", "onKeyUp"]
+          }
+        ],
+        "jsx-a11y/prefer-tag-over-role": "off",
+        "jsx-a11y/role-supports-aria-props": "off",
+        "react/jsx-no-target-blank": "error",
+        "react/exhaustive-deps": "off",
+        "react/jsx-no-constructed-context-values": "off",
+        "react/jsx-no-useless-fragment": "off",
+        "react/no-danger": "off",
+        "react/no-unsafe": "off",
+        "react/react-in-jsx-scope": "off"
+      }
+    },
+    {
+      "files": ["**/*.d.ts", "src/components/data-grid/index.tsx"],
+      "rules": {
+        "no-unused-vars": "off",
+        "typescript/consistent-type-definitions": "off",
+        "typescript/no-empty-object-type": "off"
+      }
+    },
+    {
+      "files": [
+        "src/configs/env.ts",
+        "src/lib/audit/**/*",
+        "src/lib/db/seed/**/*",
+        "src/lib/db/reset.ts",
+        "src/lib/logger.ts",
+        "src/lib/logging/**/*",
+        "src/components/ui/tree.tsx",
+        "**/*.stories.*",
+        "**/*.test.*",
+        "**/*.spec.*",
+        "e2e/**/*",
+        "test/**/*"
+      ],
+      "rules": {
+        "no-console": "off",
+        "no-empty-function": "off",
+        "no-empty-pattern": "off",
+        "unicorn/prefer-top-level-await": "off"
+      }
+    }
+  ],
+  "options": {
+    "typeAware": true
+  },
+  "settings": {
+    "jsx-a11y": {
+      "components": {
+        "Button": "button",
+        "Input": "input",
+        "Select": "select"
+      }
+    }
+  }
+}

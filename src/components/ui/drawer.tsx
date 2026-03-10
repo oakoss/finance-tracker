@@ -11,8 +11,11 @@ function Drawer({
 }: React.ComponentProps<typeof DrawerPrimitive.Root> & {
   direction?: 'bottom' | 'left' | 'right' | 'top';
 }) {
-  const swipeDirection =
-    direction === 'bottom' ? 'down' : (direction === 'top' ? 'up' : direction);
+  const swipeDirection = (() => {
+    if (direction === 'bottom') return 'down';
+    if (direction === 'top') return 'up';
+    return direction;
+  })();
   return (
     <DrawerPrimitive.Root
       data-slot="drawer"
