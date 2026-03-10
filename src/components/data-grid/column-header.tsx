@@ -250,7 +250,7 @@ function DataGridColumnHeaderInner<TData, TValue>({
                     key={col.id}
                     checked={columnVisibility[col.id] ?? true}
                     className="capitalize"
-                    onCheckedChange={(value) => col.toggleVisibility(!!value)}
+                    onCheckedChange={(value) => col.toggleVisibility(value)}
                     onSelect={(event) => event.preventDefault()}
                   >
                     {meta?.headerTitle ?? col.id}

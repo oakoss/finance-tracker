@@ -41,7 +41,7 @@ function DataGridColumnVisibility<TData>({
                   key={column.id}
                   checked={column.getIsVisible()}
                   className="capitalize"
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                  onCheckedChange={(value) => column.toggleVisibility(value)}
                   onSelect={(event) => event.preventDefault()}
                 >
                   {meta?.headerTitle ?? column.id}

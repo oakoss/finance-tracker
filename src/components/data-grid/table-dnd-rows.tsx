@@ -17,12 +17,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import {
-  type Cell,
-  flexRender,
-  type HeaderGroup,
-  type Row,
-} from '@tanstack/react-table';
+import { type Cell, flexRender, type Row } from '@tanstack/react-table';
 import {
   createContext,
   type CSSProperties,
@@ -134,7 +129,7 @@ function DataGridTableDndRow<TData>({ row }: { row: Row<TData> }) {
   );
 }
 
-function DataGridTableDndRows<TData>({
+function DataGridTableDndRows({
   dataIds,
   handleDragEnd,
 }: {
@@ -196,7 +191,7 @@ function DataGridTableDndRows<TData>({
       <div ref={tableContainerRef} className="relative">
         <DataGridTableBase>
           <DataGridTableHead>
-            {table.getHeaderGroups().map((headerGroup: HeaderGroup<TData>) => {
+            {table.getHeaderGroups().map((headerGroup) => {
               return (
                 <DataGridTableHeadRow
                   key={headerGroup.id}
@@ -259,7 +254,7 @@ function DataGridTableDndRows<TData>({
                     items={dataIds}
                     strategy={verticalListSortingStrategy}
                   >
-                    {table.getRowModel().rows.map((row: Row<TData>) => {
+                    {table.getRowModel().rows.map((row) => {
                       return <DataGridTableDndRow key={row.id} row={row} />;
                     })}
                   </SortableContext>

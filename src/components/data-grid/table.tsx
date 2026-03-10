@@ -466,7 +466,7 @@ function DataGridTableRowSelect<TData>({ row }: { row: Row<TData> }) {
         aria-label={m['dataGrid.table.selectRow']()}
         checked={row.getIsSelected()}
         className="align-[inherit]"
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        onCheckedChange={(value) => row.toggleSelected(value)}
       />
     </>
   );
@@ -485,12 +485,12 @@ function DataGridTableRowSelectAll() {
       className="align-[inherit]"
       disabled={[isLoading, recordCount === 0].some(Boolean)}
       indeterminate={isSomeSelected && !isAllSelected}
-      onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+      onCheckedChange={(value) => table.toggleAllPageRowsSelected(value)}
     />
   );
 }
 
-function DataGridTable<TData>() {
+function DataGridTable() {
   const { isLoading, props, table } = useDataGrid();
   const pagination = table.getState().pagination;
   const skeletonRows = useMemo(() => {
@@ -504,7 +504,7 @@ function DataGridTable<TData>() {
   return (
     <DataGridTableBase>
       <DataGridTableHead>
-        {table.getHeaderGroups().map((headerGroup: HeaderGroup<TData>) => {
+        {table.getHeaderGroups().map((headerGroup) => {
           return (
             <DataGridTableHeadRow
               key={headerGroup.id}
@@ -578,11 +578,11 @@ function DataGridTable<TData>() {
           }
 
           if (table.getRowModel().rows.length > 0) {
-            return table.getRowModel().rows.map((row: Row<TData>) => {
+            return table.getRowModel().rows.map((row) => {
               return (
                 <Fragment key={row.id}>
-                  <DataGridTableBodyRow key={row.id} row={row}>
-                    {row.getVisibleCells().map((cell: Cell<TData, unknown>) => {
+                  <DataGridTableBodyRow row={row}>
+                    {row.getVisibleCells().map((cell) => {
                       return (
                         <DataGridTableBodyRowCell key={cell.id} cell={cell}>
                           {flexRender(

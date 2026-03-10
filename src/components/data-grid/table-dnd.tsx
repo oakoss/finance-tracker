@@ -17,13 +17,7 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import {
-  type Cell,
-  flexRender,
-  type Header,
-  type HeaderGroup,
-  type Row,
-} from '@tanstack/react-table';
+import { type Cell, flexRender, type Header } from '@tanstack/react-table';
 import { type CSSProperties, Fragment, useId, useMemo, useRef } from 'react';
 
 import { useDataGrid } from '@/components/data-grid';
@@ -136,7 +130,7 @@ function DataGridTableDndCell<TData>({ cell }: { cell: Cell<TData, unknown> }) {
   );
 }
 
-function DataGridTableDnd<TData>({
+function DataGridTableDnd({
   handleDragEnd,
 }: {
   handleDragEnd: (event: DragEndEvent) => void;
@@ -192,7 +186,7 @@ function DataGridTableDnd<TData>({
       <div ref={containerRef}>
         <DataGridTableBase>
           <DataGridTableHead>
-            {table.getHeaderGroups().map((headerGroup: HeaderGroup<TData>) => {
+            {table.getHeaderGroups().map((headerGroup) => {
               return (
                 <DataGridTableHeadRow
                   key={headerGroup.id}
@@ -240,23 +234,21 @@ function DataGridTableDnd<TData>({
               }
 
               if (table.getRowModel().rows.length > 0) {
-                return table.getRowModel().rows.map((row: Row<TData>) => {
+                return table.getRowModel().rows.map((row) => {
                   return (
                     <Fragment key={row.id}>
                       <DataGridTableBodyRow row={row}>
-                        {row
-                          .getVisibleCells()
-                          .map((cell: Cell<TData, unknown>) => {
-                            return (
-                              <SortableContext
-                                key={cell.id}
-                                items={table.getState().columnOrder}
-                                strategy={horizontalListSortingStrategy}
-                              >
-                                <DataGridTableDndCell cell={cell} />
-                              </SortableContext>
-                            );
-                          })}
+                        {row.getVisibleCells().map((cell) => {
+                          return (
+                            <SortableContext
+                              key={cell.id}
+                              items={table.getState().columnOrder}
+                              strategy={horizontalListSortingStrategy}
+                            >
+                              <DataGridTableDndCell cell={cell} />
+                            </SortableContext>
+                          );
+                        })}
                       </DataGridTableBodyRow>
                       {row.getIsExpanded() && (
                         <DataGridTableBodyRowExpanded row={row} />
