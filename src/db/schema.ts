@@ -4,6 +4,8 @@ export * from '@/modules/accounts/db/relations';
 export * from '@/modules/accounts/db/schema';
 export * from '@/modules/auth/db/relations';
 export * from '@/modules/auth/db/schema';
+export * from '@/modules/budgets/db/relations';
+export * from '@/modules/budgets/db/schema';
 export * from '@/modules/categories/db/relations';
 export * from '@/modules/categories/db/schema';
 export * from '@/modules/debt/db/relations';

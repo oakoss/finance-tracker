@@ -50,6 +50,20 @@
       "when": 1772865008189,
       "tag": "0006_absent_wildside",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1773179304324,
+      "tag": "0007_add-budget-tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1773181500046,
+      "tag": "0008_budget-category-restrict",
+      "breakpoints": true
     }
   ]
 }
