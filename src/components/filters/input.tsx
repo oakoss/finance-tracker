@@ -69,9 +69,9 @@ function FilterInput<T = unknown>({
       setValidationMessage(
         valid
           ? ''
-          : customMessage.length > 0
+          : (customMessage.length > 0
             ? customMessage
-            : m['filters.validation.invalid'](),
+            : m['filters.validation.invalid']()),
       );
     } else {
       setIsValid(true);
@@ -124,7 +124,7 @@ function FilterInput<T = unknown>({
         <InputGroupAddon align="inline-end">
           <Tooltip>
             <TooltipTrigger render={<InputGroupButton size="icon-xs" />}>
-              <Icons.CircleAlert className="text-destructive size-3.5" />
+              <Icons.CircleAlert className="size-3.5 text-destructive" />
             </TooltipTrigger>
             <TooltipContent>
               <p className="text-sm">{validationMessage}</p>

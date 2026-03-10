@@ -1,9 +1,8 @@
 import { sql } from 'drizzle-orm';
 import { test as base } from 'vitest';
 
-import type { Db } from '~test/factories/base';
-
 import { createTestDb } from '~test/db';
+import type { Db } from '~test/factories/base';
 
 /** Thrown to force Drizzle to ROLLBACK instead of COMMIT. */
 class RollbackOnPurpose extends Error {}

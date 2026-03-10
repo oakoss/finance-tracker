@@ -415,15 +415,15 @@ function OverlaysPage() {
             </HoverCardTrigger>
             <HoverCardContent>
               <div className="flex gap-3">
-                <div className="bg-muted flex size-10 shrink-0 items-center justify-center rounded-full">
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted">
                   <Icons.User className="size-5" />
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-medium">@jacebabin</p>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     Building finance tools for families.
                   </p>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     Joined December 2024
                   </p>
                 </div>

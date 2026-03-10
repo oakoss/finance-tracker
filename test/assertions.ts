@@ -1,10 +1,9 @@
 import { and, eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '~test/factories/base';
-
 import { auditLogs } from '@/db/schema';
 import { parsePgError } from '@/lib/db/pg-error';
+import type { Db } from '~test/factories/base';
 
 /**
  * Assert that `fn` throws a Postgres constraint error matching the

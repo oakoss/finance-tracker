@@ -5,7 +5,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const badgeVariants = cva(
-  'rounded-4xl border border-transparent font-medium transition-all has-data-[icon=inline-end]:pe-1.5 has-data-[icon=inline-start]:ps-1.5 [&>svg]:size-3! inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive overflow-hidden group/badge',
+  'group/badge inline-flex w-fit shrink-0 items-center justify-center overflow-hidden rounded-4xl border border-transparent font-medium whitespace-nowrap transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 has-data-[icon=inline-end]:pe-1.5 has-data-[icon=inline-start]:ps-1.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3!',
   {
     defaultVariants: {
       size: 'default',
@@ -22,42 +22,42 @@ const badgeVariants = cva(
       variant: {
         default: 'bg-primary text-primary-foreground [a]:hover:bg-primary/80',
         destructive:
-          'bg-destructive/10 [a]:hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 text-destructive dark:bg-destructive/20',
+          'bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20',
         'destructive-light':
-          'bg-destructive/10 border-none text-destructive-foreground dark:bg-destructive/20',
+          'border-none bg-destructive/10 text-destructive-foreground dark:bg-destructive/20',
         'destructive-outline':
-          'bg-background border-border text-destructive-foreground dark:bg-input/30',
+          'border-border bg-background text-destructive-foreground dark:bg-input/30',
         ghost:
           'hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50',
         info: 'border-info/30 bg-info/4 text-info-foreground',
         'info-light':
-          'bg-info/10 border-none text-info-foreground dark:bg-info/20',
+          'border-none bg-info/10 text-info-foreground dark:bg-info/20',
         'info-outline':
-          'bg-background border-border text-info-foreground dark:bg-input/30',
+          'border-border bg-background text-info-foreground dark:bg-input/30',
         invert: 'border-invert bg-invert text-invert-foreground',
         'invert-light':
-          'bg-invert/10 border-none text-foreground dark:bg-invert/20',
+          'border-none bg-invert/10 text-foreground dark:bg-invert/20',
         'invert-outline':
-          'bg-background border-border text-invert-foreground dark:bg-input/30',
+          'border-border bg-background text-invert-foreground dark:bg-input/30',
         link: 'text-primary underline-offset-4 hover:underline',
         outline:
           'border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground',
         'primary-light':
-          'bg-primary/10 border-none text-primary dark:bg-primary/20',
+          'border-none bg-primary/10 text-primary dark:bg-primary/20',
         'primary-outline':
-          'bg-background border-border text-primary dark:bg-input/30',
+          'border-border bg-background text-primary dark:bg-input/30',
         secondary:
           'bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80',
         success: 'border-success/30 bg-success/4 text-success-foreground',
         'success-light':
-          'bg-success/10 border-none text-success-foreground dark:bg-success/20',
+          'border-none bg-success/10 text-success-foreground dark:bg-success/20',
         'success-outline':
-          'bg-background border-border text-success-foreground dark:bg-input/30',
+          'border-border bg-background text-success-foreground dark:bg-input/30',
         warning: 'border-warning/30 bg-warning/4 text-warning-foreground',
         'warning-light':
-          'bg-warning/10 border-none text-warning-foreground dark:bg-warning/20',
+          'border-none bg-warning/10 text-warning-foreground dark:bg-warning/20',
         'warning-outline':
-          'bg-background border-border text-warning-foreground dark:bg-input/30',
+          'border-border bg-background text-warning-foreground dark:bg-input/30',
       },
     },
   },

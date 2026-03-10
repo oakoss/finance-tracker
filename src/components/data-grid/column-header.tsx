@@ -72,24 +72,21 @@ function DataGridColumnHeaderInner<TData, TValue>({
   }
 
   const headerLabelClassName = cn(
-    'text-secondary-foreground/80 inline-flex h-full items-center gap-1.5 font-normal [&_svg]:opacity-60 text-[0.8125rem] leading-[calc(1.125/0.8125)] [&_svg]:size-3.5',
+    'inline-flex h-full items-center gap-1.5 text-[0.8125rem] leading-[calc(1.125/0.8125)] font-normal text-secondary-foreground/80 [&_svg]:size-3.5 [&_svg]:opacity-60',
     className,
   );
 
   const headerButtonClassName = cn(
-    'text-secondary-foreground/80 hover:bg-secondary data-[state=open]:bg-secondary hover:text-foreground data-[state=open]:text-foreground -ms-2 px-2 font-normal h-7 rounded-md',
+    '-ms-2 h-7 rounded-md px-2 font-normal text-secondary-foreground/80 hover:bg-secondary hover:text-foreground data-[state=open]:bg-secondary data-[state=open]:text-foreground',
     className,
   );
 
-  const sortIcon = canSort ? (
-    isSorted === 'desc' ? (
-      <Icons.ArrowDown className="size-3.25" />
-    ) : isSorted === 'asc' ? (
-      <Icons.ArrowUp className="size-3.25" />
-    ) : (
-      <Icons.ChevronsUpDown className="mt-px size-3.25" />
-    )
-  ) : null;
+  const sortIcon = (() => {
+    if (!canSort) return null;
+    if (isSorted === 'desc') return <Icons.ArrowDown className="size-3.25" />;
+    if (isSorted === 'asc') return <Icons.ArrowUp className="size-3.25" />;
+    return <Icons.ChevronsUpDown className="mt-px size-3.25" />;
+  })();
 
   const iconNode = renderIcon(icon);
 
@@ -136,7 +133,7 @@ function DataGridColumnHeaderInner<TData, TValue>({
           <Icons.ArrowUp className="size-3.5!" />
           <span className="grow">{m['dataGrid.column.asc']()}</span>
           {isSorted === 'asc' && (
-            <Icons.Check className="text-primary size-4 opacity-100!" />
+            <Icons.Check className="size-4 text-primary opacity-100!" />
           )}
         </DropdownMenuItem>,
         <DropdownMenuItem
@@ -153,7 +150,7 @@ function DataGridColumnHeaderInner<TData, TValue>({
           <Icons.ArrowDown className="size-3.5!" />
           <span className="grow">{m['dataGrid.column.desc']()}</span>
           {isSorted === 'desc' && (
-            <Icons.Check className="text-primary size-4 opacity-100!" />
+            <Icons.Check className="size-4 text-primary opacity-100!" />
           )}
         </DropdownMenuItem>,
       );
@@ -173,7 +170,7 @@ function DataGridColumnHeaderInner<TData, TValue>({
           <Icons.ArrowLeftToLine aria-hidden="true" className="size-3.5!" />
           <span className="grow">{m['dataGrid.column.pinToLeft']()}</span>
           {isPinned === 'left' && (
-            <Icons.Check className="text-primary size-4 opacity-100!" />
+            <Icons.Check className="size-4 text-primary opacity-100!" />
           )}
         </DropdownMenuItem>,
         <DropdownMenuItem
@@ -183,7 +180,7 @@ function DataGridColumnHeaderInner<TData, TValue>({
           <Icons.ArrowRightToLine aria-hidden="true" className="size-3.5!" />
           <span className="grow">{m['dataGrid.column.pinToRight']()}</span>
           {isPinned === 'right' && (
-            <Icons.Check className="text-primary size-4 opacity-100!" />
+            <Icons.Check className="size-4 text-primary opacity-100!" />
           )}
         </DropdownMenuItem>,
       );

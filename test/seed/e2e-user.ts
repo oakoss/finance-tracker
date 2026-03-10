@@ -1,8 +1,6 @@
 import { hashPassword } from 'better-auth/crypto';
 import { eq } from 'drizzle-orm';
 
-import type { Db } from '~test/factories/base';
-
 import { accounts, users } from '@/db/schema';
 import {
   E2E_EMAIL,
@@ -10,6 +8,7 @@ import {
   e2eDisplayName,
   e2eEmail,
 } from '~e2e/fixtures/constants';
+import type { Db } from '~test/factories/base';
 
 export async function seedE2eUser(
   db: Db,

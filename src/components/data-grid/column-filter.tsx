@@ -96,7 +96,7 @@ function DataGridColumnFilter<TData, TValue extends string>({
         </div>
         <div className="max-h-75 overflow-y-auto">
           {filteredOptions.length === 0 ? (
-            <div className="text-muted-foreground py-6 text-center text-sm">
+            <div className="py-6 text-center text-sm text-muted-foreground">
               {m['dataGrid.filter.noResults']()}
             </div>
           ) : (
@@ -125,7 +125,7 @@ function DataGridColumnFilter<TData, TValue extends string>({
                   >
                     <div
                       className={cn(
-                        'border-primary me-2 flex size-4 items-center justify-center rounded-sm border',
+                        'me-2 flex size-4 items-center justify-center rounded-sm border border-primary',
                         isSelected
                           ? 'bg-primary text-primary-foreground'
                           : 'opacity-50 [&_svg]:invisible',
@@ -134,7 +134,7 @@ function DataGridColumnFilter<TData, TValue extends string>({
                       <Icons.Check className="size-4" />
                     </div>
                     {option.icon ? (
-                      <option.icon className="text-muted-foreground mr-2 size-4" />
+                      <option.icon className="mr-2 size-4 text-muted-foreground" />
                     ) : null}
                     <span>{option.label}</span>
                     {facets?.get(option.value) === undefined ? null : (
@@ -149,10 +149,10 @@ function DataGridColumnFilter<TData, TValue extends string>({
           )}
           {selectedValues.size > 0 ? (
             <>
-              <div className="bg-border -mx-1 my-1 h-px" />
+              <div className="-mx-1 my-1 h-px bg-border" />
               <div className="p-1">
                 <button
-                  className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground relative flex w-full cursor-default items-center justify-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none"
+                  className="relative flex w-full cursor-default items-center justify-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                   type="button"
                   onClick={() => column?.setFilterValue(undefined)}
                 >

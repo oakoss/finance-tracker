@@ -163,7 +163,7 @@ function TreeItemLabel<T = any>({
   return (
     <span
       className={cn(
-        'in-focus-visible:ring-ring/50 bg-background hover:bg-accent in-data-[selected=true]:bg-accent in-data-[selected=true]:text-accent-foreground in-data-[drag-target=true]:bg-accent flex items-center gap-1 transition-colors not-in-data-[folder=true]:ps-7 in-focus-visible:ring-[3px] in-data-[search-match=true]:bg-blue-50! [&_svg]:pointer-events-none [&_svg]:shrink-0',
+        'flex items-center gap-1 bg-background transition-colors not-in-data-[folder=true]:ps-7 hover:bg-accent in-focus-visible:ring-[3px] in-focus-visible:ring-ring/50 in-data-[drag-target=true]:bg-accent in-data-[search-match=true]:bg-blue-50! in-data-[selected=true]:bg-accent in-data-[selected=true]:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0',
         'rounded-sm',
         'py-1.5',
         'px-2',
@@ -177,19 +177,19 @@ function TreeItemLabel<T = any>({
         (toggleIconType === 'plus-minus' ? (
           item.isExpanded() ? (
             <Icons.Minus
-              className="text-muted-foreground size-3.5"
+              className="size-3.5 text-muted-foreground"
               stroke="currentColor"
               strokeWidth="1"
             />
           ) : (
             <Icons.Plus
-              className="text-muted-foreground size-3.5"
+              className="size-3.5 text-muted-foreground"
               stroke="currentColor"
               strokeWidth="1"
             />
           )
         ) : (
-          <Icons.ChevronDown className="text-muted-foreground size-4 in-aria-[expanded=false]:-rotate-90" />
+          <Icons.ChevronDown className="size-4 text-muted-foreground in-aria-[expanded=false]:-rotate-90" />
         ))}
       {children ??
         (typeof item.getItemName === 'function' ? item.getItemName() : null)}
@@ -215,7 +215,7 @@ function TreeDragLine({
   return (
     <div
       className={cn(
-        'bg-primary before:bg-background before:border-primary absolute z-30 -mt-px h-0.5 w-[unset] before:absolute before:-top-0.75 before:left-0 before:size-2 before:border-2',
+        'absolute z-30 -mt-px h-0.5 w-[unset] bg-primary before:absolute before:-top-0.75 before:left-0 before:size-2 before:border-2 before:border-primary before:bg-background',
         'before:rounded-full',
         className,
       )}

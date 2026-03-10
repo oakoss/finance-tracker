@@ -149,7 +149,7 @@ function NavigationPage() {
                       <NavigationMenuLink key={item.title} href="#">
                         <div>
                           <div className="font-medium">{item.title}</div>
-                          <p className="text-muted-foreground text-xs">
+                          <p className="text-xs text-muted-foreground">
                             {item.description}
                           </p>
                         </div>
@@ -167,7 +167,7 @@ function NavigationPage() {
                         <item.icon className="text-muted-foreground" />
                         <div>
                           <div className="font-medium">{item.title}</div>
-                          <p className="text-muted-foreground text-xs">
+                          <p className="text-xs text-muted-foreground">
                             {item.description}
                           </p>
                         </div>

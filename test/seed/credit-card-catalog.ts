@@ -1,7 +1,7 @@
 import type { CreditCardCatalog } from '@/modules/accounts/models';
-import type { Db } from '~test/factories/base';
 
 import { creditCardCatalog } from '@/db/schema';
+import type { Db } from '~test/factories/base';
 
 const CATALOG = [
   {

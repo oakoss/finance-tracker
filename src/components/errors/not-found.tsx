@@ -4,7 +4,7 @@ import { RouterButton } from '@/components/ui/button';
 function NotFound() {
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 px-6 text-center">
-      <div className="bg-muted text-muted-icon flex size-12 items-center justify-center rounded-full">
+      <div className="flex size-12 items-center justify-center rounded-full bg-muted text-muted-icon">
         <Icons.Search className="size-5" />
       </div>
       <div className="max-w-md space-y-3">

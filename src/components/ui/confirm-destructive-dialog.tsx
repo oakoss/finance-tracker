@@ -83,7 +83,7 @@ function ConfirmDestructiveDialog({
               <Tooltip open={copied}>
                 <TooltipTrigger
                   render={
-                    <code className="cursor-copy select-all rounded-sm bg-muted px-1.5 py-0.5 font-mono font-semibold" />
+                    <code className="cursor-copy rounded-sm bg-muted px-1.5 py-0.5 font-mono font-semibold select-all" />
                   }
                   onClick={(e) => {
                     e.preventDefault();

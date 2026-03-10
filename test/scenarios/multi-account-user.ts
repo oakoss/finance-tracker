@@ -1,7 +1,7 @@
 import type { LedgerAccount } from '@/modules/accounts/models';
 import type { User } from '@/modules/auth/models';
-import type { Db } from '~test/factories/base';
 
+import type { Db } from '~test/factories/base';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
 import { insertUser } from '~test/factories/user.factory';
 

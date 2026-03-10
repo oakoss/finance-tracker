@@ -18,7 +18,7 @@ const AutocompleteAnchorContext =
   React.createContext<React.RefObject<HTMLElement | null> | null>(null);
 
 const inputVariants = cva(
-  'outline-none flex w-full text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [[readonly]]:bg-muted/80 [[readonly]]:cursor-not-allowed text-sm',
+  'flex w-full text-sm text-foreground outline-none placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [[readonly]]:cursor-not-allowed [[readonly]]:bg-muted/80',
   {
     defaultVariants: {
       size: 'default',
@@ -101,7 +101,7 @@ function AutocompleteStatus({
   return (
     <AutocompletePrimitive.Status
       className={cn(
-        'text-muted-foreground px-3 py-2 text-sm empty:m-0 empty:p-0',
+        'px-3 py-2 text-sm text-muted-foreground empty:m-0 empty:p-0',
         className,
       )}
       data-slot="autocomplete-status"
@@ -158,7 +158,7 @@ function AutocompleteList({
     >
       <AutocompletePrimitive.List
         className={cn(
-          'no-scrollbar max-h-[min(calc(--spacing(72)---spacing(9)),calc(var(--available-height)---spacing(9)))] scroll-py-1 p-1 overflow-y-auto overscroll-contain',
+          'no-scrollbar max-h-[min(calc(--spacing(72)---spacing(9)),calc(var(--available-height)---spacing(9)))] scroll-py-1 overflow-y-auto overscroll-contain p-1',
           className,
         )}
         data-slot="autocomplete-list"
@@ -199,7 +199,7 @@ function AutocompleteItem({
   return (
     <AutocompletePrimitive.Item
       className={cn(
-        "data-highlighted:bg-accent data-highlighted:text-accent-foreground not-data-[variant=destructive]:data-highlighted:**:text-accent-foreground gap-2 rounded-md py-1 pr-8 pl-1.5 text-sm [&_svg:not([class*='size-'])]:size-4 relative flex w-full cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "relative flex w-full cursor-default items-center gap-2 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none data-highlighted:bg-accent data-highlighted:text-accent-foreground not-data-[variant=destructive]:data-highlighted:**:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       data-slot="autocomplete-item"
@@ -242,7 +242,7 @@ function AutocompleteContent({
       >
         <AutocompletePrimitive.Popup
           className={cn(
-            'bg-popover text-popover-foreground data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ring-foreground/10 overflow-hidden rounded-lg shadow-md ring-1 duration-100 data-[side=inline-start]:slide-in-from-right-2 data-[side=inline-end]:slide-in-from-left-2 relative max-h-(--available-height) w-(--anchor-width) min-w-(--anchor-width) max-w-(--available-width) origin-(--transform-origin)',
+            'relative max-h-(--available-height) w-(--anchor-width) max-w-(--available-width) min-w-(--anchor-width) origin-(--transform-origin) overflow-hidden rounded-lg bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
             className,
           )}
           data-slot="autocomplete-popup"
@@ -270,7 +270,7 @@ function AutocompleteGroupLabel({
   return (
     <AutocompletePrimitive.GroupLabel
       className={cn(
-        'text-muted-foreground px-3 py-2.5 text-xs font-medium',
+        'px-3 py-2.5 text-xs font-medium text-muted-foreground',
         className,
       )}
       data-slot="autocomplete-group-label"
@@ -286,7 +286,7 @@ function AutocompleteEmpty({
   return (
     <AutocompletePrimitive.Empty
       className={cn(
-        'text-muted-foreground px-3 py-2 text-sm text-center empty:m-0 empty:p-0',
+        'px-3 py-2 text-center text-sm text-muted-foreground empty:m-0 empty:p-0',
         className,
       )}
       data-slot="autocomplete-empty"
@@ -355,7 +355,7 @@ function AutocompleteSeparator({
 }: React.ComponentProps<typeof AutocompletePrimitive.Separator>) {
   return (
     <AutocompletePrimitive.Separator
-      className={cn('bg-border/50 my-1.5 h-px', className)}
+      className={cn('my-1.5 h-px bg-border/50', className)}
       data-slot="autocomplete-separator"
       {...props}
     />

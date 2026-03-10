@@ -345,7 +345,7 @@ function Filters<T = unknown>({
                       onMouseEnter={() => setActiveMenu('root')}
                     />
                     {enableShortcut && shortcutLabel && (
-                      <Kbd className="bg-background absolute top-1/2 right-2 -translate-y-1/2 border">
+                      <Kbd className="absolute top-1/2 right-2 -translate-y-1/2 border bg-background">
                         {shortcutLabel}
                       </Kbd>
                     )}
@@ -366,7 +366,7 @@ function Filters<T = unknown>({
                     {(() => {
                       if (filteredFields.length === 0) {
                         return (
-                          <div className="text-muted-foreground py-2 text-center text-sm">
+                          <div className="py-2 text-center text-sm text-muted-foreground">
                             {m['filters.noFieldsFound']()}
                           </div>
                         );
@@ -406,7 +406,7 @@ function Filters<T = unknown>({
                             >
                               <DropdownMenuSubTrigger
                                 aria-selected={isHighlighted}
-                                className="data-popup-open:bg-accent data-popup-open:text-accent-foreground data-highlighted:bg-accent data-highlighted:text-accent-foreground"
+                                className="data-highlighted:bg-accent data-highlighted:text-accent-foreground data-popup-open:bg-accent data-popup-open:text-accent-foreground"
                                 data-highlighted={
                                   isHighlighted ? true : undefined
                                 }

@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const emptyVariants = cva(
-  'rounded-xl border border-dashed flex w-full min-w-0 flex-1 flex-col items-center justify-center text-center text-balance',
+  'flex w-full min-w-0 flex-1 flex-col items-center justify-center rounded-xl border border-dashed text-center text-balance',
   {
     defaultVariants: {
       size: 'default',
@@ -35,7 +35,7 @@ function Empty({
 function EmptyHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
-      className={cn('gap-2 flex max-w-sm flex-col items-center', className)}
+      className={cn('flex max-w-sm flex-col items-center gap-2', className)}
       data-slot="empty-header"
       {...props}
     />
@@ -51,9 +51,9 @@ const emptyMediaVariants = cva(
     variants: {
       variant: {
         default: 'bg-transparent',
-        icon: "bg-muted text-foreground flex size-8 shrink-0 items-center justify-center rounded-lg [&_svg:not([class*='size-'])]:size-4",
+        icon: "flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground [&_svg:not([class*='size-'])]:size-4",
         prominent:
-          "bg-muted text-muted-icon flex size-12 shrink-0 items-center justify-center rounded-xl [&_svg:not([class*='size-'])]:size-6",
+          "flex size-12 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-icon [&_svg:not([class*='size-'])]:size-6",
       },
     },
   },
@@ -88,7 +88,7 @@ function EmptyDescription({ className, ...props }: React.ComponentProps<'p'>) {
   return (
     <p
       className={cn(
-        'text-sm/relaxed text-muted-foreground [&>a:hover]:text-primary [&>a]:underline [&>a]:underline-offset-4',
+        'text-sm/relaxed text-muted-foreground [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary',
         className,
       )}
       data-slot="empty-description"
@@ -101,7 +101,7 @@ function EmptyContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'gap-2.5 text-sm flex w-full max-w-sm min-w-0 flex-col items-center text-balance',
+        'flex w-full max-w-sm min-w-0 flex-col items-center gap-2.5 text-sm text-balance',
         className,
       )}
       data-slot="empty-content"

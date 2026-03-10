@@ -138,7 +138,7 @@ function DataPage() {
             </CardHeader>
             <CardContent>
               <p className="text-2xl font-bold">$2,450.00</p>
-              <p className="text-muted-foreground text-xs">
+              <p className="text-xs text-muted-foreground">
                 +12% from last month
               </p>
             </CardContent>
@@ -163,7 +163,7 @@ function DataPage() {
             </CardHeader>
             <CardContent>
               <p className="text-2xl font-bold">$320 / $500</p>
-              <p className="text-muted-foreground text-xs">64% of budget</p>
+              <p className="text-xs text-muted-foreground">64% of budget</p>
             </CardContent>
           </Card>
         </Subsection>
@@ -267,17 +267,17 @@ function DataPage() {
               <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
             <TabsContent value="overview">
-              <p className="text-muted-foreground p-2">
+              <p className="p-2 text-muted-foreground">
                 Account overview content.
               </p>
             </TabsContent>
             <TabsContent value="transactions">
-              <p className="text-muted-foreground p-2">
+              <p className="p-2 text-muted-foreground">
                 Transaction list content.
               </p>
             </TabsContent>
             <TabsContent value="settings">
-              <p className="text-muted-foreground p-2">
+              <p className="p-2 text-muted-foreground">
                 Account settings content.
               </p>
             </TabsContent>
@@ -292,13 +292,13 @@ function DataPage() {
               <TabsTrigger value="savings">Savings</TabsTrigger>
             </TabsList>
             <TabsContent value="spending">
-              <p className="text-muted-foreground p-2">Spending breakdown.</p>
+              <p className="p-2 text-muted-foreground">Spending breakdown.</p>
             </TabsContent>
             <TabsContent value="income">
-              <p className="text-muted-foreground p-2">Income sources.</p>
+              <p className="p-2 text-muted-foreground">Income sources.</p>
             </TabsContent>
             <TabsContent value="savings">
-              <p className="text-muted-foreground p-2">Savings progress.</p>
+              <p className="p-2 text-muted-foreground">Savings progress.</p>
             </TabsContent>
           </Tabs>
         </Subsection>
@@ -311,13 +311,13 @@ function DataPage() {
               <TabsTrigger value="billing">Billing</TabsTrigger>
             </TabsList>
             <TabsContent value="account">
-              <p className="text-muted-foreground p-2">Account details.</p>
+              <p className="p-2 text-muted-foreground">Account details.</p>
             </TabsContent>
             <TabsContent value="security">
-              <p className="text-muted-foreground p-2">Security settings.</p>
+              <p className="p-2 text-muted-foreground">Security settings.</p>
             </TabsContent>
             <TabsContent value="billing">
-              <p className="text-muted-foreground p-2">Billing info.</p>
+              <p className="p-2 text-muted-foreground">Billing info.</p>
             </TabsContent>
           </Tabs>
         </Subsection>
@@ -401,17 +401,17 @@ function DataPage() {
             </StepperNav>
             <StepperPanel>
               <StepperContent value={1}>
-                <p className="text-muted-foreground p-4 text-sm">
+                <p className="p-4 text-sm text-muted-foreground">
                   Step 1: Create your first account.
                 </p>
               </StepperContent>
               <StepperContent value={2}>
-                <p className="text-muted-foreground p-4 text-sm">
+                <p className="p-4 text-sm text-muted-foreground">
                   Step 2: Configure spending categories.
                 </p>
               </StepperContent>
               <StepperContent value={3}>
-                <p className="text-muted-foreground p-4 text-sm">
+                <p className="p-4 text-sm text-muted-foreground">
                   Step 3: Import transactions from CSV.
                 </p>
               </StepperContent>

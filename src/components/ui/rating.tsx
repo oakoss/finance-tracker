@@ -30,7 +30,7 @@ const starVariants = cva('', {
   },
 });
 
-const valueVariants = cva('text-muted-foreground w-5', {
+const valueVariants = cva('w-5 text-muted-foreground', {
   defaultVariants: {
     size: 'default',
   },

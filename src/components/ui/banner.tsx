@@ -15,10 +15,10 @@ const ASSERTIVE_VARIANTS = new Set<BannerVariant>(['destructive', 'warning']);
 
 const bannerVariants = cva(
   [
-    'relative grid w-full gap-x-3 border-b px-4 py-2.5 text-start text-sm group/banner lg:px-6',
+    'group/banner relative grid w-full gap-x-3 border-b px-4 py-2.5 text-start text-sm lg:px-6',
     'has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:has-data-[slot=banner-action]:grid-cols-[auto_1fr_auto] has-[>svg]:has-data-[slot=banner-dismiss]:grid-cols-[auto_1fr_auto] has-[>svg]:has-data-[slot=banner-action]:has-data-[slot=banner-dismiss]:grid-cols-[auto_1fr_auto_auto]',
     'not-has-[>svg]:has-data-[slot=banner-action]:grid-cols-[1fr_auto] not-has-[>svg]:has-data-[slot=banner-dismiss]:grid-cols-[1fr_auto] not-has-[>svg]:has-data-[slot=banner-action]:has-data-[slot=banner-dismiss]:grid-cols-[1fr_auto_auto]',
-    '[&>svg]:row-span-2 [&>svg]:self-start [&>svg]:text-current [&>svg:not([class*=size-])]:size-4 [&>svg]:translate-y-0.5',
+    '[&>svg]:row-span-2 [&>svg]:translate-y-0.5 [&>svg]:self-start [&>svg]:text-current [&>svg:not([class*=size-])]:size-4',
   ],
   {
     defaultVariants: {

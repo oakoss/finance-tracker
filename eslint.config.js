@@ -4,7 +4,6 @@ import pluginReact from '@eslint-react/eslint-plugin';
 import js from '@eslint/js';
 import pluginQuery from '@tanstack/eslint-plugin-query';
 import pluginRouter from '@tanstack/eslint-plugin-router';
-import configPrettier from 'eslint-config-prettier';
 import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import importX from 'eslint-plugin-import-x';
 // @ts-ignore
@@ -59,26 +58,6 @@ export default defineConfig(
         'error',
         {
           ignoreCase: true,
-          order: 'asc',
-          type: 'alphabetical',
-        },
-      ],
-      'perfectionist/sort-imports': [
-        'error',
-        {
-          groups: [
-            'type-import',
-            ['value-builtin', 'value-external'],
-            'type-internal',
-            'value-internal',
-            ['type-parent', 'type-sibling', 'type-index'],
-            ['value-parent', 'value-sibling', 'value-index'],
-            'ts-equals-import',
-            'unknown',
-          ],
-          ignoreCase: true,
-          internalPattern: ['^@/.+', '^~e2e/.+', '^~test/.+'],
-          newlinesBetween: 1,
           order: 'asc',
           type: 'alphabetical',
         },
@@ -451,5 +430,4 @@ export default defineConfig(
       ],
     },
   },
-  configPrettier,
 );

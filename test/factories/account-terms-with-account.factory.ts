@@ -5,9 +5,9 @@ import type {
   LedgerAccountInsert,
 } from '@/modules/accounts/models';
 import type { User, UserInsert } from '@/modules/auth/models';
-import type { Db } from '~test/factories/base';
 
 import { insertAccountTerms } from '~test/factories/account-terms.factory';
+import type { Db } from '~test/factories/base';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
 import { insertUser } from '~test/factories/user.factory';
 

@@ -103,9 +103,9 @@ function SignUpForm() {
   });
 
   return (
-    <Card className="border-0 ring-0 shadow-none">
+    <Card className="border-0 shadow-none ring-0">
       <CardHeader className="justify-items-center text-center">
-        <Icons.Logo className="size-8 mb-2" />
+        <Icons.Logo className="mb-2 size-8" />
         <CardTitle>{m['auth.signup.heading']()}</CardTitle>
         <CardDescription>{m['auth.signup.subheading']()}</CardDescription>
       </CardHeader>
@@ -204,7 +204,7 @@ function SignUpForm() {
           {serverError && (
             <div
               aria-live="polite"
-              className="rounded-lg bg-destructive/10 border border-destructive/20 p-3"
+              className="rounded-lg border border-destructive/20 bg-destructive/10 p-3"
               role="alert"
             >
               <p className="text-sm text-destructive">{serverError}</p>

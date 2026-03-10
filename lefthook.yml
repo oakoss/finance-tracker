@@ -20,7 +20,7 @@ pre-commit:
       run: pnpm markdownlint-cli2 --fix {staged_files}
       stage_fixed: true
     format:
-      run: pnpm prettier -uwl {staged_files}
+      run: pnpm oxfmt --no-error-on-unmatched-pattern {staged_files}
       stage_fixed: true
 
 commit-msg:

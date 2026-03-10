@@ -1,0 +1,42 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "singleQuote": true,
+  "printWidth": 80,
+  "sortPackageJson": {},
+  "sortImports": {
+    "groups": [
+      "side_effect",
+      "type-import",
+      ["value-builtin", "value-external"],
+      "type-internal",
+      ["value-internal", "test-imports"],
+      ["type-parent", "type-sibling", "type-index"],
+      ["value-parent", "value-sibling", "value-index"],
+      "unknown"
+    ],
+    "newlinesBetween": true,
+    "customGroups": [
+      {
+        "groupName": "test-imports",
+        "elementNamePattern": ["~test/**", "~e2e/**"]
+      }
+    ]
+  },
+  "sortTailwindcss": {
+    "stylesheet": "./src/styles/globals.css",
+    "functions": ["cn", "clsx", "cva"]
+  },
+  "ignorePatterns": [
+    "package-lock.json",
+    "pnpm-lock.yaml",
+    "yarn.lock",
+    "node_modules/",
+    "dist/",
+    "build/",
+    "*.log",
+    "drizzle/",
+    "*.gen.ts",
+    "**/paraglide/",
+    "project.inlang/"
+  ]
+}

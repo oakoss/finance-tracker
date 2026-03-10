@@ -22,7 +22,7 @@ function PaginationContent({
 }: React.ComponentProps<'ul'>) {
   return (
     <ul
-      className={cn('gap-0.5 flex items-center', className)}
+      className={cn('flex items-center gap-0.5', className)}
       data-slot="pagination-content"
       {...props}
     />
@@ -109,7 +109,7 @@ function PaginationEllipsis({
     <span
       aria-hidden
       className={cn(
-        "size-8 [&_svg:not([class*='size-'])]:size-4 flex items-center justify-center",
+        "flex size-8 items-center justify-center [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       data-slot="pagination-ellipsis"

@@ -108,7 +108,7 @@ function SelectOptionsPopover<T = unknown>({
             aria-expanded={true}
             aria-haspopup="listbox"
             className={cn(
-              'border-input h-8 rounded-none border-0 bg-transparent! px-2 text-sm shadow-none',
+              'h-8 rounded-none border-0 border-input bg-transparent! px-2 text-sm shadow-none',
               'focus-visible:border-border focus-visible:ring-0 focus-visible:ring-offset-0',
               open && 'placeholder:text-foreground',
             )}
@@ -159,9 +159,9 @@ function SelectOptionsPopover<T = unknown>({
                       const isSelected = effectiveValues.includes(option.value);
                       const next = isSelected
                         ? effectiveValues.filter((v) => v !== option.value)
-                        : isMultiSelect
+                        : (isMultiSelect
                           ? ([...effectiveValues, option.value] as T[])
-                          : ([option.value] as T[]);
+                          : ([option.value] as T[]));
 
                       if (
                         !isSelected &&
@@ -196,7 +196,7 @@ function SelectOptionsPopover<T = unknown>({
         >
           <ScrollArea className="size-full min-h-0 **:data-[slot=scroll-area-scrollbar]:m-0 **:data-[slot=scroll-area-viewport]:h-full **:data-[slot=scroll-area-viewport]:overscroll-contain">
             {allFilteredOptions.length === 0 && (
-              <div className="text-muted-foreground py-2 text-center text-sm">
+              <div className="py-2 text-center text-sm text-muted-foreground">
                 {m['filters.noResultsFound']()}
               </div>
             )}
@@ -339,9 +339,9 @@ function SelectOptionsPopover<T = unknown>({
                   )}
                   {selectedOptions.length === 1
                     ? selectedOptions[0].label
-                    : selectedOptions.length > 1
+                    : (selectedOptions.length > 1
                       ? `${selectedOptions.length} ${m['filters.selectedCount']()}`
-                      : m['filters.select']()}
+                      : m['filters.select']())}
                 </>
               )}
             </div>
@@ -371,7 +371,7 @@ function ValueSelector<T = unknown>({
 
   if (field.customRenderer) {
     return (
-      <ButtonGroupText className="hover:bg-accent aria-expanded:bg-accent text-start whitespace-nowrap outline-hidden">
+      <ButtonGroupText className="text-start whitespace-nowrap outline-hidden hover:bg-accent aria-expanded:bg-accent">
         {field.customRenderer({ field, onChange, operator, values })}
       </ButtonGroupText>
     );

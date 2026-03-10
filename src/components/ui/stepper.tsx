@@ -93,9 +93,9 @@ function Stepper({
 
   const childArray = Array.isArray(children)
     ? children
-    : children
+    : (children
       ? [children]
-      : [];
+      : []);
   const stepsCount = childArray.filter((child) => {
     return (
       isValidElement(child) &&
@@ -202,9 +202,9 @@ function StepperItem({
   const state: StepState =
     completed || step < activeStep
       ? 'completed'
-      : activeStep === step
+      : (activeStep === step
         ? 'active'
-        : 'inactive';
+        : 'inactive');
 
   const isLoading = loading && step === activeStep;
 
@@ -323,7 +323,7 @@ function StepperTrigger({
       aria-controls={panelId}
       aria-selected={isSelected}
       className={cn(
-        'focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center outline-none focus-visible:z-10 focus-visible:ring-3 disabled:pointer-events-none disabled:opacity-60',
+        'inline-flex cursor-pointer items-center outline-none focus-visible:z-10 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-60',
         'gap-3 rounded-full',
         className,
       )}
@@ -334,7 +334,7 @@ function StepperTrigger({
       disabled={isDisabled}
       id={id}
       role="tab"
-      tabIndex={typeof tabIndex === 'number' ? tabIndex : isSelected ? 0 : -1}
+      tabIndex={typeof tabIndex === 'number' ? tabIndex : (isSelected ? 0 : -1)}
       onClick={() => setActiveStep(step)}
       onKeyDown={handleKeyDown}
       {...props}
@@ -354,7 +354,7 @@ function StepperIndicator({
   return (
     <div
       className={cn(
-        'border-background bg-accent text-accent-foreground data-[state=completed]:bg-primary data-[state=completed]:text-primary-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground relative flex size-6 shrink-0 items-center justify-center overflow-hidden',
+        'relative flex size-6 shrink-0 items-center justify-center overflow-hidden border-background bg-accent text-accent-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=completed]:bg-primary data-[state=completed]:text-primary-foreground',
         'rounded-full text-xs',
         className,
       )}
@@ -383,7 +383,7 @@ function StepperSeparator({ className }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'bg-muted rounded-full group-data-[orientation=horizontal]/stepper-nav:h-0.5 group-data-[orientation=vertical]/stepper-nav:h-12 group-data-[orientation=vertical]/stepper-nav:w-0.5 m-0.5 group-data-[orientation=horizontal]/stepper-nav:flex-1',
+        'm-0.5 rounded-full bg-muted group-data-[orientation=horizontal]/stepper-nav:h-0.5 group-data-[orientation=horizontal]/stepper-nav:flex-1 group-data-[orientation=vertical]/stepper-nav:h-12 group-data-[orientation=vertical]/stepper-nav:w-0.5',
         className,
       )}
       data-slot="stepper-separator"
@@ -414,7 +414,7 @@ function StepperDescription({
 
   return (
     <div
-      className={cn('text-muted-foreground text-sm', className)}
+      className={cn('text-sm text-muted-foreground', className)}
       data-slot="stepper-description"
       data-state={state}
     >

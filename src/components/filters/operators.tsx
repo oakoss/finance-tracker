@@ -145,14 +145,14 @@ function OperatorDropdown<T = unknown>({
           <DropdownMenuItem
             key={op.value}
             className={cn(
-              'data-highlighted:bg-accent data-highlighted:text-accent-foreground flex items-center justify-between',
+              'flex items-center justify-between data-highlighted:bg-accent data-highlighted:text-accent-foreground',
             )}
             onClick={() => onChange(op.value)}
           >
             <span>{op.label}</span>
             <Icons.Check
               className={cn(
-                'text-primary ms-auto',
+                'ms-auto text-primary',
                 op.value === operator ? 'opacity-100' : 'opacity-0',
               )}
             />

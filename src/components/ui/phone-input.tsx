@@ -144,7 +144,7 @@ function CountrySelect({
         render={
           <Button
             className={cn(
-              'rounded-s-lg rounded-e-none flex gap-1 border-e-0 px-2.5 py-0 leading-none hover:bg-transparent focus:z-10 data-pressed:bg-transparent',
+              'flex gap-1 rounded-s-lg rounded-e-none border-e-0 px-2.5 py-0 leading-none hover:bg-transparent focus:z-10 data-pressed:bg-transparent',
               disabled && 'opacity-50',
             )}
             disabled={disabled}
@@ -168,7 +168,7 @@ function CountrySelect({
         )}
       >
         <ComboboxInput
-          className="border-input focus-visible:border-border rounded-none border-0 px-0 py-2.5 shadow-none ring-0! outline-none! focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="rounded-none border-0 border-input px-0 py-2.5 shadow-none ring-0! outline-none! focus-visible:border-border focus-visible:ring-0 focus-visible:ring-offset-0"
           placeholder="e.g. United States"
           showTrigger={false}
           value={searchValue}
@@ -194,7 +194,7 @@ function CountrySelect({
                         countryName={item.label}
                       />
                       <span className="flex-1 text-sm">{item.label}</span>
-                      <span className="text-foreground/50 text-sm">
+                      <span className="text-sm text-foreground/50">
                         {`+${BasePhoneInput.getCountryCallingCode(item.value)}`}
                       </span>
                     </ComboboxItem>
@@ -224,8 +224,8 @@ function FlagPreview({ country, countryName }: FlagPreviewProps) {
       <Flag title={label} />
     </span>
   ) : (
-    <span className="bg-muted flex size-5 shrink-0 items-center justify-center rounded-full">
-      <Icons.Globe className="text-muted-foreground size-4" />
+    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted">
+      <Icons.Globe className="size-4 text-muted-foreground" />
     </span>
   );
 }

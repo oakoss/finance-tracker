@@ -230,7 +230,7 @@ function SubmenuContent<T = unknown>({
         >
           <ScrollArea className="size-full min-h-0 **:data-[slot=scroll-area-scrollbar]:m-0 **:data-[slot=scroll-area-viewport]:h-full **:data-[slot=scroll-area-viewport]:overscroll-contain">
             {filteredOptions.length === 0 ? (
-              <div className="text-muted-foreground py-2 text-center text-sm">
+              <div className="py-2 text-center text-sm text-muted-foreground">
                 {m['filters.noResultsFound']()}
               </div>
             ) : (

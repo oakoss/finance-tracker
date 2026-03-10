@@ -196,9 +196,9 @@ function Sortable<T>({
 
     const childArray = Array.isArray(children)
       ? children
-      : children
+      : (children
         ? [children]
-        : [];
+        : []);
     const matched = childArray.find((child) => {
       return (
         isValidElement(child) &&
@@ -293,7 +293,7 @@ function SortableItem({
   const baseProps = {
     children: props.children,
     className: cn(
-      isDragging && 'opacity-50 z-50',
+      isDragging && 'z-50 opacity-50',
       disabled && 'opacity-50',
       className,
     ),
@@ -374,9 +374,9 @@ function SortableOverlay({
 
   const content =
     activeId && children
-      ? typeof children === 'function'
+      ? (typeof children === 'function'
         ? children({ value: activeId })
-        : children
+        : children)
       : null;
 
   if (!isClient) return null;

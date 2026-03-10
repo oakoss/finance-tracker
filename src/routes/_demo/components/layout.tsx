@@ -464,10 +464,10 @@ function LayoutPage() {
         {ASPECT_RATIOS.map(({ label, maxWidth, ratio }) => (
           <Subsection key={label} className={`block ${maxWidth}`} label={label}>
             <AspectRatio
-              className="bg-muted flex items-center justify-center rounded-lg"
+              className="flex items-center justify-center rounded-lg bg-muted"
               ratio={ratio}
             >
-              <span className="text-muted-foreground text-sm">{label}</span>
+              <span className="text-sm text-muted-foreground">{label}</span>
             </AspectRatio>
           </Subsection>
         ))}

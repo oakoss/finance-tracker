@@ -115,7 +115,7 @@ function RootComponent() {
       attribute="class"
       defaultTheme="system"
     >
-      <div className="isolate relative flex min-h-svh flex-col">
+      <div className="relative isolate flex min-h-svh flex-col">
         <Outlet />
       </div>
       <Toaster />

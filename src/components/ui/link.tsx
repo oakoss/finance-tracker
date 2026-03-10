@@ -5,7 +5,7 @@ import { Icons } from '@/components/icons';
 import { cn } from '@/lib/utils';
 
 const linkVariants = cva(
-  'inline-flex items-center gap-1 outline-none transition-colors [&_svg]:pointer-events-none [&_svg]:shrink-0',
+  'inline-flex items-center gap-1 transition-colors outline-none [&_svg]:pointer-events-none [&_svg]:shrink-0',
   {
     defaultVariants: {
       size: 'default',
@@ -30,7 +30,7 @@ const linkVariants = cva(
           'text-destructive underline-offset-4 hover:underline focus-visible:underline',
         muted:
           'text-muted-foreground underline-offset-4 hover:text-foreground focus-visible:text-foreground data-[status=active]:text-foreground',
-        nav: 'text-muted-foreground font-medium hover:text-foreground focus-visible:text-foreground data-[status=active]:text-foreground data-[status=active]:font-semibold',
+        nav: 'font-medium text-muted-foreground hover:text-foreground focus-visible:text-foreground data-[status=active]:font-semibold data-[status=active]:text-foreground',
         subtle:
           'text-foreground hover:text-foreground/80 focus-visible:text-foreground/80 data-[status=active]:text-foreground',
       },

@@ -323,7 +323,7 @@ export function AccountForm({
         {(accountType) =>
           hasTerms(accountType) && (
             <FieldSet className="rounded-lg border p-4">
-              <legend className="text-sm font-medium leading-none px-1">
+              <legend className="px-1 text-sm leading-none font-medium">
                 {m['accounts.form.termsSection']()}
               </legend>
 

@@ -45,7 +45,7 @@ function Timestamp({ className, value }: TimestampProps) {
       <Tooltip>
         <TooltipTrigger
           className={cn(
-            'cursor-default hover:underline hover:decoration-dotted hover:decoration-muted-foreground/50 hover:underline-offset-2',
+            'cursor-default hover:underline hover:decoration-muted-foreground/50 hover:decoration-dotted hover:underline-offset-2',
             className,
           )}
           render={<time dateTime={iso} />}
@@ -74,8 +74,8 @@ function TimestampRow({ label, value }: { label: string; value: string }) {
       type="button"
       onClick={() => copy(value)}
     >
-      <span className="text-background/60 shrink-0">{label}</span>
-      <span className="text-background tabular-nums text-right">
+      <span className="shrink-0 text-background/60">{label}</span>
+      <span className="text-right text-background tabular-nums">
         {copied ? 'Copied!' : value}
       </span>
     </button>
