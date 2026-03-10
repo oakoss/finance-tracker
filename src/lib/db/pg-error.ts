@@ -31,6 +31,10 @@ type PgLogFields = {
 const CONSTRAINT_MESSAGES: Record<string, string> = {
   account_terms_account_id_idx:
     'This account already has terms. Edit existing terms.',
+  budget_lines_period_category_idx:
+    'This category already has a budget line in this period.',
+  budget_periods_user_year_month_idx:
+    'A budget period for this month already exists.',
   categories_user_name_idx: 'A category with this name already exists.',
   payees_user_name_idx: 'A payee with this name already exists.',
   tags_user_name_idx: 'A tag with this name already exists.',
