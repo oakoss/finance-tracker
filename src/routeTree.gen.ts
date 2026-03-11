@@ -19,6 +19,7 @@ import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as AppTransactionsRouteImport } from './routes/_app/transactions'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppCategoriesRouteImport } from './routes/_app/categories'
+import { Route as AppBudgetsRouteImport } from './routes/_app/budgets'
 import { Route as AppAccountsRouteImport } from './routes/_app/accounts'
 import { Route as DemoComponentsRouteRouteImport } from './routes/_demo/components/route'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -74,6 +75,11 @@ const AppDashboardRoute = AppDashboardRouteImport.update({
 const AppCategoriesRoute = AppCategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppBudgetsRoute = AppBudgetsRouteImport.update({
+  id: '/budgets',
+  path: '/budgets',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppAccountsRoute = AppAccountsRouteImport.update({
@@ -133,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/components': typeof DemoComponentsRouteRouteWithChildren
   '/accounts': typeof AppAccountsRoute
+  '/budgets': typeof AppBudgetsRoute
   '/categories': typeof AppCategoriesRoute
   '/dashboard': typeof AppDashboardRoute
   '/transactions': typeof AppTransactionsRoute
@@ -151,6 +158,7 @@ export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/components': typeof DemoComponentsRouteRouteWithChildren
   '/accounts': typeof AppAccountsRoute
+  '/budgets': typeof AppBudgetsRoute
   '/categories': typeof AppCategoriesRoute
   '/dashboard': typeof AppDashboardRoute
   '/transactions': typeof AppTransactionsRoute
@@ -173,6 +181,7 @@ export interface FileRoutesById {
   '/_public': typeof PublicRouteRouteWithChildren
   '/_demo/components': typeof DemoComponentsRouteRouteWithChildren
   '/_app/accounts': typeof AppAccountsRoute
+  '/_app/budgets': typeof AppBudgetsRoute
   '/_app/categories': typeof AppCategoriesRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/transactions': typeof AppTransactionsRoute
@@ -194,6 +203,7 @@ export interface FileRouteTypes {
     | '/'
     | '/components'
     | '/accounts'
+    | '/budgets'
     | '/categories'
     | '/dashboard'
     | '/transactions'
@@ -212,6 +222,7 @@ export interface FileRouteTypes {
     | '/'
     | '/components'
     | '/accounts'
+    | '/budgets'
     | '/categories'
     | '/dashboard'
     | '/transactions'
@@ -233,6 +244,7 @@ export interface FileRouteTypes {
     | '/_public'
     | '/_demo/components'
     | '/_app/accounts'
+    | '/_app/budgets'
     | '/_app/categories'
     | '/_app/dashboard'
     | '/_app/transactions'
@@ -329,6 +341,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCategoriesRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_app/budgets': {
+      id: '/_app/budgets'
+      path: '/budgets'
+      fullPath: '/budgets'
+      preLoaderRoute: typeof AppBudgetsRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/_app/accounts': {
       id: '/_app/accounts'
       path: '/accounts'
@@ -404,6 +423,7 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteRouteChildren {
   AppAccountsRoute: typeof AppAccountsRoute
+  AppBudgetsRoute: typeof AppBudgetsRoute
   AppCategoriesRoute: typeof AppCategoriesRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppTransactionsRoute: typeof AppTransactionsRoute
@@ -411,6 +431,7 @@ interface AppRouteRouteChildren {
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppAccountsRoute: AppAccountsRoute,
+  AppBudgetsRoute: AppBudgetsRoute,
   AppCategoriesRoute: AppCategoriesRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppTransactionsRoute: AppTransactionsRoute,

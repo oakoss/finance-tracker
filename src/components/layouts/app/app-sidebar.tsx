@@ -41,6 +41,11 @@ const navMain = [
     url: '/categories' as const,
   },
   {
+    icon: <Icons.ChartBar />,
+    title: 'Budgets',
+    url: '/budgets' as const,
+  },
+  {
     icon: <Icons.Upload />,
     title: 'Imports',
     url: '/dashboard' as const,
