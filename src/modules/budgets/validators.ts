@@ -48,6 +48,20 @@ export const listBudgetLinesSchema = type({ budgetPeriodId: 'string > 0' });
 
 export type ListBudgetLinesInput = typeof listBudgetLinesSchema.infer;
 
+export const getBudgetVsActualSchema = type({
+  budgetPeriodId: 'string > 0',
+});
+
+export type GetBudgetVsActualInput = typeof getBudgetVsActualSchema.infer;
+
+export const copyBudgetPeriodSchema = type({
+  month: '1 <= number.integer <= 12',
+  sourcePeriodId: 'string > 0',
+  year: '2000 <= number.integer <= 2100',
+});
+
+export type CopyBudgetPeriodInput = typeof copyBudgetPeriodSchema.infer;
+
 export const deleteBudgetLineSchema = budgetLinesDeleteSchema;
 
 export type DeleteBudgetLineInput = typeof deleteBudgetLineSchema.infer;
