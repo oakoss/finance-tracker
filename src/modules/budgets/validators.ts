@@ -44,6 +44,10 @@ export const updateBudgetLineSchema = type({
 
 export type UpdateBudgetLineInput = typeof updateBudgetLineSchema.infer;
 
+export const listBudgetLinesSchema = type({ budgetPeriodId: 'string > 0' });
+
+export type ListBudgetLinesInput = typeof listBudgetLinesSchema.infer;
+
 export const deleteBudgetLineSchema = budgetLinesDeleteSchema;
 
 export type DeleteBudgetLineInput = typeof deleteBudgetLineSchema.infer;
