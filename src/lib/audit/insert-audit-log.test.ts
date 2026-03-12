@@ -22,7 +22,7 @@ const importModule = async () => {
   const evlog = await import('@/lib/logging/evlog');
   const schema = await import('@/db/audit');
   const mod = await import('./insert-audit-log');
-  // eslint-disable-next-line @typescript-eslint/unbound-method -- mock fn
+  // oxlint-disable-next-line typescript/unbound-method -- mock fn
   const logInfo = vi.mocked(evlog.log.info);
   return { ...mod, auditLogs: schema.auditLogs, logInfo };
 };

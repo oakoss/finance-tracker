@@ -2,13 +2,10 @@
 
 import pluginReact from '@eslint-react/eslint-plugin';
 import js from '@eslint/js';
-import pluginQuery from '@tanstack/eslint-plugin-query';
-import pluginRouter from '@tanstack/eslint-plugin-router';
 import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 // @ts-ignore
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import oxlint from 'eslint-plugin-oxlint';
-import playwright from 'eslint-plugin-playwright';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import unicorn from 'eslint-plugin-unicorn';
@@ -37,8 +34,6 @@ export default defineConfig(
       globals: globals.browser,
     },
   },
-  ...pluginRouter.configs['flat/recommended'],
-  ...pluginQuery.configs['flat/recommended'],
   {
     extends: [js.configs.recommended, unicorn.configs.recommended],
     rules: {
@@ -172,17 +167,6 @@ export default defineConfig(
         rootFontSize: 16,
         tsconfig: './tsconfig.json',
       },
-    },
-  },
-  {
-    extends: [playwright.configs['flat/recommended']],
-    files: ['e2e/**/*'],
-    rules: {
-      'playwright/expect-expect': [
-        'warn',
-        { assertFunctionNames: ['expect', 'expectToast'] },
-      ],
-      'playwright/no-standalone-expect': 'error',
     },
   },
   {

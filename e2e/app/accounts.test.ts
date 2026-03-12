@@ -11,7 +11,7 @@ test.describe('accounts CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
     await page.goto('/accounts');
 
     // Skip if accounts exist from other tests on this worker
-    // eslint-disable-next-line playwright/no-conditional-in-test
+    // oxlint-disable-next-line playwright/no-conditional-in-test
     if (!(await isEmptyState(page, /no accounts yet/i))) return;
 
     await page

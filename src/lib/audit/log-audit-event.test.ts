@@ -16,9 +16,9 @@ const importModule = async () => {
   const evlog = await import('@/lib/logging/evlog');
   const hash = await import('@/lib/logging/hash');
   const mod = await import('./log-audit-event');
-  // eslint-disable-next-line @typescript-eslint/unbound-method -- mock fn
+  // oxlint-disable-next-line typescript/unbound-method -- mock fn
   const logInfo = vi.mocked(evlog.log.info);
-  // eslint-disable-next-line @typescript-eslint/unbound-method -- mock fn
+  // oxlint-disable-next-line typescript/unbound-method -- mock fn
   const logWarn = vi.mocked(evlog.log.warn);
   return { ...mod, hashId: hash.hashId, logInfo, logWarn };
 };

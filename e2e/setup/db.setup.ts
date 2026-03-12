@@ -38,10 +38,10 @@ async function cleanE2eUserData(
     .where(eq(schema.categories.userId, user.id));
 }
 
-// eslint-disable-next-line playwright/expect-expect -- pure DB seed, no browser assertions
+// oxlint-disable-next-line playwright/expect-expect -- pure DB seed, no browser assertions
 setup('ensure e2e seed data', async () => {
   const databaseUrl = process.env.DATABASE_URL;
-  // eslint-disable-next-line playwright/no-conditional-in-test -- env precondition, not test logic
+  // oxlint-disable-next-line playwright/no-conditional-in-test -- env precondition, not test logic
   if (!databaseUrl) throw new Error('DATABASE_URL is not set');
 
   const db = drizzle(databaseUrl, {

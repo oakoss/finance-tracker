@@ -1,7 +1,12 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["unicorn", "import", "typescript", "react", "jsx-a11y"],
-  "jsPlugins": ["eslint-plugin-perfectionist"],
+  "jsPlugins": [
+    "@tanstack/eslint-plugin-query",
+    "@tanstack/eslint-plugin-router",
+    "eslint-plugin-perfectionist",
+    "eslint-plugin-playwright"
+  ],
   "categories": {
     "correctness": "error"
   },
@@ -20,6 +25,15 @@
     "**/*.gen.ts"
   ],
   "rules": {
+    "@tanstack/query/exhaustive-deps": "error",
+    "@tanstack/query/infinite-query-property-order": "error",
+    "@tanstack/query/mutation-property-order": "error",
+    "@tanstack/query/no-rest-destructuring": "warn",
+    "@tanstack/query/no-unstable-deps": "error",
+    "@tanstack/query/no-void-query-fn": "error",
+    "@tanstack/query/stable-query-client": "error",
+    "@tanstack/router/create-route-property-order": "warn",
+    "@tanstack/router/route-param-names": "error",
     "eqeqeq": "error",
     "no-console": "warn",
     "no-restricted-imports": [
@@ -563,6 +577,49 @@
         "no-empty-function": "off",
         "no-empty-pattern": "off",
         "unicorn/prefer-top-level-await": "off"
+      }
+    },
+    {
+      "files": ["e2e/**/*"],
+      "rules": {
+        "playwright/consistent-spacing-between-blocks": "warn",
+        "playwright/expect-expect": [
+          "warn",
+          { "assertFunctionNames": ["expect", "expectToast"] }
+        ],
+        "playwright/max-nested-describe": "warn",
+        "playwright/missing-playwright-await": "error",
+        "playwright/no-conditional-expect": "warn",
+        "playwright/no-conditional-in-test": "warn",
+        "playwright/no-duplicate-hooks": "warn",
+        "playwright/no-duplicate-slow": "warn",
+        "playwright/no-element-handle": "warn",
+        "playwright/no-eval": "warn",
+        "playwright/no-focused-test": "error",
+        "playwright/no-force-option": "warn",
+        "playwright/no-nested-step": "warn",
+        "playwright/no-networkidle": "error",
+        "playwright/no-page-pause": "warn",
+        "playwright/no-skipped-test": "warn",
+        "playwright/no-standalone-expect": "error",
+        "playwright/no-unsafe-references": "error",
+        "playwright/no-unused-locators": "error",
+        "playwright/no-useless-await": "warn",
+        "playwright/no-useless-not": "warn",
+        "playwright/no-wait-for-navigation": "error",
+        "playwright/no-wait-for-selector": "warn",
+        "playwright/no-wait-for-timeout": "warn",
+        "playwright/prefer-hooks-in-order": "warn",
+        "playwright/prefer-hooks-on-top": "warn",
+        "playwright/prefer-locator": "warn",
+        "playwright/prefer-to-have-count": "warn",
+        "playwright/prefer-to-have-length": "warn",
+        "playwright/prefer-web-first-assertions": "error",
+        "playwright/valid-describe-callback": "error",
+        "playwright/valid-expect": "error",
+        "playwright/valid-expect-in-promise": "error",
+        "playwright/valid-test-tags": "error",
+        "playwright/valid-title": "error"
       }
     }
   ],
