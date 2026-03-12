@@ -110,7 +110,7 @@ function DataGridTableDndRow<TData>({ row }: { row: Row<TData> }) {
   };
 
   return (
-    <SortableRowContext.Provider value={{ attributes, listeners }}>
+    <SortableRowContext value={{ attributes, listeners }}>
       <DataGridTableBodyRow
         key={row.id}
         dndRef={setNodeRef}
@@ -125,7 +125,7 @@ function DataGridTableDndRow<TData>({ row }: { row: Row<TData> }) {
           );
         })}
       </DataGridTableBodyRow>
-    </SortableRowContext.Provider>
+    </SortableRowContext>
   );
 }
 

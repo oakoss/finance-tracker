@@ -215,7 +215,7 @@ function Filters<T = unknown>({
   });
 
   return (
-    <FilterContext.Provider
+    <FilterContext
       value={{
         allowMultiple,
         className,
@@ -545,7 +545,7 @@ function Filters<T = unknown>({
           );
         })}
       </div>
-    </FilterContext.Provider>
+    </FilterContext>
   );
 }
 

@@ -58,7 +58,7 @@ function PhoneInput({
 }: PhoneInputProps) {
   const phoneInputSize = variant ?? 'default';
   return (
-    <PhoneInputContext.Provider
+    <PhoneInputContext
       value={{ popupClassName, scrollAreaClassName, variant: phoneInputSize }}
     >
       {/* @ts-expect-error -- react-phone-number-input Props lack `| undefined` on optional fields, incompatible with exactOptionalPropertyTypes */}
@@ -79,7 +79,7 @@ function PhoneInput({
           onChange?.(nextValue ?? ('' as BasePhoneInput.Value))
         }
       />
-    </PhoneInputContext.Provider>
+    </PhoneInputContext>
   );
 }
 

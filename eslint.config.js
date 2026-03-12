@@ -6,8 +6,6 @@ import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 // @ts-ignore
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import oxlint from 'eslint-plugin-oxlint';
-import react from 'eslint-plugin-react';
-import reactHooks from 'eslint-plugin-react-hooks';
 import unicorn from 'eslint-plugin-unicorn';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
@@ -101,9 +99,6 @@ export default defineConfig(
   {
     extends: [
       pluginReact.configs['recommended-type-checked'],
-      reactHooks.configs.flat.recommended,
-      react.configs.flat.recommended,
-      react.configs.flat['jsx-runtime'],
       jsxA11y.flatConfigs.recommended,
     ],
     files: ['**/*.{jsx,tsx}'],
@@ -113,9 +108,6 @@ export default defineConfig(
       },
     },
     rules: {
-      '@eslint-react/hooks-extra/no-direct-set-state-in-use-effect': 'off',
-      '@eslint-react/no-context-provider': 'off',
-      '@eslint-react/no-nested-component-definitions': 'off',
       'jsx-a11y/no-static-element-interactions': [
         'error',
         {
@@ -123,14 +115,6 @@ export default defineConfig(
           handlers: ['onClick', 'onKeyDown', 'onKeyPress', 'onKeyUp'],
         },
       ],
-      'react-hooks/exhaustive-deps': 'off',
-      'react-hooks/incompatible-library': 'off',
-      'react/jsx-no-bind': 'off',
-      'react/jsx-no-constructed-context-values': 'off',
-      'react/jsx-no-useless-fragment': 'off',
-      'react/jsx-uses-vars': 'off',
-      'react/no-danger': 'off',
-      'react/prop-types': 'off',
     },
     settings: {
       'jsx-a11y': {
@@ -140,7 +124,6 @@ export default defineConfig(
           Select: 'select',
         },
       },
-      react: { version: 'detect' },
     },
   },
   {

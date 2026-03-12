@@ -39,9 +39,9 @@ function Autocomplete({
   const anchorRef = React.useRef<HTMLElement | null>(null);
 
   return (
-    <AutocompleteAnchorContext.Provider value={anchorRef}>
+    <AutocompleteAnchorContext value={anchorRef}>
       <AutocompletePrimitive.Root {...props} />
-    </AutocompleteAnchorContext.Provider>
+    </AutocompleteAnchorContext>
   );
 }
 

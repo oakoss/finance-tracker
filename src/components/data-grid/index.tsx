@@ -117,7 +117,7 @@ function DataGridProvider<TData extends object>({
   ...props
 }: DataGridProps<TData> & { table: Table<TData> }) {
   return (
-    <DataGridContext.Provider
+    <DataGridContext
       value={{
         isLoading: props.isLoading ?? false,
         props,
@@ -126,7 +126,7 @@ function DataGridProvider<TData extends object>({
       }}
     >
       {children}
-    </DataGridContext.Provider>
+    </DataGridContext>
   );
 }
 

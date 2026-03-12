@@ -166,7 +166,7 @@ function Stepper({
   };
 
   return (
-    <StepperContext.Provider value={contextValue}>
+    <StepperContext value={contextValue}>
       <div
         aria-orientation={orientation}
         className={cn('w-full', className)}
@@ -177,7 +177,7 @@ function Stepper({
       >
         {children}
       </div>
-    </StepperContext.Provider>
+    </StepperContext>
   );
 }
 
@@ -208,9 +208,7 @@ function StepperItem({
   const isLoading = loading && step === activeStep;
 
   return (
-    <StepItemContext.Provider
-      value={{ isDisabled: disabled, isLoading, state, step }}
-    >
+    <StepItemContext value={{ isDisabled: disabled, isLoading, state, step }}>
       <div
         className={cn(
           'group/step flex items-center justify-center not-last:flex-1 group-data-[orientation=horizontal]/stepper-nav:flex-row group-data-[orientation=vertical]/stepper-nav:flex-col',
@@ -223,7 +221,7 @@ function StepperItem({
       >
         {children}
       </div>
-    </StepItemContext.Provider>
+    </StepItemContext>
   );
 }
 

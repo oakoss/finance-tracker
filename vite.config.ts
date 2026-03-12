@@ -64,7 +64,11 @@ export default defineConfig({
     tailwindcss(),
     tanstackStart(),
     nitro(),
-    viteReact(),
+    viteReact({
+      babel: {
+        plugins: ['babel-plugin-react-compiler'],
+      },
+    }),
     paraglideVitePlugin({
       cookieName: 'APP_LOCALE',
       outdir: './src/paraglide',

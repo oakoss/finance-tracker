@@ -66,15 +66,13 @@ function Timeline({
   };
 
   return (
-    <TimelineContext.Provider
-      value={{ activeStep: currentStep, setActiveStep }}
-    >
+    <TimelineContext value={{ activeStep: currentStep, setActiveStep }}>
       {useRender({
         defaultTagName: 'div',
         props: mergeProps<'div'>(defaultProps, props),
         render,
       })}
-    </TimelineContext.Provider>
+    </TimelineContext>
   );
 }
 

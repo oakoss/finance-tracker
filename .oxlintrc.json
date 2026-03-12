@@ -5,7 +5,8 @@
     "@tanstack/eslint-plugin-query",
     "@tanstack/eslint-plugin-router",
     "eslint-plugin-perfectionist",
-    "eslint-plugin-playwright"
+    "eslint-plugin-playwright",
+    { "name": "react-compiler", "specifier": "eslint-plugin-react-hooks" }
   ],
   "categories": {
     "correctness": "error"
@@ -412,7 +413,22 @@
         "react/no-danger": "off",
         "react/no-react-children": "error",
         "react/no-unsafe": "off",
-        "react/react-in-jsx-scope": "off"
+        "react/react-in-jsx-scope": "off",
+        "react/rules-of-hooks": "error",
+        "react-compiler/component-hook-factories": "error",
+        "react-compiler/config": "error",
+        "react-compiler/error-boundaries": "error",
+        "react-compiler/gating": "error",
+        "react-compiler/globals": "error",
+        "react-compiler/immutability": "error",
+        "react-compiler/preserve-manual-memoization": "error",
+        "react-compiler/purity": "error",
+        "react-compiler/refs": "error",
+        "react-compiler/set-state-in-effect": "error",
+        "react-compiler/set-state-in-render": "error",
+        "react-compiler/static-components": "error",
+        "react-compiler/unsupported-syntax": "warn",
+        "react-compiler/use-memo": "error"
       }
     },
     {

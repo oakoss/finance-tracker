@@ -62,14 +62,14 @@ function Tree({
   } as React.CSSProperties;
 
   return (
-    <TreeContext.Provider value={{ indent, toggleIconType, tree }}>
+    <TreeContext value={{ indent, toggleIconType, tree }}>
       <div
         className={cn('flex flex-col', className)}
         data-slot="tree"
         style={mergedStyle}
         {...otherProps}
       />
-    </TreeContext.Provider>
+    </TreeContext>
   );
 }
 
@@ -131,13 +131,13 @@ function TreeItem<T = any>({
   };
 
   return (
-    <TreeContext.Provider value={{ ...parentContext, currentItem: item }}>
+    <TreeContext value={{ ...parentContext, currentItem: item }}>
       {useRender({
         defaultTagName: 'button',
         props: mergeProps<'button'>(defaultProps, otherProps),
         render,
       })}
-    </TreeContext.Provider>
+    </TreeContext>
   );
 }
 

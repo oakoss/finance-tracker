@@ -217,7 +217,7 @@ function Sortable<T>({
   }, [activeId, children]);
 
   return (
-    <SortableInternalContext.Provider value={contextValue}>
+    <SortableInternalContext value={contextValue}>
       <DndContext
         measuring={{
           droppable: {
@@ -244,14 +244,12 @@ function Sortable<T>({
               dropAnimation={dropAnimationConfig}
               {...(modifiers !== undefined && { modifiers })}
             >
-              <IsOverlayContext.Provider value={true}>
-                {overlayContent}
-              </IsOverlayContext.Provider>
+              <IsOverlayContext value={true}>{overlayContent}</IsOverlayContext>
             </DragOverlay>,
             document.body,
           )}
       </DndContext>
-    </SortableInternalContext.Provider>
+    </SortableInternalContext>
   );
 }
 
@@ -313,7 +311,7 @@ function SortableItem({
       };
 
   return (
-    <SortableItemContext.Provider
+    <SortableItemContext
       value={{
         disabled,
         isDragging,
@@ -325,7 +323,7 @@ function SortableItem({
         props: mergeProps<'div'>(defaultProps, props),
         render,
       })}
-    </SortableItemContext.Provider>
+    </SortableItemContext>
   );
 }
 
@@ -387,9 +385,7 @@ function SortableOverlay({
       {...(modifiers !== undefined && { modifiers })}
       {...props}
     >
-      <IsOverlayContext.Provider value={true}>
-        {content}
-      </IsOverlayContext.Provider>
+      <IsOverlayContext value={true}>{content}</IsOverlayContext>
     </DragOverlay>,
     document.body,
   );

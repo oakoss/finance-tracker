@@ -73,7 +73,7 @@ function NumberField({
   const sizeValue = size ?? 'default';
 
   return (
-    <NumberFieldContext.Provider value={{ fieldId, size: sizeValue }}>
+    <NumberFieldContext value={{ fieldId, size: sizeValue }}>
       <NumberFieldPrimitive.Root
         className={cn('flex w-full flex-col items-start gap-2', className)}
         data-size={sizeValue}
@@ -81,7 +81,7 @@ function NumberField({
         id={fieldId}
         {...props}
       />
-    </NumberFieldContext.Provider>
+    </NumberFieldContext>
   );
 }
 
