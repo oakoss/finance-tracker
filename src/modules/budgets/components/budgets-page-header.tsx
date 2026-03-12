@@ -11,8 +11,10 @@ import { CopyBudgetDialog } from '@/modules/budgets/components/copy-budget-dialo
 import { m } from '@/paraglide/messages';
 
 export function BudgetsPageHeader({
+  onEditClick,
   periods,
 }: {
+  onEditClick: () => void;
   periods: BudgetPeriodListItem[];
 }) {
   const hydrated = useHydrated();
@@ -51,6 +53,15 @@ export function BudgetsPageHeader({
           {m['budgets.title']()}
         </h1>
         <div className="flex items-center gap-2">
+          <Button
+            disabled={!hydrated}
+            size="sm"
+            variant="outline"
+            onClick={onEditClick}
+          >
+            <Icons.Pencil className="size-4" />
+            {m['budgets.editBudget']()}
+          </Button>
           {periods.length > 0 && (
             <Button
               disabled={!hydrated}

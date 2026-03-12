@@ -1,4 +1,5 @@
 import { Icons } from '@/components/icons';
+import { Button } from '@/components/ui/button';
 import {
   Empty,
   EmptyDescription,
@@ -9,8 +10,10 @@ import {
 import { m } from '@/paraglide/messages';
 
 export function BudgetsEmpty({
+  onCreateClick,
   variant,
 }: {
+  onCreateClick: () => void;
   variant: 'noPeriods' | 'noCurrentPeriod';
 }) {
   const isNoPeriods = variant === 'noPeriods';
@@ -32,6 +35,10 @@ export function BudgetsEmpty({
             : m['budgets.empty.noPeriod.description']()}
         </EmptyDescription>
       </EmptyHeader>
+      <Button size="sm" onClick={onCreateClick}>
+        <Icons.Plus className="size-4" />
+        {m['budgets.createBudget']()}
+      </Button>
     </Empty>
   );
 }

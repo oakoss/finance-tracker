@@ -9,6 +9,36 @@ import { formatCurrency } from '@/lib/i18n/number';
 import { cn } from '@/lib/utils';
 import { m } from '@/paraglide/messages';
 
+function BudgetStatus({
+  isOver,
+  remaining,
+  spent,
+}: {
+  isOver: boolean;
+  remaining: number;
+  spent: number;
+}) {
+  if (spent === 0) {
+    return <>{m['budgets.noSpending']()}</>;
+  }
+  if (isOver) {
+    return (
+      <span className="text-destructive">
+        {m['budgets.overBy']({
+          amount: formatCurrency({ amountCents: Math.abs(remaining) }),
+        })}
+      </span>
+    );
+  }
+  return (
+    <>
+      {m['budgets.remaining']({
+        amount: formatCurrency({ amountCents: remaining }),
+      })}
+    </>
+  );
+}
+
 export function BudgetCategoryRow({ item }: { item: BudgetVsActualItem }) {
   const spent = item.actualDebitCents;
   const budgeted = item.budgetedCents;
@@ -33,19 +63,7 @@ export function BudgetCategoryRow({ item }: { item: BudgetVsActualItem }) {
         </ProgressTrack>
       </Progress>
       <div className="text-xs text-muted-foreground">
-        {spent === 0 ? (
-          m['budgets.noSpending']()
-        ) : (isOver ? (
-          <span className="text-destructive">
-            {m['budgets.overBy']({
-              amount: formatCurrency({ amountCents: Math.abs(remaining) }),
-            })}
-          </span>
-        ) : (
-          m['budgets.remaining']({
-            amount: formatCurrency({ amountCents: remaining }),
-          })
-        ))}
+        <BudgetStatus isOver={isOver} remaining={remaining} spent={spent} />
       </div>
     </div>
   );
