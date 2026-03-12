@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["unicorn", "import", "typescript", "react", "jsx-a11y"],
+  "jsPlugins": ["eslint-plugin-perfectionist"],
   "categories": {
     "correctness": "error"
   },
@@ -21,6 +22,43 @@
   "rules": {
     "eqeqeq": "error",
     "no-console": "warn",
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "message": "Import from @/lib/i18n/date instead.",
+            "name": "@date-fns/tz"
+          },
+          {
+            "message": "Import from @/components/ui/* instead of @base-ui/react directly.",
+            "name": "@base-ui/react"
+          },
+          {
+            "message": "Import from @/lib/i18n/date instead.",
+            "name": "date-fns"
+          },
+          {
+            "message": "Import from @/components/icons instead.",
+            "name": "lucide-react"
+          },
+          {
+            "message": "Import from @/components/ui/calendar instead of react-day-picker directly.",
+            "name": "react-day-picker"
+          }
+        ],
+        "patterns": [
+          {
+            "group": ["@date-fns/*"],
+            "message": "Import from @/lib/i18n/date instead."
+          },
+          {
+            "group": ["date-fns/*"],
+            "message": "Import from @/lib/i18n/date instead."
+          }
+        ]
+      }
+    ],
     "no-unused-vars": [
       "error",
       {
@@ -68,6 +106,44 @@
     "no-useless-constructor": "error",
     "no-useless-return": "error",
     "no-var": "error",
+    "perfectionist/sort-exports": [
+      "error",
+      {
+        "ignoreCase": true,
+        "order": "asc",
+        "type": "alphabetical"
+      }
+    ],
+    "perfectionist/sort-named-exports": [
+      "error",
+      {
+        "ignoreCase": true,
+        "order": "asc",
+        "type": "alphabetical"
+      }
+    ],
+    "perfectionist/sort-named-imports": [
+      "error",
+      {
+        "ignoreCase": true,
+        "order": "asc",
+        "type": "alphabetical"
+      }
+    ],
+    "perfectionist/sort-objects": [
+      "error",
+      {
+        "type": "unsorted",
+        "useConfigurationIf": {
+          "callingFunctionNamePattern": "^createFileRoute\\("
+        }
+      },
+      {
+        "ignoreCase": true,
+        "order": "asc",
+        "type": "alphabetical"
+      }
+    ],
     "prefer-const": "error",
     "prefer-rest-params": "error",
     "prefer-spread": "error",
@@ -75,26 +151,126 @@
     "import/no-absolute-path": "error",
     "import/no-empty-named-blocks": "error",
     "import/no-self-import": "error",
+    "unicorn/catch-error-name": "error",
+    "unicorn/consistent-assert": "error",
+    "unicorn/consistent-date-clone": "error",
+    "unicorn/consistent-empty-array-spread": "error",
+    "unicorn/consistent-existence-index-check": "error",
     "unicorn/consistent-function-scoping": "error",
+    "unicorn/empty-brace-spaces": "error",
+    "unicorn/error-message": "error",
     "unicorn/escape-case": "error",
+    "unicorn/explicit-length-check": "error",
+    "unicorn/new-for-builtins": "error",
+    "unicorn/no-abusive-eslint-disable": "error",
+    "unicorn/no-accessor-recursion": "error",
+    "unicorn/no-anonymous-default-export": "error",
+    "unicorn/no-array-callback-reference": "error",
+    "unicorn/no-array-for-each": "error",
+    "unicorn/no-array-method-this-argument": "error",
+    "unicorn/no-array-reduce": "error",
     "unicorn/no-array-reverse": "error",
     "unicorn/no-array-sort": "error",
+    "unicorn/no-await-expression-member": "error",
+    "unicorn/no-await-in-promise-methods": "error",
+    "unicorn/no-console-spaces": "error",
+    "unicorn/no-document-cookie": "error",
+    "unicorn/no-empty-file": "error",
+    "unicorn/no-hex-escape": "error",
+    "unicorn/no-immediate-mutation": "error",
     "unicorn/no-instanceof-builtins": "error",
+    "unicorn/no-invalid-fetch-options": "error",
+    "unicorn/no-invalid-remove-event-listener": "error",
+    "unicorn/no-lonely-if": "error",
+    "unicorn/no-magic-array-flat-depth": "error",
+    "unicorn/no-negation-in-equality-check": "error",
+    "unicorn/no-nested-ternary": "error",
+    "unicorn/no-new-array": "error",
+    "unicorn/no-new-buffer": "error",
     "unicorn/no-null": "off",
+    "unicorn/no-object-as-default-parameter": "error",
+    "unicorn/no-process-exit": "error",
+    "unicorn/no-single-promise-in-promise-methods": "error",
+    "unicorn/no-static-only-class": "error",
+    "unicorn/no-thenable": "error",
+    "unicorn/no-this-assignment": "error",
     "unicorn/no-typeof-undefined": "error",
+    "unicorn/no-unnecessary-array-flat-depth": "error",
+    "unicorn/no-unnecessary-array-splice-count": "error",
+    "unicorn/no-unnecessary-await": "error",
+    "unicorn/no-unnecessary-slice-end": "error",
+    "unicorn/no-unreadable-array-destructuring": "error",
     "unicorn/no-unreadable-iife": "error",
+    "unicorn/no-useless-collection-argument": "error",
+    "unicorn/no-useless-error-capture-stack-trace": "error",
+    "unicorn/no-useless-fallback-in-spread": "error",
+    "unicorn/no-useless-length-check": "error",
     "unicorn/no-useless-promise-resolve-reject": "error",
+    "unicorn/no-useless-spread": "error",
     "unicorn/no-useless-switch-case": "error",
+    "unicorn/no-useless-undefined": "error",
+    "unicorn/no-zero-fractions": "error",
+    "unicorn/number-literal-case": "error",
+    "unicorn/numeric-separators-style": "error",
+    "unicorn/prefer-add-event-listener": "error",
     "unicorn/prefer-array-find": "error",
+    "unicorn/prefer-array-flat": "error",
     "unicorn/prefer-array-flat-map": "error",
+    "unicorn/prefer-array-index-of": "error",
     "unicorn/prefer-array-some": "error",
+    "unicorn/prefer-at": "error",
+    "unicorn/prefer-bigint-literals": "error",
+    "unicorn/prefer-blob-reading-methods": "error",
     "unicorn/prefer-class-fields": "error",
+    "unicorn/prefer-classlist-toggle": "error",
+    "unicorn/prefer-code-point": "error",
     "unicorn/prefer-date-now": "error",
+    "unicorn/prefer-default-parameters": "error",
+    "unicorn/prefer-dom-node-append": "error",
+    "unicorn/prefer-dom-node-dataset": "error",
+    "unicorn/prefer-dom-node-remove": "error",
+    "unicorn/prefer-dom-node-text-content": "error",
+    "unicorn/prefer-event-target": "error",
+    "unicorn/prefer-global-this": "error",
+    "unicorn/prefer-includes": "error",
+    "unicorn/prefer-keyboard-event-key": "error",
+    "unicorn/prefer-logical-operator-over-ternary": "error",
+    "unicorn/prefer-math-min-max": "error",
+    "unicorn/prefer-math-trunc": "error",
+    "unicorn/prefer-modern-dom-apis": "error",
+    "unicorn/prefer-modern-math-apis": "error",
     "unicorn/prefer-module": "error",
+    "unicorn/prefer-native-coercion-functions": "error",
+    "unicorn/prefer-negative-index": "error",
+    "unicorn/prefer-node-protocol": "error",
+    "unicorn/prefer-number-properties": "error",
+    "unicorn/prefer-object-from-entries": "error",
+    "unicorn/prefer-optional-catch-binding": "error",
+    "unicorn/prefer-prototype-methods": "error",
+    "unicorn/prefer-query-selector": "error",
+    "unicorn/prefer-reflect-apply": "error",
     "unicorn/prefer-regexp-test": "error",
+    "unicorn/prefer-response-static-json": "error",
     "unicorn/prefer-set-has": "error",
+    "unicorn/prefer-set-size": "error",
+    "unicorn/prefer-spread": "error",
+    "unicorn/prefer-string-raw": "error",
     "unicorn/prefer-string-replace-all": "error",
-    "unicorn/prevent-abbreviations": "off"
+    "unicorn/prefer-string-slice": "error",
+    "unicorn/prefer-string-starts-ends-with": "error",
+    "unicorn/prefer-string-trim-start-end": "error",
+    "unicorn/prefer-structured-clone": "error",
+    "unicorn/prefer-ternary": "error",
+    "unicorn/prefer-type-error": "error",
+    "unicorn/prevent-abbreviations": "off",
+    "unicorn/relative-url-style": "error",
+    "unicorn/require-array-join-separator": "error",
+    "unicorn/require-module-attributes": "error",
+    "unicorn/require-module-specifiers": "error",
+    "unicorn/require-number-to-fixed-digits-argument": "error",
+    "unicorn/switch-case-braces": "error",
+    "unicorn/text-encoding-identifier-case": "error",
+    "unicorn/throw-new-error": "error"
   },
   "overrides": [
     {
@@ -133,6 +309,14 @@
         "typescript/no-implied-eval": "error",
         "typescript/no-inferrable-types": "error",
         "typescript/no-namespace": "error",
+        "perfectionist/sort-object-types": [
+          "error",
+          {
+            "ignoreCase": true,
+            "order": "asc",
+            "type": "alphabetical"
+          }
+        ],
         "typescript/no-misused-promises": [
           "error",
           {
@@ -192,6 +376,19 @@
           }
         ],
         "jsx-a11y/prefer-tag-over-role": "off",
+        "perfectionist/sort-jsx-props": [
+          "error",
+          {
+            "customGroups": [
+              { "elementNamePattern": "^(key|ref)$", "groupName": "reserved" },
+              { "elementNamePattern": "^on.+", "groupName": "callback" }
+            ],
+            "groups": ["reserved", "shorthand-prop", "prop", "callback"],
+            "ignoreCase": true,
+            "order": "asc",
+            "type": "alphabetical"
+          }
+        ],
         "jsx-a11y/role-supports-aria-props": "off",
         "react/exhaustive-deps": "off",
         "react/jsx-no-constructed-context-values": "off",
@@ -202,6 +399,140 @@
         "react/no-react-children": "error",
         "react/no-unsafe": "off",
         "react/react-in-jsx-scope": "off"
+      }
+    },
+    {
+      "files": ["src/lib/i18n/date.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "message": "Import from @/components/ui/* instead of @base-ui/react directly.",
+                "name": "@base-ui/react"
+              },
+              {
+                "message": "Import from @/components/icons instead.",
+                "name": "lucide-react"
+              },
+              {
+                "message": "Import from @/components/ui/calendar instead of react-day-picker directly.",
+                "name": "react-day-picker"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/components/icons.tsx"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "message": "Import from @/lib/i18n/date instead.",
+                "name": "@date-fns/tz"
+              },
+              {
+                "message": "Import from @/components/ui/* instead of @base-ui/react directly.",
+                "name": "@base-ui/react"
+              },
+              {
+                "message": "Import from @/lib/i18n/date instead.",
+                "name": "date-fns"
+              },
+              {
+                "message": "Import from @/components/ui/calendar instead of react-day-picker directly.",
+                "name": "react-day-picker"
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["@date-fns/*"],
+                "message": "Import from @/lib/i18n/date instead."
+              },
+              {
+                "group": ["date-fns/*"],
+                "message": "Import from @/lib/i18n/date instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/components/ui/**", "src/components/filters/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "message": "Import from @/lib/i18n/date instead.",
+                "name": "@date-fns/tz"
+              },
+              {
+                "message": "Import from @/lib/i18n/date instead.",
+                "name": "date-fns"
+              },
+              {
+                "message": "Import from @/components/icons instead.",
+                "name": "lucide-react"
+              },
+              {
+                "message": "Import from @/components/ui/calendar instead of react-day-picker directly.",
+                "name": "react-day-picker"
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["@date-fns/*"],
+                "message": "Import from @/lib/i18n/date instead."
+              },
+              {
+                "group": ["date-fns/*"],
+                "message": "Import from @/lib/i18n/date instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/components/ui/calendar.tsx"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "message": "Import from @/lib/i18n/date instead.",
+                "name": "@date-fns/tz"
+              },
+              {
+                "message": "Import from @/lib/i18n/date instead.",
+                "name": "date-fns"
+              },
+              {
+                "message": "Import from @/components/icons instead.",
+                "name": "lucide-react"
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["@date-fns/*"],
+                "message": "Import from @/lib/i18n/date instead."
+              },
+              {
+                "group": ["date-fns/*"],
+                "message": "Import from @/lib/i18n/date instead."
+              }
+            ]
+          }
+        ]
       }
     },
     {

@@ -8,7 +8,6 @@ import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 // @ts-ignore
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import oxlint from 'eslint-plugin-oxlint';
-import perfectionist from 'eslint-plugin-perfectionist';
 import playwright from 'eslint-plugin-playwright';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
@@ -42,50 +41,9 @@ export default defineConfig(
   ...pluginQuery.configs['flat/recommended'],
   {
     extends: [js.configs.recommended, unicorn.configs.recommended],
-    plugins: {
-      perfectionist,
-    },
     rules: {
       eqeqeq: 'error',
       'no-console': 'warn',
-      'perfectionist/sort-exports': [
-        'error',
-        {
-          ignoreCase: true,
-          order: 'asc',
-          type: 'alphabetical',
-        },
-      ],
-      'perfectionist/sort-named-exports': [
-        'error',
-        {
-          ignoreCase: true,
-          order: 'asc',
-          type: 'alphabetical',
-        },
-      ],
-      'perfectionist/sort-named-imports': [
-        'error',
-        {
-          ignoreCase: true,
-          order: 'asc',
-          type: 'alphabetical',
-        },
-      ],
-      'perfectionist/sort-objects': [
-        'error',
-        {
-          type: 'unsorted',
-          useConfigurationIf: {
-            callingFunctionNamePattern: String.raw`^createFileRoute\(`,
-          },
-        },
-        {
-          ignoreCase: true,
-          order: 'asc',
-          type: 'alphabetical',
-        },
-      ],
       'unicorn/filename-case': [
         'error',
         {
@@ -143,14 +101,6 @@ export default defineConfig(
       '@typescript-eslint/only-throw-error': 'off',
       '@typescript-eslint/prefer-return-this-type': 'error',
       '@typescript-eslint/restrict-template-expressions': 'off',
-      'perfectionist/sort-object-types': [
-        'error',
-        {
-          ignoreCase: true,
-          order: 'asc',
-          type: 'alphabetical',
-        },
-      ],
     },
   },
   {
@@ -176,19 +126,6 @@ export default defineConfig(
         {
           allowExpressionValues: true,
           handlers: ['onClick', 'onKeyDown', 'onKeyPress', 'onKeyUp'],
-        },
-      ],
-      'perfectionist/sort-jsx-props': [
-        'error',
-        {
-          customGroups: [
-            { elementNamePattern: '^(key|ref)$', groupName: 'reserved' },
-            { elementNamePattern: '^on.+', groupName: 'callback' },
-          ],
-          groups: ['reserved', 'shorthand-prop', 'prop', 'callback'],
-          ignoreCase: true,
-          order: 'asc',
-          type: 'alphabetical',
         },
       ],
       'react-hooks/exhaustive-deps': 'off',
@@ -264,160 +201,6 @@ export default defineConfig(
       '@typescript-eslint/no-empty-function': 'off',
       'no-console': 'off',
       'unicorn/prefer-top-level-await': 'off',
-    },
-  },
-  // -- Restricted imports (all restrictions in one block) --
-  {
-    files: ['**/*.{ts,tsx}'],
-    ignores: [
-      'src/components/filters/**',
-      'src/components/icons.tsx',
-      'src/components/ui/**',
-      'src/lib/i18n/date.ts',
-    ],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          paths: [
-            {
-              message: 'Import from @/lib/i18n/date instead.',
-              name: '@date-fns/tz',
-            },
-            {
-              message: 'Import from @/lib/i18n/date instead.',
-              name: 'date-fns',
-            },
-            {
-              message:
-                'Import from @/components/ui/* instead of @base-ui/react directly.',
-              name: '@base-ui/react',
-            },
-            {
-              message: 'Import from @/components/icons instead.',
-              name: 'lucide-react',
-            },
-            {
-              message:
-                'Import from @/components/ui/calendar instead of react-day-picker directly.',
-              name: 'react-day-picker',
-            },
-          ],
-          patterns: [
-            {
-              group: ['@date-fns/*'],
-              message: 'Import from @/lib/i18n/date instead.',
-            },
-            {
-              group: ['date-fns/*'],
-              message: 'Import from @/lib/i18n/date instead.',
-            },
-          ],
-        },
-      ],
-    },
-  },
-  // Override: src/lib/i18n/date.ts may use date-fns directly
-  {
-    files: ['src/lib/i18n/date.ts'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          paths: [
-            {
-              message:
-                'Import from @/components/ui/* instead of @base-ui/react directly.',
-              name: '@base-ui/react',
-            },
-            {
-              message: 'Import from @/components/icons instead.',
-              name: 'lucide-react',
-            },
-            {
-              message:
-                'Import from @/components/ui/calendar instead of react-day-picker directly.',
-              name: 'react-day-picker',
-            },
-          ],
-        },
-      ],
-    },
-  },
-  // Override: src/components/icons.tsx may use lucide-react directly
-  {
-    files: ['src/components/icons.tsx'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          paths: [
-            {
-              message: 'Import from @/lib/i18n/date instead.',
-              name: '@date-fns/tz',
-            },
-            {
-              message: 'Import from @/lib/i18n/date instead.',
-              name: 'date-fns',
-            },
-            {
-              message:
-                'Import from @/components/ui/* instead of @base-ui/react directly.',
-              name: '@base-ui/react',
-            },
-            {
-              message:
-                'Import from @/components/ui/calendar instead of react-day-picker directly.',
-              name: 'react-day-picker',
-            },
-          ],
-          patterns: [
-            {
-              group: ['@date-fns/*'],
-              message: 'Import from @/lib/i18n/date instead.',
-            },
-            {
-              group: ['date-fns/*'],
-              message: 'Import from @/lib/i18n/date instead.',
-            },
-          ],
-        },
-      ],
-    },
-  },
-  // Override: UI components may use @base-ui/react and react-day-picker directly
-  {
-    files: ['src/components/ui/**', 'src/components/filters/**'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          paths: [
-            {
-              message: 'Import from @/lib/i18n/date instead.',
-              name: '@date-fns/tz',
-            },
-            {
-              message: 'Import from @/lib/i18n/date instead.',
-              name: 'date-fns',
-            },
-            {
-              message: 'Import from @/components/icons instead.',
-              name: 'lucide-react',
-            },
-          ],
-          patterns: [
-            {
-              group: ['@date-fns/*'],
-              message: 'Import from @/lib/i18n/date instead.',
-            },
-            {
-              group: ['date-fns/*'],
-              message: 'Import from @/lib/i18n/date instead.',
-            },
-          ],
-        },
-      ],
     },
   },
   ...oxlint.buildFromOxlintConfigFile('./.oxlintrc.json'),
