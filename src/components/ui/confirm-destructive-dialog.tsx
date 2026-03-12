@@ -82,6 +82,7 @@ function ConfirmDestructiveDialog({
             <TooltipProvider>
               <Tooltip open={copied}>
                 <TooltipTrigger
+                  closeOnClick={false}
                   render={
                     <code className="cursor-copy rounded-sm bg-muted px-1.5 py-0.5 font-mono font-semibold select-all" />
                   }
