@@ -32,7 +32,7 @@ describe('createServerCookies', () => {
   });
 
   it('handles undefined cookie header', () => {
-    // eslint-disable-next-line unicorn/no-useless-undefined
+    // oxlint-disable-next-line unicorn/no-useless-undefined
     const cookies = createServerCookies(undefined);
     expect(cookies.get('anything')).toBeUndefined();
   });

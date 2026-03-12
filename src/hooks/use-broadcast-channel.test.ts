@@ -70,7 +70,7 @@ describe('useBroadcastChannel', () => {
   });
 
   it('returns false from postMessage when constructor fails at runtime', () => {
-    // eslint-disable-next-line unicorn/no-useless-undefined -- stubGlobal requires 2 args
+    // oxlint-disable-next-line unicorn/no-useless-undefined -- stubGlobal requires 2 args
     vi.stubGlobal('BroadcastChannel', undefined);
 
     const { result } = renderHook(() => useBroadcastChannel<string>('test'));
