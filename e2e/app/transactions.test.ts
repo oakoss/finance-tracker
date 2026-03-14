@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 
 import { expect, test } from '~e2e/fixtures/auth';
 import { createViaCombobox } from '~e2e/fixtures/combobox';
@@ -20,6 +20,34 @@ async function selectAccount(page: Page, accountName: string): Promise<void> {
   // On small viewports the select popup may need scrolling
   await option.scrollIntoViewIfNeeded();
   await option.click();
+}
+
+/** Create an expense category via the categories page. */
+async function createCategory(page: Page, name: string): Promise<void> {
+  await page.goto('/categories');
+  await page
+    .getByRole('button', { name: /add category/i })
+    .first()
+    .click();
+  await page.getByLabel(/category name/i).fill(name);
+  await page.getByRole('button', { name: /create/i }).click();
+  await expectToast(page, 'Category created');
+}
+
+/** Locate a form field by its visible label using `data-slot="field"`. */
+function getField(page: Page, label: string): Locator {
+  return page
+    .locator('[data-slot="field"]')
+    .filter({ has: page.getByText(label, { exact: true }) });
+}
+
+/** Click a row's edit action and wait for the edit dialog to appear. */
+async function openEditDialog(page: Page, desc: string): Promise<void> {
+  const row = page.getByRole('row', { name: new RegExp(desc, 'i') });
+  await clickRowAction(page, row, /edit/i);
+  await expect(
+    page.getByRole('heading', { name: /edit transaction/i }),
+  ).toBeVisible();
 }
 
 test.describe(
@@ -196,15 +224,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     const categoryName = `E2E Cat ${Date.now()}`;
     const desc = `Txn Cat ${Date.now()}`;
 
-    // Create a category first
-    await page.goto('/categories');
-    await page
-      .getByRole('button', { name: /add category/i })
-      .first()
-      .click();
-    await page.getByLabel(/category name/i).fill(categoryName);
-    await page.getByRole('button', { name: /create/i }).click();
-    await expectToast(page, 'Category created');
+    await createCategory(page, categoryName);
 
     // Create transaction with that category
     await page.goto('/transactions');
@@ -256,10 +276,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await page.getByLabel(/amount/i).fill('7.00');
     await selectAccount(page, accountName);
 
-    const payeeField = page
-      .locator('[data-slot="field"]')
-      .filter({ has: page.getByText('Payee', { exact: true }) });
-    const payeeInput = payeeField.getByRole('combobox');
+    const payeeInput = getField(page, 'Payee').getByRole('combobox');
     await payeeInput.click();
     await payeeInput.pressSequentially(payeeName, { delay: 50 });
     // Select existing payee (not "Create ...")
@@ -301,9 +318,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await selectAccount(page, accountName);
 
     // Select existing tag from dropdown
-    const tagsField = page
-      .locator('[data-slot="field"]')
-      .filter({ has: page.getByText('Tags', { exact: true }) });
+    const tagsField = getField(page, 'Tags');
     const tagInput = tagsField.getByRole('combobox');
     await tagInput.click();
     const tagOption = page.getByRole('option', {
@@ -335,10 +350,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await selectAccount(page, accountName);
 
     // Toggle pending on
-    const pendingField = page
-      .locator('[data-slot="field"]')
-      .filter({ has: page.getByText('Pending', { exact: true }) });
-    const pendingSwitch = pendingField.getByRole('switch');
+    const pendingSwitch = getField(page, 'Pending').getByRole('switch');
     await pendingSwitch.click();
     await expect(pendingSwitch).toBeChecked();
 
@@ -346,12 +358,8 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await expectToast(page, 'Transaction created');
 
     // Verify pending persists by reopening edit dialog
-    const row = page.getByRole('row', { name: new RegExp(desc, 'i') });
-    await clickRowAction(page, row, /edit/i);
-    const editPendingField = page
-      .locator('[data-slot="field"]')
-      .filter({ has: page.getByText('Pending', { exact: true }) });
-    await expect(editPendingField.getByRole('switch')).toBeChecked();
+    await openEditDialog(page, desc);
+    await expect(getField(page, 'Pending').getByRole('switch')).toBeChecked();
   });
 
   test('fills memo field', async ({ page, testAccountName }) => {
@@ -375,8 +383,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await expectToast(page, 'Transaction created');
 
     // Verify memo persists by opening edit dialog
-    const row = page.getByRole('row', { name: new RegExp(desc, 'i') });
-    await clickRowAction(page, row, /edit/i);
+    await openEditDialog(page, desc);
     await expect(page.getByLabel('Memo')).toHaveValue(memo);
   });
 
@@ -430,5 +437,238 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
 
     await page.getByRole('button', { name: /create/i }).click();
     await expectToast(page, 'Transaction created');
+  });
+
+  test('verifies category, payee, and tag persist after create', async ({
+    page,
+    testAccountName,
+  }) => {
+    test.slow();
+    const accountName = testAccountName;
+    const categoryName = `E2E PersistCat ${Date.now()}`;
+    const payeeName = `E2E PersistPayee ${Date.now()}`;
+    const tagName = `e2e-persist-${Date.now()}`;
+    const desc = `Persist Txn ${Date.now()}`;
+
+    await createCategory(page, categoryName);
+
+    // Create transaction with category + payee + tag
+    await page.goto('/transactions');
+    await page
+      .getByRole('button', { name: /add transaction/i })
+      .first()
+      .click();
+
+    await page.getByLabel(/description/i).fill(desc);
+    await page.getByLabel(/amount/i).fill('55.00');
+    await selectAccount(page, accountName);
+
+    await page.getByLabel('Category').click();
+    await page
+      .getByRole('option', { name: new RegExp(categoryName, 'i') })
+      .click();
+
+    await createViaCombobox(page, 'Payee', payeeName);
+    await createViaCombobox(page, 'Tags', tagName);
+
+    await page.getByRole('button', { name: /create/i }).click();
+    await expectToast(page, 'Transaction created');
+
+    // Reopen edit dialog and verify all fields persisted
+    await openEditDialog(page, desc);
+
+    await expect(page.getByLabel('Category')).toHaveText(
+      new RegExp(categoryName, 'i'),
+    );
+    await expect(getField(page, 'Payee').getByRole('combobox')).toHaveValue(
+      payeeName,
+    );
+    await expect(getField(page, 'Tags').getByText(tagName)).toBeVisible();
+  });
+
+  test('edits category, payee, and tags on existing transaction', async ({
+    page,
+    testAccountName,
+  }) => {
+    test.slow();
+    const accountName = testAccountName;
+    const cat1 = `E2E EditCatA ${Date.now()}`;
+    const cat2 = `E2E EditCatB ${Date.now()}`;
+    const payee1 = `E2E EditPayeeA ${Date.now()}`;
+    const payee2 = `E2E EditPayeeB ${Date.now()}`;
+    const tag1 = `e2e-edittag1-${Date.now()}`;
+    const tag2 = `e2e-edittag2-${Date.now()}`;
+    const desc = `EditFields Txn ${Date.now()}`;
+
+    // Create two categories
+    await createCategory(page, cat1);
+    await createCategory(page, cat2);
+
+    // Create transaction with cat1, payee1, tag1
+    await page.goto('/transactions');
+    await page
+      .getByRole('button', { name: /add transaction/i })
+      .first()
+      .click();
+
+    await page.getByLabel(/description/i).fill(desc);
+    await page.getByLabel(/amount/i).fill('60.00');
+    await selectAccount(page, accountName);
+
+    await page.getByLabel('Category').click();
+    await page.getByRole('option', { name: new RegExp(cat1, 'i') }).click();
+
+    await createViaCombobox(page, 'Payee', payee1);
+    await createViaCombobox(page, 'Tags', tag1);
+
+    await page.getByRole('button', { name: /create/i }).click();
+    await expectToast(page, 'Transaction created');
+
+    // Edit: change category to cat2, payee to payee2, add tag2
+    await openEditDialog(page, desc);
+
+    // Change category
+    await page.getByLabel('Category').click();
+    await page.getByRole('option', { name: new RegExp(cat2, 'i') }).click();
+
+    // Change payee
+    const payeeInput = getField(page, 'Payee').getByRole('combobox');
+    await payeeInput.clear();
+    await payeeInput.pressSequentially(payee2, { delay: 50 });
+    await page
+      .getByRole('option', { name: new RegExp(`Create "${payee2}"`, 'i') })
+      .click();
+
+    // Add second tag
+    await createViaCombobox(page, 'Tags', tag2);
+
+    await page.getByRole('button', { name: /save/i }).click();
+    await expectToast(page, 'Transaction updated');
+
+    // Reopen and verify changes persisted
+    await openEditDialog(page, desc);
+
+    await expect(page.getByLabel('Category')).toHaveText(new RegExp(cat2, 'i'));
+    await expect(getField(page, 'Payee').getByRole('combobox')).toHaveValue(
+      payee2,
+    );
+    await expect(getField(page, 'Tags').getByText(tag1)).toBeVisible();
+    await expect(getField(page, 'Tags').getByText(tag2)).toBeVisible();
+  });
+
+  test('removes tag during edit', async ({ page, testAccountName }) => {
+    test.slow();
+    const accountName = testAccountName;
+    const tagName = `e2e-rmedittag-${Date.now()}`;
+    const desc = `RmEditTag Txn ${Date.now()}`;
+
+    // Create transaction with a tag
+    await page.goto('/transactions');
+    await page
+      .getByRole('button', { name: /add transaction/i })
+      .first()
+      .click();
+
+    await page.getByLabel(/description/i).fill(desc);
+    await page.getByLabel(/amount/i).fill('18.00');
+    await selectAccount(page, accountName);
+    await createViaCombobox(page, 'Tags', tagName);
+
+    await page.getByRole('button', { name: /create/i }).click();
+    await expectToast(page, 'Transaction created');
+
+    // Open edit dialog and verify tag is present
+    await openEditDialog(page, desc);
+    const tagsField = getField(page, 'Tags');
+    await expect(tagsField.getByText(tagName)).toBeVisible();
+
+    // Remove tag by clicking badge
+    await tagsField.getByText(new RegExp(String.raw`${tagName}\s*×`)).click();
+    await expect(tagsField.getByText(tagName)).toBeHidden();
+
+    await page.getByRole('button', { name: /save/i }).click();
+    await expectToast(page, 'Transaction updated');
+
+    // Reopen and verify tag is gone
+    await openEditDialog(page, desc);
+    await expect(getField(page, 'Tags').getByText(tagName)).toBeHidden();
+  });
+
+  test('data grid displays payee, tags, pending badge, and formatted amount', async ({
+    page,
+    testAccountName,
+  }) => {
+    test.slow();
+    const accountName = testAccountName;
+    const payeeName = `E2E GridPayee ${Date.now()}`;
+    const tagName = `e2e-gridtag-${Date.now()}`;
+    const desc = `Grid Display ${Date.now()}`;
+
+    await page.goto('/transactions');
+    await page
+      .getByRole('button', { name: /add transaction/i })
+      .first()
+      .click();
+
+    await page.getByLabel(/description/i).fill(desc);
+    await page.getByLabel(/amount/i).fill('99.99');
+    await selectAccount(page, accountName);
+
+    await createViaCombobox(page, 'Payee', payeeName);
+    await createViaCombobox(page, 'Tags', tagName);
+
+    // Toggle pending on
+    await getField(page, 'Pending').getByRole('switch').click();
+
+    await page.getByRole('button', { name: /create/i }).click();
+    await expectToast(page, 'Transaction created');
+
+    // Verify data grid row displays all fields
+    const row = page.getByRole('row', { name: new RegExp(desc, 'i') });
+    await expect(row).toBeVisible();
+
+    // Amount formatted with minus prefix (debit)
+    await expect(row.getByText('-$99.99')).toBeVisible();
+
+    // Payee name in row
+    await expect(row.getByText(payeeName)).toBeVisible();
+
+    // Tag badge in row
+    await expect(row.getByText(tagName)).toBeVisible();
+
+    // Pending badge in row
+    await expect(row.getByText('Pending')).toBeVisible();
+  });
+
+  test('cancel button dismisses dialog without saving', async ({
+    page,
+    testAccountName,
+  }) => {
+    const accountName = testAccountName;
+    const desc = `Cancel Txn ${Date.now()}`;
+
+    await page.goto('/transactions');
+    await page
+      .getByRole('button', { name: /add transaction/i })
+      .first()
+      .click();
+    await expect(
+      page.getByRole('heading', { name: /create transaction/i }),
+    ).toBeVisible();
+
+    await page.getByLabel(/description/i).fill(desc);
+    await page.getByLabel(/amount/i).fill('50.00');
+    await selectAccount(page, accountName);
+
+    // Click cancel
+    await page.getByRole('button', { name: /cancel/i }).click();
+
+    // Dialog should close
+    await expect(
+      page.getByRole('heading', { name: /create transaction/i }),
+    ).toBeHidden();
+
+    // Transaction should not appear in the table
+    await expect(page.getByText(desc)).toBeHidden();
   });
 });
