@@ -1,23 +1,6 @@
-import type { Page } from '@playwright/test';
-
 import { expect, test } from '~e2e/fixtures/auth';
+import { createCategory } from '~e2e/fixtures/entity';
 import { expectToast } from '~e2e/fixtures/table-actions';
-
-/** Create an expense category via the categories page. */
-async function ensureExpenseCategory(page: Page, name: string): Promise<void> {
-  await page.goto('/categories');
-  await page
-    .getByRole('button', { name: /add category/i })
-    .first()
-    .click();
-  await expect(
-    page.getByRole('heading', { name: /create category/i }),
-  ).toBeVisible();
-  await page.getByLabel(/category name/i).fill(name);
-  // Default type is "expense" — no need to change
-  await page.getByRole('button', { name: /create/i }).click();
-  await expectToast(page, 'Category created');
-}
 
 test.describe('budget edit dialog', { tag: ['@authenticated'] }, () => {
   test('create budget via edit dialog and verify persistence', async ({
@@ -28,8 +11,8 @@ test.describe('budget edit dialog', { tag: ['@authenticated'] }, () => {
     // Ensure at least 2 expense categories exist for this worker's user
     const cat1 = `E2E Budget Cat A ${Date.now()}`;
     const cat2 = `E2E Budget Cat B ${Date.now()}`;
-    await ensureExpenseCategory(page, cat1);
-    await ensureExpenseCategory(page, cat2);
+    await createCategory(page, cat1);
+    await createCategory(page, cat2);
 
     await page.goto('/budgets');
 

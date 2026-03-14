@@ -1,13 +1,21 @@
-import type { Locator, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 import { expect, test } from '~e2e/fixtures/auth';
-import { createViaCombobox } from '~e2e/fixtures/combobox';
+import {
+  createViaCombobox,
+  selectExistingCombobox,
+} from '~e2e/fixtures/combobox';
+import { createCategory } from '~e2e/fixtures/entity';
+import { getField } from '~e2e/fixtures/field';
 import {
   clickRowAction,
   confirmDelete,
   expectToast,
   isEmptyState,
+  openEditDialog,
 } from '~e2e/fixtures/table-actions';
+
+const EDIT_TXN_HEADING = /edit transaction/i;
 
 /** Open the Account select and pick the option by name. */
 async function selectAccount(page: Page, accountName: string): Promise<void> {
@@ -20,34 +28,6 @@ async function selectAccount(page: Page, accountName: string): Promise<void> {
   // On small viewports the select popup may need scrolling
   await option.scrollIntoViewIfNeeded();
   await option.click();
-}
-
-/** Create an expense category via the categories page. */
-async function createCategory(page: Page, name: string): Promise<void> {
-  await page.goto('/categories');
-  await page
-    .getByRole('button', { name: /add category/i })
-    .first()
-    .click();
-  await page.getByLabel(/category name/i).fill(name);
-  await page.getByRole('button', { name: /create/i }).click();
-  await expectToast(page, 'Category created');
-}
-
-/** Locate a form field by its visible label using `data-slot="field"`. */
-function getField(page: Page, label: string): Locator {
-  return page
-    .locator('[data-slot="field"]')
-    .filter({ has: page.getByText(label, { exact: true }) });
-}
-
-/** Click a row's edit action and wait for the edit dialog to appear. */
-async function openEditDialog(page: Page, desc: string): Promise<void> {
-  const row = page.getByRole('row', { name: new RegExp(desc, 'i') });
-  await clickRowAction(page, row, /edit/i);
-  await expect(
-    page.getByRole('heading', { name: /edit transaction/i }),
-  ).toBeVisible();
 }
 
 test.describe(
@@ -276,11 +256,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await page.getByLabel(/amount/i).fill('7.00');
     await selectAccount(page, accountName);
 
-    const payeeInput = getField(page, 'Payee').getByRole('combobox');
-    await payeeInput.click();
-    await payeeInput.pressSequentially(payeeName, { delay: 50 });
-    // Select existing payee (not "Create ...")
-    await page.getByRole('option', { exact: true, name: payeeName }).click();
+    await selectExistingCombobox(page, 'Payee', payeeName);
 
     await page.getByRole('button', { name: /create/i }).click();
     await expectToast(page, 'Transaction created');
@@ -358,7 +334,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await expectToast(page, 'Transaction created');
 
     // Verify pending persists by reopening edit dialog
-    await openEditDialog(page, desc);
+    await openEditDialog(page, desc, EDIT_TXN_HEADING);
     await expect(getField(page, 'Pending').getByRole('switch')).toBeChecked();
   });
 
@@ -383,7 +359,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await expectToast(page, 'Transaction created');
 
     // Verify memo persists by opening edit dialog
-    await openEditDialog(page, desc);
+    await openEditDialog(page, desc, EDIT_TXN_HEADING);
     await expect(page.getByLabel('Memo')).toHaveValue(memo);
   });
 
@@ -475,7 +451,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await expectToast(page, 'Transaction created');
 
     // Reopen edit dialog and verify all fields persisted
-    await openEditDialog(page, desc);
+    await openEditDialog(page, desc, EDIT_TXN_HEADING);
 
     await expect(page.getByLabel('Category')).toHaveText(
       new RegExp(categoryName, 'i'),
@@ -525,7 +501,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await expectToast(page, 'Transaction created');
 
     // Edit: change category to cat2, payee to payee2, add tag2
-    await openEditDialog(page, desc);
+    await openEditDialog(page, desc, EDIT_TXN_HEADING);
 
     // Change category
     await page.getByLabel('Category').click();
@@ -546,7 +522,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await expectToast(page, 'Transaction updated');
 
     // Reopen and verify changes persisted
-    await openEditDialog(page, desc);
+    await openEditDialog(page, desc, EDIT_TXN_HEADING);
 
     await expect(page.getByLabel('Category')).toHaveText(new RegExp(cat2, 'i'));
     await expect(getField(page, 'Payee').getByRole('combobox')).toHaveValue(
@@ -578,7 +554,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await expectToast(page, 'Transaction created');
 
     // Open edit dialog and verify tag is present
-    await openEditDialog(page, desc);
+    await openEditDialog(page, desc, EDIT_TXN_HEADING);
     const tagsField = getField(page, 'Tags');
     await expect(tagsField.getByText(tagName)).toBeVisible();
 
@@ -590,7 +566,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await expectToast(page, 'Transaction updated');
 
     // Reopen and verify tag is gone
-    await openEditDialog(page, desc);
+    await openEditDialog(page, desc, EDIT_TXN_HEADING);
     await expect(getField(page, 'Tags').getByText(tagName)).toBeHidden();
   });
 

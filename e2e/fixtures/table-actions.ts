@@ -13,6 +13,17 @@ export async function clickRowAction(
   await page.getByRole('menuitem', { name: action }).click();
 }
 
+/** Find a row by text, click edit action, and assert the edit heading. */
+export async function openEditDialog(
+  page: Page,
+  rowText: string,
+  editHeading: RegExp,
+): Promise<void> {
+  const row = page.getByRole('row', { name: new RegExp(rowText, 'i') });
+  await clickRowAction(page, row, /edit/i);
+  await expect(page.getByRole('heading', { name: editHeading })).toBeVisible();
+}
+
 /** Fill the type-to-confirm input and click the delete button. */
 export async function confirmDelete(
   page: Page,
