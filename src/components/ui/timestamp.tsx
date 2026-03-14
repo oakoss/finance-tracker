@@ -7,6 +7,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
+import { useHydrated } from '@/hooks/use-hydrated';
 import {
   formatDateTime,
   formatDateTimeFull,
@@ -25,20 +26,15 @@ function Timestamp({ className, value }: TimestampProps) {
     () => (value instanceof Date ? value : new Date(value)),
     [value],
   );
-  const userTimeZone = useMemo(() => getUserTimeZone(), []);
+  const hydrated = useHydrated();
 
   if (Number.isNaN(date.getTime())) {
     return <span className={className}>--</span>;
   }
 
-  const showLocalTime = userTimeZone !== 'UTC';
-
-  const utc = formatDateTimeFull({ timeZone: 'UTC', value: date });
-  const local = showLocalTime
-    ? formatDateTimeFull({ timeZone: userTimeZone, value: date })
-    : null;
-  const relative = formatRelativeTime({ value: date });
   const iso = date.toISOString();
+
+  const tooltipRows = hydrated ? getTooltipRows(date) : [];
 
   return (
     <TooltipProvider>
@@ -54,15 +50,36 @@ function Timestamp({ className, value }: TimestampProps) {
         </TooltipTrigger>
         <TooltipContent className="max-w-none p-0" side="bottom" sideOffset={6}>
           <div className="grid gap-0 font-mono text-[11px] leading-relaxed">
-            <TimestampRow label="UTC" value={utc} />
-            {local && <TimestampRow label={userTimeZone} value={local} />}
-            <TimestampRow label="Relative" value={relative} />
+            {tooltipRows.map(({ label, value: v }) => (
+              <TimestampRow key={label} label={label} value={v} />
+            ))}
             <TimestampRow label="Timestamp" value={iso} />
           </div>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );
+}
+
+function getTooltipRows(date: Date): { label: string; value: string }[] {
+  const userTimeZone = getUserTimeZone();
+  const rows = [
+    {
+      label: 'UTC',
+      value: formatDateTimeFull({ timeZone: 'UTC', value: date }),
+    },
+  ];
+
+  if (userTimeZone !== 'UTC') {
+    rows.push({
+      label: userTimeZone,
+      value: formatDateTimeFull({ timeZone: userTimeZone, value: date }),
+    });
+  }
+
+  rows.push({ label: 'Relative', value: formatRelativeTime({ value: date }) });
+
+  return rows;
 }
 
 function TimestampRow({ label, value }: { label: string; value: string }) {
