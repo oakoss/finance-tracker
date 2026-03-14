@@ -25,7 +25,7 @@ export const auth = betterAuth({
       generateId: 'uuid',
     },
     ipAddress: {
-      ipAddressHeaders: ['cf-connecting-ip'],
+      ipAddressHeaders: ['cf-connecting-ip', 'x-forwarded-for'],
     },
   },
   appName: appConfig.name,
