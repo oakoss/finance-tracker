@@ -54,6 +54,8 @@
   "budgets.edit.description": "Set monthly budget targets for each category.",
   "budgets.edit.loadError": "Could not load budget data.",
   "budgets.edit.noExpenseCategories": "No expense categories found.",
+  "budgets.edit.noPreviousData": "No previous month data for reference.",
+  "budgets.edit.previousLoadError": "Could not load previous month data.",
   "budgets.edit.previousMonth": "Prev",
   "budgets.edit.uncategorized": "Other",
   "budgets.editBudget": "Edit budget",

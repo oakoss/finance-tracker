@@ -34,6 +34,9 @@ async function cleanE2eUserData(
     .delete(schema.ledgerAccounts)
     .where(eq(schema.ledgerAccounts.userId, user.id));
   await db
+    .delete(schema.budgetPeriods)
+    .where(eq(schema.budgetPeriods.userId, user.id));
+  await db
     .delete(schema.categories)
     .where(eq(schema.categories.userId, user.id));
 }

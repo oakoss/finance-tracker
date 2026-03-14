@@ -158,7 +158,7 @@ export function EditBudgetDialog({
   const prevPeriod = periods.find(
     (p) => p.month === prevMonth && p.year === prevYear,
   );
-  const { data: prevLines } = useQuery({
+  const { data: prevLines, isError: isPrevLinesError } = useQuery({
     ...budgetLineQueries.list(prevPeriod?.id ?? ''),
     enabled: !!prevPeriod,
   });
@@ -191,6 +191,7 @@ export function EditBudgetDialog({
             groups={groups}
             month={month}
             prevLines={prevLines ?? []}
+            prevLinesError={isPrevLinesError}
             year={year}
             onClose={() => onOpenChange(false)}
           />
@@ -217,6 +218,7 @@ function EditBudgetForm({
   month,
   onClose,
   prevLines,
+  prevLinesError,
   year,
 }: {
   activePeriodId?: string | undefined;
@@ -225,6 +227,7 @@ function EditBudgetForm({
   month: number;
   onClose: () => void;
   prevLines: BudgetLineListItem[];
+  prevLinesError: boolean;
   year: number;
 }) {
   const [lineState, setLineState] = useState(() =>
@@ -311,6 +314,7 @@ function EditBudgetForm({
           amounts={amounts}
           groups={groups}
           prevLineMap={prevLineMap}
+          prevLinesError={prevLinesError}
           onAmountChange={updateAmount}
         />
       </form>
@@ -340,11 +344,13 @@ function FormContent({
   groups,
   onAmountChange,
   prevLineMap,
+  prevLinesError,
 }: {
   amounts: Map<string, string>;
   groups: CategoryGroup[];
   onAmountChange: (categoryId: string, value: string) => void;
   prevLineMap: Map<string, BudgetLineListItem>;
+  prevLinesError: boolean;
 }) {
   const hasCategories = groups.some((g) => g.children.length > 0);
   if (!hasCategories) {
@@ -355,17 +361,33 @@ function FormContent({
     );
   }
 
+  let prevMonthHint: { className: string; message: string } | null = null;
+  if (prevLinesError) {
+    prevMonthHint = {
+      className: 'text-xs text-destructive',
+      message: m['budgets.edit.previousLoadError'](),
+    };
+  } else if (prevLineMap.size === 0) {
+    prevMonthHint = {
+      className: 'text-xs text-muted-foreground',
+      message: m['budgets.edit.noPreviousData'](),
+    };
+  }
+
   return (
     <ScrollArea className="max-h-[60vh]">
       <div className="flex flex-col gap-4 pr-3">
+        {prevMonthHint && (
+          <p className={prevMonthHint.className}>{prevMonthHint.message}</p>
+        )}
         {groups.map((group) => (
-          <div
+          <fieldset
             key={group.parent?.id ?? 'ungrouped'}
             className="flex flex-col gap-2"
           >
-            <h3 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+            <legend className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               {group.parent?.name ?? m['budgets.edit.uncategorized']()}
-            </h3>
+            </legend>
             {group.children.map((child) => {
               const amount = amounts.get(child.id);
               const prevLine = prevLineMap.get(child.id);
@@ -396,7 +418,7 @@ function FormContent({
                 </div>
               );
             })}
-          </div>
+          </fieldset>
         ))}
       </div>
     </ScrollArea>
