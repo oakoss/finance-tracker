@@ -3,10 +3,7 @@
 import pluginReact from '@eslint-react/eslint-plugin';
 import js from '@eslint/js';
 import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
-// @ts-ignore
-import jsxA11y from 'eslint-plugin-jsx-a11y';
 import oxlint from 'eslint-plugin-oxlint';
-import unicorn from 'eslint-plugin-unicorn';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -33,27 +30,10 @@ export default defineConfig(
     },
   },
   {
-    extends: [js.configs.recommended, unicorn.configs.recommended],
+    extends: [js.configs.recommended],
     rules: {
       eqeqeq: 'error',
       'no-console': 'warn',
-      'unicorn/filename-case': [
-        'error',
-        {
-          cases: {
-            camelCase: false,
-            kebabCase: true,
-            pascalCase: false,
-          },
-          ignore: [
-            String.raw`^\$.*\.tsx?$`, // TanStack Router parameter files ($param)
-            String.raw`^-.*\.tsx?$`, // TanStack Router ignored route files (-shared)
-          ],
-        },
-      ],
-      'unicorn/no-null': 'off',
-      'unicorn/prefer-class-fields': 'error',
-      'unicorn/prevent-abbreviations': 'off',
     },
   },
   {
@@ -97,32 +77,11 @@ export default defineConfig(
     },
   },
   {
-    extends: [
-      pluginReact.configs['recommended-type-checked'],
-      jsxA11y.flatConfigs.recommended,
-    ],
+    extends: [pluginReact.configs['recommended-type-checked']],
     files: ['**/*.{jsx,tsx}'],
     languageOptions: {
       parserOptions: {
         ecmaFeatures: { jsx: true },
-      },
-    },
-    rules: {
-      'jsx-a11y/no-static-element-interactions': [
-        'error',
-        {
-          allowExpressionValues: true,
-          handlers: ['onClick', 'onKeyDown', 'onKeyPress', 'onKeyUp'],
-        },
-      ],
-    },
-    settings: {
-      'jsx-a11y': {
-        components: {
-          Button: 'button',
-          Input: 'input',
-          Select: 'select',
-        },
       },
     },
   },
@@ -167,7 +126,6 @@ export default defineConfig(
     rules: {
       '@typescript-eslint/no-empty-function': 'off',
       'no-console': 'off',
-      'unicorn/prefer-top-level-await': 'off',
     },
   },
   ...oxlint.buildFromOxlintConfigFile('./.oxlintrc.json'),
