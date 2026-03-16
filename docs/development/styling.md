@@ -69,6 +69,13 @@ The `@theme inline` section mirrors the same tokens for Tailwind usage:
 
 ## Typography
 
+Three font families via the Fintech pairing (fonttrio.xyz):
+
+- **Heading** (`font-heading`): Outfit — geometric clarity for headings
+- **Body** (`font-sans`): IBM Plex Sans — readable for data-heavy interfaces
+- **Mono** (`font-mono`): IBM Plex Mono — tabular numbers for financial data
+
+Headings (`h1`-`h6`) use `font-heading` automatically via base styles.
 Use Tailwind classes directly on semantic HTML elements. No wrapper
 component.
 
