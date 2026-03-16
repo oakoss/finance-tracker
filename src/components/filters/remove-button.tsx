@@ -12,18 +12,15 @@ function RemoveButton({
   ...props
 }: RemoveButtonProps) {
   const context = useFilterContext();
+  const size =
+    context.size === 'sm'
+      ? 'icon-sm'
+      : (context.size === 'lg'
+        ? 'icon-lg'
+        : 'icon');
 
   return (
-    <Button
-      className={className}
-      size={(() => {
-        if (context.size === 'sm') return 'icon-sm';
-        if (context.size === 'lg') return 'icon-lg';
-        return 'icon';
-      })()}
-      variant="outline"
-      {...props}
-    >
+    <Button className={className} size={size} variant="outline" {...props}>
       {icon}
     </Button>
   );

@@ -1,5 +1,5 @@
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import type { BudgetPeriodListItem } from '@/modules/budgets/api/list-budget-periods';
 
@@ -22,7 +22,8 @@ export function BudgetsPageHeader({
   const search = useSearch({ from: '/_app/budgets' });
   const [copyOpen, setCopyOpen] = useState(false);
 
-  const now = new Date();
+  // Frozen on mount — only used as fallback until user navigates.
+  const now = useMemo(() => new Date(), []);
   const month = search.month ?? now.getMonth() + 1;
   const year = search.year ?? now.getFullYear();
 
@@ -42,9 +43,10 @@ export function BudgetsPageHeader({
     });
   }
 
-  const label = formatMonthYear({
-    value: new Date(year, month - 1, 1),
-  });
+  const label = useMemo(
+    () => formatMonthYear({ value: new Date(year, month - 1, 1) }),
+    [year, month],
+  );
 
   return (
     <>

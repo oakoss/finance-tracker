@@ -23,6 +23,7 @@ export function TransactionsDataGrid({
 }: TransactionsDataGridProps) {
   const columns = useMemo(() => createTransactionColumns(), []);
 
+  // oxlint-disable-next-line react-compiler/incompatible-library -- TanStack Table API is Compiler-incompatible by design
   const table = useReactTable({
     columns,
     data,

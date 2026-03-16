@@ -160,10 +160,9 @@ function DataGridTableHeadRowCell<TData>({
           ? props.tableClassNames?.edgeCell
           : '',
       )}
-      data-last-col={(() => {
-        if (isLastLeftPinned) return 'left';
-        if (isFirstRightPinned) return 'right';
-      })()}
+      data-last-col={
+        isLastLeftPinned ? 'left' : (isFirstRightPinned ? 'right' : undefined)
+      }
       data-pinned={isPinned === false ? undefined : isPinned}
       style={{
         ...((props.tableLayout?.width === 'fixed' ||
@@ -281,10 +280,9 @@ function DataGridTableBodyRowSkeletonCell<TData>({
           ? props.tableClassNames?.edgeCell
           : '',
       )}
-      data-last-col={(() => {
-        if (isLastLeftPinned) return 'left';
-        if (isFirstRightPinned) return 'right';
-      })()}
+      data-last-col={
+        isLastLeftPinned ? 'left' : (isFirstRightPinned ? 'right' : undefined)
+      }
       data-pinned={isPinned === false ? undefined : isPinned}
       style={{
         ...(props.tableLayout?.columnsResizable && {
@@ -404,10 +402,9 @@ function DataGridTableBodyRowCell<TData>({
           ? props.tableClassNames?.edgeCell
           : '',
       )}
-      data-last-col={(() => {
-        if (isLastLeftPinned) return 'left';
-        if (isFirstRightPinned) return 'right';
-      })()}
+      data-last-col={
+        isLastLeftPinned ? 'left' : (isFirstRightPinned ? 'right' : undefined)
+      }
       data-pinned={isPinned === false ? undefined : isPinned}
       style={{
         ...(props.tableLayout?.columnsResizable && {
@@ -501,6 +498,51 @@ function DataGridTable() {
     }));
   }, [pagination?.pageSize, pagination?.pageIndex]);
 
+  let bodyContent: ReactNode;
+  if (isLoading && props.loadingMode === 'skeleton' && pagination?.pageSize) {
+    bodyContent = skeletonRows.map((row) => (
+      <DataGridTableBodyRowSkeleton key={row.id}>
+        {table.getVisibleFlatColumns().map((column) => {
+          return (
+            <DataGridTableBodyRowSkeletonCell key={column.id} column={column}>
+              {column.columnDef.meta?.skeleton}
+            </DataGridTableBodyRowSkeletonCell>
+          );
+        })}
+      </DataGridTableBodyRowSkeleton>
+    ));
+  } else if (isLoading && props.loadingMode === 'spinner') {
+    bodyContent = (
+      <tr>
+        <td className="p-8" colSpan={table.getVisibleFlatColumns().length}>
+          <div className="flex items-center justify-center gap-3">
+            <Spinner className="-ml-1 size-5" />
+            {props.loadingMessage ?? m['dataGrid.table.loading']()}
+          </div>
+        </td>
+      </tr>
+    );
+  } else if (table.getRowModel().rows.length > 0) {
+    bodyContent = table.getRowModel().rows.map((row) => {
+      return (
+        <Fragment key={row.id}>
+          <DataGridTableBodyRow row={row}>
+            {row.getVisibleCells().map((cell) => {
+              return (
+                <DataGridTableBodyRowCell key={cell.id} cell={cell}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </DataGridTableBodyRowCell>
+              );
+            })}
+          </DataGridTableBodyRow>
+          {row.getIsExpanded() && <DataGridTableBodyRowExpanded row={row} />}
+        </Fragment>
+      );
+    });
+  } else {
+    bodyContent = <DataGridTableEmpty />;
+  }
+
   return (
     <DataGridTableBase>
       <DataGridTableHead>
@@ -538,72 +580,7 @@ function DataGridTable() {
         !(props.tableLayout?.rowBorder ?? true),
       ].some(Boolean) && <DataGridTableRowSpacer />}
 
-      <DataGridTableBody>
-        {(() => {
-          if (
-            isLoading &&
-            props.loadingMode === 'skeleton' &&
-            pagination?.pageSize
-          ) {
-            return skeletonRows.map((row) => (
-              <DataGridTableBodyRowSkeleton key={row.id}>
-                {table.getVisibleFlatColumns().map((column) => {
-                  return (
-                    <DataGridTableBodyRowSkeletonCell
-                      key={column.id}
-                      column={column}
-                    >
-                      {column.columnDef.meta?.skeleton}
-                    </DataGridTableBodyRowSkeletonCell>
-                  );
-                })}
-              </DataGridTableBodyRowSkeleton>
-            ));
-          }
-
-          if (isLoading && props.loadingMode === 'spinner') {
-            return (
-              <tr>
-                <td
-                  className="p-8"
-                  colSpan={table.getVisibleFlatColumns().length}
-                >
-                  <div className="flex items-center justify-center gap-3">
-                    <Spinner className="-ml-1 size-5" />
-                    {props.loadingMessage ?? m['dataGrid.table.loading']()}
-                  </div>
-                </td>
-              </tr>
-            );
-          }
-
-          if (table.getRowModel().rows.length > 0) {
-            return table.getRowModel().rows.map((row) => {
-              return (
-                <Fragment key={row.id}>
-                  <DataGridTableBodyRow row={row}>
-                    {row.getVisibleCells().map((cell) => {
-                      return (
-                        <DataGridTableBodyRowCell key={cell.id} cell={cell}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </DataGridTableBodyRowCell>
-                      );
-                    })}
-                  </DataGridTableBodyRow>
-                  {row.getIsExpanded() && (
-                    <DataGridTableBodyRowExpanded row={row} />
-                  )}
-                </Fragment>
-              );
-            });
-          }
-
-          return <DataGridTableEmpty />;
-        })()}
-      </DataGridTableBody>
+      <DataGridTableBody>{bodyContent}</DataGridTableBody>
     </DataGridTableBase>
   );
 }

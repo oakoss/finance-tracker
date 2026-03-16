@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Calendar } from '@/components/ui/calendar';
 import { DatePicker } from '@/components/ui/date-picker';
@@ -23,6 +23,8 @@ function DatePage() {
   );
   const [pickerValue, setPickerValue] = useState(() => todayISODateString());
   const [pickerEmpty, setPickerEmpty] = useState('');
+  const now = useMemo(() => new Date(), []);
+  const pastDate = useMemo(() => new Date('2024-06-15T14:30:00Z'), []);
 
   return (
     <div className="space-y-10">
@@ -81,11 +83,11 @@ function DatePage() {
 
       <Section title="Timestamp">
         <Subsection label="Recent date">
-          <Timestamp value={new Date()} />
+          <Timestamp value={now} />
         </Subsection>
 
         <Subsection label="Past date">
-          <Timestamp value={new Date('2024-06-15T14:30:00Z')} />
+          <Timestamp value={pastDate} />
         </Subsection>
 
         <Subsection label="From string">

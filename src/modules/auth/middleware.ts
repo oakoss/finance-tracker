@@ -8,10 +8,7 @@ import { createError, log } from '@/lib/logging/evlog';
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
   const headers = getRequestHeaders();
 
-  let session = null;
-  try {
-    session = await auth.api.getSession({ headers });
-  } catch (error) {
+  const session = await auth.api.getSession({ headers }).catch((error) => {
     const cause = toError(error);
     log.error({
       action: 'auth.middleware.session',
@@ -24,7 +21,7 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
       message: 'Authentication service unavailable.',
       status: 503,
     });
-  }
+  });
 
   return next({ context: { session } });
 });

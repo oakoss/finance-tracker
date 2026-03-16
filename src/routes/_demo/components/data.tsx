@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import * as React from 'react';
+import { useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
 import { Icons } from '@/components/icons';
@@ -93,7 +93,8 @@ const TABLE_DATA = [
 ];
 
 function DataPage() {
-  const [stepperValue, setStepperValue] = React.useState(2);
+  const [stepperValue, setStepperValue] = useState(2);
+  const now = useMemo(() => new Date(), []);
 
   return (
     <div className="space-y-10">
@@ -439,7 +440,7 @@ function DataPage() {
 
       <Section title="Timestamp">
         <Subsection label="Current date">
-          <Timestamp value={new Date()} />
+          <Timestamp value={now} />
         </Subsection>
 
         <Subsection label="From string">

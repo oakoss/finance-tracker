@@ -4,7 +4,7 @@ import {
   type ErrorComponentProps,
 } from '@tanstack/react-router';
 import { type } from 'arktype';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import type { BudgetPeriodListItem } from '@/modules/budgets/api/list-budget-periods';
 
@@ -62,7 +62,9 @@ function BudgetsPage() {
   const { data: periods } = useSuspenseQuery(budgetPeriodQueries.list());
   const [editOpen, setEditOpen] = useState(false);
 
-  const now = new Date();
+  // Frozen on mount — stale if page stays open across midnight, but
+  // user interaction sets explicit search params within seconds.
+  const now = useMemo(() => new Date(), []);
   const month = search.month ?? now.getMonth() + 1;
   const year = search.year ?? now.getFullYear();
 

@@ -226,43 +226,35 @@ function DataGridTableDndRows({
           ].some(Boolean) && <DataGridTableRowSpacer />}
 
           <DataGridTableBody>
-            {(() => {
-              if (
-                props.loadingMode === 'skeleton' &&
-                isLoading &&
-                pagination?.pageSize
-              ) {
-                return skeletonRows.map((row) => (
-                  <DataGridTableBodyRowSkeleton key={row.id}>
-                    {table.getVisibleFlatColumns().map((column) => {
-                      return (
-                        <DataGridTableBodyRowSkeletonCell
-                          key={column.id}
-                          column={column}
-                        >
-                          {column.columnDef.meta?.skeleton}
-                        </DataGridTableBodyRowSkeletonCell>
-                      );
-                    })}
-                  </DataGridTableBodyRowSkeleton>
-                ));
-              }
-
-              if (table.getRowModel().rows.length > 0) {
-                return (
-                  <SortableContext
-                    items={dataIds}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    {table.getRowModel().rows.map((row) => {
-                      return <DataGridTableDndRow key={row.id} row={row} />;
-                    })}
-                  </SortableContext>
-                );
-              }
-
-              return <DataGridTableEmpty />;
-            })()}
+            {props.loadingMode === 'skeleton' &&
+            isLoading &&
+            pagination?.pageSize ? (
+              skeletonRows.map((row) => (
+                <DataGridTableBodyRowSkeleton key={row.id}>
+                  {table.getVisibleFlatColumns().map((column) => {
+                    return (
+                      <DataGridTableBodyRowSkeletonCell
+                        key={column.id}
+                        column={column}
+                      >
+                        {column.columnDef.meta?.skeleton}
+                      </DataGridTableBodyRowSkeletonCell>
+                    );
+                  })}
+                </DataGridTableBodyRowSkeleton>
+              ))
+            ) : (table.getRowModel().rows.length > 0 ? (
+              <SortableContext
+                items={dataIds}
+                strategy={verticalListSortingStrategy}
+              >
+                {table.getRowModel().rows.map((row) => {
+                  return <DataGridTableDndRow key={row.id} row={row} />;
+                })}
+              </SortableContext>
+            ) : (
+              <DataGridTableEmpty />
+            ))}
           </DataGridTableBody>
         </DataGridTableBase>
       </div>

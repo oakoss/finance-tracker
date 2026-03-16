@@ -363,16 +363,12 @@ function Filters<T = unknown>({
                   onMouseEnter={() => setActiveMenu('root')}
                 >
                   <ScrollArea className="**:data-[slot=scroll-area-scrollbar]:m-0">
-                    {(() => {
-                      if (filteredFields.length === 0) {
-                        return (
-                          <div className="py-2 text-center text-sm text-muted-foreground">
-                            {m['filters.noFieldsFound']()}
-                          </div>
-                        );
-                      }
-
-                      return filteredFields.map((field, index) => {
+                    {filteredFields.length === 0 ? (
+                      <div className="py-2 text-center text-sm text-muted-foreground">
+                        {m['filters.noFieldsFound']()}
+                      </div>
+                    ) : (
+                      filteredFields.map((field, index) => {
                         const isHighlighted = highlightedIndex === index;
                         const itemId = `${rootId}-item-${index}`;
                         const hasSubMenu =
@@ -509,8 +505,8 @@ function Filters<T = unknown>({
                             <span>{field.label}</span>
                           </DropdownMenuItem>
                         );
-                      });
-                    })()}
+                      })
+                    )}
                   </ScrollArea>
                 </div>
               </div>

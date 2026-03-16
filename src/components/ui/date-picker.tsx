@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
@@ -31,7 +31,10 @@ function DatePicker({
 }: DatePickerProps) {
   const [open, setOpen] = useState(false);
 
-  const selected = value ? new Date(`${value}T00:00:00`) : undefined;
+  const selected = useMemo(
+    () => (value ? new Date(`${value}T00:00:00`) : undefined),
+    [value],
+  );
 
   return (
     <Popover

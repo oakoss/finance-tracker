@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import type { BudgetPeriodListItem } from '@/modules/budgets/api/list-budget-periods';
 
@@ -52,9 +52,10 @@ export function CopyBudgetDialog({
     );
   }
 
-  const targetLabel = formatMonthYear({
-    value: new Date(year, month - 1, 1),
-  });
+  const targetLabel = useMemo(
+    () => formatMonthYear({ value: new Date(year, month - 1, 1) }),
+    [year, month],
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

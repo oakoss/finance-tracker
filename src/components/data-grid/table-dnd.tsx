@@ -211,55 +211,49 @@ function DataGridTableDnd({
           ].some(Boolean) && <DataGridTableRowSpacer />}
 
           <DataGridTableBody>
-            {(() => {
-              if (
-                props.loadingMode === 'skeleton' &&
-                isLoading &&
-                pagination?.pageSize
-              ) {
-                return skeletonRows.map((row) => (
-                  <DataGridTableBodyRowSkeleton key={row.id}>
-                    {table.getVisibleFlatColumns().map((column) => {
-                      return (
-                        <DataGridTableBodyRowSkeletonCell
-                          key={column.id}
-                          column={column}
-                        >
-                          {column.columnDef.meta?.skeleton}
-                        </DataGridTableBodyRowSkeletonCell>
-                      );
-                    })}
-                  </DataGridTableBodyRowSkeleton>
-                ));
-              }
-
-              if (table.getRowModel().rows.length > 0) {
-                return table.getRowModel().rows.map((row) => {
-                  return (
-                    <Fragment key={row.id}>
-                      <DataGridTableBodyRow row={row}>
-                        {row.getVisibleCells().map((cell) => {
-                          return (
-                            <SortableContext
-                              key={cell.id}
-                              items={table.getState().columnOrder}
-                              strategy={horizontalListSortingStrategy}
-                            >
-                              <DataGridTableDndCell cell={cell} />
-                            </SortableContext>
-                          );
-                        })}
-                      </DataGridTableBodyRow>
-                      {row.getIsExpanded() && (
-                        <DataGridTableBodyRowExpanded row={row} />
-                      )}
-                    </Fragment>
-                  );
-                });
-              }
-
-              return <DataGridTableEmpty />;
-            })()}
+            {props.loadingMode === 'skeleton' &&
+            isLoading &&
+            pagination?.pageSize ? (
+              skeletonRows.map((row) => (
+                <DataGridTableBodyRowSkeleton key={row.id}>
+                  {table.getVisibleFlatColumns().map((column) => {
+                    return (
+                      <DataGridTableBodyRowSkeletonCell
+                        key={column.id}
+                        column={column}
+                      >
+                        {column.columnDef.meta?.skeleton}
+                      </DataGridTableBodyRowSkeletonCell>
+                    );
+                  })}
+                </DataGridTableBodyRowSkeleton>
+              ))
+            ) : (table.getRowModel().rows.length > 0 ? (
+              table.getRowModel().rows.map((row) => {
+                return (
+                  <Fragment key={row.id}>
+                    <DataGridTableBodyRow row={row}>
+                      {row.getVisibleCells().map((cell) => {
+                        return (
+                          <SortableContext
+                            key={cell.id}
+                            items={table.getState().columnOrder}
+                            strategy={horizontalListSortingStrategy}
+                          >
+                            <DataGridTableDndCell cell={cell} />
+                          </SortableContext>
+                        );
+                      })}
+                    </DataGridTableBodyRow>
+                    {row.getIsExpanded() && (
+                      <DataGridTableBodyRowExpanded row={row} />
+                    )}
+                  </Fragment>
+                );
+              })
+            ) : (
+              <DataGridTableEmpty />
+            ))}
           </DataGridTableBody>
         </DataGridTableBase>
       </div>

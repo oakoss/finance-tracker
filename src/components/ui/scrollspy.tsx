@@ -192,10 +192,12 @@ export function Scrollspy({
   }, [dataAttribute, scrollTo]);
 
   useEffect(() => {
+    const selfElement = selfRef.current;
+
     // Query elements and store them in the ref, avoiding unnecessary re-renders
-    if (selfRef.current) {
+    if (selfElement) {
       anchorElementsRef.current = [
-        ...selfRef.current.querySelectorAll(`[data-${dataAttribute}-anchor]`),
+        ...selfElement.querySelectorAll(`[data-${dataAttribute}-anchor]`),
       ];
     }
 
@@ -206,7 +208,7 @@ export function Scrollspy({
       scrollTo(anchor)(event);
     };
 
-    selfRef.current?.addEventListener('click', handleAnchorClick);
+    selfElement?.addEventListener('click', handleAnchorClick);
 
     const onScroll = (event: Event) => {
       const scrollElement =
@@ -235,7 +237,7 @@ export function Scrollspy({
 
     return () => {
       window.removeEventListener('scroll', onScroll, true);
-      selfRef.current?.removeEventListener('click', handleAnchorClick);
+      selfElement?.removeEventListener('click', handleAnchorClick);
       clearTimeout(initialTimeout);
     };
   }, [targetRef, handleScroll, dataAttribute, scrollTo, scrollToHashSection]);

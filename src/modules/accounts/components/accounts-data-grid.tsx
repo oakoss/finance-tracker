@@ -17,6 +17,7 @@ type AccountsDataGridProps = {
 };
 
 export function AccountsDataGrid({ data, isLoading }: AccountsDataGridProps) {
+  // oxlint-disable-next-line react-compiler/incompatible-library -- TanStack Table API is Compiler-incompatible by design
   const table = useReactTable({
     columns: accountColumns,
     data,

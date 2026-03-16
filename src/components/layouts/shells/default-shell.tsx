@@ -23,28 +23,20 @@ export function DefaultShell({ children }: { children: React.ReactNode }) {
             {appConfig.name}
           </RouterLink>
           <div className="flex items-center gap-4">
-            {(() => {
-              if (isPending) {
-                return (
-                  <span className="h-5 w-20 animate-pulse rounded-sm bg-muted" />
-                );
-              }
-
-              if (session?.user) {
-                return <DefaultShellUserNav name={session.user.name} />;
-              }
-
-              return (
-                <>
-                  <RouterLink to="/sign-in" variant="nav">
-                    Sign in
-                  </RouterLink>
-                  <RouterLink to="/sign-up" variant="nav">
-                    Sign up
-                  </RouterLink>
-                </>
-              );
-            })()}
+            {isPending ? (
+              <span className="h-5 w-20 animate-pulse rounded-sm bg-muted" />
+            ) : (session?.user ? (
+              <DefaultShellUserNav name={session.user.name} />
+            ) : (
+              <>
+                <RouterLink to="/sign-in" variant="nav">
+                  Sign in
+                </RouterLink>
+                <RouterLink to="/sign-up" variant="nav">
+                  Sign up
+                </RouterLink>
+              </>
+            ))}
             <ModeToggle />
           </div>
         </div>
