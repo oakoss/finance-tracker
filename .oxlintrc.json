@@ -560,6 +560,60 @@
       }
     },
     {
+      "files": [
+        "src/lib/auth/server.ts",
+        "src/lib/db/**/*",
+        "src/lib/server-fn/**/*",
+        "src/modules/*/api/**/*",
+        "src/modules/*/middleware.ts",
+        "src/modules/*/services/**/*",
+        "src/server.ts"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "message": "Import from @/lib/i18n/date instead.",
+                "name": "@date-fns/tz"
+              },
+              {
+                "message": "Import from @/components/ui/* instead of @base-ui/react directly.",
+                "name": "@base-ui/react"
+              },
+              {
+                "message": "Import from @/lib/i18n/date instead.",
+                "name": "date-fns"
+              },
+              {
+                "message": "Use @/lib/logging/evlog (log) in server code, not client-logger.",
+                "name": "@/lib/logging/client-logger"
+              },
+              {
+                "message": "Import from @/components/icons instead.",
+                "name": "lucide-react"
+              },
+              {
+                "message": "Import from @/components/ui/calendar instead of react-day-picker directly.",
+                "name": "react-day-picker"
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["@date-fns/*"],
+                "message": "Import from @/lib/i18n/date instead."
+              },
+              {
+                "group": ["date-fns/*"],
+                "message": "Import from @/lib/i18n/date instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "files": ["**/*.d.ts", "src/components/data-grid/index.tsx"],
       "rules": {
         "no-unused-vars": "off",
@@ -575,7 +629,6 @@
         "src/lib/db/reset.ts",
         "src/lib/logger.ts",
         "src/lib/logging/**/*",
-        "src/components/ui/tree.tsx",
         "**/*.stories.*",
         "**/*.test.*",
         "**/*.spec.*",

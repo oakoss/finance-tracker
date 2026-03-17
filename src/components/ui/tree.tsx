@@ -7,6 +7,7 @@ import { useRender } from '@base-ui/react/use-render';
 import { createContext, use } from 'react';
 
 import { Icons } from '@/components/icons';
+import { clientLog } from '@/lib/logging/client-logger';
 import { cn } from '@/lib/utils';
 
 type ToggleIconType = 'chevron' | 'plus-minus';
@@ -156,6 +157,10 @@ function TreeItemLabel<T = any>({
   const item = propItem ?? currentItem;
 
   if (!item) {
+    clientLog.warn({
+      action: 'tree.itemLabel.missingItem',
+      message: 'TreeItemLabel: no item provided via props or context',
+    });
     return null;
   }
 
@@ -203,6 +208,10 @@ function TreeDragLine({
   const { tree } = useTreeContext();
 
   if (!tree || typeof tree.getDragLineStyle !== 'function') {
+    clientLog.warn({
+      action: 'tree.dragLine.missingContext',
+      message: 'TreeDragLine: no tree context or missing getDragLineStyle',
+    });
     return null;
   }
 
