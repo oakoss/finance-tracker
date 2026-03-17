@@ -9,10 +9,7 @@ export const Route = createFileRoute('/_app')({
     const session = await getSession();
 
     if (!session) {
-      throw redirect({
-        search: { redirect: location.href },
-        to: '/sign-in',
-      });
+      throw redirect({ search: { redirect: location.href }, to: '/sign-in' });
     }
 
     return { session };

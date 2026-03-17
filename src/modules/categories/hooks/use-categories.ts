@@ -46,9 +46,7 @@ export function useCreateCategory() {
     onSuccess: () => {
       toast.success(m['categories.toast.createSuccess']());
       void navigate({ search: {}, to: '/categories' });
-      void queryClient.invalidateQueries({
-        queryKey: categoryQueries.all(),
-      });
+      void queryClient.invalidateQueries({ queryKey: categoryQueries.all() });
       void router.invalidate();
     },
   });
@@ -71,9 +69,7 @@ export function useUpdateCategory() {
     onSuccess: () => {
       toast.success(m['categories.toast.updateSuccess']());
       void navigate({ search: {}, to: '/categories' });
-      void queryClient.invalidateQueries({
-        queryKey: categoryQueries.all(),
-      });
+      void queryClient.invalidateQueries({ queryKey: categoryQueries.all() });
       void router.invalidate();
     },
   });
@@ -94,9 +90,7 @@ export function useDeleteCategory() {
     },
     onSuccess: () => {
       toast.success(m['categories.toast.deleteSuccess']());
-      void queryClient.invalidateQueries({
-        queryKey: categoryQueries.all(),
-      });
+      void queryClient.invalidateQueries({ queryKey: categoryQueries.all() });
       void router.invalidate();
     },
   });

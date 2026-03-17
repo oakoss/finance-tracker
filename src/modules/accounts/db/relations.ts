@@ -16,9 +16,7 @@ import { transfers } from '@/modules/transfers/db/schema';
 
 export const creditCardCatalogRelations = relations(
   creditCardCatalog,
-  ({ many }) => ({
-    ledgerAccounts: many(ledgerAccounts),
-  }),
+  ({ many }) => ({ ledgerAccounts: many(ledgerAccounts) }),
 );
 
 export const ledgerAccountsRelations = relations(

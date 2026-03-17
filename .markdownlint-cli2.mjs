@@ -8,9 +8,7 @@ export default {
     // MD001: Heading levels should only increment by one level at a time
     MD001: false,
     // MD007: Unordered list indentation
-    MD007: {
-      indent: 2,
-    },
+    MD007: { indent: 2 },
     // MD012: Multiple consecutive blank lines
     MD012: false,
     // MD013: Line length
@@ -32,9 +30,7 @@ export default {
     // MD041: First line in a file should be a top-level heading
     MD041: false,
     // MD046: Code block style
-    MD046: {
-      style: 'fenced',
-    },
+    MD046: { style: 'fenced' },
     // MD060: Table column alignment
     MD060: false,
   },

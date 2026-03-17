@@ -8,10 +8,7 @@ import type { Db } from '~test/factories/base';
 import { insertBudgetPeriod } from '~test/factories/budget-period.factory';
 import { insertUser } from '~test/factories/user.factory';
 
-type BudgetPeriodWithUser = {
-  period: BudgetPeriod;
-  user: User;
-};
+type BudgetPeriodWithUser = { period: BudgetPeriod; user: User };
 
 type BudgetPeriodWithUserOverrides = {
   period?: Omit<Partial<BudgetPeriodInsert>, 'userId'>;

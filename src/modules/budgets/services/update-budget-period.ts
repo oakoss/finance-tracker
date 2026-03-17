@@ -27,10 +27,7 @@ export async function updateBudgetPeriodService(
 
     const [updated] = await tx
       .update(budgetPeriods)
-      .set({
-        ...fields,
-        updatedById: userId,
-      })
+      .set({ ...fields, updatedById: userId })
       .where(
         and(
           eq(budgetPeriods.id, id),

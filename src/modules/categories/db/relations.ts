@@ -15,8 +15,5 @@ export const categoriesRelations = relations(categories, ({ many, one }) => ({
   }),
   recurringRules: many(recurringRules),
   transactions: many(transactions),
-  user: one(users, {
-    fields: [categories.userId],
-    references: [users.id],
-  }),
+  user: one(users, { fields: [categories.userId], references: [users.id] }),
 }));

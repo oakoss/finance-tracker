@@ -27,10 +27,7 @@ export async function deleteAccountService(
 
     const [deleted] = await tx
       .update(ledgerAccounts)
-      .set({
-        deletedAt: now,
-        deletedById: userId,
-      })
+      .set({ deletedAt: now, deletedById: userId })
       .where(
         and(
           eq(ledgerAccounts.id, data.id),
@@ -50,10 +47,7 @@ export async function deleteAccountService(
 
     await tx
       .update(accountTerms)
-      .set({
-        deletedAt: now,
-        deletedById: userId,
-      })
+      .set({ deletedAt: now, deletedById: userId })
       .where(
         and(
           eq(accountTerms.accountId, data.id),

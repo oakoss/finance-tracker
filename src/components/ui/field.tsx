@@ -52,9 +52,7 @@ function FieldGroup({ className, ...props }: React.ComponentProps<'div'>) {
 const fieldVariants = cva(
   'group/field flex w-full gap-2 data-[invalid=true]:text-destructive',
   {
-    defaultVariants: {
-      orientation: 'vertical',
-    },
+    defaultVariants: { orientation: 'vertical' },
     variants: {
       orientation: {
         horizontal:
@@ -145,9 +143,7 @@ function FieldSeparator({
   children,
   className,
   ...props
-}: React.ComponentProps<'div'> & {
-  children?: React.ReactNode;
-}) {
+}: React.ComponentProps<'div'> & { children?: React.ReactNode }) {
   return (
     <div
       className={cn(

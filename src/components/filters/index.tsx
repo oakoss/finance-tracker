@@ -216,14 +216,7 @@ function Filters<T = unknown>({
 
   return (
     <FilterContext
-      value={{
-        allowMultiple,
-        className,
-        radius,
-        size,
-        trigger,
-        variant,
-      }}
+      value={{ allowMultiple, className, radius, size, trigger, variant }}
     >
       <div
         className={cn(filtersContainerVariants({ size, variant }), className)}

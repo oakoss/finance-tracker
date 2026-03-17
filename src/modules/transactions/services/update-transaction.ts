@@ -135,13 +135,15 @@ export async function updateTransactionService(
       });
 
       if (allTagIds.length > 0) {
-        await tx.insert(transactionTags).values(
-          allTagIds.map((tagId) => ({
-            createdById: userId,
-            tagId,
-            transactionId: id,
-          })),
-        );
+        await tx
+          .insert(transactionTags)
+          .values(
+            allTagIds.map((tagId) => ({
+              createdById: userId,
+              tagId,
+              transactionId: id,
+            })),
+          );
       }
     }
 

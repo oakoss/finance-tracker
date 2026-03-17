@@ -4,10 +4,7 @@ import { createTransport } from 'nodemailer';
 
 import { env } from '@/configs/env';
 
-type EmailRecipient = {
-  email: string;
-  name?: string | undefined;
-};
+type EmailRecipient = { email: string; name?: string | undefined };
 
 type SendEmailOptions = {
   html: string;

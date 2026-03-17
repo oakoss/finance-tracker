@@ -42,9 +42,7 @@ function DialogContent({
   className,
   showCloseButton = true,
   ...props
-}: DialogPrimitive.Popup.Props & {
-  showCloseButton?: boolean;
-}) {
+}: DialogPrimitive.Popup.Props & { showCloseButton?: boolean }) {
   return (
     <DialogPortal>
       <DialogOverlay />
@@ -92,9 +90,7 @@ function DialogFooter({
   className,
   showCloseButton = false,
   ...props
-}: React.ComponentProps<'div'> & {
-  showCloseButton?: boolean;
-}) {
+}: React.ComponentProps<'div'> & { showCloseButton?: boolean }) {
   return (
     <div
       className={cn(

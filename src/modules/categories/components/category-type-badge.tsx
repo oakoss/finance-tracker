@@ -5,18 +5,9 @@ const CONFIG: Record<
   string,
   { label: () => string; variant: BadgeProps['variant'] }
 > = {
-  expense: {
-    label: () => m['categories.type.expense'](),
-    variant: 'warning',
-  },
-  income: {
-    label: () => m['categories.type.income'](),
-    variant: 'success',
-  },
-  transfer: {
-    label: () => m['categories.type.transfer'](),
-    variant: 'info',
-  },
+  expense: { label: () => m['categories.type.expense'](), variant: 'warning' },
+  income: { label: () => m['categories.type.income'](), variant: 'success' },
+  transfer: { label: () => m['categories.type.transfer'](), variant: 'info' },
 };
 
 export function CategoryTypeBadge({ type }: { type: string }) {

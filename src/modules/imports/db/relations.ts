@@ -11,10 +11,7 @@ export const importsRelations = relations(imports, ({ many, one }) => ({
     references: [ledgerAccounts.id],
   }),
   rows: many(importRows),
-  user: one(users, {
-    fields: [imports.userId],
-    references: [users.id],
-  }),
+  user: one(users, { fields: [imports.userId], references: [users.id] }),
 }));
 
 export const importRowsRelations = relations(importRows, ({ one }) => ({

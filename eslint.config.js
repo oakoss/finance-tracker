@@ -23,18 +23,10 @@ export default defineConfig(
     '**/paraglide',
     '**/*.gen.ts',
   ]),
-  {
-    languageOptions: {
-      ecmaVersion: 'latest',
-      globals: globals.browser,
-    },
-  },
+  { languageOptions: { ecmaVersion: 'latest', globals: globals.browser } },
   {
     extends: [js.configs.recommended],
-    rules: {
-      eqeqeq: 'error',
-      'no-console': 'warn',
-    },
+    rules: { eqeqeq: 'error', 'no-console': 'warn' },
   },
   {
     extends: [
@@ -79,17 +71,11 @@ export default defineConfig(
   {
     extends: [pluginReact.configs['recommended-type-checked']],
     files: ['**/*.{jsx,tsx}'],
-    languageOptions: {
-      parserOptions: {
-        ecmaFeatures: { jsx: true },
-      },
-    },
+    languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },
   },
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
-    plugins: {
-      'better-tailwindcss': betterTailwindcss,
-    },
+    plugins: { 'better-tailwindcss': betterTailwindcss },
     rules: {
       ...betterTailwindcss.configs.recommended.rules,
       'better-tailwindcss/enforce-consistent-class-order': 'off',

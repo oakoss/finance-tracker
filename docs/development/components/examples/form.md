@@ -22,10 +22,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
-const basicFormSchema = type({
-  message: 'string',
-  name: 'string',
-});
+const basicFormSchema = type({ message: 'string', name: 'string' });
 
 type BasicFormValues = typeof basicFormSchema.infer;
 
@@ -34,21 +31,14 @@ function submitBasicForm(value: BasicFormValues) {
 }
 
 export function BasicFormExample() {
-  const mutation = useMutation({
-    mutationFn: submitBasicForm,
-  });
+  const mutation = useMutation({ mutationFn: submitBasicForm });
 
   const form = useForm({
-    defaultValues: {
-      message: '',
-      name: '',
-    },
+    defaultValues: { message: '', name: '' },
     onSubmit: async ({ value }) => {
       await mutation.mutateAsync(value);
     },
-    validators: {
-      onSubmit: basicFormSchema,
-    },
+    validators: { onSubmit: basicFormSchema },
   });
 
   return (
@@ -153,22 +143,14 @@ function submitConditionalForm(value: ConditionalFormValues) {
 }
 
 export function ConditionalFormExample() {
-  const mutation = useMutation({
-    mutationFn: submitConditionalForm,
-  });
+  const mutation = useMutation({ mutationFn: submitConditionalForm });
 
   const form = useForm({
-    defaultValues: {
-      contactMethod: 'email',
-      email: '',
-      phone: '',
-    },
+    defaultValues: { contactMethod: 'email', email: '', phone: '' },
     onSubmit: async ({ value }) => {
       await mutation.mutateAsync(value);
     },
-    validators: {
-      onSubmit: conditionalFormSchema,
-    },
+    validators: { onSubmit: conditionalFormSchema },
   });
 
   return (
@@ -337,23 +319,14 @@ function submitWizardForm(value: WizardFormValues) {
 
 export function WizardFormExample() {
   const [step, setStep] = React.useState(0);
-  const mutation = useMutation({
-    mutationFn: submitWizardForm,
-  });
+  const mutation = useMutation({ mutationFn: submitWizardForm });
 
   const form = useForm({
-    defaultValues: {
-      company: '',
-      email: '',
-      name: '',
-      role: '',
-    },
+    defaultValues: { company: '', email: '', name: '', role: '' },
     onSubmit: async ({ value }) => {
       await mutation.mutateAsync(value);
     },
-    validators: {
-      onSubmit: wizardFormSchema,
-    },
+    validators: { onSubmit: wizardFormSchema },
   });
 
   const isFinalStep = step === 1;
@@ -665,9 +638,7 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 
-const fieldSchema = type({
-  email: 'string.email',
-});
+const fieldSchema = type({ email: 'string.email' });
 
 const emailSchema = type('string.email');
 
@@ -685,20 +656,14 @@ async function isEmailAvailable(value: string) {
 }
 
 export function FieldValidatorsExample() {
-  const mutation = useMutation({
-    mutationFn: submitFieldValidatorForm,
-  });
+  const mutation = useMutation({ mutationFn: submitFieldValidatorForm });
 
   const form = useForm({
-    defaultValues: {
-      email: '',
-    },
+    defaultValues: { email: '' },
     onSubmit: async ({ value }) => {
       await mutation.mutateAsync(value);
     },
-    validators: {
-      onSubmit: fieldSchema,
-    },
+    validators: { onSubmit: fieldSchema },
   });
 
   return (

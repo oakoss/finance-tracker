@@ -11,10 +11,7 @@ import { DataGridPagination } from '@/components/data-grid/pagination';
 import { DataGridTable } from '@/components/data-grid/table';
 import { accountColumns } from '@/modules/accounts/components/accounts-columns';
 
-type AccountsDataGridProps = {
-  data: AccountListItem[];
-  isLoading?: boolean;
-};
+type AccountsDataGridProps = { data: AccountListItem[]; isLoading?: boolean };
 
 export function AccountsDataGrid({ data, isLoading }: AccountsDataGridProps) {
   // oxlint-disable-next-line react-compiler/incompatible-library -- TanStack Table API is Compiler-incompatible by design

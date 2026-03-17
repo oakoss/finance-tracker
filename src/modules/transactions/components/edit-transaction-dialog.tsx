@@ -27,9 +27,7 @@ import {
 } from '@/modules/transactions/hooks/use-transactions';
 import { m } from '@/paraglide/messages';
 
-type EditTransactionDialogProps = {
-  transactions: TransactionListItem[];
-};
+type EditTransactionDialogProps = { transactions: TransactionListItem[] };
 
 export function EditTransactionDialog({
   transactions,

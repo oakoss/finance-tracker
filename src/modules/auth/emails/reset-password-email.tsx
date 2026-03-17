@@ -12,9 +12,7 @@ type ResetPasswordEmailProps = {
 };
 
 export function ResetPasswordEmail({ name, url }: ResetPasswordEmailProps) {
-  const preview = m['email.resetPassword.preview']({
-    appName: appConfig.name,
-  });
+  const preview = m['email.resetPassword.preview']({ appName: appConfig.name });
 
   return (
     <BaseEmail lang={getLocale()} preview={preview}>
@@ -24,9 +22,7 @@ export function ResetPasswordEmail({ name, url }: ResetPasswordEmailProps) {
       <Text className="mt-4 text-base/relaxed text-muted-foreground">
         {name
           ? m['email.resetPassword.body']({ appName: appConfig.name, name })
-          : m['email.resetPassword.bodyNoName']({
-              appName: appConfig.name,
-            })}
+          : m['email.resetPassword.bodyNoName']({ appName: appConfig.name })}
       </Text>
       <Button
         className="mt-6 inline-block rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"

@@ -26,10 +26,7 @@ import {
 import { categoryQueries } from '@/modules/categories/hooks/use-categories';
 import { m } from '@/paraglide/messages';
 
-type LineState = {
-  amount: string;
-  existingLineId?: string | undefined;
-};
+type LineState = { amount: string; existingLineId?: string | undefined };
 
 type CategoryGroup = {
   children: { id: string; name: string }[];
@@ -111,10 +108,7 @@ function buildInitialState(
     for (const child of group.children) {
       const existing = lineMap.get(child.id);
       const amount = existing ? centsToDisplay(existing.amountCents) : '';
-      state.set(child.id, {
-        amount,
-        existingLineId: existing?.id,
-      });
+      state.set(child.id, { amount, existingLineId: existing?.id });
     }
   }
 
@@ -399,9 +393,7 @@ function FormContent({
                   {prevLine && (
                     <span className="shrink-0 text-xs text-muted-foreground">
                       {m['budgets.edit.previousMonth']()}{' '}
-                      {formatCurrency({
-                        amountCents: prevLine.amountCents,
-                      })}
+                      {formatCurrency({ amountCents: prevLine.amountCents })}
                     </span>
                   )}
                   <Input

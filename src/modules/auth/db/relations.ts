@@ -37,17 +37,11 @@ export const usersRelations = relations(users, ({ many, one }) => ({
 }));
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
-  users: one(users, {
-    fields: [sessions.userId],
-    references: [users.id],
-  }),
+  users: one(users, { fields: [sessions.userId], references: [users.id] }),
 }));
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
-  users: one(users, {
-    fields: [accounts.userId],
-    references: [users.id],
-  }),
+  users: one(users, { fields: [accounts.userId], references: [users.id] }),
 }));
 
 export const verificationsRelations = relations(verifications, () => ({}));

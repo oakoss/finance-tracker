@@ -4,18 +4,10 @@ import { m } from '@/paraglide/messages';
 
 configure({
   keywords: {
-    number: {
-      expected: () => m['validation.number'](),
-    },
-    string: {
-      expected: () => m['validation.string'](),
-    },
-    'string.email': {
-      expected: () => m['validation.email'](),
-    },
-    'string.url': {
-      expected: () => m['validation.url'](),
-    },
+    number: { expected: () => m['validation.number']() },
+    string: { expected: () => m['validation.string']() },
+    'string.email': { expected: () => m['validation.email']() },
+    'string.url': { expected: () => m['validation.url']() },
   },
   maxLength: {
     expected: (ctx) => m['validation.maxLength']({ max: String(ctx.rule) }),

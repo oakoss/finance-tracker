@@ -25,39 +25,19 @@ const navMain = [
     title: 'Dashboard',
     url: '/dashboard' as const,
   },
-  {
-    icon: <Icons.Wallet />,
-    title: 'Accounts',
-    url: '/accounts' as const,
-  },
+  { icon: <Icons.Wallet />, title: 'Accounts', url: '/accounts' as const },
   {
     icon: <Icons.ArrowLeftRight />,
     title: 'Transactions',
     url: '/transactions' as const,
   },
-  {
-    icon: <Icons.Tag />,
-    title: 'Categories',
-    url: '/categories' as const,
-  },
-  {
-    icon: <Icons.ChartBar />,
-    title: 'Budgets',
-    url: '/budgets' as const,
-  },
-  {
-    icon: <Icons.Upload />,
-    title: 'Imports',
-    url: '/dashboard' as const,
-  },
+  { icon: <Icons.Tag />, title: 'Categories', url: '/categories' as const },
+  { icon: <Icons.ChartBar />, title: 'Budgets', url: '/budgets' as const },
+  { icon: <Icons.Upload />, title: 'Imports', url: '/dashboard' as const },
 ];
 
 const navSecondary = [
-  {
-    icon: <Icons.Settings />,
-    title: 'Settings',
-    url: '/dashboard' as const,
-  },
+  { icon: <Icons.Settings />, title: 'Settings', url: '/dashboard' as const },
 ];
 
 export function AppSidebar({

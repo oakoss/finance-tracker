@@ -74,11 +74,5 @@ export async function createMonthlySpending(
     )
     .returning();
 
-  return {
-    account,
-    categories: cats,
-    payees: pays,
-    transactions: txns,
-    user,
-  };
+  return { account, categories: cats, payees: pays, transactions: txns, user };
 }

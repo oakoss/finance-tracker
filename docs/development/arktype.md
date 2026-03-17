@@ -39,10 +39,7 @@ const UserIdentifier = User.pick('id');
 ```ts
 import { type } from 'arktype';
 
-const Preferences = type({
-  'timezone?': 'string',
-  'locale?': 'string',
-});
+const Preferences = type({ 'timezone?': 'string', 'locale?': 'string' });
 ```
 
 Notes:

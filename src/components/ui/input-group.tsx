@@ -25,9 +25,7 @@ function InputGroup({ className, ...props }: React.ComponentProps<'fieldset'>) {
 const inputGroupAddonVariants = cva(
   "flex h-auto cursor-text items-center justify-center gap-2 py-1.5 text-sm font-medium text-muted-foreground select-none group-data-[disabled=true]/input-group:opacity-50 [&>kbd]:rounded-[calc(var(--radius)-5px)] [&>svg:not([class*='size-'])]:size-4",
   {
-    defaultVariants: {
-      align: 'inline-start',
-    },
+    defaultVariants: { align: 'inline-start' },
     variants: {
       align: {
         'block-end':
@@ -74,9 +72,7 @@ function InputGroupAddon({
 const inputGroupButtonVariants = cva(
   'flex items-center gap-2 text-sm shadow-none',
   {
-    defaultVariants: {
-      size: 'xs',
-    },
+    defaultVariants: { size: 'xs' },
     variants: {
       size: {
         'icon-sm': 'size-8 p-0 has-[>svg]:p-0',

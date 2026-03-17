@@ -12,11 +12,7 @@ type PgErrorInfo = {
   table: string | undefined;
 };
 
-type PgErrorLike = {
-  code: string;
-  constraint?: string;
-  table?: string;
-};
+type PgErrorLike = { code: string; constraint?: string; table?: string };
 
 type PgLogFields = {
   pgCode?: string | undefined;
@@ -154,9 +150,5 @@ export function throwIfConstraintViolation(
 export function pgErrorFields(error: unknown): PgLogFields {
   const pg = unwrap(error);
   if (!pg) return {};
-  return {
-    pgCode: pg.code,
-    pgConstraint: pg.constraint,
-    pgTable: pg.table,
-  };
+  return { pgCode: pg.code, pgConstraint: pg.constraint, pgTable: pg.table };
 }

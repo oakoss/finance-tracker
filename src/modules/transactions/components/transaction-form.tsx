@@ -485,9 +485,7 @@ export function TransactionForm({
               ))}
               {showCreateTag && (
                 <ComboboxItem value="__create_tag__">
-                  {m['transactions.form.createTag']({
-                    name: tagSearch.trim(),
-                  })}
+                  {m['transactions.form.createTag']({ name: tagSearch.trim() })}
                 </ComboboxItem>
               )}
             </ComboboxList>

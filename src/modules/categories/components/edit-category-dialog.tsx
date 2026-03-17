@@ -19,9 +19,7 @@ import {
 import { useUpdateCategory } from '@/modules/categories/hooks/use-categories';
 import { m } from '@/paraglide/messages';
 
-type EditCategoryDialogProps = {
-  categories: CategoryListItem[];
-};
+type EditCategoryDialogProps = { categories: CategoryListItem[] };
 
 export function EditCategoryDialog({ categories }: EditCategoryDialogProps) {
   const search = useSearch({ from: '/_app/categories' });

@@ -15,12 +15,14 @@ test('parsePgError extracts fields from a real PG unique violation', async ({
 
   let caught: unknown;
   try {
-    await db.insert(categories).values({
-      createdById: user.id,
-      name: 'Duplicate',
-      type: 'expense',
-      userId: user.id,
-    });
+    await db
+      .insert(categories)
+      .values({
+        createdById: user.id,
+        name: 'Duplicate',
+        type: 'expense',
+        userId: user.id,
+      });
     expect.fail('Expected unique violation to be thrown');
   } catch (error) {
     caught = error;

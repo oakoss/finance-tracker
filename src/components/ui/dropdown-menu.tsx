@@ -61,9 +61,7 @@ function DropdownMenuLabel({
   className,
   inset,
   ...props
-}: MenuPrimitive.GroupLabel.Props & {
-  inset?: boolean;
-}) {
+}: MenuPrimitive.GroupLabel.Props & { inset?: boolean }) {
   return (
     <MenuPrimitive.GroupLabel
       className={cn(
@@ -109,9 +107,7 @@ function DropdownMenuSubTrigger({
   className,
   inset,
   ...props
-}: MenuPrimitive.SubmenuTrigger.Props & {
-  inset?: boolean;
-}) {
+}: MenuPrimitive.SubmenuTrigger.Props & { inset?: boolean }) {
   return (
     <MenuPrimitive.SubmenuTrigger
       className={cn(
@@ -158,9 +154,7 @@ function DropdownMenuCheckboxItem({
   className,
   inset,
   ...props
-}: MenuPrimitive.CheckboxItem.Props & {
-  inset?: boolean;
-}) {
+}: MenuPrimitive.CheckboxItem.Props & { inset?: boolean }) {
   return (
     <MenuPrimitive.CheckboxItem
       checked={checked}
@@ -199,9 +193,7 @@ function DropdownMenuRadioItem({
   className,
   inset,
   ...props
-}: MenuPrimitive.RadioItem.Props & {
-  inset?: boolean;
-}) {
+}: MenuPrimitive.RadioItem.Props & { inset?: boolean }) {
   return (
     <MenuPrimitive.RadioItem
       className={cn(

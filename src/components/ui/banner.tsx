@@ -21,9 +21,7 @@ const bannerVariants = cva(
     '[&>svg]:row-span-2 [&>svg]:translate-y-0.5 [&>svg]:self-start [&>svg]:text-current [&>svg:not([class*=size-])]:size-4',
   ],
   {
-    defaultVariants: {
-      variant: DEFAULT_VARIANT,
-    },
+    defaultVariants: { variant: DEFAULT_VARIANT },
     variants: {
       variant: {
         destructive:

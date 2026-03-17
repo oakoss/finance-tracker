@@ -17,12 +17,14 @@ test('categories — rejects duplicate name for same user', async ({ db }) => {
 
   await expectPgError(
     () =>
-      db.insert(categories).values({
-        createdById: user.id,
-        name: 'Unique-Name',
-        type: 'expense',
-        userId: user.id,
-      }),
+      db
+        .insert(categories)
+        .values({
+          createdById: user.id,
+          name: 'Unique-Name',
+          type: 'expense',
+          userId: user.id,
+        }),
     { code: '23505', constraint: 'categories_user_name_idx' },
   );
 });

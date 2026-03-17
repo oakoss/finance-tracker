@@ -19,15 +19,11 @@ config({ convention: 'flow', quiet: true });
 const isProduction = process.env.NODE_ENV === 'production';
 
 export default defineConfig({
-  build: {
-    target: 'es2023',
-  },
+  build: { target: 'es2023' },
   nitro: {
     modules: [
       evlog({
-        env: {
-          service: 'finance-tracker',
-        },
+        env: { service: 'finance-tracker' },
         // Exclude noisy internal, static, and high-frequency auth paths
         exclude: [
           '/_src/**',
@@ -56,19 +52,13 @@ export default defineConfig({
   },
   plugins: [
     devtools(),
-    viteTsConfigPaths({
-      projects: ['./tsconfig.json'],
-    }),
+    viteTsConfigPaths({ projects: ['./tsconfig.json'] }),
     killerInstincts({ autoKill: true }),
     arkenvVitePlugin(Env),
     tailwindcss(),
     tanstackStart(),
     nitro(),
-    viteReact({
-      babel: {
-        plugins: ['babel-plugin-react-compiler'],
-      },
-    }),
+    viteReact({ babel: { plugins: ['babel-plugin-react-compiler'] } }),
     paraglideVitePlugin({
       cookieName: 'APP_LOCALE',
       outdir: './src/paraglide',
@@ -76,8 +66,5 @@ export default defineConfig({
       strategy: ['cookie', 'preferredLanguage', 'baseLocale'],
     }),
   ],
-  server: {
-    port: 3000,
-    strictPort: true,
-  },
+  server: { port: 3000, strictPort: true },
 });

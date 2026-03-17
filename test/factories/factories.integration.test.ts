@@ -190,10 +190,7 @@ test('insertTransactionWithRelations — creates with category and payee', async
 }) => {
   const { category, payee, transaction } = await insertTransactionWithRelations(
     db,
-    {
-      withCategory: true,
-      withPayee: true,
-    },
+    { withCategory: true, withPayee: true },
   );
   expect(category).not.toBeNull();
   expect(payee).not.toBeNull();

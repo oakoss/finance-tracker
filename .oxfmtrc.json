@@ -1,10 +1,9 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "singleQuote": true,
+  "objectWrap": "collapse",
   "printWidth": 80,
-  "sortPackageJson": {
-    "sortScripts": true
-  },
+  "sortPackageJson": { "sortScripts": true },
   "sortImports": {
     "groups": [
       "side_effect",

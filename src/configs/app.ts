@@ -1,4 +1,1 @@
-export const appConfig = {
-  name: 'Finance Tracker',
-  passwordMinLength: 8,
-};
+export const appConfig = { name: 'Finance Tracker', passwordMinLength: 8 };

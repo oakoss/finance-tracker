@@ -15,9 +15,7 @@ import {
 import { useDeleteCategory } from '@/modules/categories/hooks/use-categories';
 import { m } from '@/paraglide/messages';
 
-type CategoryRowActionsProps = {
-  row: CategoryListItem;
-};
+type CategoryRowActionsProps = { row: CategoryListItem };
 
 export function CategoryRowActions({ row }: CategoryRowActionsProps) {
   const navigate = useNavigate();
@@ -38,10 +36,7 @@ export function CategoryRowActions({ row }: CategoryRowActionsProps) {
         <DropdownMenuContent align="end">
           <DropdownMenuItem
             onClick={() =>
-              void navigate({
-                search: { edit: row.id },
-                to: '/categories',
-              })
+              void navigate({ search: { edit: row.id }, to: '/categories' })
             }
           >
             <Icons.Settings2 className="size-4" />

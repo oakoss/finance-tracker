@@ -20,15 +20,9 @@ const AutocompleteAnchorContext =
 const inputVariants = cva(
   'flex w-full text-sm text-foreground outline-none placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [[readonly]]:cursor-not-allowed [[readonly]]:bg-muted/80',
   {
-    defaultVariants: {
-      size: 'default',
-    },
+    defaultVariants: { size: 'default' },
     variants: {
-      size: {
-        default: 'h-9 px-3',
-        lg: 'h-10 px-4',
-        sm: 'h-8 px-3',
-      },
+      size: { default: 'h-9 px-3', lg: 'h-10 px-4', sm: 'h-8 px-3' },
     },
   },
 );

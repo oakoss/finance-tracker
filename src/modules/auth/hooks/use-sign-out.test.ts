@@ -7,9 +7,7 @@ const mockPostMessage = vi.fn(() => true);
 const mockSignOut = vi.fn();
 
 vi.mock('@tanstack/react-router', () => ({
-  useRouter: () => ({
-    navigate: mockNavigate,
-  }),
+  useRouter: () => ({ navigate: mockNavigate }),
 }));
 
 const mockUseBroadcastChannel = vi.fn(
@@ -22,24 +20,17 @@ vi.mock('@/hooks/use-broadcast-channel', () => ({
 }));
 
 vi.mock('@/lib/auth/client', () => ({
-  authClient: {
-    signOut: (...args: unknown[]) => mockSignOut(...args),
-  },
+  authClient: { signOut: (...args: unknown[]) => mockSignOut(...args) },
 }));
 
 vi.mock('@/lib/logging/client-logger', () => ({
-  clientLog: {
-    error: vi.fn(),
-    warn: vi.fn(),
-  },
+  clientLog: { error: vi.fn(), warn: vi.fn() },
 }));
 
 const mockToastWarning = vi.fn();
 
 vi.mock('sonner', () => ({
-  toast: {
-    warning: (...args: unknown[]) => mockToastWarning(...args),
-  },
+  toast: { warning: (...args: unknown[]) => mockToastWarning(...args) },
 }));
 
 vi.mock('@/paraglide/messages', () => ({

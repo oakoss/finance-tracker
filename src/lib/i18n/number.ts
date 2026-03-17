@@ -29,10 +29,7 @@ export const formatCurrency = (params: {
   const locale = params.locale ?? getLocale();
   const currency = params.currency ?? defaultCurrency;
   const amountCents = params.amountCents;
-  const formatter = getNumberFormatter(locale, {
-    currency,
-    style: 'currency',
-  });
+  const formatter = getNumberFormatter(locale, { currency, style: 'currency' });
   return formatter.format(amountCents / 100);
 };
 

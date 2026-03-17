@@ -15,9 +15,7 @@ import {
 import { useDeleteTransaction } from '@/modules/transactions/hooks/use-transactions';
 import { m } from '@/paraglide/messages';
 
-type TransactionRowActionsProps = {
-  row: TransactionListItem;
-};
+type TransactionRowActionsProps = { row: TransactionListItem };
 
 export function TransactionRowActions({ row }: TransactionRowActionsProps) {
   const navigate = useNavigate();
@@ -38,10 +36,7 @@ export function TransactionRowActions({ row }: TransactionRowActionsProps) {
         <DropdownMenuContent align="end">
           <DropdownMenuItem
             onClick={() =>
-              void navigate({
-                search: { edit: row.id },
-                to: '/transactions',
-              })
+              void navigate({ search: { edit: row.id }, to: '/transactions' })
             }
           >
             <Icons.Settings2 className="size-4" />

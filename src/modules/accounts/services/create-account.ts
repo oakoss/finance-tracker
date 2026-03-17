@@ -36,21 +36,21 @@ export async function createAccountService(
     }
 
     if (terms) {
-      await tx.insert(accountTerms).values({
-        ...terms,
-        accountId: account.id,
-        createdById: userId,
-      });
+      await tx
+        .insert(accountTerms)
+        .values({ ...terms, accountId: account.id, createdById: userId });
     }
 
     if (initialBalanceCents !== undefined) {
-      await tx.insert(accountBalanceSnapshots).values({
-        accountId: account.id,
-        balanceCents: initialBalanceCents,
-        createdById: userId,
-        recordedAt: new Date(),
-        source: 'manual',
-      });
+      await tx
+        .insert(accountBalanceSnapshots)
+        .values({
+          accountId: account.id,
+          balanceCents: initialBalanceCents,
+          createdById: userId,
+          recordedAt: new Date(),
+          source: 'manual',
+        });
     }
 
     await insertAuditLog(tx, {

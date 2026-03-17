@@ -99,10 +99,7 @@ const table = useReactTable({
   getPaginationRowModel: getPaginationRowModel(),
   onColumnFiltersChange: setColumnFilters,
   onPaginationChange: setPagination,
-  state: {
-    columnFilters,
-    pagination,
-  },
+  state: { columnFilters, pagination },
 });
 ```
 
@@ -126,10 +123,7 @@ const table = useReactTable({
   rowCount: totalRowCount,
   onPaginationChange: setPagination,
   onColumnFiltersChange: setColumnFilters,
-  state: {
-    columnFilters,
-    pagination,
-  },
+  state: { columnFilters, pagination },
 });
 ```
 

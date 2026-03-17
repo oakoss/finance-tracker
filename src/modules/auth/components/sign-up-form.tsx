@@ -64,11 +64,7 @@ function SignUpForm() {
   const [serverError, setServerError] = useState('');
 
   const form = useForm({
-    defaultValues: {
-      email: '',
-      name: '',
-      password: '',
-    },
+    defaultValues: { email: '', name: '', password: '' },
     onSubmit: async ({ value }) => {
       setServerError('');
 

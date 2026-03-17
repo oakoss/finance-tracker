@@ -86,12 +86,7 @@ function createFilterGroup<T = unknown>(
   fields: FilterFieldConfig<T>[],
   initialFilters: Filter<T>[] = [],
 ): FilterGroup<T> {
-  return {
-    fields,
-    filters: initialFilters,
-    id,
-    label,
-  };
+  return { fields, filters: initialFilters, id, label };
 }
 
 export {

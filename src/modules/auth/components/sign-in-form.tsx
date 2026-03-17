@@ -23,9 +23,7 @@ import { SocialSignIn } from '@/modules/auth/components/social-sign-in';
 import { emailType, passwordType } from '@/modules/auth/lib/validate-field';
 import { m } from '@/paraglide/messages';
 
-type SignInFormProps = {
-  redirect?: string | undefined;
-};
+type SignInFormProps = { redirect?: string | undefined };
 
 function SignInForm({ redirect }: SignInFormProps) {
   const hydrated = useHydrated();
@@ -33,10 +31,7 @@ function SignInForm({ redirect }: SignInFormProps) {
   const [serverError, setServerError] = useState('');
 
   const form = useForm({
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+    defaultValues: { email: '', password: '' },
     onSubmit: async ({ value }) => {
       setServerError('');
 

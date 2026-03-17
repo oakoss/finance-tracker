@@ -39,10 +39,7 @@ export async function deleteTransactionService(
 
     const [deleted] = await tx
       .update(transactions)
-      .set({
-        deletedAt: now,
-        deletedById: userId,
-      })
+      .set({ deletedAt: now, deletedById: userId })
       .where(
         and(eq(transactions.id, data.id), notDeleted(transactions.deletedAt)),
       )

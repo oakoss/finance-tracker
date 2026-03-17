@@ -115,9 +115,7 @@ function MenubarCheckboxItem({
   className,
   inset,
   ...props
-}: MenuPrimitive.CheckboxItem.Props & {
-  inset?: boolean;
-}) {
+}: MenuPrimitive.CheckboxItem.Props & { inset?: boolean }) {
   return (
     <MenuPrimitive.CheckboxItem
       checked={checked}
@@ -150,9 +148,7 @@ function MenubarRadioItem({
   className,
   inset,
   ...props
-}: MenuPrimitive.RadioItem.Props & {
-  inset?: boolean;
-}) {
+}: MenuPrimitive.RadioItem.Props & { inset?: boolean }) {
   return (
     <MenuPrimitive.RadioItem
       className={cn(
@@ -177,9 +173,7 @@ function MenubarLabel({
   className,
   inset,
   ...props
-}: React.ComponentProps<typeof DropdownMenuLabel> & {
-  inset?: boolean;
-}) {
+}: React.ComponentProps<typeof DropdownMenuLabel> & { inset?: boolean }) {
   return (
     <DropdownMenuLabel
       className={cn(
@@ -232,9 +226,7 @@ function MenubarSubTrigger({
   className,
   inset,
   ...props
-}: React.ComponentProps<typeof DropdownMenuSubTrigger> & {
-  inset?: boolean;
-}) {
+}: React.ComponentProps<typeof DropdownMenuSubTrigger> & { inset?: boolean }) {
   return (
     <DropdownMenuSubTrigger
       className={cn(

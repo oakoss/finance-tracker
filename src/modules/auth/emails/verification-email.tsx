@@ -6,15 +6,10 @@ import { getLocale } from '@/paraglide/runtime';
 
 import { BaseEmail } from './base-email';
 
-type VerificationEmailProps = {
-  name?: string | null | undefined;
-  url: string;
-};
+type VerificationEmailProps = { name?: string | null | undefined; url: string };
 
 export function VerificationEmail({ name, url }: VerificationEmailProps) {
-  const preview = m['email.verification.preview']({
-    appName: appConfig.name,
-  });
+  const preview = m['email.verification.preview']({ appName: appConfig.name });
 
   return (
     <BaseEmail lang={getLocale()} preview={preview}>

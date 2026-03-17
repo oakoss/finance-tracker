@@ -133,10 +133,7 @@ describe('TERMS_TYPES validation', () => {
 
 describe('updateAccountSchema TERMS_TYPES validation', () => {
   it('accepts terms without type field (existing type not re-validated)', () => {
-    const result = updateAccountSchema({
-      id: 'abc',
-      terms: { aprBps: 1500 },
-    });
+    const result = updateAccountSchema({ id: 'abc', terms: { aprBps: 1500 } });
     expect(isError(result)).toBe(false);
   });
 

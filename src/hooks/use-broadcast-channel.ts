@@ -2,9 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 
 import { clientLog } from '@/lib/logging/client-logger';
 
-type UseBroadcastChannelOptions<T> = {
-  onMessage?: (data: T) => void;
-};
+type UseBroadcastChannelOptions<T> = { onMessage?: (data: T) => void };
 
 const isSupported =
   typeof globalThis !== 'undefined' && 'BroadcastChannel' in globalThis;

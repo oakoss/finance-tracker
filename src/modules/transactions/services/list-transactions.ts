@@ -31,11 +31,7 @@ export async function listTransactionsService(database: Db, userId: string) {
       account: { columns: { name: true } },
       category: { columns: { name: true, type: true } },
       payee: { columns: { deletedAt: true, name: true } },
-      transactionTags: {
-        with: {
-          tag: { columns: { id: true, name: true } },
-        },
-      },
+      transactionTags: { with: { tag: { columns: { id: true, name: true } } } },
     },
   });
 

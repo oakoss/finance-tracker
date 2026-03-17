@@ -37,15 +37,9 @@ function invalidateAll(
   queryClient: ReturnType<typeof useQueryClient>,
   router: ReturnType<typeof useRouter>,
 ) {
-  void queryClient.invalidateQueries({
-    queryKey: budgetPeriodQueries.all(),
-  });
-  void queryClient.invalidateQueries({
-    queryKey: budgetLineQueries.all(),
-  });
-  void queryClient.invalidateQueries({
-    queryKey: budgetVsActualQueries.all(),
-  });
+  void queryClient.invalidateQueries({ queryKey: budgetPeriodQueries.all() });
+  void queryClient.invalidateQueries({ queryKey: budgetLineQueries.all() });
+  void queryClient.invalidateQueries({ queryKey: budgetVsActualQueries.all() });
   void router.invalidate();
 }
 

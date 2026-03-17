@@ -32,10 +32,7 @@ type CategoryFormProps = {
   onSubmit: (values: CategoryFormValues) => void;
 };
 
-const DEFAULT_VALUES: CategoryFormValues = {
-  name: '',
-  type: 'expense',
-};
+const DEFAULT_VALUES: CategoryFormValues = { name: '', type: 'expense' };
 
 export function CategoryForm({
   categories = [],
@@ -47,10 +44,7 @@ export function CategoryForm({
   const form = useForm({
     defaultValues: { ...DEFAULT_VALUES, ...defaultValues },
     onSubmit: ({ value }) => onSubmit(value),
-    validators: {
-      onBlur: categoryFormSchema,
-      onSubmit: categoryFormSchema,
-    },
+    validators: { onBlur: categoryFormSchema, onSubmit: categoryFormSchema },
   });
 
   const categoryTypeItems = toSelectItems(categoryTypeEnum.enumValues, (t) =>

@@ -194,9 +194,7 @@ function Sidebar({
           dir={dir}
           side={side}
           style={
-            {
-              '--sidebar-width': SIDEBAR_WIDTH_MOBILE,
-            } as React.CSSProperties
+            { '--sidebar-width': SIDEBAR_WIDTH_MOBILE } as React.CSSProperties
           }
         >
           <SheetHeader className="sr-only">
@@ -411,10 +409,7 @@ function SidebarGroupLabel({
       props,
     ),
     render,
-    state: {
-      sidebar: 'group-label',
-      slot: 'sidebar-group-label',
-    },
+    state: { sidebar: 'group-label', slot: 'sidebar-group-label' },
   });
 }
 
@@ -435,10 +430,7 @@ function SidebarGroupAction({
       props,
     ),
     render,
-    state: {
-      sidebar: 'group-action',
-      slot: 'sidebar-group-action',
-    },
+    state: { sidebar: 'group-action', slot: 'sidebar-group-action' },
   });
 }
 
@@ -481,10 +473,7 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<'li'>) {
 const sidebarMenuButtonVariants = cva(
   'peer/menu-button group/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm ring-sidebar-ring outline-hidden transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:font-medium data-active:text-sidebar-accent-foreground [&_svg]:size-4 [&_svg]:shrink-0 [&>span:last-child]:truncate',
   {
-    defaultVariants: {
-      size: 'default',
-      variant: 'default',
-    },
+    defaultVariants: { size: 'default', variant: 'default' },
     variants: {
       size: {
         default: 'h-8 text-sm',
@@ -536,9 +525,7 @@ function SidebarMenuButton({
   }
 
   if (typeof tooltip === 'string') {
-    tooltip = {
-      children: tooltip,
-    };
+    tooltip = { children: tooltip };
   }
 
   return (
@@ -560,9 +547,7 @@ function SidebarMenuAction({
   showOnHover = false,
   ...props
 }: useRender.ComponentProps<'button'> &
-  React.ComponentProps<'button'> & {
-    showOnHover?: boolean;
-  }) {
+  React.ComponentProps<'button'> & { showOnHover?: boolean }) {
   return useRender({
     defaultTagName: 'button',
     props: mergeProps<'button'>(
@@ -577,10 +562,7 @@ function SidebarMenuAction({
       props,
     ),
     render,
-    state: {
-      sidebar: 'menu-action',
-      slot: 'sidebar-menu-action',
-    },
+    state: { sidebar: 'menu-action', slot: 'sidebar-menu-action' },
   });
 }
 
@@ -605,9 +587,7 @@ function SidebarMenuSkeleton({
   className,
   showIcon = false,
   ...props
-}: React.ComponentProps<'div'> & {
-  showIcon?: boolean;
-}) {
+}: React.ComponentProps<'div'> & { showIcon?: boolean }) {
   // Random width between 50 to 90%.
   const [width] = React.useState(() => {
     return `${Math.floor(Math.random() * 40) + 50}%`;
@@ -629,11 +609,7 @@ function SidebarMenuSkeleton({
       <Skeleton
         className="h-4 max-w-(--skeleton-width) flex-1"
         data-sidebar="menu-skeleton-text"
-        style={
-          {
-            '--skeleton-width': width,
-          } as React.CSSProperties
-        }
+        style={{ '--skeleton-width': width } as React.CSSProperties}
       />
     </div>
   );
@@ -674,10 +650,7 @@ function SidebarMenuSubButton({
   size = 'md',
   ...props
 }: useRender.ComponentProps<'a'> &
-  React.ComponentProps<'a'> & {
-    isActive?: boolean;
-    size?: 'sm' | 'md';
-  }) {
+  React.ComponentProps<'a'> & { isActive?: boolean; size?: 'sm' | 'md' }) {
   return useRender({
     defaultTagName: 'a',
     props: mergeProps<'a'>(

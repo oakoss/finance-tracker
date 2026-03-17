@@ -27,10 +27,7 @@ export async function deleteCategoryService(
 
     const [deleted] = await tx
       .update(categories)
-      .set({
-        deletedAt: now,
-        deletedById: userId,
-      })
+      .set({ deletedAt: now, deletedById: userId })
       .where(
         and(
           eq(categories.id, data.id),
@@ -51,10 +48,7 @@ export async function deleteCategoryService(
     // Nullify parentId on children of deleted category
     await tx
       .update(categories)
-      .set({
-        parentId: null,
-        updatedById: userId,
-      })
+      .set({ parentId: null, updatedById: userId })
       .where(
         and(
           eq(categories.parentId, data.id),

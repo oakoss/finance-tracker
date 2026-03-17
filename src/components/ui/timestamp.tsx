@@ -16,10 +16,7 @@ import {
 } from '@/lib/i18n/date';
 import { cn } from '@/lib/utils';
 
-type TimestampProps = {
-  className?: string;
-  value: Date | string;
-};
+type TimestampProps = { className?: string; value: Date | string };
 
 function Timestamp({ className, value }: TimestampProps) {
   const date = useMemo(

@@ -21,9 +21,7 @@ const EDIT_TXN_HEADING = /edit transaction/i;
 async function selectAccount(page: Page, accountName: string): Promise<void> {
   await page.getByLabel('Account').click();
   const option = page
-    .getByRole('option', {
-      name: new RegExp(accountName, 'i'),
-    })
+    .getByRole('option', { name: new RegExp(accountName, 'i') })
     .first();
   // On small viewports the select popup may need scrolling
   await option.scrollIntoViewIfNeeded();
@@ -82,9 +80,7 @@ test.describe(
       await expect(page.getByText(name)).toBeVisible();
 
       // Edit transaction
-      const row = page.getByRole('row', {
-        name: new RegExp(name, 'i'),
-      });
+      const row = page.getByRole('row', { name: new RegExp(name, 'i') });
       await clickRowAction(page, row, /edit/i);
 
       await expect(
@@ -297,10 +293,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     const tagsField = getField(page, 'Tags');
     const tagInput = tagsField.getByRole('combobox');
     await tagInput.click();
-    const tagOption = page.getByRole('option', {
-      exact: true,
-      name: tagName,
-    });
+    const tagOption = page.getByRole('option', { exact: true, name: tagName });
     await tagOption.waitFor({ state: 'visible' });
     await tagOption.click();
 

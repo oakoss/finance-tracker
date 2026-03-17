@@ -8,10 +8,7 @@ import type { Db } from '~test/factories/base';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
 import { insertUser } from '~test/factories/user.factory';
 
-type AccountWithUser = {
-  account: LedgerAccount;
-  user: User;
-};
+type AccountWithUser = { account: LedgerAccount; user: User };
 
 type AccountWithUserOverrides = {
   account?: Omit<Partial<LedgerAccountInsert>, 'userId'>;

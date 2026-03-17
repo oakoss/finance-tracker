@@ -5,42 +5,18 @@ import { Icons } from '@/components/icons';
 import { cn } from '@/lib/utils';
 
 const ratingVariants = cva('flex items-center', {
-  defaultVariants: {
-    size: 'default',
-  },
-  variants: {
-    size: {
-      default: 'gap-2.5',
-      lg: 'gap-3',
-      sm: 'gap-2',
-    },
-  },
+  defaultVariants: { size: 'default' },
+  variants: { size: { default: 'gap-2.5', lg: 'gap-3', sm: 'gap-2' } },
 });
 
 const starVariants = cva('', {
-  defaultVariants: {
-    size: 'default',
-  },
-  variants: {
-    size: {
-      default: 'size-5',
-      lg: 'size-6',
-      sm: 'size-4',
-    },
-  },
+  defaultVariants: { size: 'default' },
+  variants: { size: { default: 'size-5', lg: 'size-6', sm: 'size-4' } },
 });
 
 const valueVariants = cva('w-5 text-muted-foreground', {
-  defaultVariants: {
-    size: 'default',
-  },
-  variants: {
-    size: {
-      default: 'text-sm',
-      lg: 'text-base',
-      sm: 'text-xs',
-    },
-  },
+  defaultVariants: { size: 'default' },
+  variants: { size: { default: 'text-sm', lg: 'text-base', sm: 'text-xs' } },
 });
 
 function Rating({
@@ -130,9 +106,7 @@ function Rating({
 
           <div
             className="absolute inset-0 overflow-hidden"
-            style={{
-              width: filled ? '100%' : `${fillPercentage}%`,
-            }}
+            style={{ width: filled ? '100%' : `${fillPercentage}%` }}
           >
             <Icons.Star
               className={cn(

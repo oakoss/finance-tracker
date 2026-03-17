@@ -7,10 +7,7 @@ import { payees } from '@/modules/transactions/db/schema';
 
 export async function listPayeesService(database: Db, userId: string) {
   return database
-    .select({
-      id: payees.id,
-      name: payees.name,
-    })
+    .select({ id: payees.id, name: payees.name })
     .from(payees)
     .where(and(eq(payees.userId, userId), notDeleted(payees.deletedAt)))
     .orderBy(asc(payees.name));

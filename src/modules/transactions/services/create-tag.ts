@@ -24,11 +24,7 @@ export async function createTagService(
   try {
     [tag] = await database
       .insert(tags)
-      .values({
-        createdById: userId,
-        name,
-        userId,
-      })
+      .values({ createdById: userId, name, userId })
       .returning();
   } catch (error) {
     // Race condition: another request created the same tag

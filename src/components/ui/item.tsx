@@ -37,10 +37,7 @@ function ItemSeparator({
 const itemVariants = cva(
   'group/item flex w-full flex-wrap items-center rounded-lg border text-sm transition-colors duration-100 outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [a]:transition-colors [a]:hover:bg-muted',
   {
-    defaultVariants: {
-      size: 'default',
-      variant: 'default',
-    },
+    defaultVariants: { size: 'default', variant: 'default' },
     variants: {
       size: {
         default: 'gap-2.5 px-3 py-2.5',
@@ -66,26 +63,18 @@ function Item({
   return useRender({
     defaultTagName: 'div',
     props: mergeProps<'div'>(
-      {
-        className: cn(itemVariants({ className, size, variant })),
-      },
+      { className: cn(itemVariants({ className, size, variant })) },
       props,
     ),
     render,
-    state: {
-      size,
-      slot: 'item',
-      variant,
-    },
+    state: { size, slot: 'item', variant },
   });
 }
 
 const itemMediaVariants = cva(
   'flex shrink-0 items-center justify-center gap-2 group-has-data-[slot=item-description]/item:translate-y-0.5 group-has-data-[slot=item-description]/item:self-start [&_svg]:pointer-events-none',
   {
-    defaultVariants: {
-      variant: 'default',
-    },
+    defaultVariants: { variant: 'default' },
     variants: {
       variant: {
         default: 'bg-transparent',

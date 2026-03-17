@@ -150,11 +150,7 @@ export const useFileUpload = (
         inputRef.current.value = '';
       }
 
-      const newState = {
-        ...prev,
-        errors: [],
-        files: [],
-      };
+      const newState = { ...prev, errors: [], files: [] };
 
       onFilesChange?.(newState.files);
       return newState;
@@ -237,18 +233,11 @@ export const useFileUpload = (
             ? [...prev.files, ...validFiles]
             : validFiles;
           onFilesChange?.(newFiles);
-          return {
-            ...prev,
-            errors,
-            files: newFiles,
-          };
+          return { ...prev, errors, files: newFiles };
         });
       } else if (errors.length > 0) {
         onError?.(errors);
-        setState((prev) => ({
-          ...prev,
-          errors,
-        }));
+        setState((prev) => ({ ...prev, errors }));
       }
 
       // Reset input value after handling files
@@ -282,21 +271,14 @@ export const useFileUpload = (
         const newFiles = prev.files.filter((file) => file.id !== id);
         onFilesChange?.(newFiles);
 
-        return {
-          ...prev,
-          errors: [],
-          files: newFiles,
-        };
+        return { ...prev, errors: [], files: newFiles };
       });
     },
     [onFilesChange],
   );
 
   const clearErrors = useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      errors: [],
-    }));
+    setState((prev) => ({ ...prev, errors: [] }));
   }, []);
 
   const handleDragEnter = useCallback((e: DragEvent<HTMLElement>) => {

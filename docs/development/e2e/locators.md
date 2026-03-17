@@ -177,11 +177,13 @@ await page.getByLabel('Upload').setInputFiles([]);
 await page.getByLabel('Upload').setInputFiles('path/to/directory');
 
 // In-memory buffer (no file on disk)
-await page.getByLabel('Upload').setInputFiles({
-  name: 'statement.csv',
-  mimeType: 'text/csv',
-  buffer: Buffer.from('date,amount\n2024-01-01,100.00'),
-});
+await page
+  .getByLabel('Upload')
+  .setInputFiles({
+    name: 'statement.csv',
+    mimeType: 'text/csv',
+    buffer: Buffer.from('date,amount\n2024-01-01,100.00'),
+  });
 
 // Dynamic file chooser (no input element)
 const fileChooserPromise = page.waitForEvent('filechooser');

@@ -11,10 +11,7 @@ export const statementsRelations = relations(statements, ({ many, one }) => ({
     references: [ledgerAccounts.id],
   }),
   attachments: many(attachments),
-  user: one(users, {
-    fields: [statements.userId],
-    references: [users.id],
-  }),
+  user: one(users, { fields: [statements.userId], references: [users.id] }),
 }));
 
 export const attachmentsRelations = relations(attachments, ({ one }) => ({
@@ -26,8 +23,5 @@ export const attachmentsRelations = relations(attachments, ({ one }) => ({
     fields: [attachments.transactionId],
     references: [transactions.id],
   }),
-  user: one(users, {
-    fields: [attachments.userId],
-    references: [users.id],
-  }),
+  user: one(users, { fields: [attachments.userId], references: [users.id] }),
 }));

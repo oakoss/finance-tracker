@@ -47,11 +47,7 @@ function getInitials(name: string): string {
 export function NavUser({
   user,
 }: {
-  user: {
-    avatar?: string | undefined;
-    email: string;
-    name: string;
-  };
+  user: { avatar?: string | undefined; email: string; name: string };
 }) {
   const { isMobile } = useSidebar();
   const { setTheme, theme } = useTheme();

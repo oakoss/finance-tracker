@@ -16,9 +16,7 @@ import {
   toISODateString,
 } from './date';
 
-vi.mock('@/paraglide/runtime', () => ({
-  getLocale: vi.fn(() => 'en-US'),
-}));
+vi.mock('@/paraglide/runtime', () => ({ getLocale: vi.fn(() => 'en-US') }));
 
 const mockedGetLocale = getLocale as unknown as ReturnType<
   typeof vi.fn<() => string>

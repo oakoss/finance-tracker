@@ -17,14 +17,16 @@ export async function insertAuditLog(
   tx: DbOrTx,
   params: InsertAuditLogParams,
 ): Promise<void> {
-  await tx.insert(auditLogs).values({
-    action: params.action,
-    actorId: params.actorId,
-    afterData: params.afterData,
-    beforeData: params.beforeData,
-    recordId: params.entityId,
-    tableName: params.tableName,
-  });
+  await tx
+    .insert(auditLogs)
+    .values({
+      action: params.action,
+      actorId: params.actorId,
+      afterData: params.afterData,
+      beforeData: params.beforeData,
+      recordId: params.entityId,
+      tableName: params.tableName,
+    });
 
   logAuditEvent({
     action: params.action,

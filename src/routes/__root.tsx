@@ -23,19 +23,14 @@ import { devtoolsPlugins } from '@/lib/devtools';
 import { getLocale } from '@/paraglide/runtime';
 import globalsCss from '@/styles/globals.css?url';
 
-type RouterContext = {
-  queryClient: QueryClient;
-};
+type RouterContext = { queryClient: QueryClient };
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
   errorComponent: RootError,
   head: () => ({
     links: [
-      {
-        href: globalsCss,
-        rel: 'stylesheet',
-      },
+      { href: globalsCss, rel: 'stylesheet' },
       {
         href: '/logo.svg',
         media: '(prefers-color-scheme: light)',
@@ -48,26 +43,13 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         rel: 'icon',
         type: 'image/svg+xml',
       },
-      {
-        href: '/logo192.png',
-        rel: 'apple-touch-icon',
-      },
-      {
-        href: '/manifest.json',
-        rel: 'manifest',
-      },
+      { href: '/logo192.png', rel: 'apple-touch-icon' },
+      { href: '/manifest.json', rel: 'manifest' },
     ],
     meta: [
-      {
-        charSet: 'utf8',
-      },
-      {
-        content: 'width=device-width, initial-scale=1',
-        name: 'viewport',
-      },
-      {
-        title: appConfig.name,
-      },
+      { charSet: 'utf8' },
+      { content: 'width=device-width, initial-scale=1', name: 'viewport' },
+      { title: appConfig.name },
     ],
   }),
   notFoundComponent: RootNotFound,
@@ -121,9 +103,7 @@ function RootComponent() {
       <Toaster />
       {!isAutomated && (
         <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-          }}
+          config={{ position: 'bottom-right' }}
           plugins={devtoolsPlugins}
         />
       )}

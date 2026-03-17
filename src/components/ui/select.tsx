@@ -33,9 +33,7 @@ function SelectTrigger({
   className,
   size = 'default',
   ...props
-}: SelectPrimitive.Trigger.Props & {
-  size?: 'sm' | 'default';
-}) {
+}: SelectPrimitive.Trigger.Props & { size?: 'sm' | 'default' }) {
   return (
     <SelectPrimitive.Trigger
       className={cn(

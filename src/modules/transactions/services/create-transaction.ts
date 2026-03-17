@@ -100,13 +100,15 @@ export async function createTransactionService(
     });
 
     if (allTagIds.length > 0) {
-      await tx.insert(transactionTags).values(
-        allTagIds.map((tagId) => ({
-          createdById: userId,
-          tagId,
-          transactionId: transaction.id,
-        })),
-      );
+      await tx
+        .insert(transactionTags)
+        .values(
+          allTagIds.map((tagId) => ({
+            createdById: userId,
+            tagId,
+            transactionId: transaction.id,
+          })),
+        );
     }
 
     await insertAuditLog(tx, {

@@ -48,9 +48,7 @@ export const listBudgetLinesSchema = type({ budgetPeriodId: 'string > 0' });
 
 export type ListBudgetLinesInput = typeof listBudgetLinesSchema.infer;
 
-export const getBudgetVsActualSchema = type({
-  budgetPeriodId: 'string > 0',
-});
+export const getBudgetVsActualSchema = type({ budgetPeriodId: 'string > 0' });
 
 export type GetBudgetVsActualInput = typeof getBudgetVsActualSchema.infer;
 

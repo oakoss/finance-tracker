@@ -7,15 +7,9 @@ import { cn } from '@/lib/utils';
 const linkVariants = cva(
   'inline-flex items-center gap-1 transition-colors outline-none [&_svg]:pointer-events-none [&_svg]:shrink-0',
   {
-    defaultVariants: {
-      size: 'default',
-      variant: 'default',
-    },
+    defaultVariants: { size: 'default', variant: 'default' },
     variants: {
-      inline: {
-        false: '',
-        true: 'underline underline-offset-4',
-      },
+      inline: { false: '', true: 'underline underline-offset-4' },
       size: {
         default: 'text-sm',
         inherit: '',
@@ -62,10 +56,7 @@ function RouterLink({
     <Link
       className={cn(linkVariants({ className, inline, size, variant }))}
       data-slot="link"
-      {...(external && {
-        rel: 'noopener noreferrer',
-        target: '_blank',
-      })}
+      {...(external && { rel: 'noopener noreferrer', target: '_blank' })}
       {...props}
     >
       {typeof children === 'function' ? (

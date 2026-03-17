@@ -69,12 +69,8 @@ export function useCreateTransaction() {
       void queryClient.invalidateQueries({
         queryKey: transactionQueries.all(),
       });
-      void queryClient.invalidateQueries({
-        queryKey: payeeQueries.all(),
-      });
-      void queryClient.invalidateQueries({
-        queryKey: tagQueries.all(),
-      });
+      void queryClient.invalidateQueries({ queryKey: payeeQueries.all() });
+      void queryClient.invalidateQueries({ queryKey: tagQueries.all() });
       void router.invalidate();
     },
   });
@@ -100,12 +96,8 @@ export function useUpdateTransaction() {
       void queryClient.invalidateQueries({
         queryKey: transactionQueries.all(),
       });
-      void queryClient.invalidateQueries({
-        queryKey: payeeQueries.all(),
-      });
-      void queryClient.invalidateQueries({
-        queryKey: tagQueries.all(),
-      });
+      void queryClient.invalidateQueries({ queryKey: payeeQueries.all() });
+      void queryClient.invalidateQueries({ queryKey: tagQueries.all() });
       void router.invalidate();
     },
   });

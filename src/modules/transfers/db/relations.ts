@@ -17,8 +17,5 @@ export const transfersRelations = relations(transfers, ({ many, one }) => ({
     relationName: 'transferTo',
   }),
   transactions: many(transactions),
-  user: one(users, {
-    fields: [transfers.userId],
-    references: [users.id],
-  }),
+  user: one(users, { fields: [transfers.userId], references: [users.id] }),
 }));

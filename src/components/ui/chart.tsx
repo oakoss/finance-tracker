@@ -8,18 +8,13 @@ const THEMES = { dark: '.dark', light: '' } as const;
 
 export type ChartConfig = Record<
   string,
-  {
-    icon?: React.ComponentType;
-    label?: React.ReactNode;
-  } & (
+  { icon?: React.ComponentType; label?: React.ReactNode } & (
     | { color?: string; theme?: never }
     | { color?: never; theme: Record<keyof typeof THEMES, string> }
   )
 >;
 
-type ChartContextProps = {
-  config: ChartConfig;
-};
+type ChartContextProps = { config: ChartConfig };
 
 const ChartContext = React.createContext<ChartContextProps | null>(null);
 
@@ -290,9 +285,7 @@ function ChartLegendContent({
               ) : (
                 <div
                   className="size-2 shrink-0 rounded-[2px]"
-                  style={{
-                    backgroundColor: item.color,
-                  }}
+                  style={{ backgroundColor: item.color }}
                 />
               )}
               {itemConfig?.label}

@@ -12,26 +12,18 @@ const { defaultBrowserType: _iphone, ...iPhone } = devices['iPhone 15 Pro Max'];
 const { defaultBrowserType: _pixel, ...pixel } = devices['Pixel 7'];
 
 export default defineConfig({
-  expect: {
-    timeout: 10_000,
-  },
+  expect: { timeout: 10_000 },
   failOnFlakyTests: !!process.env.CI,
   forbidOnly: !!process.env.CI,
   fullyParallel: true,
   outputDir: 'test-results',
   projects: [
-    {
-      name: 'db-setup',
-      testDir: 'e2e/setup',
-      testMatch: 'db.setup.ts',
-    },
+    { name: 'db-setup', testDir: 'e2e/setup', testMatch: 'db.setup.ts' },
     {
       dependencies: ['db-setup'],
       grep: /@authenticated/,
       name: 'chromium:authenticated',
-      use: {
-        ...devices['Desktop Chrome'],
-      },
+      use: { ...devices['Desktop Chrome'] },
     },
     {
       dependencies: ['db-setup'],
@@ -56,18 +48,13 @@ export default defineConfig({
       dependencies: ['db-setup'],
       grep: /@authenticated/,
       name: 'iphone:authenticated',
-      use: {
-        ...iPhone,
-      },
+      use: { ...iPhone },
     },
     {
       dependencies: ['db-setup'],
       grepInvert: [/@authenticated/, /@demo/],
       name: 'iphone:public',
-      use: {
-        ...iPhone,
-        storageState: { cookies: [], origins: [] },
-      },
+      use: { ...iPhone, storageState: { cookies: [], origins: [] } },
     },
 
     // Pixel (Chromium with Pixel viewport/UA)
@@ -75,18 +62,13 @@ export default defineConfig({
       dependencies: ['db-setup'],
       grep: /@authenticated/,
       name: 'pixel:authenticated',
-      use: {
-        ...pixel,
-      },
+      use: { ...pixel },
     },
     {
       dependencies: ['db-setup'],
       grepInvert: [/@authenticated/, /@demo/],
       name: 'pixel:public',
-      use: {
-        ...pixel,
-        storageState: { cookies: [], origins: [] },
-      },
+      use: { ...pixel, storageState: { cookies: [], origins: [] } },
     },
   ],
   reporter: process.env.CI ? [['github'], ['blob']] : 'html',

@@ -305,9 +305,7 @@ test('creates an account', async ({ accountsPage }) => {
 in a single fixture for pre-authenticated page access:
 
 ```ts
-export const test = base.extend<{
-  adminAccountsPage: AccountsPage;
-}>({
+export const test = base.extend<{ adminAccountsPage: AccountsPage }>({
   adminAccountsPage: async ({ browser }, use) => {
     const ctx = await browser.newContext({
       storageState: 'playwright/.auth/admin.json',

@@ -50,10 +50,7 @@ export async function updateBudgetLineService(
 
     const [updated] = await tx
       .update(budgetLines)
-      .set({
-        ...fields,
-        updatedById: userId,
-      })
+      .set({ ...fields, updatedById: userId })
       .where(and(eq(budgetLines.id, id), notDeleted(budgetLines.deletedAt)))
       .returning();
 

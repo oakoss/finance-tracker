@@ -602,10 +602,7 @@ function OverlaysPage() {
             variant="outline"
             onClick={() =>
               toast('Transaction deleted', {
-                action: {
-                  label: 'Undo',
-                  onClick: () => toast.info('Undone!'),
-                },
+                action: { label: 'Undo', onClick: () => toast.info('Undone!') },
               })
             }
           >

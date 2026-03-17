@@ -265,9 +265,7 @@ toast to clear mid-test, use `toBeHidden()` with a generous
 timeout:
 
 ```ts
-await expect(page.getByText('Toast message')).toBeHidden({
-  timeout: 10_000,
-});
+await expect(page.getByText('Toast message')).toBeHidden({ timeout: 10_000 });
 ```
 
 **Mocking browser APIs:** Use `addInitScript()` to override native

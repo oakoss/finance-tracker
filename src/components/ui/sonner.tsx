@@ -28,11 +28,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
         } as React.CSSProperties
       }
       theme={theme as NonNullable<ToasterProps['theme']>}
-      toastOptions={{
-        classNames: {
-          toast: 'cn-toast',
-        },
-      }}
+      toastOptions={{ classNames: { toast: 'cn-toast' } }}
       {...props}
     />
   );

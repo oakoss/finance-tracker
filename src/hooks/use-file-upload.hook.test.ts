@@ -251,9 +251,7 @@ describe('useFileUpload', () => {
 
     expect(onFilesChange).toHaveBeenCalledWith(
       expect.arrayContaining([
-        expect.objectContaining({
-          file: expect.any(File),
-        }),
+        expect.objectContaining({ file: expect.any(File) }),
       ]),
     );
   });
@@ -268,9 +266,7 @@ describe('useFileUpload', () => {
 
     expect(onFilesAdded).toHaveBeenCalledWith(
       expect.arrayContaining([
-        expect.objectContaining({
-          file: expect.any(File),
-        }),
+        expect.objectContaining({ file: expect.any(File) }),
       ]),
     );
   });

@@ -28,9 +28,7 @@ function ResizableHandle({
   className,
   withHandle,
   ...props
-}: ResizablePrimitive.SeparatorProps & {
-  withHandle?: boolean;
-}) {
+}: ResizablePrimitive.SeparatorProps & { withHandle?: boolean }) {
   return (
     <ResizablePrimitive.Separator
       className={cn(

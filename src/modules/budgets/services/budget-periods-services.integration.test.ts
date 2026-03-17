@@ -290,9 +290,7 @@ test('update — writes audit log with before/after', async ({ serviceDb }) => {
 test('delete — soft-deletes period', async ({ serviceDb }) => {
   const { period, user } = await insertBudgetPeriodWithUser(serviceDb);
 
-  await deleteBudgetPeriodService(asDb(serviceDb), user.id, {
-    id: period.id,
-  });
+  await deleteBudgetPeriodService(asDb(serviceDb), user.id, { id: period.id });
 
   const rows = await serviceDb
     .select()
@@ -312,9 +310,7 @@ test('delete — cascade soft-deletes budget lines', async ({ serviceDb }) => {
     categoryId: category.id,
   });
 
-  await deleteBudgetPeriodService(asDb(serviceDb), user.id, {
-    id: period.id,
-  });
+  await deleteBudgetPeriodService(asDb(serviceDb), user.id, { id: period.id });
 
   const lines = await serviceDb
     .select()
@@ -355,9 +351,7 @@ test('delete — rejects already-soft-deleted', async ({ serviceDb }) => {
 test('delete — writes audit log', async ({ serviceDb }) => {
   const { period, user } = await insertBudgetPeriodWithUser(serviceDb);
 
-  await deleteBudgetPeriodService(asDb(serviceDb), user.id, {
-    id: period.id,
-  });
+  await deleteBudgetPeriodService(asDb(serviceDb), user.id, { id: period.id });
 
   const logs = await serviceDb
     .select()

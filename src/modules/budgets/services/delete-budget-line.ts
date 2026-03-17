@@ -34,10 +34,7 @@ export async function deleteBudgetLineService(
 
     const [deleted] = await tx
       .update(budgetLines)
-      .set({
-        deletedAt: new Date(),
-        deletedById: userId,
-      })
+      .set({ deletedAt: new Date(), deletedById: userId })
       .where(
         and(eq(budgetLines.id, data.id), notDeleted(budgetLines.deletedAt)),
       )

@@ -10,9 +10,7 @@
     },
     "editor.tabSize": 2
   },
-  "[javascript]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
+  "[javascript]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
   "[json]": {
     "editor.defaultFormatter": "oxc.oxc-vscode",
     "editor.formatOnSave": true
@@ -21,32 +19,16 @@
     "editor.defaultFormatter": "oxc.oxc-vscode",
     "editor.formatOnSave": true
   },
-  "[markdown]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
-  "[yaml]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
-  "editor.codeActionsOnSave": {
-    "source.fixAll.oxc": "always"
-  },
+  "[markdown]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[typescript]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "[yaml]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+  "editor.codeActionsOnSave": { "source.fixAll.oxc": "always" },
   "editor.defaultFormatter": "oxc.oxc-vscode",
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "file",
-  "editor.quickSuggestions": {
-    "strings": "on"
-  },
-  "eslint.workingDirectories": [
-    {
-      "mode": "auto"
-    }
-  ],
+  "editor.quickSuggestions": { "strings": "on" },
+  "eslint.workingDirectories": [{ "mode": "auto" }],
   "files.readonlyInclude": {
     "**/.tanstack/**/*": true,
     "**/routeTree.gen.ts": true,

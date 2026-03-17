@@ -54,10 +54,7 @@ export async function updateCategoryService(
 
     const [updated] = await tx
       .update(categories)
-      .set({
-        ...fields,
-        updatedById: userId,
-      })
+      .set({ ...fields, updatedById: userId })
       .where(
         and(
           eq(categories.id, id),

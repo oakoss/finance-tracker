@@ -21,19 +21,12 @@ export const auth = betterAuth({
     encryptOAuthTokens: process.env.NODE_ENV === 'production',
   },
   advanced: {
-    database: {
-      generateId: 'uuid',
-    },
-    ipAddress: {
-      ipAddressHeaders: ['cf-connecting-ip', 'x-forwarded-for'],
-    },
+    database: { generateId: 'uuid' },
+    ipAddress: { ipAddressHeaders: ['cf-connecting-ip', 'x-forwarded-for'] },
   },
   appName: appConfig.name,
   baseURL: env.BETTER_AUTH_URL,
-  database: drizzleAdapter(db, {
-    provider: 'pg',
-    usePlural: true,
-  }),
+  database: drizzleAdapter(db, { provider: 'pg', usePlural: true }),
   emailAndPassword: {
     enabled: true,
     minPasswordLength: appConfig.passwordMinLength,
@@ -57,9 +50,7 @@ export const auth = betterAuth({
         user,
       }),
   },
-  experimental: {
-    joins: true,
-  },
+  experimental: { joins: true },
   plugins: [tanstackStartCookies()],
   rateLimit: {
     enabled: process.env.NODE_ENV === 'production',
@@ -100,11 +91,7 @@ export const auth = betterAuth({
         sendVerificationEmail({
           cookie: request?.headers.get('cookie') ?? null,
           url,
-          user: {
-            email: user.email,
-            id: user.id,
-            name: user.name,
-          },
+          user: { email: user.email, id: user.id, name: user.name },
         }),
     },
     deleteUser: {
@@ -113,11 +100,7 @@ export const auth = betterAuth({
         sendVerificationEmail({
           cookie: request?.headers.get('cookie') ?? null,
           url,
-          user: {
-            email: user.email,
-            id: user.id,
-            name: user.name,
-          },
+          user: { email: user.email, id: user.id, name: user.name },
         }),
     },
   },

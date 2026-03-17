@@ -244,9 +244,7 @@ describe('throwIfConstraintViolation', () => {
       // expected
     }
     expect(warnSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        user: { idHash: 'hashed-user-id' },
-      }),
+      expect.objectContaining({ user: { idHash: 'hashed-user-id' } }),
     );
     warnSpy.mockRestore();
   });

@@ -21,9 +21,7 @@ import {
 import { useUpdateAccount } from '@/modules/accounts/hooks/use-accounts';
 import { m } from '@/paraglide/messages';
 
-type EditAccountDialogProps = {
-  accounts: AccountListItem[];
-};
+type EditAccountDialogProps = { accounts: AccountListItem[] };
 
 export function EditAccountDialog({ accounts }: EditAccountDialogProps) {
   const search = useSearch({ from: '/_app/accounts' });

@@ -30,10 +30,7 @@ export const recurringRulesRelations = relations(recurringRules, ({ one }) => ({
     fields: [recurringRules.payeeId],
     references: [payees.id],
   }),
-  user: one(users, {
-    fields: [recurringRules.userId],
-    references: [users.id],
-  }),
+  user: one(users, { fields: [recurringRules.userId], references: [users.id] }),
 }));
 
 export const merchantRulesRelations = relations(merchantRules, ({ one }) => ({
@@ -45,8 +42,5 @@ export const merchantRulesRelations = relations(merchantRules, ({ one }) => ({
     fields: [merchantRules.payeeId],
     references: [payees.id],
   }),
-  user: one(users, {
-    fields: [merchantRules.userId],
-    references: [users.id],
-  }),
+  user: one(users, { fields: [merchantRules.userId], references: [users.id] }),
 }));

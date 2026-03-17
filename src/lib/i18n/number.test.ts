@@ -6,9 +6,7 @@ import { getLocale } from '@/paraglide/runtime';
 
 import { defaultCurrency, formatCurrency, formatNumber } from './number';
 
-vi.mock('@/paraglide/runtime', () => ({
-  getLocale: vi.fn(() => 'en-US'),
-}));
+vi.mock('@/paraglide/runtime', () => ({ getLocale: vi.fn(() => 'en-US') }));
 
 // Widen to accept arbitrary locale strings (Paraglide constrains to available locales)
 const mockedGetLocale = getLocale as unknown as ReturnType<
@@ -79,10 +77,7 @@ describe('formatNumber', () => {
   });
 
   it('applies Intl options', () => {
-    const result = formatNumber({
-      options: { style: 'percent' },
-      value: 0.85,
-    });
+    const result = formatNumber({ options: { style: 'percent' }, value: 0.85 });
     expect(result).toBe('85%');
   });
 

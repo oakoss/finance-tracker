@@ -11,11 +11,7 @@ import { type EmailLocale, renderEmail } from './email-render';
 import { ResetPasswordEmail } from './reset-password-email';
 import { VerificationEmail } from './verification-email';
 
-type EmailPerson = {
-  email: string;
-  id?: string | null;
-  name?: string | null;
-};
+type EmailPerson = { email: string; id?: string | null; name?: string | null };
 
 const localeCookieName = 'APP_LOCALE';
 

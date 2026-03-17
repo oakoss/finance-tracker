@@ -15,9 +15,7 @@ import {
 import { useDeleteAccount } from '@/modules/accounts/hooks/use-accounts';
 import { m } from '@/paraglide/messages';
 
-type AccountRowActionsProps = {
-  row: AccountListItem;
-};
+type AccountRowActionsProps = { row: AccountListItem };
 
 export function AccountRowActions({ row }: AccountRowActionsProps) {
   const navigate = useNavigate();

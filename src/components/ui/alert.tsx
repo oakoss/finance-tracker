@@ -12,9 +12,7 @@ const alertVariants = cva(
     'has-[>[data-slot=alert-title]+[data-slot=alert-description]]:**:data-[slot=alert-action]:sm:row-end-3',
   ],
   {
-    defaultVariants: {
-      variant: 'default',
-    },
+    defaultVariants: { variant: 'default' },
     variants: {
       variant: {
         default: 'bg-card text-card-foreground',

@@ -3,10 +3,7 @@ import { act, renderHook } from '@testing-library/react';
 import { useCopyToClipboard } from './use-copy-to-clipboard';
 
 vi.mock('@/lib/logging/client-logger', () => ({
-  clientLog: {
-    error: vi.fn(),
-    warn: vi.fn(),
-  },
+  clientLog: { error: vi.fn(), warn: vi.fn() },
 }));
 
 const mockWriteText = vi.fn();
@@ -14,9 +11,7 @@ const mockWriteText = vi.fn();
 describe('useCopyToClipboard', () => {
   beforeEach(() => {
     mockWriteText.mockReset();
-    Object.assign(navigator, {
-      clipboard: { writeText: mockWriteText },
-    });
+    Object.assign(navigator, { clipboard: { writeText: mockWriteText } });
   });
 
   it('starts with copied: false', () => {

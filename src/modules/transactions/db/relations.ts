@@ -48,10 +48,7 @@ export const transactionsRelations = relations(
 export const transactionTagsRelations = relations(
   transactionTags,
   ({ one }) => ({
-    tag: one(tags, {
-      fields: [transactionTags.tagId],
-      references: [tags.id],
-    }),
+    tag: one(tags, { fields: [transactionTags.tagId], references: [tags.id] }),
     transaction: one(transactions, {
       fields: [transactionTags.transactionId],
       references: [transactions.id],
@@ -64,16 +61,10 @@ export const payeesRelations = relations(payees, ({ many, one }) => ({
   merchantRules: many(merchantRules),
   recurringRules: many(recurringRules),
   transactions: many(transactions),
-  user: one(users, {
-    fields: [payees.userId],
-    references: [users.id],
-  }),
+  user: one(users, { fields: [payees.userId], references: [users.id] }),
 }));
 
 export const tagsRelations = relations(tags, ({ many, one }) => ({
   transactionTags: many(transactionTags),
-  user: one(users, {
-    fields: [tags.userId],
-    references: [users.id],
-  }),
+  user: one(users, { fields: [tags.userId], references: [users.id] }),
 }));

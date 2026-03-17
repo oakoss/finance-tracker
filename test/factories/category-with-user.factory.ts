@@ -5,10 +5,7 @@ import type { Db } from '~test/factories/base';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertUser } from '~test/factories/user.factory';
 
-type CategoryWithUser = {
-  category: Category;
-  user: User;
-};
+type CategoryWithUser = { category: Category; user: User };
 
 type CategoryWithUserOverrides = {
   category?: Omit<Partial<CategoryInsert>, 'userId'>;

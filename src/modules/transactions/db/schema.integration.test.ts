@@ -85,17 +85,15 @@ test('transactionTags — rejects duplicate (transactionId, tagId)', async ({
   const tag = await insertTag(db, { userId: user.id });
   const txn = await insertTransaction(db, { accountId: account.id });
 
-  await db.insert(transactionTags).values({
-    tagId: tag.id,
-    transactionId: txn.id,
-  });
+  await db
+    .insert(transactionTags)
+    .values({ tagId: tag.id, transactionId: txn.id });
 
   await expectPgError(
     () =>
-      db.insert(transactionTags).values({
-        tagId: tag.id,
-        transactionId: txn.id,
-      }),
+      db
+        .insert(transactionTags)
+        .values({ tagId: tag.id, transactionId: txn.id }),
     { code: '23505', constraint: 'transaction_tags_unique_idx' },
   );
 });

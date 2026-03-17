@@ -6,10 +6,7 @@ import { getLocale } from '@/paraglide/runtime';
 
 export const defaultTimeZone = 'UTC';
 
-const LOCALE_MAP: Record<string, Locale> = {
-  'de-DE': de,
-  'en-US': enUS,
-};
+const LOCALE_MAP: Record<string, Locale> = { 'de-DE': de, 'en-US': enUS };
 
 function resolveDateFnsLocale(locale?: string): Locale {
   const key = locale ?? getLocale();
@@ -76,10 +73,7 @@ export const formatRelativeTime = (params: {
 }) => {
   const locale = resolveDateFnsLocale(params.locale);
   const now = params.now ?? new Date();
-  return formatDistanceStrict(params.value, now, {
-    addSuffix: true,
-    locale,
-  });
+  return formatDistanceStrict(params.value, now, { addSuffix: true, locale });
 };
 
 export const getUserTimeZone = (): string =>

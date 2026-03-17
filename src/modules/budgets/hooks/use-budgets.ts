@@ -132,9 +132,7 @@ export function useDeleteBudgetPeriod() {
       void queryClient.invalidateQueries({
         queryKey: budgetPeriodQueries.all(),
       });
-      void queryClient.invalidateQueries({
-        queryKey: budgetLineQueries.all(),
-      });
+      void queryClient.invalidateQueries({ queryKey: budgetLineQueries.all() });
       void queryClient.invalidateQueries({
         queryKey: budgetVsActualQueries.all(),
       });
@@ -161,9 +159,7 @@ export function useCopyBudgetPeriod() {
       void queryClient.invalidateQueries({
         queryKey: budgetPeriodQueries.all(),
       });
-      void queryClient.invalidateQueries({
-        queryKey: budgetLineQueries.all(),
-      });
+      void queryClient.invalidateQueries({ queryKey: budgetLineQueries.all() });
       void queryClient.invalidateQueries({
         queryKey: budgetVsActualQueries.all(),
       });
@@ -191,9 +187,7 @@ export function useCreateBudgetLine() {
     },
     onSuccess: () => {
       toast.success(m['budgets.toast.lineCreateSuccess']());
-      void queryClient.invalidateQueries({
-        queryKey: budgetLineQueries.all(),
-      });
+      void queryClient.invalidateQueries({ queryKey: budgetLineQueries.all() });
       void queryClient.invalidateQueries({
         queryKey: budgetVsActualQueries.all(),
       });
@@ -217,9 +211,7 @@ export function useUpdateBudgetLine() {
     },
     onSuccess: () => {
       toast.success(m['budgets.toast.lineUpdateSuccess']());
-      void queryClient.invalidateQueries({
-        queryKey: budgetLineQueries.all(),
-      });
+      void queryClient.invalidateQueries({ queryKey: budgetLineQueries.all() });
       void queryClient.invalidateQueries({
         queryKey: budgetVsActualQueries.all(),
       });
@@ -243,9 +235,7 @@ export function useDeleteBudgetLine() {
     },
     onSuccess: () => {
       toast.success(m['budgets.toast.lineDeleteSuccess']());
-      void queryClient.invalidateQueries({
-        queryKey: budgetLineQueries.all(),
-      });
+      void queryClient.invalidateQueries({ queryKey: budgetLineQueries.all() });
       void queryClient.invalidateQueries({
         queryKey: budgetVsActualQueries.all(),
       });

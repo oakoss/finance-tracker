@@ -406,13 +406,15 @@ test('list — returns user accounts with terms and balance', async ({
     terms: { aprBps: 1999 },
   });
 
-  await serviceDb.insert(accountBalanceSnapshots).values({
-    accountId: account.id,
-    balanceCents: 50_000,
-    createdById: user.id,
-    recordedAt: new Date(),
-    source: 'manual',
-  });
+  await serviceDb
+    .insert(accountBalanceSnapshots)
+    .values({
+      accountId: account.id,
+      balanceCents: 50_000,
+      createdById: user.id,
+      recordedAt: new Date(),
+      source: 'manual',
+    });
 
   const rows = await listAccountsService(asDb(serviceDb), user.id);
 

@@ -6,9 +6,7 @@ const mockNavigate = vi.fn();
 let onMessageHandler: ((data: string) => void) | null = null;
 
 vi.mock('@tanstack/react-router', () => ({
-  useRouter: () => ({
-    navigate: mockNavigate,
-  }),
+  useRouter: () => ({ navigate: mockNavigate }),
 }));
 
 const mockUseBroadcastChannel = vi.fn((..._args: unknown[]) => {

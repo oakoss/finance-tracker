@@ -25,9 +25,7 @@ const ensureClientLogger = (): void => {
     // To enable remote ingestion later, set drain.endpoint to a server ingest URL.
     const drain = createBrowserLogDrain({
       drain: { endpoint: '' },
-      pipeline: {
-        batch: { intervalMs: 3000, size: 20 },
-      },
+      pipeline: { batch: { intervalMs: 3000, size: 20 } },
     });
 
     initLogger({

@@ -363,9 +363,7 @@ function DataPage() {
       <Section title="Stepper">
         <Subsection className="block" label="Horizontal">
           <Stepper
-            indicators={{
-              completed: <Icons.Check className="size-3" />,
-            }}
+            indicators={{ completed: <Icons.Check className="size-3" /> }}
             value={stepperValue}
             onValueChange={setStepperValue}
           >

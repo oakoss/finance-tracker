@@ -66,11 +66,9 @@ export async function updateAccountService(
             .update(accountTerms)
             .set({ ...terms, updatedById: userId })
             .where(eq(accountTerms.accountId, id))
-        : tx.insert(accountTerms).values({
-            ...terms,
-            accountId: id,
-            createdById: userId,
-          }));
+        : tx
+            .insert(accountTerms)
+            .values({ ...terms, accountId: id, createdById: userId }));
     }
 
     await insertAuditLog(tx, {

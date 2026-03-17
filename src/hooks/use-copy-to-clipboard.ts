@@ -2,9 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { clientLog } from '@/lib/logging/client-logger';
 
-type UseCopyToClipboardOptions = {
-  timeout?: number;
-};
+type UseCopyToClipboardOptions = { timeout?: number };
 
 export function useCopyToClipboard(options: UseCopyToClipboardOptions = {}) {
   const { timeout = 2000 } = options;

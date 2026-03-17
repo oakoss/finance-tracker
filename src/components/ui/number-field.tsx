@@ -16,15 +16,9 @@ const NumberFieldContext = createContext<{
 const numberFieldGroupVariants = cva(
   'relative flex w-full justify-between rounded-md border border-input bg-input/30 transition-colors focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 focus-within:has-aria-invalid:border-destructive focus-within:has-aria-invalid:ring-destructive/20 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:focus-within:has-aria-invalid:ring-destructive/40 dark:aria-invalid:ring-destructive/40 data-disabled:pointer-events-none data-disabled:opacity-50',
   {
-    defaultVariants: {
-      size: 'default',
-    },
+    defaultVariants: { size: 'default' },
     variants: {
-      size: {
-        default: 'h-9 text-sm',
-        lg: 'h-10 text-sm',
-        sm: 'h-8 text-sm',
-      },
+      size: { default: 'h-9 text-sm', lg: 'h-10 text-sm', sm: 'h-8 text-sm' },
     },
   },
 );
@@ -32,9 +26,7 @@ const numberFieldGroupVariants = cva(
 const numberFieldButtonVariants = cva(
   'relative flex shrink-0 cursor-pointer items-center justify-center transition-colors hover:bg-accent pointer-coarse:after:absolute pointer-coarse:after:size-full pointer-coarse:after:min-h-11 pointer-coarse:after:min-w-11',
   {
-    defaultVariants: {
-      size: 'default',
-    },
+    defaultVariants: { size: 'default' },
     variants: {
       size: {
         default: "px-2.5 [&_svg:not([class*='size-'])]:size-4",
@@ -48,15 +40,9 @@ const numberFieldButtonVariants = cva(
 const numberFieldInputVariants = cva(
   'w-full min-w-0 flex-1 bg-transparent text-center tabular-nums outline-none',
   {
-    defaultVariants: {
-      size: 'default',
-    },
+    defaultVariants: { size: 'default' },
     variants: {
-      size: {
-        default: 'px-3 py-1.5',
-        lg: 'px-3.5 py-2',
-        sm: 'px-2.5 py-1',
-      },
+      size: { default: 'px-3 py-1.5', lg: 'px-3.5 py-2', sm: 'px-2.5 py-1' },
     },
   },
 );
@@ -199,9 +185,7 @@ function NumberFieldScrubArea({
   className,
   label,
   ...props
-}: NumberFieldPrimitive.ScrubArea.Props & {
-  label: string;
-}) {
+}: NumberFieldPrimitive.ScrubArea.Props & { label: string }) {
   const context = use(NumberFieldContext);
   if (!context) {
     throw new Error(

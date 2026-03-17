@@ -73,9 +73,7 @@ function ContextMenuLabel({
   className,
   inset,
   ...props
-}: ContextMenuPrimitive.GroupLabel.Props & {
-  inset?: boolean;
-}) {
+}: ContextMenuPrimitive.GroupLabel.Props & { inset?: boolean }) {
   return (
     <ContextMenuPrimitive.GroupLabel
       className={cn(
@@ -123,9 +121,7 @@ function ContextMenuSubTrigger({
   className,
   inset,
   ...props
-}: ContextMenuPrimitive.SubmenuTrigger.Props & {
-  inset?: boolean;
-}) {
+}: ContextMenuPrimitive.SubmenuTrigger.Props & { inset?: boolean }) {
   return (
     <ContextMenuPrimitive.SubmenuTrigger
       className={cn(
@@ -161,9 +157,7 @@ function ContextMenuCheckboxItem({
   className,
   inset,
   ...props
-}: ContextMenuPrimitive.CheckboxItem.Props & {
-  inset?: boolean;
-}) {
+}: ContextMenuPrimitive.CheckboxItem.Props & { inset?: boolean }) {
   return (
     <ContextMenuPrimitive.CheckboxItem
       checked={checked}
@@ -201,9 +195,7 @@ function ContextMenuRadioItem({
   className,
   inset,
   ...props
-}: ContextMenuPrimitive.RadioItem.Props & {
-  inset?: boolean;
-}) {
+}: ContextMenuPrimitive.RadioItem.Props & { inset?: boolean }) {
   return (
     <ContextMenuPrimitive.RadioItem
       className={cn(

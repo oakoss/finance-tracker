@@ -270,11 +270,7 @@ function NavigationPage() {
         <Subsection className="block" label="Default (non-collapsible)">
           <SidebarProvider
             className="min-h-0! max-w-xs"
-            style={
-              {
-                '--sidebar-width': '16rem',
-              } as React.CSSProperties
-            }
+            style={{ '--sidebar-width': '16rem' } as React.CSSProperties}
           >
             <Sidebar collapsible="none">
               <SidebarHeader>
@@ -321,11 +317,7 @@ function NavigationPage() {
         <Subsection className="block" label="With toggle trigger">
           <SidebarProvider
             className="min-h-0! max-w-sm"
-            style={
-              {
-                '--sidebar-width': '14rem',
-              } as React.CSSProperties
-            }
+            style={{ '--sidebar-width': '14rem' } as React.CSSProperties}
           >
             <Sidebar>
               <SidebarContent>

@@ -34,18 +34,13 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
 
   const otlpDrain = createOTLPDrain({
     endpoint: otlpEndpoint,
-    resourceAttributes: {
-      'deployment.environment': environment,
-    },
+    resourceAttributes: { 'deployment.environment': environment },
     serviceName: 'finance-tracker',
   });
 
   // Wrap OTLP drain in a pipeline for batching, retry, and buffer management
   const pipeline = createDrainPipeline<DrainContext>({
-    batch: {
-      intervalMs: 5000,
-      size: 50,
-    },
+    batch: { intervalMs: 5000, size: 50 },
     maxBufferSize: 1000,
     onDropped: (events, error) => {
       console.error(

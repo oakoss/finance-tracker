@@ -14,10 +14,7 @@
   "timezone": "America/Chicago",
   "labels": ["dependencies"],
   "packageRules": [
-    {
-      "matchUpdateTypes": ["major"],
-      "automerge": false
-    },
+    { "matchUpdateTypes": ["major"], "automerge": false },
     {
       "matchPackageNames": [
         "react",
@@ -37,10 +34,7 @@
       ],
       "groupName": "oxlint"
     },
-    {
-      "matchDepTypes": ["peerDependencies"],
-      "rangeStrategy": "widen"
-    }
+    { "matchDepTypes": ["peerDependencies"], "rangeStrategy": "widen" }
   ],
   "vulnerabilityAlerts": {
     "labels": ["security"],

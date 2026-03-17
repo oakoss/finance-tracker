@@ -8,9 +8,7 @@ function InputOTP({
   className,
   containerClassName,
   ...props
-}: React.ComponentProps<typeof OTPInput> & {
-  containerClassName?: string;
-}) {
+}: React.ComponentProps<typeof OTPInput> & { containerClassName?: string }) {
   return (
     <OTPInput
       className={cn('disabled:cursor-not-allowed', className)}
@@ -42,9 +40,7 @@ function InputOTPSlot({
   className,
   index,
   ...props
-}: React.ComponentProps<'div'> & {
-  index: number;
-}) {
+}: React.ComponentProps<'div'> & { index: number }) {
   const inputOTPContext = React.use(OTPInputContext);
   const { char, hasFakeCaret, isActive } = inputOTPContext?.slots[index] ?? {};
 

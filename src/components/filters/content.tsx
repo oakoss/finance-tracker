@@ -12,20 +12,10 @@ import { ButtonGroup, ButtonGroupText } from '@/components/ui/button-group';
 import { cn } from '@/lib/utils';
 
 export const filtersContainerVariants = cva('flex flex-wrap items-center', {
-  defaultVariants: {
-    size: 'default',
-    variant: 'default',
-  },
+  defaultVariants: { size: 'default', variant: 'default' },
   variants: {
-    size: {
-      default: 'gap-2.5',
-      lg: 'gap-3.5',
-      sm: 'gap-1.5',
-    },
-    variant: {
-      default: '',
-      solid: 'gap-2',
-    },
+    size: { default: 'gap-2.5', lg: 'gap-3.5', sm: 'gap-1.5' },
+    variant: { default: '', solid: 'gap-2' },
   },
 });
 

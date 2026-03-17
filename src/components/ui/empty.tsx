@@ -5,14 +5,9 @@ import { cn } from '@/lib/utils';
 const emptyVariants = cva(
   'flex w-full min-w-0 flex-1 flex-col items-center justify-center rounded-xl border border-dashed text-center text-balance',
   {
-    defaultVariants: {
-      size: 'default',
-    },
+    defaultVariants: { size: 'default' },
     variants: {
-      size: {
-        default: 'gap-4 p-4 sm:p-6 lg:p-12',
-        sm: 'gap-3 p-4 sm:p-6',
-      },
+      size: { default: 'gap-4 p-4 sm:p-6 lg:p-12', sm: 'gap-3 p-4 sm:p-6' },
     },
   },
 );
@@ -45,9 +40,7 @@ function EmptyHeader({ className, ...props }: React.ComponentProps<'div'>) {
 const emptyMediaVariants = cva(
   'mb-2 flex shrink-0 items-center justify-center [&_svg]:pointer-events-none [&_svg]:shrink-0',
   {
-    defaultVariants: {
-      variant: 'default',
-    },
+    defaultVariants: { variant: 'default' },
     variants: {
       variant: {
         default: 'bg-transparent',

@@ -10,9 +10,7 @@ type CookieOptions = {
   secure?: boolean;
 };
 
-const defaultOptions: CookieOptions = {
-  path: '/',
-};
+const defaultOptions: CookieOptions = { path: '/' };
 
 export const createClientCookies = () => new Cookies(undefined, defaultOptions);
 

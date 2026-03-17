@@ -7,11 +7,7 @@ import type { Db } from '~test/factories/base';
 /** Thrown to force Drizzle to ROLLBACK instead of COMMIT. */
 class RollbackOnPurpose extends Error {}
 
-type IntegrationFixtures = {
-  db: Db;
-  fileDb: Db;
-  serviceDb: Db;
-};
+type IntegrationFixtures = { db: Db; fileDb: Db; serviceDb: Db };
 
 /**
  * Vitest fixtures for transaction-isolated integration tests.

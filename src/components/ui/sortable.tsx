@@ -48,32 +48,21 @@ const SortableItemContext = createContext<{
   disabled?: boolean | undefined;
   isDragging?: boolean | undefined;
   listeners: DraggableSyntheticListeners | undefined;
-}>({
-  disabled: false,
-  isDragging: false,
-  listeners: undefined,
-});
+}>({ disabled: false, isDragging: false, listeners: undefined });
 
 const IsOverlayContext = createContext(false);
 
 const SortableInternalContext = createContext<{
   activeId: UniqueIdentifier | null;
   modifiers?: Modifiers | undefined;
-}>({
-  activeId: null,
-  modifiers: undefined,
-});
+}>({ activeId: null, modifiers: undefined });
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
 const dropAnimationConfig: DropAnimation = {
   sideEffects: defaultDropAnimationSideEffects({
-    styles: {
-      active: {
-        opacity: '0.4',
-      },
-    },
+    styles: { active: { opacity: '0.4' } },
   }),
 };
 
@@ -115,11 +104,7 @@ function Sortable<T>({
   const isClient = typeof document !== 'undefined';
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 10,
-      },
-    }),
+    useSensor(PointerSensor, { activationConstraint: { distance: 10 } }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
@@ -219,11 +204,7 @@ function Sortable<T>({
   return (
     <SortableInternalContext value={contextValue}>
       <DndContext
-        measuring={{
-          droppable: {
-            strategy: MeasuringStrategy.Always,
-          },
-        }}
+        measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
         sensors={sensors}
         onDragCancel={handleDragCancel}
         onDragEnd={handleDragEnd}
@@ -303,12 +284,7 @@ function SortableItem({
 
   const defaultProps = isOverlay
     ? baseProps
-    : {
-        ...baseProps,
-        ref: setNodeRef,
-        style,
-        ...attributes,
-      };
+    : { ...baseProps, ref: setNodeRef, style, ...attributes };
 
   return (
     <SortableItemContext

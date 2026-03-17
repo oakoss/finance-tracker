@@ -36,11 +36,7 @@ export default defineConfig({
         test: {
           clearMocks: true,
           environment: 'jsdom',
-          environmentOptions: {
-            jsdom: {
-              url: 'http://localhost:3000',
-            },
-          },
+          environmentOptions: { jsdom: { url: 'http://localhost:3000' } },
           exclude: [
             'src/**/*.integration.test.{ts,tsx}',
             'test/**/*.integration.test.{ts,tsx}',

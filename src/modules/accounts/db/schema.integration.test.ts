@@ -14,13 +14,15 @@ test('accountTerms — rejects duplicate for same account', async ({ db }) => {
 
   await expectPgError(
     () =>
-      db.insert(accountTerms).values({
-        accountId: account.id,
-        aprBps: 1500,
-        createdById: user.id,
-        dueDay: 1,
-        statementDay: 15,
-      }),
+      db
+        .insert(accountTerms)
+        .values({
+          accountId: account.id,
+          aprBps: 1500,
+          createdById: user.id,
+          dueDay: 1,
+          statementDay: 15,
+        }),
     { code: '23505', constraint: 'account_terms_account_id_idx' },
   );
 });

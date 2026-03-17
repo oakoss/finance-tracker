@@ -7,9 +7,7 @@ import {
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { useSignOutListener } from '@/modules/auth/hooks/use-sign-out-listener';
 
-const sidebarShellStyles = {
-  '--header-height': '3.5rem',
-} as CSSProperties;
+const sidebarShellStyles = { '--header-height': '3.5rem' } as CSSProperties;
 
 export function SidebarShell({
   children,

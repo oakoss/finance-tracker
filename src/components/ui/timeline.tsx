@@ -168,9 +168,7 @@ function TimelineIndicator({
 }
 
 // TimelineItem
-type TimelineItemProps = {
-  step: number;
-} & useRender.ComponentProps<'div'>;
+type TimelineItemProps = { step: number } & useRender.ComponentProps<'div'>;
 
 function TimelineItem({
   children,

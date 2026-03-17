@@ -33,12 +33,7 @@ Base UI uses `render` and `children` instead of `asChild`.
 - Use `useRender` + `mergeProps` when you build custom wrappers.
 
 ```tsx
-const { render } = useRender({
-  defaultTagName: 'button',
-  props,
-  ref,
-  state,
-});
+const { render } = useRender({ defaultTagName: 'button', props, ref, state });
 
 return render;
 ```

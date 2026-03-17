@@ -27,10 +27,7 @@ export async function deleteBudgetPeriodService(
 
     const [deleted] = await tx
       .update(budgetPeriods)
-      .set({
-        deletedAt: now,
-        deletedById: userId,
-      })
+      .set({ deletedAt: now, deletedById: userId })
       .where(
         and(
           eq(budgetPeriods.id, data.id),
@@ -51,10 +48,7 @@ export async function deleteBudgetPeriodService(
     // Cascade soft-delete to budget lines
     await tx
       .update(budgetLines)
-      .set({
-        deletedAt: now,
-        deletedById: userId,
-      })
+      .set({ deletedAt: now, deletedById: userId })
       .where(
         and(
           eq(budgetLines.budgetPeriodId, data.id),

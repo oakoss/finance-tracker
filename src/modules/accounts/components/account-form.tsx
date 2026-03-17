@@ -100,10 +100,7 @@ export function AccountForm({
   const form = useForm({
     defaultValues: { ...DEFAULT_VALUES, ...defaultValues },
     onSubmit: ({ value }) => onSubmit(value),
-    validators: {
-      onBlur: accountFormSchema,
-      onSubmit: accountFormSchema,
-    },
+    validators: { onBlur: accountFormSchema, onSubmit: accountFormSchema },
   });
 
   return (
