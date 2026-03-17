@@ -1,6 +1,11 @@
 import { vi } from 'vitest';
 
-// Mock evlog and evlog/browser before any imports
+vi.mock('evlog/browser', () => ({
+  createBrowserLogDrain: mockCreateBrowserLogDrain,
+}));
+
+vi.mock('evlog', () => ({ initLogger: mockInitLogger, log: mockLog }));
+
 const mockLog = {
   debug: vi.fn(),
   error: vi.fn(),
@@ -10,27 +15,9 @@ const mockLog = {
 const mockInitLogger = vi.fn();
 const mockCreateBrowserLogDrain = vi.fn(() => 'mock-drain');
 
-vi.mock('evlog', () => ({
-  initLogger: mockInitLogger,
-  log: mockLog,
-}));
-
-vi.mock('evlog/browser', () => ({
-  createBrowserLogDrain: mockCreateBrowserLogDrain,
-}));
-
 // Helper to import a fresh client-logger module with specific env values
 const importClientLogger = async (env: { VITE_CLIENT_LOG_LEVEL?: string }) => {
   vi.resetModules();
-
-  // Re-register mocks after resetModules (hoisted mocks survive, but re-registering ensures clean state)
-  vi.mock('evlog', () => ({
-    initLogger: mockInitLogger,
-    log: mockLog,
-  }));
-  vi.mock('evlog/browser', () => ({
-    createBrowserLogDrain: mockCreateBrowserLogDrain,
-  }));
 
   if (env.VITE_CLIENT_LOG_LEVEL !== undefined) {
     vi.stubEnv('VITE_CLIENT_LOG_LEVEL', env.VITE_CLIENT_LOG_LEVEL);
@@ -58,7 +45,7 @@ describe('clientLog', () => {
 
       clientLog.info({ message: 'first' });
 
-      expect(mockInitLogger).toHaveBeenCalledTimes(1);
+      expect(mockInitLogger).toHaveBeenCalledOnce();
     });
 
     it('only calls initLogger once (idempotent)', async () => {
@@ -70,7 +57,7 @@ describe('clientLog', () => {
       clientLog.warn({ message: 'second' });
       clientLog.error({ message: 'third' });
 
-      expect(mockInitLogger).toHaveBeenCalledTimes(1);
+      expect(mockInitLogger).toHaveBeenCalledOnce();
     });
 
     it('creates a browser log drain', async () => {
@@ -80,12 +67,9 @@ describe('clientLog', () => {
 
       clientLog.info({ message: 'trigger init' });
 
-      expect(mockCreateBrowserLogDrain).toHaveBeenCalledTimes(1);
-      expect(mockCreateBrowserLogDrain).toHaveBeenCalledWith({
+      expect(mockCreateBrowserLogDrain).toHaveBeenCalledExactlyOnceWith({
         drain: { endpoint: '' },
-        pipeline: {
-          batch: { intervalMs: 3000, size: 20 },
-        },
+        pipeline: { batch: { intervalMs: 3000, size: 20 } },
       });
     });
 

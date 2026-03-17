@@ -25,7 +25,7 @@ export function DefaultShell({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-4">
             {isPending ? (
               <span className="h-5 w-20 animate-pulse rounded-sm bg-muted" />
-            ) : (session?.user ? (
+            ) : session?.user ? (
               <DefaultShellUserNav name={session.user.name} />
             ) : (
               <>
@@ -36,7 +36,7 @@ export function DefaultShell({ children }: { children: React.ReactNode }) {
                   Sign up
                 </RouterLink>
               </>
-            ))}
+            )}
             <ModeToggle />
           </div>
         </div>

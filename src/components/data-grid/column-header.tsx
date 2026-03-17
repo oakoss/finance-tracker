@@ -1,6 +1,7 @@
 'use client';
 
-import { type Column } from '@tanstack/react-table';
+import type { Column } from '@tanstack/react-table';
+
 import { type HTMLAttributes, memo, type ReactNode, useMemo } from 'react';
 
 import { getColumnMeta, useDataGrid } from '@/components/data-grid';

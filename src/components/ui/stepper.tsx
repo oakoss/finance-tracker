@@ -202,9 +202,9 @@ function StepperItem({
   const state: StepState =
     completed || step < activeStep
       ? 'completed'
-      : (activeStep === step
+      : activeStep === step
         ? 'active'
-        : 'inactive');
+        : 'inactive';
 
   const isLoading = loading && step === activeStep;
 
@@ -332,7 +332,7 @@ function StepperTrigger({
       disabled={isDisabled}
       id={id}
       role="tab"
-      tabIndex={typeof tabIndex === 'number' ? tabIndex : (isSelected ? 0 : -1)}
+      tabIndex={typeof tabIndex === 'number' ? tabIndex : isSelected ? 0 : -1}
       onClick={() => setActiveStep(step)}
       onKeyDown={handleKeyDown}
       {...props}

@@ -25,9 +25,7 @@ describe('env lazy proxy', () => {
   it('defers validation until first property access', async () => {
     const arkenv = await import('arkenv');
     const mockedArkenv = arkenv.default as unknown as MockInstance;
-    mockedArkenv.mockReturnValue({
-      DATABASE_URL: 'postgres://localhost/test',
-    });
+    mockedArkenv.mockReturnValue({ DATABASE_URL: 'postgres://localhost/test' });
 
     // Import env — should NOT call arkenv yet
     const { env } = await import('@/configs/env');
@@ -35,7 +33,7 @@ describe('env lazy proxy', () => {
 
     // Access a property — NOW it should validate
     const url = env.DATABASE_URL;
-    expect(mockedArkenv).toHaveBeenCalledTimes(1);
+    expect(mockedArkenv).toHaveBeenCalledOnce();
     expect(url).toBe('postgres://localhost/test');
   });
 
@@ -54,7 +52,7 @@ describe('env lazy proxy', () => {
     void env.BETTER_AUTH_URL;
 
     // Should only call arkenv once (cached)
-    expect(mockedArkenv).toHaveBeenCalledTimes(1);
+    expect(mockedArkenv).toHaveBeenCalledOnce();
   });
 
   it('skips validation when SKIP_ENV_VALIDATION=true', async () => {

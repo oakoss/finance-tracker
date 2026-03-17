@@ -60,9 +60,7 @@ function DataGridTableDndHeader<TData>({
     setNodeRef,
     transform,
     transition,
-  } = useSortable({
-    id: header.column.id,
-  });
+  } = useSortable({ id: header.column.id });
 
   const style: CSSProperties = {
     opacity: isDragging ? 0.8 : 1,
@@ -228,7 +226,7 @@ function DataGridTableDnd({
                   })}
                 </DataGridTableBodyRowSkeleton>
               ))
-            ) : (table.getRowModel().rows.length > 0 ? (
+            ) : table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map((row) => {
                 return (
                   <Fragment key={row.id}>
@@ -253,7 +251,7 @@ function DataGridTableDnd({
               })
             ) : (
               <DataGridTableEmpty />
-            ))}
+            )}
           </DataGridTableBody>
         </DataGridTableBase>
       </div>

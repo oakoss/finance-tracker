@@ -2,22 +2,20 @@
 
 import { vi } from 'vitest';
 
+vi.mock('@/db', () => ({}));
+
+vi.mock('@/lib/logging/evlog', () => ({
+  log: { info: vi.fn(), warn: vi.fn() },
+}));
+
+vi.mock('@/lib/logging/hash', () => ({
+  hashId: vi.fn((id: string) => `hashed_${id}`),
+}));
+
+vi.mock('@/db/audit', () => ({ auditLogs: Symbol('auditLogs') }));
+
 const importModule = async () => {
   vi.resetModules();
-
-  vi.mock('@/db', () => ({}));
-
-  vi.mock('@/lib/logging/evlog', () => ({
-    log: { info: vi.fn(), warn: vi.fn() },
-  }));
-
-  vi.mock('@/lib/logging/hash', () => ({
-    hashId: vi.fn((id: string) => `hashed_${id}`),
-  }));
-
-  vi.mock('@/db/audit', () => ({
-    auditLogs: Symbol('auditLogs'),
-  }));
 
   const evlog = await import('@/lib/logging/evlog');
   const schema = await import('@/db/audit');

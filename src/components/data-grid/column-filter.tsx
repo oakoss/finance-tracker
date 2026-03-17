@@ -1,4 +1,5 @@
-import { type Column } from '@tanstack/react-table';
+import type { Column } from '@tanstack/react-table';
+
 import { useMemo, useState } from 'react';
 
 import { Icons } from '@/components/icons';

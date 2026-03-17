@@ -1,8 +1,9 @@
 'use client';
 
+import type { ItemInstance } from '@headless-tree/core';
+
 import { mergeProps } from '@base-ui/react/merge-props';
 import { useRender } from '@base-ui/react/use-render';
-import { type ItemInstance } from '@headless-tree/core';
 import { createContext, use } from 'react';
 
 import { Icons } from '@/components/icons';
@@ -73,10 +74,10 @@ function Tree({
   );
 }
 
-type TreeItemProps<T = any> = {
-  indent?: number;
-  item: ItemInstance<T>;
-} & Omit<useRender.ComponentProps<'button'>, 'indent'>;
+type TreeItemProps<T = any> = { indent?: number; item: ItemInstance<T> } & Omit<
+  useRender.ComponentProps<'button'>,
+  'indent'
+>;
 
 function TreeItem<T = any>({
   children,
@@ -155,8 +156,6 @@ function TreeItemLabel<T = any>({
   const item = propItem ?? currentItem;
 
   if (!item) {
-    // eslint-disable-next-line @eslint-react/purity -- dev-only guard
-    console.warn('TreeItemLabel: No item provided via props or context');
     return null;
   }
 
@@ -204,10 +203,6 @@ function TreeDragLine({
   const { tree } = useTreeContext();
 
   if (!tree || typeof tree.getDragLineStyle !== 'function') {
-    // eslint-disable-next-line @eslint-react/purity -- dev-only guard
-    console.warn(
-      'TreeDragLine: No tree provided via context or tree does not have getDragLineStyle method',
-    );
     return null;
   }
 

@@ -16,27 +16,13 @@ import { cn } from '@/lib/utils';
 import { m } from '@/paraglide/messages';
 
 const headerCellSpacingVariants = cva('', {
-  defaultVariants: {
-    size: 'default',
-  },
-  variants: {
-    size: {
-      default: 'px-4',
-      dense: 'h-9 px-2.5',
-    },
-  },
+  defaultVariants: { size: 'default' },
+  variants: { size: { default: 'px-4', dense: 'h-9 px-2.5' } },
 });
 
 const bodyCellSpacingVariants = cva('', {
-  defaultVariants: {
-    size: 'default',
-  },
-  variants: {
-    size: {
-      default: 'px-4 py-2.5',
-      dense: 'px-2.5 py-2',
-    },
-  },
+  defaultVariants: { size: 'default' },
+  variants: { size: { default: 'px-4 py-2.5', dense: 'px-2.5 py-2' } },
 });
 
 function getPinningStyles<TData>(column: Column<TData>): CSSProperties {
@@ -161,14 +147,12 @@ function DataGridTableHeadRowCell<TData>({
           : '',
       )}
       data-last-col={
-        isLastLeftPinned ? 'left' : (isFirstRightPinned ? 'right' : undefined)
+        isLastLeftPinned ? 'left' : isFirstRightPinned ? 'right' : undefined
       }
       data-pinned={isPinned === false ? undefined : isPinned}
       style={{
         ...((props.tableLayout?.width === 'fixed' ||
-          props.tableLayout?.columnsResizable) && {
-          width: header.getSize(),
-        }),
+          props.tableLayout?.columnsResizable) && { width: header.getSize() }),
         ...(props.tableLayout?.columnsPinnable &&
           column.getCanPin() &&
           getPinningStyles(column)),
@@ -201,7 +185,7 @@ function DataGridTableHeadRowCellResize<TData>({
 }
 
 function DataGridTableRowSpacer() {
-  return <tbody aria-hidden="true" className="h-2"></tbody>;
+  return <tbody aria-hidden="true" className="h-2" />;
 }
 
 function DataGridTableBody({ children }: { children: ReactNode }) {
@@ -281,13 +265,11 @@ function DataGridTableBodyRowSkeletonCell<TData>({
           : '',
       )}
       data-last-col={
-        isLastLeftPinned ? 'left' : (isFirstRightPinned ? 'right' : undefined)
+        isLastLeftPinned ? 'left' : isFirstRightPinned ? 'right' : undefined
       }
       data-pinned={isPinned === false ? undefined : isPinned}
       style={{
-        ...(props.tableLayout?.columnsResizable && {
-          width: column.getSize(),
-        }),
+        ...(props.tableLayout?.columnsResizable && { width: column.getSize() }),
         ...(props.tableLayout?.columnsPinnable &&
           column.getCanPin() &&
           getPinningStyles(column)),
@@ -403,13 +385,11 @@ function DataGridTableBodyRowCell<TData>({
           : '',
       )}
       data-last-col={
-        isLastLeftPinned ? 'left' : (isFirstRightPinned ? 'right' : undefined)
+        isLastLeftPinned ? 'left' : isFirstRightPinned ? 'right' : undefined
       }
       data-pinned={isPinned === false ? undefined : isPinned}
       style={{
-        ...(props.tableLayout?.columnsResizable && {
-          width: column.getSize(),
-        }),
+        ...(props.tableLayout?.columnsResizable && { width: column.getSize() }),
         ...(props.tableLayout?.columnsPinnable &&
           column.getCanPin() &&
           getPinningStyles(column)),
@@ -458,7 +438,7 @@ function DataGridTableRowSelect<TData>({ row }: { row: Row<TData> }) {
           'absolute inset-y-0 inset-s-0 hidden w-0.5 bg-primary',
           row.getIsSelected() && 'block',
         )}
-      ></div>
+      />
       <Checkbox
         aria-label={m['dataGrid.table.selectRow']()}
         checked={row.getIsSelected()}

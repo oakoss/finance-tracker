@@ -1,12 +1,13 @@
 'use client';
 
-import {
-  type Column,
-  type ColumnFiltersState,
-  type RowData,
-  type SortingState,
-  type Table,
+import type {
+  Column,
+  ColumnFiltersState,
+  RowData,
+  SortingState,
+  Table,
 } from '@tanstack/react-table';
+
 import { createContext, type ReactNode, use } from 'react';
 
 import { cn } from '@/lib/utils';
@@ -40,10 +41,7 @@ export type DataGridApiFetchParams = {
 export type DataGridApiResponse<T> = {
   data: T[];
   empty: boolean;
-  pagination: {
-    page: number;
-    total: number;
-  };
+  pagination: { page: number; total: number };
 };
 
 export type DataGridContextProps<TData extends object> = {
@@ -173,10 +171,7 @@ function DataGrid<TData extends object>({
       ...defaultProps.tableClassNames,
       ...props.tableClassNames,
     },
-    tableLayout: {
-      ...defaultProps.tableLayout,
-      ...props.tableLayout,
-    },
+    tableLayout: { ...defaultProps.tableLayout, ...props.tableLayout },
   };
 
   // Ensure table is provided

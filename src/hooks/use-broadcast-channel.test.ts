@@ -3,10 +3,7 @@ import { act, renderHook } from '@testing-library/react';
 import { useBroadcastChannel } from './use-broadcast-channel';
 
 vi.mock('@/lib/logging/client-logger', () => ({
-  clientLog: {
-    error: vi.fn(),
-    warn: vi.fn(),
-  },
+  clientLog: { error: vi.fn(), warn: vi.fn() },
 }));
 
 const mockClose = vi.fn();
@@ -232,7 +229,7 @@ describe('useBroadcastChannel', () => {
 
     rerender({ name: 'channel-b' });
 
-    expect(mockClose).toHaveBeenCalledTimes(1);
+    expect(mockClose).toHaveBeenCalledOnce();
   });
 
   it('uses latest onMessage without re-subscribing', () => {

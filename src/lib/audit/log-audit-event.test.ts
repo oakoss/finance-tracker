@@ -2,16 +2,16 @@
 
 import { vi } from 'vitest';
 
+vi.mock('@/lib/logging/hash', () => ({
+  hashId: vi.fn((id: string) => `hashed_${id}`),
+}));
+
+vi.mock('@/lib/logging/evlog', () => ({
+  log: { info: vi.fn(), warn: vi.fn() },
+}));
+
 const importModule = async () => {
   vi.resetModules();
-
-  vi.mock('@/lib/logging/evlog', () => ({
-    log: { info: vi.fn(), warn: vi.fn() },
-  }));
-
-  vi.mock('@/lib/logging/hash', () => ({
-    hashId: vi.fn((id: string) => `hashed_${id}`),
-  }));
 
   const evlog = await import('@/lib/logging/evlog');
   const hash = await import('@/lib/logging/hash');

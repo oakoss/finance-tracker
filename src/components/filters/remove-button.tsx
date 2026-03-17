@@ -15,9 +15,9 @@ function RemoveButton({
   const size =
     context.size === 'sm'
       ? 'icon-sm'
-      : (context.size === 'lg'
+      : context.size === 'lg'
         ? 'icon-lg'
-        : 'icon');
+        : 'icon';
 
   return (
     <Button className={className} size={size} variant="outline" {...props}>

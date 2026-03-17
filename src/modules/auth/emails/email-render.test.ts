@@ -1,7 +1,8 @@
 // @vitest-environment node
 
+import type { ReactElement } from 'react';
+
 import { render } from '@react-email/render';
-import { type ReactElement } from 'react';
 import { vi } from 'vitest';
 
 import { getLocale, setLocale } from '@/paraglide/runtime';
@@ -141,9 +142,7 @@ describe('renderEmail', () => {
       });
 
       expect(mockedSetLocale).toHaveBeenCalledWith('fr', { reload: false });
-      expect(mockedSetLocale).toHaveBeenCalledWith('en-US', {
-        reload: false,
-      });
+      expect(mockedSetLocale).toHaveBeenCalledWith('en-US', { reload: false });
     });
 
     it('falls back to baseLocale when getLocale returns undefined', async () => {
@@ -167,9 +166,7 @@ describe('renderEmail', () => {
       const calls = trackLocaleChanges();
 
       await expect(
-        renderEmail(element, {
-          locale: 'fr' as ReturnType<typeof getLocale>,
-        }),
+        renderEmail(element, { locale: 'fr' as ReturnType<typeof getLocale> }),
       ).rejects.toThrow('Email render failed.');
 
       expect(calls).toEqual(['fr', 'en-US']);
@@ -179,9 +176,7 @@ describe('renderEmail', () => {
       mockedSetLocale.mockRejectedValueOnce(new Error('locale boom'));
 
       await expect(
-        renderEmail(element, {
-          locale: 'fr' as ReturnType<typeof getLocale>,
-        }),
+        renderEmail(element, { locale: 'fr' as ReturnType<typeof getLocale> }),
       ).rejects.toThrow('Failed to set email locale.');
     });
 
@@ -191,9 +186,7 @@ describe('renderEmail', () => {
         .mockRejectedValueOnce(new Error('reset boom'));
 
       await expect(
-        renderEmail(element, {
-          locale: 'fr' as ReturnType<typeof getLocale>,
-        }),
+        renderEmail(element, { locale: 'fr' as ReturnType<typeof getLocale> }),
       ).rejects.toThrow('Failed to reset email locale.');
     });
 
@@ -204,9 +197,7 @@ describe('renderEmail', () => {
         .mockRejectedValueOnce(new Error('reset boom'));
 
       await expect(
-        renderEmail(element, {
-          locale: 'fr' as ReturnType<typeof getLocale>,
-        }),
+        renderEmail(element, { locale: 'fr' as ReturnType<typeof getLocale> }),
       ).rejects.toThrow('Email render failed and locale reset failed.');
     });
   });

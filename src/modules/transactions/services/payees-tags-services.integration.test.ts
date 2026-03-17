@@ -9,7 +9,7 @@ import { createPayeeService } from '@/modules/transactions/services/create-payee
 import { createTagService } from '@/modules/transactions/services/create-tag';
 import { listPayeesService } from '@/modules/transactions/services/list-payees';
 import { listTagsService } from '@/modules/transactions/services/list-tags';
-import { type Db as TestDb } from '~test/factories/base';
+import type { Db as TestDb } from '~test/factories/base';
 import { insertPayee } from '~test/factories/payee.factory';
 import { insertTag } from '~test/factories/tag.factory';
 import { insertUser } from '~test/factories/user.factory';

@@ -120,7 +120,7 @@ describe('ConfirmDestructiveDialog', () => {
     await user.type(screen.getByPlaceholderText('DELETE'), 'DELETE');
     await user.click(screen.getByRole('button', { name: 'Delete' }));
 
-    expect(onConfirm).toHaveBeenCalledTimes(1);
+    expect(onConfirm).toHaveBeenCalledOnce();
   });
 
   it('clears the input when dialog is closed and reopened', async () => {
@@ -174,9 +174,7 @@ describe('ConfirmDestructiveDialog', () => {
 
     await user.click(screen.getByRole('button', { name: 'Open' }));
 
-    const actionButton = screen.getByRole('button', {
-      name: /Delete/,
-    });
+    const actionButton = screen.getByRole('button', { name: /Delete/ });
     expect(actionButton).toBeDisabled();
     expect(actionButton).toHaveAttribute('data-loading', 'true');
   });
@@ -349,6 +347,6 @@ describe('ConfirmDestructiveDialog (controlled mode)', () => {
     await user.type(screen.getByPlaceholderText('DELETE'), 'DELETE');
     await user.click(screen.getByRole('button', { name: 'Delete' }));
 
-    expect(onConfirm).toHaveBeenCalledTimes(1);
+    expect(onConfirm).toHaveBeenCalledOnce();
   });
 });

@@ -97,9 +97,7 @@ function DataGridTableDndRow<TData>({ row }: { row: Row<TData> }) {
     setNodeRef,
     transform,
     transition,
-  } = useSortable({
-    id: row.id,
-  });
+  } = useSortable({ id: row.id });
 
   const style: CSSProperties = {
     opacity: isDragging ? 0.8 : 1,
@@ -243,7 +241,7 @@ function DataGridTableDndRows({
                   })}
                 </DataGridTableBodyRowSkeleton>
               ))
-            ) : (table.getRowModel().rows.length > 0 ? (
+            ) : table.getRowModel().rows.length > 0 ? (
               <SortableContext
                 items={dataIds}
                 strategy={verticalListSortingStrategy}
@@ -254,7 +252,7 @@ function DataGridTableDndRows({
               </SortableContext>
             ) : (
               <DataGridTableEmpty />
-            ))}
+            )}
           </DataGridTableBody>
         </DataGridTableBase>
       </div>

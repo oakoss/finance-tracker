@@ -8,11 +8,11 @@
     "eslint-plugin-playwright",
     { "name": "jsx-a11y-js", "specifier": "eslint-plugin-jsx-a11y" },
     { "name": "react-compiler", "specifier": "eslint-plugin-react-hooks" },
-    { "name": "unicorn-js", "specifier": "eslint-plugin-unicorn" }
+    { "name": "unicorn-js", "specifier": "eslint-plugin-unicorn" },
+    { "name": "vitest-js", "specifier": "@vitest/eslint-plugin" },
+    { "name": "import-x-js", "specifier": "eslint-plugin-import-x" }
   ],
-  "categories": {
-    "correctness": "error"
-  },
+  "categories": { "correctness": "error" },
   "ignorePatterns": [
     "node_modules",
     "dist",
@@ -78,38 +78,28 @@
     ],
     "no-unused-vars": [
       "error",
-      {
-        "argsIgnorePattern": "^_",
-        "varsIgnorePattern": "^_"
-      }
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
     ],
     "import/first": "error",
-    "import/no-duplicates": [
-      "error",
-      {
-        "prefer-inline": true
-      }
-    ],
+    "import/no-duplicates": ["error", { "prefer-inline": true }],
     "import/no-cycle": ["error", { "maxDepth": 3 }],
     "import/no-relative-parent-imports": "error",
     "unicorn/filename-case": [
       "error",
       {
-        "cases": {
-          "camelCase": false,
-          "kebabCase": true,
-          "pascalCase": false
-        },
+        "cases": { "camelCase": false, "kebabCase": true, "pascalCase": false },
         "ignore": ["^\\$.*\\.tsx?$", "^-.*\\.tsx?$"]
       }
     ],
     "array-callback-return": "error",
+    "block-scoped-var": "error",
     "no-accumulating-spread": "error",
     "no-case-declarations": "error",
     "no-constructor-return": "error",
     "no-else-return": "error",
     "no-empty": "error",
     "no-empty-function": "error",
+    "no-extend-native": "error",
     "no-extra-bind": "error",
     "no-fallthrough": "error",
     "no-lonely-if": "error",
@@ -118,34 +108,26 @@
     "no-regex-spaces": "error",
     "no-self-compare": "error",
     "no-shadow": "error",
+    "no-template-curly-in-string": "error",
     "no-unexpected-multiline": "error",
+    "no-unmodified-loop-condition": "error",
+    "no-unneeded-ternary": "error",
+    "no-useless-call": "error",
     "no-useless-concat": "error",
     "no-useless-constructor": "error",
     "no-useless-return": "error",
     "no-var": "error",
     "perfectionist/sort-exports": [
       "error",
-      {
-        "ignoreCase": true,
-        "order": "asc",
-        "type": "alphabetical"
-      }
+      { "ignoreCase": true, "order": "asc", "type": "alphabetical" }
     ],
     "perfectionist/sort-named-exports": [
       "error",
-      {
-        "ignoreCase": true,
-        "order": "asc",
-        "type": "alphabetical"
-      }
+      { "ignoreCase": true, "order": "asc", "type": "alphabetical" }
     ],
     "perfectionist/sort-named-imports": [
       "error",
-      {
-        "ignoreCase": true,
-        "order": "asc",
-        "type": "alphabetical"
-      }
+      { "ignoreCase": true, "order": "asc", "type": "alphabetical" }
     ],
     "perfectionist/sort-objects": [
       "error",
@@ -155,16 +137,17 @@
           "callingFunctionNamePattern": "^createFileRoute\\("
         }
       },
-      {
-        "ignoreCase": true,
-        "order": "asc",
-        "type": "alphabetical"
-      }
+      { "ignoreCase": true, "order": "asc", "type": "alphabetical" }
     ],
     "prefer-const": "error",
+    "prefer-object-has-own": "error",
     "prefer-rest-params": "error",
     "prefer-spread": "error",
+    "prefer-template": "error",
     "preserve-caught-error": "error",
+    "import-x-js/export": "error",
+    "import-x-js/newline-after-import": "error",
+    "import-x-js/no-useless-path-segments": "error",
     "import/no-absolute-path": "error",
     "import/no-empty-named-blocks": "error",
     "import/no-self-import": "error",
@@ -198,10 +181,11 @@
     "unicorn/no-instanceof-builtins": "error",
     "unicorn/no-invalid-fetch-options": "error",
     "unicorn/no-invalid-remove-event-listener": "error",
+    "unicorn/no-length-as-slice-end": "error",
     "unicorn/no-lonely-if": "error",
     "unicorn/no-magic-array-flat-depth": "error",
     "unicorn/no-negation-in-equality-check": "error",
-    "unicorn/no-nested-ternary": "error",
+    "unicorn/no-nested-ternary": "off",
     "unicorn/no-new-array": "error",
     "unicorn/no-new-buffer": "error",
     "unicorn/no-null": "off",
@@ -316,9 +300,7 @@
         "typescript/consistent-type-exports": "error",
         "typescript/consistent-type-imports": [
           "error",
-          {
-            "fixStyle": "inline-type-imports"
-          }
+          { "fixStyle": "inline-type-imports" }
         ],
         "typescript/dot-notation": "error",
         "typescript/no-array-constructor": "error",
@@ -331,24 +313,18 @@
         "typescript/no-explicit-any": "off",
         "typescript/no-floating-promises": "error",
         "typescript/no-for-in-array": "error",
+        "typescript/no-import-type-side-effects": "error",
         "typescript/no-implied-eval": "error",
         "typescript/no-inferrable-types": "error",
         "typescript/no-namespace": "error",
+        "typescript/no-non-null-asserted-nullish-coalescing": "error",
         "perfectionist/sort-object-types": [
           "error",
-          {
-            "ignoreCase": true,
-            "order": "asc",
-            "type": "alphabetical"
-          }
+          { "ignoreCase": true, "order": "asc", "type": "alphabetical" }
         ],
         "typescript/no-misused-promises": [
           "error",
-          {
-            "checksVoidReturn": {
-              "attributes": false
-            }
-          }
+          { "checksVoidReturn": { "attributes": false } }
         ],
         "typescript/no-redundant-type-constituents": "error",
         "typescript/no-require-imports": "error",
@@ -420,7 +396,9 @@
         ],
         "jsx-a11y/role-supports-aria-props": "off",
         "react/exhaustive-deps": "off",
+        "react/iframe-missing-sandbox": "error",
         "react/jsx-no-constructed-context-values": "off",
+        "react/jsx-no-script-url": "error",
         "react/jsx-no-target-blank": "error",
         "react/jsx-no-useless-fragment": "off",
         "react/no-clone-element": "error",
@@ -429,6 +407,7 @@
         "react/no-unsafe": "off",
         "react/react-in-jsx-scope": "off",
         "react/rules-of-hooks": "error",
+        "react/self-closing-comp": "error",
         "react-compiler/config": "error",
         "react-compiler/error-boundaries": "error",
         "react-compiler/gating": "error",
@@ -611,6 +590,42 @@
       }
     },
     {
+      "files": ["**/*.test.*", "**/*.spec.*", "test/**/*"],
+      "plugins": ["vitest"],
+      "rules": {
+        "vitest/consistent-each-for": "error",
+        "vitest/hoisted-apis-on-top": "error",
+        "vitest/no-conditional-tests": "error",
+        "vitest/no-import-node-test": "error",
+        "vitest/prefer-called-once": "error",
+        "vitest/prefer-expect-type-of": "off",
+        "vitest/prefer-to-be-falsy": "off",
+        "vitest/prefer-to-be-object": "error",
+        "vitest/prefer-to-be-truthy": "off",
+        "vitest-js/expect-expect": [
+          "error",
+          { "assertFunctionNames": ["expect", "expectTypeOf"] }
+        ],
+        "vitest-js/no-commented-out-tests": "error",
+        "vitest-js/no-conditional-expect": "error",
+        "vitest-js/no-disabled-tests": "warn",
+        "vitest-js/no-focused-tests": "error",
+        "vitest-js/no-identical-title": "error",
+        "vitest-js/no-interpolation-in-snapshots": "error",
+        "vitest-js/no-mocks-import": "error",
+        "vitest-js/no-standalone-expect": [
+          "error",
+          { "additionalTestBlockFunctions": ["test"] }
+        ],
+        "vitest-js/no-unneeded-async-expect-function": "error",
+        "vitest-js/prefer-called-exactly-once-with": "error",
+        "vitest-js/valid-describe-callback": "error",
+        "vitest-js/valid-expect": "error",
+        "vitest-js/valid-expect-in-promise": "error",
+        "vitest-js/valid-title": "error"
+      }
+    },
+    {
       "files": ["e2e/**/*"],
       "rules": {
         "playwright/consistent-spacing-between-blocks": "warn",
@@ -656,15 +671,12 @@
   ],
   "options": {
     "maxWarnings": 0,
+    "reportUnusedDisableDirectives": "error",
     "typeAware": true
   },
   "settings": {
     "jsx-a11y": {
-      "components": {
-        "Button": "button",
-        "Input": "input",
-        "Select": "select"
-      }
+      "components": { "Button": "button", "Input": "input", "Select": "select" }
     }
   }
 }

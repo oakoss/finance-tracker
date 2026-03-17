@@ -43,11 +43,7 @@ export async function seedE2eUser(
 
   const [user] = await db
     .insert(users)
-    .values({
-      email,
-      emailVerified: true,
-      name,
-    })
+    .values({ email, emailVerified: true, name })
     .returning({ id: users.id });
 
   if (!user) {
@@ -56,12 +52,14 @@ export async function seedE2eUser(
     );
   }
 
-  await db.insert(accounts).values({
-    accountId: user.id,
-    password: hashedPassword,
-    providerId: 'credential',
-    userId: user.id,
-  });
+  await db
+    .insert(accounts)
+    .values({
+      accountId: user.id,
+      password: hashedPassword,
+      providerId: 'credential',
+      userId: user.id,
+    });
 
   console.log(`Created E2E user: ${email}`);
 }
@@ -73,10 +71,7 @@ export async function seedE2eWorkerUsers(db: Db, count: number): Promise<void> {
       await seedE2eUser(db, e2eEmail(i), e2eDisplayName(i));
     } catch (error) {
       throw new Error(
-        `Failed to seed worker user ${i}/${count} (${e2eEmail(i)}).` +
-          (i > 0
-            ? ` Workers 0-${i - 1} may have been created successfully.`
-            : ''),
+        `Failed to seed worker user ${i}/${count} (${e2eEmail(i)}).${i > 0 ? ` Workers 0-${i - 1} may have been created successfully.` : ''}`,
         { cause: error },
       );
     }
