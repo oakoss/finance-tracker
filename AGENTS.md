@@ -71,6 +71,9 @@ These are enforced by tooling and will reject code if violated:
   followed by bullet points. Small changes get just bullet points
   (or no body if the subject says it all). Keep bullets concise:
   what changed, not how. No wall-of-text paragraphs.
+- **Commit ticket refs**: Do not put ticket IDs in the subject or
+  body. Add `Refs: TREK-XX` in the commit footer (after a blank
+  line following the body).
 - **Kebab-case filenames**: `unicorn/filename-case`.
 - **No barrel files**: Import from concrete module paths.
 - **Absolute imports**: Use `@/` paths. No parent relative imports.
