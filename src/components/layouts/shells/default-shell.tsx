@@ -5,6 +5,7 @@ import { RouterLink } from '@/components/ui/link';
 import { appConfig } from '@/configs/app';
 import { authClient } from '@/lib/auth/client';
 import { useSignOut } from '@/modules/auth/hooks/use-sign-out';
+import { m } from '@/paraglide/messages';
 
 export function DefaultShell({ children }: { children: React.ReactNode }) {
   const { data: session, isPending } = authClient.useSession();
@@ -52,6 +53,9 @@ function DefaultShellUserNav({ name }: { name: string }) {
   return (
     <>
       <span className="text-sm text-muted-foreground">{name}</span>
+      <RouterLink to="/dashboard" variant="nav">
+        {m['nav.dashboard']()}
+      </RouterLink>
       <Button size="sm" variant="outline" onClick={handleSignOut}>
         Sign out
       </Button>

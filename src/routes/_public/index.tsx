@@ -1,10 +1,26 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, isRedirect, redirect } from '@tanstack/react-router';
 
 import { Icons } from '@/components/icons';
 import { appConfig } from '@/configs/app';
+import { getSession } from '@/modules/auth/api/get-session';
 import { m } from '@/paraglide/messages';
 
-export const Route = createFileRoute('/_public/')({ component: LandingPage });
+export const Route = createFileRoute('/_public/')({
+  beforeLoad: async () => {
+    try {
+      const session = await getSession();
+
+      if (session) {
+        throw redirect({ to: '/dashboard' });
+      }
+    } catch (error) {
+      if (isRedirect(error)) throw error;
+      // Auth infrastructure failures fall through to show the landing page.
+      // getSession() already logs the error server-side via evlog.
+    }
+  },
+  component: LandingPage,
+});
 
 function LandingPage() {
   return (
