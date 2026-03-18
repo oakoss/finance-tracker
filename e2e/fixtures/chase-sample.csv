@@ -1,0 +1,6 @@
+Transaction Date,Post Date,Description,Category,Type,Amount,Memo
+01/15/2024,01/16/2024,STARBUCKS STORE 12345,Food & Drink,Sale,-5.75,
+01/16/2024,01/17/2024,AMAZON.COM*ABC123,Shopping,Sale,-42.99,
+01/17/2024,01/18/2024,UBER TRIP,Travel,Sale,-18.50,
+01/20/2024,01/21/2024,WHOLE FOODS MARKET,Groceries,Sale,-87.23,
+01/25/2024,01/25/2024,PAYROLL DIRECT DEP,Income,Payment,2500.00,

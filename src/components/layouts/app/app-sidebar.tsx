@@ -33,7 +33,7 @@ const navMain = [
   },
   { icon: <Icons.Tag />, title: 'Categories', url: '/categories' as const },
   { icon: <Icons.ChartBar />, title: 'Budgets', url: '/budgets' as const },
-  { icon: <Icons.Upload />, title: 'Imports', url: '/dashboard' as const },
+  { icon: <Icons.Upload />, title: 'Imports', url: '/imports' as const },
 ];
 
 const navSecondary = [
