@@ -20,7 +20,10 @@ test.describe(
   () => {
     for (const scheme of colorSchemes) {
       test(`no a11y violations (${scheme})`, async ({ page }) => {
-        await page.emulateMedia({ colorScheme: scheme });
+        await page.emulateMedia({
+          colorScheme: scheme,
+          reducedMotion: 'reduce',
+        });
         await page.goto('/dashboard');
         await waitForHydration(page);
         const results = await a11yScan(page);

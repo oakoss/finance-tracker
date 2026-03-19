@@ -29,8 +29,12 @@ test.describe('budget edit dialog', { tag: ['@authenticated'] }, () => {
     const input1 = page.getByRole('spinbutton', { name: cat1 });
     const input2 = page.getByRole('spinbutton', { name: cat2 });
 
-    // Fill amounts for the 2 categories
-    await expect(input1).toBeVisible();
+    // Wait for both category inputs to render (async dialog content)
+    await expect(async () => {
+      await expect(input1).toBeVisible();
+      await expect(input2).toBeVisible();
+    }).toPass({ timeout: 10_000 });
+
     await input1.fill('150.00');
     await input2.fill('75.50');
 

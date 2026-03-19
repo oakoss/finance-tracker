@@ -19,7 +19,10 @@ test.describe('accessibility', { tag: '@a11y' }, () => {
       test(`${name} page has no a11y violations (${scheme})`, async ({
         page,
       }) => {
-        await page.emulateMedia({ colorScheme: scheme });
+        await page.emulateMedia({
+          colorScheme: scheme,
+          reducedMotion: 'reduce',
+        });
         await page.goto(path);
         await waitForHydration(page);
         const results = await a11yScan(page);
