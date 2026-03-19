@@ -1,7 +1,16 @@
-import path from 'node:path';
-
 import { expect, test } from '~e2e/fixtures/auth';
 import { expectToast, isEmptyState } from '~e2e/fixtures/table-actions';
+
+/** Generate a unique CSV so the file hash differs across projects/runs. */
+function uniqueCsv() {
+  const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return [
+    'Transaction Date,Post Date,Description,Category,Type,Amount,Memo',
+    `01/15/2024,01/16/2024,STARBUCKS #${id},Food & Drink,Sale,-5.75,`,
+    '01/16/2024,01/17/2024,AMAZON.COM*ABC123,Shopping,Sale,-42.99,',
+    '01/17/2024,01/18/2024,UBER TRIP,Travel,Sale,-18.50,',
+  ].join('\n');
+}
 
 test.describe(
   'imports CSV upload',
@@ -30,13 +39,13 @@ test.describe(
         .getByRole('option', { name: new RegExp(testAccountName, 'i') })
         .click();
 
-      // Upload CSV file
-      const csvPath = path.resolve(
-        import.meta.dirname,
-        '../fixtures/chase-sample.csv',
-      );
+      // Upload unique CSV (avoids duplicate-hash rejection across projects)
       const fileInput = page.locator('input[type="file"]');
-      await fileInput.setInputFiles(csvPath);
+      await fileInput.setInputFiles({
+        buffer: Buffer.from(uniqueCsv()),
+        mimeType: 'text/csv',
+        name: 'chase-sample.csv',
+      });
 
       // Submit
       await page.getByRole('button', { name: /^import$/i }).click();

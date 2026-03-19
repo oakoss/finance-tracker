@@ -30,6 +30,7 @@ async function cleanE2eUserData(
     return;
   }
 
+  await db.delete(schema.imports).where(eq(schema.imports.userId, user.id));
   await db
     .delete(schema.ledgerAccounts)
     .where(eq(schema.ledgerAccounts.userId, user.id));
