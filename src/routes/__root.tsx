@@ -19,6 +19,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { appConfig } from '@/configs/app';
 import { useAutomatedBrowser } from '@/hooks/use-automated-browser';
 import { useHydratedAttribute } from '@/hooks/use-hydrated';
+import { PostHogProvider } from '@/lib/analytics';
 import { devtoolsPlugins } from '@/lib/devtools';
 import { getLocale } from '@/paraglide/runtime';
 import globalsCss from '@/styles/globals.css?url';
@@ -91,22 +92,24 @@ function RootComponent() {
   const isAutomated = useAutomatedBrowser();
 
   return (
-    <ThemeProvider
-      disableTransitionOnChange
-      enableSystem
-      attribute="class"
-      defaultTheme="system"
-    >
-      <div className="relative isolate flex min-h-svh flex-col">
-        <Outlet />
-      </div>
-      <Toaster />
-      {!isAutomated && (
-        <TanStackDevtools
-          config={{ position: 'bottom-right' }}
-          plugins={devtoolsPlugins}
-        />
-      )}
-    </ThemeProvider>
+    <PostHogProvider>
+      <ThemeProvider
+        disableTransitionOnChange
+        enableSystem
+        attribute="class"
+        defaultTheme="system"
+      >
+        <div className="relative isolate flex min-h-svh flex-col">
+          <Outlet />
+        </div>
+        <Toaster />
+        {!isAutomated && (
+          <TanStackDevtools
+            config={{ position: 'bottom-right' }}
+            plugins={devtoolsPlugins}
+          />
+        )}
+      </ThemeProvider>
+    </PostHogProvider>
   );
 }

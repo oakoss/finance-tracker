@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
 import { AppHeader } from '@/components/layouts/app/app-header';
 import { SidebarShell } from '@/components/layouts/shells/sidebar-shell';
+import { usePostHogIdentity } from '@/hooks/use-posthog-identity';
 import { getSession } from '@/modules/auth/api/get-session';
 
 export const Route = createFileRoute('/_app')({
@@ -19,6 +20,7 @@ export const Route = createFileRoute('/_app')({
 
 function AppLayout() {
   const { session } = Route.useRouteContext();
+  usePostHogIdentity(session.user);
 
   return (
     <SidebarShell

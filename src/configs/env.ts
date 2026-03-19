@@ -25,6 +25,8 @@ export const Env = type({
   TRUSTED_ORIGINS: 'string > 0',
   // Client-side vars (VITE_* prefix — available in browser via import.meta.env)
   VITE_CLIENT_LOG_LEVEL: "'debug' | 'info' | 'warn' | 'error' = 'warn'",
+  'VITE_PUBLIC_POSTHOG_HOST?': 'string.url',
+  'VITE_PUBLIC_POSTHOG_KEY?': 'string > 0',
 });
 
 type ValidatedEnv = typeof Env.infer;
