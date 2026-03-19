@@ -1,7 +1,9 @@
 onlyBuiltDependencies:
+  - core-js
   - esbuild
   - lefthook
   - msw
+  - protobufjs
   - unrs-resolver
 overrides:
   '@hono/node-server@<1.19.10': '>=1.19.10'
