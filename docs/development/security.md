@@ -8,12 +8,13 @@ ADR.
 ## Authentication
 
 Better Auth handles authentication with the following production
-settings (configured in `src/lib/auth.ts`):
+settings (configured in `src/lib/auth/server.ts`):
 
 ### Password policy
 
 - Minimum length: 8 characters (configured in `appConfig.passwordMinLength`)
-- Email verification required before login
+- Email verification emails sent on sign-up/sign-in but not required
+  to log in (`requireEmailVerification: false`)
 - Password reset tokens expire after 2 hours
 - All sessions are revoked on password reset
 

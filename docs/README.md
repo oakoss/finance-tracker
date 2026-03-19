@@ -34,7 +34,7 @@ Project documentation organized by area.
 - `docs/development/components/implementation.md`
 - `docs/development/components/tanstack.md`
 - `docs/development/components/examples/form.md`
-- `docs/development/components/examples/typography.md`
+- `docs/development/components/examples/confirm-destructive-dialog.md`
 
 ## Architecture
 

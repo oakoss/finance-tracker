@@ -60,13 +60,13 @@ when public pages ship. Only include public routes.
 
 ## Manifest
 
-`public/manifest.json` exists but still contains TanStack boilerplate
-values. Update the `name`, `short_name`, and icons when the brand
-identity is finalized (TREK-72). Link it from the root `head()`.
+`public/manifest.json` is configured with `name: "Finance Tracker"`,
+`short_name: "Finance"`, `theme_color: "#2a597f"`, and PWA icons
+(`logo192.png`, `logo512.png`). Linked from the root `head()` in
+`__root.tsx`.
 
 ## Planned work
 
 - Add Open Graph and Twitter card meta to public pages
 - Set canonical URLs on public routes
-- Update manifest with real app name and icons
 - Generate a sitemap for public pages

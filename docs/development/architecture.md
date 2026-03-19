@@ -134,16 +134,20 @@ Modules:
   `hooks/` (e.g., `use-sign-out.ts`), `lib/`, `middleware.ts`
 - **transactions**: `api/`, `services/`, `lib/`, `db/`, `models.ts`,
   `validators.ts`
-- **accounts**: `api/`, `db/`, `models.ts`, `validators.ts`
-- **categories**: `api/`, `db/`, `models.ts`, `validators.ts`
+- **accounts**: `api/`, `services/`, `db/`, `models.ts`,
+  `validators.ts`, `hooks/`, `components/`
+- **categories**: `api/`, `services/`, `db/`, `models.ts`,
+  `validators.ts`, `hooks/`, `components/`
 - **debt**: `db/`, `models.ts` (debt strategies, order, runs)
-- **imports**: `db/`, `models.ts` (CSV/PDF imports, import rows)
+- **budgets**: `api/`, `services/`, `db/`, `models.ts`,
+  `validators.ts`, `hooks/`, `components/`
+- **imports**: `api/`, `services/`, `lib/`, `db/`, `models.ts`,
+  `validators.ts`, `hooks/`, `components/`
 - **preferences**: `db/`, `models.ts` (user preferences)
 - **promotions**: `db/`, `models.ts` (promos, buckets, bucket txns)
 - **rules**: `db/`, `models.ts` (recurring rules, merchant rules,
   payee aliases)
 - **statements**: `db/`, `models.ts` (statements, attachments)
-- **todos**: `db/` (schema, relations), `models.ts`
 - **transfers**: `db/`, `models.ts`
 
 Each module owns its Drizzle schema and relations in `{module}/db/`.

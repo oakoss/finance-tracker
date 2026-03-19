@@ -66,39 +66,22 @@ test('no contrast violations in dark mode', async ({ browser }) => {
 });
 ```
 
-**Shared config via fixture:**
+**Shared config via `a11yScan()` helper:**
 
-When multiple tests share the same AxeBuilder configuration,
-extract a factory fixture. The factory returns a fresh builder
-so each test can further customize with `.include()`:
+The project provides a shared `a11yScan()` function in
+`e2e/fixtures/a11y.ts` that applies our standard WCAG tag set:
 
 ```ts
-import AxeBuilder from '@axe-core/playwright';
-import { test as base } from '@playwright/test';
+import { a11yScan } from '~e2e/fixtures/a11y';
 
-type AxeFixture = { makeAxeBuilder: () => AxeBuilder };
-
-const test = base.extend<AxeFixture>({
-  makeAxeBuilder: async ({ page }, use) => {
-    await use(() =>
-      new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-        .exclude('.third-party-widget'),
-    );
-  },
-});
-
-test('page is accessible', async ({ makeAxeBuilder }) => {
-  const results = await makeAxeBuilder().analyze();
-  expect(results.violations).toEqual([]);
-});
-
-test('dialog is accessible', async ({ page, makeAxeBuilder }) => {
-  await page.getByRole('button', { name: 'Open' }).click();
-  const results = await makeAxeBuilder().include('[role="dialog"]').analyze();
+test('page is accessible', async ({ page }) => {
+  await page.goto('/sign-in');
+  const results = await a11yScan(page);
   expect(results.violations).toEqual([]);
 });
 ```
+
+For scoped or customized scans, use `AxeBuilder` directly:
 
 **Attaching scan results:**
 

@@ -81,35 +81,47 @@ npx playwright show-report                 # open the HTML report viewer
   enabled globally (including `e2e/`). All Playwright calls (`click`,
   `fill`, `goto`, etc.) return Promises and must be `await`-ed
 
-## Directory structure (target)
+## Directory structure
 
 ```text
 e2e/
   setup/
     db.setup.ts              # seeds worker users + catalog (no browser)
   fixtures/
+    a11y.ts                  # a11yScan() helper (axe-core WCAG scan)
     auth.ts                  # worker-scoped auth fixture (per-worker login)
-    index.ts                 # waitForHydration helper (body[data-hydrated])
+    combobox.ts              # combobox interaction helpers
     constants.ts             # shared E2E credentials + worker helpers
+    entity.ts                # entity creation helpers
+    field.ts                 # form field helpers
+    index.ts                 # waitForHydration helper (body[data-hydrated])
     mailpit.ts               # email assertion helpers
+    table-actions.ts         # table row action + toast helpers
   app/
+    a11y.test.ts             # @a11y
+    accounts.test.ts         # @authenticated
+    budgets.test.ts          # @authenticated
+    categories.test.ts       # @authenticated
     dashboard.test.ts        # @smoke @a11y @authenticated
-    shell.test.ts            # @smoke @a11y
-  accounts/
-    crud.test.ts             # @crud
-    list.test.ts             # @smoke @a11y
+    imports.test.ts          # @authenticated
+    imports-stress.test.ts   # @stress @authenticated
+    shell.test.ts            # @smoke
+    transactions.test.ts     # @authenticated
   auth/
     redirect.test.ts         # @smoke @auth
     reverse-guard.test.ts    # @smoke @auth @authenticated
     sign-in.test.ts          # @smoke @auth @a11y
     sign-up.test.ts          # @smoke @auth @a11y
     sign-out.test.ts         # @auth
+  demo/
+    components.test.ts       # @demo (screenshot tests, local only)
   .auth/                     # gitignored (per-worker auth state files)
 ```
 
-Feature folders generally correspond to `src/modules/`, plus an
-`app/` folder for shell-level tests. Each file covers a specific
-flow. Tags are applied per `test.describe`, not per file.
+Feature folders correspond to `src/modules/`, plus `app/` for
+shell-level and cross-cutting tests, and `demo/` for component
+screenshot tests. Tags are applied per `test.describe`, not per
+file.
 
 ## Tags
 

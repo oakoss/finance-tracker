@@ -4,7 +4,7 @@
 
 ## Assertions
 
-Playwright has two assertion categories. The 5-second assertion
+Playwright has two assertion categories. The 10-second assertion
 timeout (configured in `playwright.config.ts`) applies only to
 auto-retrying assertions. Non-retrying assertions are synchronous
 and have no timeout.
@@ -195,7 +195,7 @@ export const expect = baseExpect.extend({
 
 ### Polling for non-UI values
 
-`expect.poll()` defaults to the assertion timeout (5s). Always
+`expect.poll()` defaults to the assertion timeout (10s). Always
 specify an explicit `timeout` for operations that may take longer:
 
 ```ts

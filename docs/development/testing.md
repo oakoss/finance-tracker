@@ -64,7 +64,8 @@ singleton).
 
 Available factories: `User`, `LedgerAccount`, `Category`, `Payee`,
 `Tag`, `Transaction`, `Transfer`, `AccountTerms`,
-`AccountBalanceSnapshot`, `CreditCardCatalog`, `TransactionTag`.
+`AccountBalanceSnapshot`, `CreditCardCatalog`, `TransactionTag`,
+`BudgetPeriod`, `BudgetLine`, `Import`.
 
 ### Type aliases
 
@@ -83,6 +84,7 @@ Composite factories reduce multi-step setup to a single call:
 
 - `insertAccountWithUser(db)`: user + account
 - `insertCategoryWithUser(db)`: user + category
+- `insertBudgetPeriodWithUser(db)`: user + budget period
 - `insertAccountTermsWithAccount(db)`: user + account + terms
 - `insertTransactionWithRelations(db, { withCategory, withPayee })`:
   user + account + optional category/payee + transaction

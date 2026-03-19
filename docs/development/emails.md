@@ -133,8 +133,8 @@ If you add new tokens for email, extend the `colors` (or `fontFamily`) in `BaseE
   `<Html lang>` attribute to the resolved locale.
 - Use the `renderEmail` helper in `src/modules/auth/emails/email-render.ts` to render
   localized HTML + plain text and restore the previous locale.
-- Pass an optional `locale` when sending emails (e.g.
-  `sendVerificationEmail({ user, url, locale })`).
+- Pass an optional `locale` and `cookie` when sending emails (e.g.
+  `sendVerificationEmail({ user, url, locale, cookie })`).
 - Locale resolution order: explicit `locale` param → `APP_LOCALE` cookie →
   `user_preferences.locale` → runtime `getLocale()` → `baseLocale`.
 - Better Auth email hooks pass the `request` as a second argument; we forward

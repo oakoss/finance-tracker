@@ -13,9 +13,9 @@ All domain data uses soft-delete via the `auditFields` mixin:
 - Features with deletable items should show a "Recently Deleted"
   indicator or link.
 
-## Trash View
+## Trash View (planned)
 
-A dedicated trash page shows soft-deleted items grouped by type
+A dedicated trash page will show soft-deleted items grouped by type
 (accounts, transactions, categories, payees, budgets).
 
 - Route: `/_app/profile/trash`
@@ -23,9 +23,9 @@ A dedicated trash page shows soft-deleted items grouped by type
 - Actions: restore, permanent delete.
 - 30-day retention countdown displayed per item.
 
-## Account Deletion
+## Account Deletion (planned)
 
-User account deletion follows a grace period:
+User account deletion will follow a grace period:
 
 1. User initiates deletion from profile page danger zone.
 2. **Type-to-confirm** dialog (uses `ConfirmDestructiveDialog`).
@@ -34,10 +34,11 @@ User account deletion follows a grace period:
 5. Grace period banner shown across the app.
 6. After 7 days, account and all associated data are permanently purged.
 
-## Data Export
+## Data Export (planned)
 
-Users can export their data as CSV or JSON from the profile page.
-Covers: accounts, transactions, categories, payees, budgets.
+Users will be able to export their data as CSV or JSON from the
+profile page. Covers: accounts, transactions, categories, payees,
+budgets.
 
 Required before account deletion (GDPR right to data portability).
 
