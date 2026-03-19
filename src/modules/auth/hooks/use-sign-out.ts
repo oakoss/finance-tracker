@@ -1,3 +1,4 @@
+import { usePostHog } from '@posthog/react';
 import { useRouter } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
@@ -9,6 +10,7 @@ import { m } from '@/paraglide/messages';
 
 export function useSignOut() {
   const router = useRouter();
+  const posthog = usePostHog();
 
   const { postMessage } = useBroadcastChannel<string>(AUTH_CHANNEL);
 
@@ -24,6 +26,11 @@ export function useSignOut() {
         toast.warning(m['auth.error.signOutIncomplete']());
       })
       .finally(() => {
+        try {
+          posthog?.reset();
+        } catch {
+          // Analytics should never break the sign-out flow
+        }
         const broadcasted = postMessage('sign-out');
         if (!broadcasted) {
           clientLog.warn({

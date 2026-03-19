@@ -19,6 +19,9 @@ export const Env = type({
   'OTEL_EXPORTER_OTLP_ENDPOINT?': 'string.url',
   'OTEL_RESOURCE_ATTRIBUTES?': 'string > 0',
   'OTEL_SERVICE_NAME?': 'string > 0',
+  // PostHog — server-side API key for posthog-node (private, not exposed to browser)
+  'POSTHOG_API_KEY?': 'string > 0',
+  'POSTHOG_HOST?': 'string.url',
   // SMTP transport for local dev / CI (Mailpit); when unset, Brevo API is used
   'SMTP_HOST?': 'string > 0',
   'SMTP_PORT?': '1 <= number <= 65535',

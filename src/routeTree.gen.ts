@@ -23,6 +23,7 @@ import { Route as AppCategoriesRouteImport } from './routes/_app/categories'
 import { Route as AppBudgetsRouteImport } from './routes/_app/budgets'
 import { Route as AppAccountsRouteImport } from './routes/_app/accounts'
 import { Route as DemoComponentsRouteRouteImport } from './routes/_demo/components/route'
+import { Route as ApiIngestSplatRouteImport } from './routes/api/ingest/$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as DemoComponentsSelectionsRouteImport } from './routes/_demo/components/selections'
 import { Route as DemoComponentsOverlaysRouteImport } from './routes/_demo/components/overlays'
@@ -98,6 +99,11 @@ const DemoComponentsRouteRoute = DemoComponentsRouteRouteImport.update({
   path: '/components',
   getParentRoute: () => DemoRouteRoute,
 } as any)
+const ApiIngestSplatRoute = ApiIngestSplatRouteImport.update({
+  id: '/api/ingest/$',
+  path: '/api/ingest/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -160,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/components/overlays': typeof DemoComponentsOverlaysRoute
   '/components/selections': typeof DemoComponentsSelectionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/ingest/$': typeof ApiIngestSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
@@ -180,6 +187,7 @@ export interface FileRoutesByTo {
   '/components/overlays': typeof DemoComponentsOverlaysRoute
   '/components/selections': typeof DemoComponentsSelectionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/ingest/$': typeof ApiIngestSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -205,6 +213,7 @@ export interface FileRoutesById {
   '/_demo/components/overlays': typeof DemoComponentsOverlaysRoute
   '/_demo/components/selections': typeof DemoComponentsSelectionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/ingest/$': typeof ApiIngestSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -227,6 +236,7 @@ export interface FileRouteTypes {
     | '/components/overlays'
     | '/components/selections'
     | '/api/auth/$'
+    | '/api/ingest/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -247,6 +257,7 @@ export interface FileRouteTypes {
     | '/components/overlays'
     | '/components/selections'
     | '/api/auth/$'
+    | '/api/ingest/$'
   id:
     | '__root__'
     | '/_app'
@@ -271,6 +282,7 @@ export interface FileRouteTypes {
     | '/_demo/components/overlays'
     | '/_demo/components/selections'
     | '/api/auth/$'
+    | '/api/ingest/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -279,6 +291,7 @@ export interface RootRouteChildren {
   DemoRouteRoute: typeof DemoRouteRouteWithChildren
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiIngestSplatRoute: typeof ApiIngestSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -380,6 +393,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/components'
       preLoaderRoute: typeof DemoComponentsRouteRouteImport
       parentRoute: typeof DemoRouteRoute
+    }
+    '/api/ingest/$': {
+      id: '/api/ingest/$'
+      path: '/api/ingest/$'
+      fullPath: '/api/ingest/$'
+      preLoaderRoute: typeof ApiIngestSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -529,6 +549,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoRouteRoute: DemoRouteRouteWithChildren,
   PublicRouteRoute: PublicRouteRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiIngestSplatRoute: ApiIngestSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

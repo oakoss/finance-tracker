@@ -20,7 +20,7 @@ export const Route = createFileRoute('/_app')({
 
 function AppLayout() {
   const { session } = Route.useRouteContext();
-  usePostHogIdentity(session.user);
+  usePostHogIdentity(session.user.id);
 
   return (
     <SidebarShell
