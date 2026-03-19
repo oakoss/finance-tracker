@@ -57,8 +57,8 @@ export const imports = pgTable(
     ...auditFields,
   },
   (table) => [
-    index('imports_user_id_idx').on(table.userId),
     index('imports_account_id_idx').on(table.accountId),
+    index('imports_user_file_hash_idx').on(table.userId, table.fileHash),
   ],
 );
 

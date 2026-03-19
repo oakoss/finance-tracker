@@ -1,0 +1,1 @@
+CREATE INDEX "imports_user_file_hash_idx" ON "imports" USING btree ("user_id","file_hash");

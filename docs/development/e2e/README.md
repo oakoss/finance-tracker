@@ -121,6 +121,7 @@ flow. Tags are applied per `test.describe`, not per file.
 | `@authenticated` | Requires auth storageState (project split) | Merge to main   |
 | `@crud`          | Feature happy-path CRUD                    | Merge to main   |
 | `@mobile`        | Mobile-specific tests (not yet in use)     | Every PR        |
+| `@stress`        | Large dataset / load tests (local only)    | Never (local)   |
 
 CI currently runs all tags; per-tag filtering will be added when
 the suite is large enough to benefit.

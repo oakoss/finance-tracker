@@ -109,7 +109,10 @@ export async function createImportService(
       rowIndex: index,
     }));
 
-    await tx.insert(importRows).values(rowValues);
+    const BATCH_SIZE = 500;
+    for (let i = 0; i < rowValues.length; i += BATCH_SIZE) {
+      await tx.insert(importRows).values(rowValues.slice(i, i + BATCH_SIZE));
+    }
 
     await insertAuditLog(tx, {
       action: 'create',

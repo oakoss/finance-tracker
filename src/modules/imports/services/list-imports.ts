@@ -5,7 +5,13 @@ import type { Db } from '@/db';
 import { ledgerAccounts } from '@/modules/accounts/db/schema';
 import { importRows, imports } from '@/modules/imports/db/schema';
 
-export async function listImportsService(database: Db, userId: string) {
+const DEFAULT_LIMIT = 100;
+
+export async function listImportsService(
+  database: Db,
+  userId: string,
+  limit = DEFAULT_LIMIT,
+) {
   const rowCounts = database
     .select({ count: count().as('row_count'), importId: importRows.importId })
     .from(importRows)
@@ -27,5 +33,6 @@ export async function listImportsService(database: Db, userId: string) {
     .leftJoin(ledgerAccounts, eq(ledgerAccounts.id, imports.accountId))
     .leftJoin(rowCounts, eq(rowCounts.importId, imports.id))
     .where(eq(imports.userId, userId))
-    .orderBy(desc(imports.createdAt));
+    .orderBy(desc(imports.createdAt))
+    .limit(limit);
 }

@@ -64,6 +64,20 @@
       "when": 1773181500046,
       "tag": "0008_budget-category-restrict",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1773900353763,
+      "tag": "0009_imports-user-file-hash-idx",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1773901104138,
+      "tag": "0010_drop-redundant-imports-user-idx",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,1 @@
+DROP INDEX "imports_user_id_idx";

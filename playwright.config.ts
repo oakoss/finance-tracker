@@ -22,12 +22,13 @@ export default defineConfig({
     {
       dependencies: ['db-setup'],
       grep: /@authenticated/,
+      grepInvert: /@stress/,
       name: 'chromium:authenticated',
       use: { ...devices['Desktop Chrome'] },
     },
     {
       dependencies: ['db-setup'],
-      grepInvert: [/@authenticated/, /@demo/],
+      grepInvert: [/@authenticated/, /@demo/, /@stress/],
       name: 'chromium:public',
       use: {
         ...devices['Desktop Chrome'],
@@ -36,6 +37,7 @@ export default defineConfig({
     },
     {
       grep: /@demo/,
+      grepInvert: /@stress/,
       name: 'chromium:demo',
       use: {
         ...devices['Desktop Chrome'],
@@ -47,12 +49,13 @@ export default defineConfig({
     {
       dependencies: ['db-setup'],
       grep: /@authenticated/,
+      grepInvert: /@stress/,
       name: 'iphone:authenticated',
       use: { ...iPhone },
     },
     {
       dependencies: ['db-setup'],
-      grepInvert: [/@authenticated/, /@demo/],
+      grepInvert: [/@authenticated/, /@demo/, /@stress/],
       name: 'iphone:public',
       use: { ...iPhone, storageState: { cookies: [], origins: [] } },
     },
@@ -61,14 +64,23 @@ export default defineConfig({
     {
       dependencies: ['db-setup'],
       grep: /@authenticated/,
+      grepInvert: /@stress/,
       name: 'pixel:authenticated',
       use: { ...pixel },
     },
     {
       dependencies: ['db-setup'],
-      grepInvert: [/@authenticated/, /@demo/],
+      grepInvert: [/@authenticated/, /@demo/, /@stress/],
       name: 'pixel:public',
       use: { ...pixel, storageState: { cookies: [], origins: [] } },
+    },
+
+    // Stress tests — local only, run with: pnpm test:e2e --project stress
+    {
+      dependencies: ['db-setup'],
+      grep: /@stress/,
+      name: 'stress',
+      use: { ...devices['Desktop Chrome'] },
     },
   ],
   reporter: process.env.CI ? [['github'], ['blob']] : 'html',

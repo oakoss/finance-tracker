@@ -264,3 +264,50 @@ test('list — returns account name from join', async ({ db }) => {
 
   expect(result[0].accountName).toBe(account.name);
 });
+
+test('list — respects limit parameter', async ({ db }) => {
+  const { account, user } = await insertAccountWithUser(db);
+
+  await insertImport(db, { accountId: account.id, userId: user.id });
+  await insertImport(db, { accountId: account.id, userId: user.id });
+  await insertImport(db, { accountId: account.id, userId: user.id });
+
+  const result = await listImportsService(asDb(db), user.id, 2);
+
+  expect(result).toHaveLength(2);
+});
+
+// ---------------------------------------------------------------------------
+// createImportService — batched INSERT
+// ---------------------------------------------------------------------------
+
+test('create — batched insert persists all rows across batch boundaries', async ({
+  serviceDb,
+}) => {
+  const { account, user } = await insertAccountWithUser(serviceDb);
+
+  // Generate CSV with 501 rows to cross one batch boundary (BATCH_SIZE = 500)
+  const header = 'Date,Description,Amount';
+  const rows = Array.from(
+    { length: 501 },
+    (_, i) => `2024-01-01,Row ${i},-${(i + 1).toFixed(2)}`,
+  );
+  const largeCsv = [header, ...rows].join('\n');
+
+  const result = await createImportService(
+    asDb(serviceDb),
+    user.id,
+    validInput(account.id, { fileContent: largeCsv, fileHash: 'batch-test' }),
+  );
+
+  expect(result.rowCount).toBe(501);
+
+  const persisted = await serviceDb
+    .select()
+    .from(importRows)
+    .where(eq(importRows.importId, result.id));
+
+  expect(persisted).toHaveLength(501);
+  expect(persisted[0].rowIndex).toBe(0);
+  expect(persisted[500].rowIndex).toBe(500);
+});
