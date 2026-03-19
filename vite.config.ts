@@ -49,6 +49,35 @@ export default defineConfig({
       }),
     ],
     plugins: ['./src/lib/logging/drain.ts'],
+    // Workaround: Rolldown chunk concatenation places __exportAll/__defProp
+    // helpers after first usage in SSR bundles. This plugin hoists them to
+    // the top of the chunk so they are defined before any call site.
+    rolldownConfig: {
+      plugins: [
+        {
+          name: 'hoist-rolldown-helpers',
+          renderChunk(code) {
+            const idx = code.indexOf('__exportAll(');
+            if (idx === -1) return null;
+            const defIdx = code.indexOf('var __exportAll');
+            if (defIdx === -1 || defIdx < idx) return null;
+            const defPropIdx = code.lastIndexOf('var __defProp', defIdx);
+            const blockStart = defPropIdx !== -1 ? defPropIdx : defIdx;
+            const afterExport = code.indexOf('\n};', defIdx);
+            const blockEnd = afterExport !== -1 ? afterExport + 3 : defIdx;
+            const helperBlock = code.slice(blockStart, blockEnd);
+            const cleaned = `${code.slice(0, blockStart)}${code.slice(blockEnd)}`;
+            const lastImport = cleaned.lastIndexOf(
+              '\nimport ',
+              cleaned.indexOf('//#region'),
+            );
+            const insertAt =
+              lastImport !== -1 ? cleaned.indexOf('\n', lastImport + 1) : 0;
+            return `${cleaned.slice(0, insertAt)}\n${helperBlock}\n${cleaned.slice(insertAt)}`;
+          },
+        },
+      ],
+    },
   },
   plugins: [
     devtools(),
