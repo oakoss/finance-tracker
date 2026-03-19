@@ -1,15 +1,15 @@
 import arkenvVitePlugin from '@arkenv/vite-plugin';
 import { config } from '@dotenvx/dotenvx';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
+import babel from '@rolldown/plugin-babel';
 import tailwindcss from '@tailwindcss/vite';
 import { devtools } from '@tanstack/devtools-vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
-import viteReact from '@vitejs/plugin-react';
+import viteReact, { reactCompilerPreset } from '@vitejs/plugin-react';
 import evlog from 'evlog/nitro/v3';
 import { nitro } from 'nitro/vite';
 import { defineConfig } from 'vite';
 import killerInstincts from 'vite-plugin-killer-instincts';
-import viteTsConfigPaths from 'vite-tsconfig-paths';
 
 import { Env } from './src/configs/env';
 
@@ -52,13 +52,13 @@ export default defineConfig({
   },
   plugins: [
     devtools(),
-    viteTsConfigPaths({ projects: ['./tsconfig.json'] }),
     killerInstincts({ autoKill: true }),
     arkenvVitePlugin(Env),
     tailwindcss(),
     tanstackStart(),
     nitro(),
-    viteReact({ babel: { plugins: ['babel-plugin-react-compiler'] } }),
+    viteReact(),
+    babel({ presets: [reactCompilerPreset()] }),
     paraglideVitePlugin({
       cookieName: 'APP_LOCALE',
       outdir: './src/paraglide',
@@ -66,5 +66,6 @@ export default defineConfig({
       strategy: ['cookie', 'preferredLanguage', 'baseLocale'],
     }),
   ],
+  resolve: { tsconfigPaths: true },
   server: { port: 3000, strictPort: true },
 });

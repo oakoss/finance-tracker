@@ -1,12 +1,11 @@
 import { config } from '@dotenvx/dotenvx';
-import viteTsConfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 // Auto-load .env files using dotenv-flow convention (.env.{NODE_ENV}.local, .env.{NODE_ENV}, .env.local, .env)
 config({ convention: 'flow', quiet: true });
 
 export default defineConfig({
-  plugins: [viteTsConfigPaths({ projects: ['./tsconfig.json'] })],
+  resolve: { tsconfigPaths: true },
   test: {
     coverage: {
       exclude: [
