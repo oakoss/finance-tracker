@@ -8,9 +8,11 @@ onlyBuiltDependencies:
   - unrs-resolver
 overrides:
   '@hono/node-server@<1.19.10': '>=1.19.10'
+  effect@<3.20.0: '>=3.20.0'
   esbuild@<=0.24.2: '>=0.25.0'
+  h3-v2: npm:h3@2.0.1-rc.17
   hono@<4.11.10: '>=4.11.10'
   hono@<4.11.7: '>=4.11.7'
   hono@<4.12.4: '>=4.12.4'
-  kysely@>=0.26.0 <0.28.11: '>=0.28.12'
+  hono@<4.12.7: '>=4.12.7'
   lodash@>=4.0.0 <=4.17.22: '>=4.17.23'

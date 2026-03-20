@@ -103,13 +103,7 @@ export default defineConfig({
             sourcemaps: { deleteAfterUpload: true, enabled: isProduction },
           }),
         ]
-      : isProduction
-        ? // oxlint-disable-next-line no-console -- build-time warning, no logger available
-          (console.warn(
-            '[build] POSTHOG_PERSONAL_API_KEY or POSTHOG_PROJECT_ID missing — source maps will not be uploaded to PostHog.',
-          ),
-          [])
-        : []),
+      : []),
   ],
   resolve: { tsconfigPaths: true },
   server: { port: 3000, strictPort: true },
