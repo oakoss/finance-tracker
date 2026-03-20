@@ -102,7 +102,6 @@ function DeleteCategoryButton({ categoryId }: { categoryId: string }) {
 
 ## i18n keys
 
-- `confirm.typePhrasePrefix` -- "Type"
-- `confirm.typePhraseSuffix` -- "to confirm"
+- `confirm.typePhraseLabel` -- "Type the following to confirm:"
 - `actions.cancel` -- Cancel button
 - `actions.delete` -- Default action button (overridden by `actionLabel`)

@@ -14,8 +14,7 @@ vi.mock('@/paraglide/messages', () => ({
           'actions.cancel': () => 'Cancel',
           'actions.delete': () => 'Delete',
           'confirm.copied': () => 'Copied!',
-          'confirm.typePhrasePrefix': () => 'Type',
-          'confirm.typePhraseSuffix': () => 'to confirm',
+          'confirm.typePhraseLabel': () => 'Type the following to confirm:',
         };
         return messages[key] ?? (() => key);
       },

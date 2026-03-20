@@ -71,20 +71,20 @@ function ConfirmDestructiveDialog({
   return (
     <AlertDialog open={open} onOpenChange={handleOpenChange}>
       {trigger && <AlertDialogPrimitive.Trigger render={trigger} />}
-      <AlertDialogContent>
+      <AlertDialogContent className="sm:max-w-md">
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="flex flex-col gap-2" data-slot="confirm-field">
-          <Label htmlFor={inputId}>
-            {m['confirm.typePhrasePrefix']()}{' '}
+        <div className="flex flex-col gap-3" data-slot="confirm-field">
+          <Label className="grid gap-2.5" htmlFor={inputId}>
+            <span>{m['confirm.typePhraseLabel']()}</span>
             <TooltipProvider>
               <Tooltip open={copied}>
                 <TooltipTrigger
                   closeOnClick={false}
                   render={
-                    <code className="cursor-copy rounded-sm bg-muted px-1.5 py-0.5 font-mono font-semibold select-all" />
+                    <code className="block max-w-full cursor-copy truncate rounded-md bg-muted px-3 py-2 font-mono text-sm font-semibold select-all" />
                   }
                   onClick={(e) => {
                     e.preventDefault();
@@ -96,8 +96,7 @@ function ConfirmDestructiveDialog({
                 </TooltipTrigger>
                 <TooltipContent>{m['confirm.copied']()}</TooltipContent>
               </Tooltip>
-            </TooltipProvider>{' '}
-            {m['confirm.typePhraseSuffix']()}
+            </TooltipProvider>
           </Label>
           <Input
             autoComplete="off"
