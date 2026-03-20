@@ -52,7 +52,6 @@
     "@fontsource/ibm-plex-mono": "^5.2.7",
     "@getbrevo/brevo": "^5.0.1",
     "@headless-tree/core": "^1.6.3",
-    "@posthog/react": "^1.8.2",
     "@react-email/components": "^1.0.10",
     "@react-email/render": "^2.0.4",
     "@react-email/tailwind": "^2.0.6",

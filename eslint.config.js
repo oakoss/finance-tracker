@@ -114,5 +114,22 @@ export default defineConfig(
       'no-console': 'off',
     },
   },
+  {
+    files: ['**/*.{ts,tsx}'],
+    ignores: ['src/hooks/use-analytics.ts', 'src/lib/analytics.tsx'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              message: 'Use @/hooks/use-analytics instead.',
+              name: 'posthog-js/react',
+            },
+          ],
+        },
+      ],
+    },
+  },
   ...oxlint.buildFromOxlintConfigFile('./.oxlintrc.json'),
 );

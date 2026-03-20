@@ -15,6 +15,7 @@ import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { RouterLink } from '@/components/ui/link';
 import { PasswordInput } from '@/components/ui/password-input';
+import { useAnalytics } from '@/hooks/use-analytics';
 import { useHydrated } from '@/hooks/use-hydrated';
 import { authClient } from '@/lib/auth/client';
 import { fieldValidators } from '@/lib/form/field';
@@ -28,6 +29,7 @@ type SignInFormProps = { redirect?: string | undefined };
 function SignInForm({ redirect }: SignInFormProps) {
   const hydrated = useHydrated();
   const navigate = useNavigate();
+  const { capture } = useAnalytics();
   const [serverError, setServerError] = useState('');
 
   const form = useForm({
@@ -56,6 +58,7 @@ function SignInForm({ redirect }: SignInFormProps) {
               ? redirect
               : '/dashboard';
           void navigate({ to });
+          capture('user_signed_in', { method: 'email' });
         }
       } catch (error) {
         clientLog.error({

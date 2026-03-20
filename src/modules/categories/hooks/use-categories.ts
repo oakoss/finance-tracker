@@ -12,6 +12,7 @@ import type {
   UpdateCategoryInput,
 } from '@/modules/categories/validators';
 
+import { useAnalytics } from '@/hooks/use-analytics';
 import { clientLog } from '@/lib/logging/client-logger';
 import { parseError } from '@/lib/logging/evlog';
 import { createCategory } from '@/modules/categories/api/create-category';
@@ -32,6 +33,7 @@ export const categoryQueries = {
 export function useCreateCategory() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { capture } = useAnalytics();
   const router = useRouter();
 
   return useMutation({
@@ -43,11 +45,15 @@ export function useCreateCategory() {
         description: parsed.fix ?? parsed.why ?? m['auth.error.unexpected'](),
       });
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       toast.success(m['categories.toast.createSuccess']());
       void navigate({ search: {}, to: '/categories' });
       void queryClient.invalidateQueries({ queryKey: categoryQueries.all() });
       void router.invalidate();
+      capture('category_created', {
+        has_parent: !!variables.parentId,
+        type: variables.type,
+      });
     },
   });
 }
@@ -55,6 +61,7 @@ export function useCreateCategory() {
 export function useUpdateCategory() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { capture } = useAnalytics();
   const router = useRouter();
 
   return useMutation({
@@ -71,12 +78,14 @@ export function useUpdateCategory() {
       void navigate({ search: {}, to: '/categories' });
       void queryClient.invalidateQueries({ queryKey: categoryQueries.all() });
       void router.invalidate();
+      capture('category_updated');
     },
   });
 }
 
 export function useDeleteCategory() {
   const queryClient = useQueryClient();
+  const { capture } = useAnalytics();
   const router = useRouter();
 
   return useMutation({
@@ -92,6 +101,7 @@ export function useDeleteCategory() {
       toast.success(m['categories.toast.deleteSuccess']());
       void queryClient.invalidateQueries({ queryKey: categoryQueries.all() });
       void router.invalidate();
+      capture('category_deleted');
     },
   });
 }

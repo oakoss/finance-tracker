@@ -12,6 +12,7 @@ import type {
   UpdateTransactionInput,
 } from '@/modules/transactions/validators';
 
+import { useAnalytics } from '@/hooks/use-analytics';
 import { clientLog } from '@/lib/logging/client-logger';
 import { parseError } from '@/lib/logging/evlog';
 import { createTransaction } from '@/modules/transactions/api/create-transaction';
@@ -52,6 +53,7 @@ export const tagQueries = {
 export function useCreateTransaction() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { capture } = useAnalytics();
   const router = useRouter();
 
   return useMutation({
@@ -63,7 +65,7 @@ export function useCreateTransaction() {
         description: parsed.fix ?? parsed.why,
       });
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       toast.success(m['transactions.toast.createSuccess']());
       void navigate({ search: {}, to: '/transactions' });
       void queryClient.invalidateQueries({
@@ -72,6 +74,12 @@ export function useCreateTransaction() {
       void queryClient.invalidateQueries({ queryKey: payeeQueries.all() });
       void queryClient.invalidateQueries({ queryKey: tagQueries.all() });
       void router.invalidate();
+      capture('transaction_created', {
+        direction: variables.direction,
+        has_category: !!variables.categoryId,
+        has_payee: !!(variables.payeeId ?? variables.newPayeeName),
+        has_tags: !!(variables.tagIds?.length ?? variables.newTagNames?.length),
+      });
     },
   });
 }
@@ -79,6 +87,7 @@ export function useCreateTransaction() {
 export function useUpdateTransaction() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { capture } = useAnalytics();
   const router = useRouter();
 
   return useMutation({
@@ -90,7 +99,7 @@ export function useUpdateTransaction() {
         description: parsed.fix ?? parsed.why,
       });
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       toast.success(m['transactions.toast.updateSuccess']());
       void navigate({ search: {}, to: '/transactions' });
       void queryClient.invalidateQueries({
@@ -99,12 +108,14 @@ export function useUpdateTransaction() {
       void queryClient.invalidateQueries({ queryKey: payeeQueries.all() });
       void queryClient.invalidateQueries({ queryKey: tagQueries.all() });
       void router.invalidate();
+      capture('transaction_updated', { direction: variables.direction });
     },
   });
 }
 
 export function useDeleteTransaction() {
   const queryClient = useQueryClient();
+  const { capture } = useAnalytics();
   const router = useRouter();
 
   return useMutation({
@@ -122,6 +133,7 @@ export function useDeleteTransaction() {
         queryKey: transactionQueries.all(),
       });
       void router.invalidate();
+      capture('transaction_deleted');
     },
   });
 }

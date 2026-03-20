@@ -1,4 +1,4 @@
-import { PostHogProvider as Provider } from '@posthog/react';
+import { PostHogProvider as Provider } from 'posthog-js/react';
 
 import { analyticsConfig } from '@/configs/analytics';
 
@@ -7,6 +7,8 @@ const host = import.meta.env.VITE_PUBLIC_POSTHOG_HOST;
 
 const options = {
   api_host: host ?? analyticsConfig.posthogProxyPath,
+  capture_exceptions: true,
+  defaults: '2026-01-30' as const,
   person_profiles: 'identified_only' as const,
   ui_host: analyticsConfig.posthogUiHost,
 };

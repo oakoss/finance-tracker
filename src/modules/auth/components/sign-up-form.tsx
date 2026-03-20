@@ -22,6 +22,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { appConfig } from '@/configs/app';
+import { useAnalytics } from '@/hooks/use-analytics';
 import { useHydrated } from '@/hooks/use-hydrated';
 import { authClient } from '@/lib/auth/client';
 import { fieldValidators } from '@/lib/form/field';
@@ -61,6 +62,7 @@ const passwordValidators = {
 function SignUpForm() {
   const hydrated = useHydrated();
   const navigate = useNavigate();
+  const { capture } = useAnalytics();
   const [serverError, setServerError] = useState('');
 
   const form = useForm({
@@ -86,6 +88,7 @@ function SignUpForm() {
           );
         } else {
           void navigate({ to: '/dashboard' });
+          capture('user_signed_up', { method: 'email' });
         }
       } catch (error) {
         clientLog.error({

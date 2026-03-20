@@ -12,6 +12,7 @@ import type {
   UpdateAccountInput,
 } from '@/modules/accounts/validators';
 
+import { useAnalytics } from '@/hooks/use-analytics';
 import { clientLog } from '@/lib/logging/client-logger';
 import { parseError } from '@/lib/logging/evlog';
 import { createAccount } from '@/modules/accounts/api/create-account';
@@ -32,6 +33,7 @@ export const accountQueries = {
 export function useCreateAccount() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { capture } = useAnalytics();
   const router = useRouter();
 
   return useMutation({
@@ -43,11 +45,16 @@ export function useCreateAccount() {
         description: parsed.fix ?? parsed.why,
       });
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       toast.success(m['accounts.toast.createSuccess']());
       void navigate({ search: {}, to: '/accounts' });
       void queryClient.invalidateQueries({ queryKey: accountQueries.all() });
       void router.invalidate();
+      capture('account_created', {
+        currency: variables.currency,
+        owner_type: variables.ownerType,
+        type: variables.type,
+      });
     },
   });
 }
@@ -55,6 +62,7 @@ export function useCreateAccount() {
 export function useUpdateAccount() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { capture } = useAnalytics();
   const router = useRouter();
 
   return useMutation({
@@ -66,17 +74,19 @@ export function useUpdateAccount() {
         description: parsed.fix ?? parsed.why,
       });
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       toast.success(m['accounts.toast.updateSuccess']());
       void navigate({ search: {}, to: '/accounts' });
       void queryClient.invalidateQueries({ queryKey: accountQueries.all() });
       void router.invalidate();
+      capture('account_updated', { type: variables.type });
     },
   });
 }
 
 export function useDeleteAccount() {
   const queryClient = useQueryClient();
+  const { capture } = useAnalytics();
   const router = useRouter();
 
   return useMutation({
@@ -92,6 +102,7 @@ export function useDeleteAccount() {
       toast.success(m['accounts.toast.deleteSuccess']());
       void queryClient.invalidateQueries({ queryKey: accountQueries.all() });
       void router.invalidate();
+      capture('account_deleted');
     },
   });
 }

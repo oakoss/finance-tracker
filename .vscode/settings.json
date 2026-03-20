@@ -43,6 +43,7 @@
     "@base-ui/react",
     "@react-email/components",
     "^lucide-react/dist/lucide-react.suffixed$",
+    "posthog-js/react",
     "radix-ui",
     "react-day-picker",
     "recharts",
