@@ -16,11 +16,16 @@ export const createImport = createServerFn({ method: 'POST' })
     const userId = requireUserId(context);
 
     try {
+      const start = performance.now();
       const result = await createImportService(db, userId, data);
 
       log.info({
         action: 'import.create',
-        outcome: { idHash: hashId(result.id), rowCount: result.rowCount },
+        outcome: {
+          idHash: hashId(result.id),
+          rowCount: result.rowCount,
+          serviceMs: Math.round(performance.now() - start),
+        },
         user: { idHash: hashId(userId) },
       });
 

@@ -13,11 +13,15 @@ export const listTransactions = createServerFn({ method: 'GET' })
     const userId = requireUserId(context);
 
     try {
+      const start = performance.now();
       const result = await listTransactionsService(db, userId);
 
       log.info({
         action: 'transaction.list',
-        outcome: { count: result.length },
+        outcome: {
+          count: result.length,
+          serviceMs: Math.round(performance.now() - start),
+        },
         user: { idHash: hashId(userId) },
       });
 

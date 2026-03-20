@@ -13,11 +13,15 @@ export const listAccounts = createServerFn({ method: 'GET' })
     const userId = requireUserId(context);
 
     try {
+      const start = performance.now();
       const result = await listAccountsService(db, userId);
 
       log.info({
         action: 'account.list',
-        outcome: { count: result.length },
+        outcome: {
+          count: result.length,
+          serviceMs: Math.round(performance.now() - start),
+        },
         user: { idHash: hashId(userId) },
       });
 

@@ -111,6 +111,7 @@ All server events should include these fields where available:
 | `user.role`          | `string` | optional                                       |
 | `outcome.status`     | `number` | HTTP status — set automatically                |
 | `outcome.durationMs` | `number` | set automatically                              |
+| `outcome.serviceMs`  | `number` | service-call latency via `performance.now()`   |
 | `outcome.errorId`    | `string` | structured error identifier, if applicable     |
 | `audit.entity`       | `string` | auditable entity name e.g. `transaction`       |
 | `audit.entityIdHash` | `string` | hashed entity ID                               |
