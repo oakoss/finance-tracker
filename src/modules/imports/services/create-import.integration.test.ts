@@ -1,16 +1,14 @@
-import { and, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
 import type { Db } from '@/db';
 
 import { auditLogs } from '@/db/schema';
-import { importRows, imports } from '@/modules/imports/db/schema';
+import { importRows } from '@/modules/imports/db/schema';
 import { createImportService } from '@/modules/imports/services/create-import';
-import { deleteImportService } from '@/modules/imports/services/delete-import';
-import { listImportsService } from '@/modules/imports/services/list-imports';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
 import { fakeId, type Db as TestDb } from '~test/factories/base';
-import { insertImport, insertImportRow } from '~test/factories/import.factory';
+import { insertImport } from '~test/factories/import.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
 
@@ -30,10 +28,6 @@ function validInput(accountId: string, overrides?: Record<string, string>) {
     ...overrides,
   };
 }
-
-// ---------------------------------------------------------------------------
-// createImportService
-// ---------------------------------------------------------------------------
 
 test('create — happy path: inserts import + rows', async ({ serviceDb }) => {
   const { account, user } = await insertAccountWithUser(serviceDb);
@@ -215,73 +209,6 @@ test('create — CSV with quoted fields parses correctly', async ({
   });
 });
 
-// ---------------------------------------------------------------------------
-// listImportsService
-// ---------------------------------------------------------------------------
-
-test('list — returns only imports for the requesting user', async ({ db }) => {
-  const { account: account1, user: user1 } = await insertAccountWithUser(db);
-  const { account: account2, user: user2 } = await insertAccountWithUser(db);
-
-  await insertImport(db, { accountId: account1.id, userId: user1.id });
-  await insertImport(db, { accountId: account2.id, userId: user2.id });
-
-  const result = await listImportsService(asDb(db), user1.id);
-
-  expect(result).toHaveLength(1);
-  expect(result[0].accountName).toBe(account1.name);
-});
-
-test('list — returns empty array when user has no imports', async ({ db }) => {
-  const user = await insertUser(db);
-
-  const result = await listImportsService(asDb(db), user.id);
-
-  expect(result).toHaveLength(0);
-});
-
-test('list — includes row count from joined subquery', async ({ db }) => {
-  const { account, user } = await insertAccountWithUser(db);
-  const imp = await insertImport(db, {
-    accountId: account.id,
-    userId: user.id,
-  });
-
-  await insertImportRow(db, { importId: imp.id, rowIndex: 0 });
-  await insertImportRow(db, { importId: imp.id, rowIndex: 1 });
-  await insertImportRow(db, { importId: imp.id, rowIndex: 2 });
-
-  const result = await listImportsService(asDb(db), user.id);
-
-  expect(result).toHaveLength(1);
-  expect(result[0].rowCount).toBe(3);
-});
-
-test('list — returns account name from join', async ({ db }) => {
-  const { account, user } = await insertAccountWithUser(db);
-  await insertImport(db, { accountId: account.id, userId: user.id });
-
-  const result = await listImportsService(asDb(db), user.id);
-
-  expect(result[0].accountName).toBe(account.name);
-});
-
-test('list — respects limit parameter', async ({ db }) => {
-  const { account, user } = await insertAccountWithUser(db);
-
-  await insertImport(db, { accountId: account.id, userId: user.id });
-  await insertImport(db, { accountId: account.id, userId: user.id });
-  await insertImport(db, { accountId: account.id, userId: user.id });
-
-  const result = await listImportsService(asDb(db), user.id, 2);
-
-  expect(result).toHaveLength(2);
-});
-
-// ---------------------------------------------------------------------------
-// createImportService — batched INSERT
-// ---------------------------------------------------------------------------
-
 test('create — batched insert persists all rows across batch boundaries', async ({
   serviceDb,
 }) => {
@@ -311,116 +238,4 @@ test('create — batched insert persists all rows across batch boundaries', asyn
   expect(persisted).toHaveLength(501);
   expect(persisted[0].rowIndex).toBe(0);
   expect(persisted[500].rowIndex).toBe(500);
-});
-
-// ---------------------------------------------------------------------------
-// deleteImportService
-// ---------------------------------------------------------------------------
-
-test('delete — hard-deletes import', async ({ serviceDb }) => {
-  const { account, user } = await insertAccountWithUser(serviceDb);
-  const imp = await insertImport(serviceDb, {
-    accountId: account.id,
-    userId: user.id,
-  });
-
-  await deleteImportService(asDb(serviceDb), user.id, { id: imp.id });
-
-  const rows = await serviceDb
-    .select()
-    .from(imports)
-    .where(eq(imports.id, imp.id));
-
-  expect(rows).toHaveLength(0);
-});
-
-test('delete — cascades import rows', async ({ serviceDb }) => {
-  const { account, user } = await insertAccountWithUser(serviceDb);
-  const imp = await insertImport(serviceDb, {
-    accountId: account.id,
-    userId: user.id,
-  });
-  await insertImportRow(serviceDb, { importId: imp.id, rowIndex: 0 });
-  await insertImportRow(serviceDb, { importId: imp.id, rowIndex: 1 });
-
-  await deleteImportService(asDb(serviceDb), user.id, { id: imp.id });
-
-  const rows = await serviceDb
-    .select()
-    .from(importRows)
-    .where(eq(importRows.importId, imp.id));
-
-  expect(rows).toHaveLength(0);
-});
-
-test('delete — rejects cross-user import', async ({ serviceDb }) => {
-  const { account, user } = await insertAccountWithUser(serviceDb);
-  const otherUser = await insertUser(serviceDb);
-  const imp = await insertImport(serviceDb, {
-    accountId: account.id,
-    userId: user.id,
-  });
-
-  await expect(
-    deleteImportService(asDb(serviceDb), otherUser.id, { id: imp.id }),
-  ).rejects.toMatchObject({ status: 404 });
-});
-
-test('delete — rejects nonexistent import', async ({ serviceDb }) => {
-  const user = await insertUser(serviceDb);
-
-  await expect(
-    deleteImportService(asDb(serviceDb), user.id, { id: fakeId() }),
-  ).rejects.toMatchObject({ status: 404 });
-});
-
-test('delete — writes audit log entry', async ({ serviceDb }) => {
-  const { account, user } = await insertAccountWithUser(serviceDb);
-  const imp = await insertImport(serviceDb, {
-    accountId: account.id,
-    userId: user.id,
-  });
-
-  await deleteImportService(asDb(serviceDb), user.id, { id: imp.id });
-
-  const logs = await serviceDb
-    .select()
-    .from(auditLogs)
-    .where(
-      and(
-        eq(auditLogs.recordId, imp.id),
-        eq(auditLogs.tableName, 'imports'),
-        eq(auditLogs.action, 'delete'),
-      ),
-    );
-
-  expect(logs).toHaveLength(1);
-  expect(logs[0].actorId).toBe(user.id);
-  expect(logs[0].beforeData).toMatchObject({
-    accountId: account.id,
-    id: imp.id,
-  });
-});
-
-test('delete — allows re-upload of same file hash after hard delete', async ({
-  serviceDb,
-}) => {
-  const { account, user } = await insertAccountWithUser(serviceDb);
-
-  const result = await createImportService(
-    asDb(serviceDb),
-    user.id,
-    validInput(account.id, { fileHash: 'reupload-hash' }),
-  );
-
-  await deleteImportService(asDb(serviceDb), user.id, { id: result.id });
-
-  const second = await createImportService(
-    asDb(serviceDb),
-    user.id,
-    validInput(account.id, { fileHash: 'reupload-hash' }),
-  );
-
-  expect(second.id).toBeDefined();
-  expect(second.id).not.toBe(result.id);
 });
