@@ -201,13 +201,17 @@ not integration tests.
 
 ### Test placement
 
-| What you're testing                          | Where it lives                       |
-| -------------------------------------------- | ------------------------------------ |
-| Service business logic (CRUD, auth, audit)   | `services/*.integration.test.ts`     |
-| DB schema constraints (unique, FK, partial)  | `db/schema.integration.test.ts`      |
-| Domain helpers (resolve\*, format\*)         | `lib/*.integration.test.ts`          |
-| API handlers (auth, validation, error map)   | E2E tests                            |
-| `throwIfConstraintViolation` message mapping | `src/lib/db/pg-error.test.ts` (unit) |
+| What you're testing                          | Where it lives                           |
+| -------------------------------------------- | ---------------------------------------- |
+| Service business logic (CRUD, auth, audit)   | `services/<service>.integration.test.ts` |
+| DB schema constraints (unique, FK, partial)  | `db/schema.integration.test.ts`          |
+| Domain helpers (resolve\*, format\*)         | `lib/*.integration.test.ts`              |
+| API handlers (auth, validation, error map)   | E2E tests                                |
+| `throwIfConstraintViolation` message mapping | `src/lib/db/pg-error.test.ts` (unit)     |
+
+**One test file per service.** Name it after the service file:
+`create-account.ts` → `create-account.integration.test.ts`. Do not
+combine multiple services into one test file.
 
 ### Writing integration tests
 
