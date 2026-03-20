@@ -42,6 +42,36 @@ budgets.
 
 Required before account deletion (GDPR right to data portability).
 
+## PostHog Analytics
+
+PostHog collects analytics, error tracking, and session replay data.
+
+### Session replay privacy
+
+Session replay uses the strictest privacy mode (`src/lib/analytics.tsx`):
+
+- `maskAllInputs: true` — all form inputs show `***` in recordings.
+- `maskTextContent: true` — all visible text replaced with `***`.
+- Network payloads are not recorded.
+
+Recordings show page layout, clicks, and navigation without exposing
+financial data. To unmask specific non-sensitive elements (e.g., nav
+labels), add the `data-unmask` HTML attribute.
+
+### Data retention
+
+PostHog's free tier retains session recordings for 1 month and
+analytics data for 1 year. No financial data is stored in PostHog
+(inputs and text are masked before capture).
+
+### Account deletion
+
+When a user's account is purged after the 7-day grace period, their
+PostHog person record and associated events must also be deleted via
+the PostHog API (`persons-bulk-delete` with `delete_events: true`,
+`delete_recordings: true`). This is required for GDPR right to
+erasure.
+
 ## Destructive Actions
 
 All destructive actions require type-to-confirm via
