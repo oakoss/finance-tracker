@@ -1,7 +1,5 @@
 import { expect, type Page } from '@playwright/test';
 
-import { expectToast } from '~e2e/fixtures/table-actions';
-
 /** Generate a unique CSV so the file hash differs across projects/runs. */
 export function uniqueCsv() {
   const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -48,7 +46,9 @@ export async function uploadCsv(
   await expect(page.getByText(/amount format/i)).toBeVisible();
   await expect(page.getByText(/preview/i)).toBeVisible();
 
-  // Submit
+  // Submit and wait for dialog to close (import succeeded)
   await page.getByRole('button', { name: /^import$/i }).click();
-  await expectToast(page, /csv imported/i);
+  await expect(page.getByRole('heading', { name: /import csv/i })).toBeHidden({
+    timeout: 15_000,
+  });
 }

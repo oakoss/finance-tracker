@@ -82,7 +82,7 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
   webServer: {
-    command: process.env.CI ? 'pnpm start' : 'pnpm dev',
+    command: 'pnpm build && pnpm start',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
     url: BASE_URL,

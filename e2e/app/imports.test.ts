@@ -16,7 +16,7 @@ test.describe(
 
       await page.goto('/imports');
 
-      const fileName = 'chase-sample.csv';
+      const fileName = `import-${Date.now()}.csv`;
       await uploadCsv(page, testAccountName, fileName);
 
       // Verify import appears in the list
@@ -28,7 +28,7 @@ test.describe(
 
       await page.goto('/imports');
 
-      const fileName = 'delete-test.csv';
+      const fileName = `delete-${Date.now()}.csv`;
       await uploadCsv(page, testAccountName, fileName);
 
       // Delete it

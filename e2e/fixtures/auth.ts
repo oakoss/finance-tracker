@@ -1,5 +1,6 @@
 import { test as base, expect } from '@playwright/test';
 
+import { waitForHydration } from '~e2e/fixtures';
 import {
   E2E_PASSWORD,
   E2E_USER_COUNT,
@@ -25,6 +26,16 @@ export const test = base.extend<
   { testAccountName: string },
   { workerStorageState: string }
 >({
+  page: async ({ page }, use) => {
+    const originalGoto = page.goto.bind(page);
+    page.goto = async (url, options) => {
+      const response = await originalGoto(url, options);
+      await waitForHydration(page);
+      return response;
+    };
+    await use(page);
+  },
+
   storageState: ({ workerStorageState }, use) => use(workerStorageState),
 
   testAccountName: async ({ page }, use, workerInfo) => {
