@@ -31,6 +31,7 @@ export const importQueries = {
 export function useCreateImport() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { capture } = useAnalytics();
   const router = useRouter();
 
   return useMutation({
@@ -47,6 +48,7 @@ export function useCreateImport() {
       void navigate({ search: {}, to: '/imports' });
       void queryClient.invalidateQueries({ queryKey: importQueries.all() });
       void router.invalidate();
+      capture('import_created');
     },
   });
 }

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { useAnalytics } from '@/hooks/use-analytics';
 import { authClient } from '@/lib/auth/client';
 import { clientLog } from '@/lib/logging/client-logger';
 import { m } from '@/paraglide/messages';
@@ -15,6 +16,7 @@ type SocialSignInProps = {
 };
 
 function SocialSignIn({ disabled, onError }: SocialSignInProps) {
+  const { capture } = useAnalytics();
   const [loading, setLoading] = useState<SocialProvider | null>(null);
 
   const isDisabled = disabled === true || loading !== null;
@@ -37,6 +39,8 @@ function SocialSignIn({ disabled, onError }: SocialSignInProps) {
         });
         onError(result.error.message ?? m['auth.error.unexpected']());
         setLoading(null);
+      } else {
+        capture('user_social_auth_started', { provider });
       }
     } catch (error) {
       clientLog.error({

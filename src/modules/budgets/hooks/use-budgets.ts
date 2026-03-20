@@ -16,6 +16,7 @@ import type {
   UpdateBudgetPeriodInput,
 } from '@/modules/budgets/validators';
 
+import { useAnalytics } from '@/hooks/use-analytics';
 import { clientLog } from '@/lib/logging/client-logger';
 import { parseError } from '@/lib/logging/evlog';
 import { copyBudgetPeriod } from '@/modules/budgets/api/copy-budget-period';
@@ -67,6 +68,7 @@ export const budgetVsActualQueries = {
 
 export function useCreateBudgetPeriod() {
   const queryClient = useQueryClient();
+  const { capture } = useAnalytics();
   const router = useRouter();
 
   return useMutation({
@@ -84,6 +86,7 @@ export function useCreateBudgetPeriod() {
         queryKey: budgetPeriodQueries.all(),
       });
       void router.invalidate();
+      capture('budget_period_created');
     },
   });
 }
@@ -116,6 +119,7 @@ export function useUpdateBudgetPeriod() {
 
 export function useDeleteBudgetPeriod() {
   const queryClient = useQueryClient();
+  const { capture } = useAnalytics();
   const router = useRouter();
 
   return useMutation({
@@ -137,12 +141,14 @@ export function useDeleteBudgetPeriod() {
         queryKey: budgetVsActualQueries.all(),
       });
       void router.invalidate();
+      capture('budget_period_deleted');
     },
   });
 }
 
 export function useCopyBudgetPeriod() {
   const queryClient = useQueryClient();
+  const { capture } = useAnalytics();
   const router = useRouter();
 
   return useMutation({
@@ -164,6 +170,7 @@ export function useCopyBudgetPeriod() {
         queryKey: budgetVsActualQueries.all(),
       });
       void router.invalidate();
+      capture('budget_period_copied');
     },
   });
 }
@@ -174,6 +181,7 @@ export function useCopyBudgetPeriod() {
 
 export function useCreateBudgetLine() {
   const queryClient = useQueryClient();
+  const { capture } = useAnalytics();
   const router = useRouter();
 
   return useMutation({
@@ -192,6 +200,7 @@ export function useCreateBudgetLine() {
         queryKey: budgetVsActualQueries.all(),
       });
       void router.invalidate();
+      capture('budget_line_created');
     },
   });
 }
@@ -222,6 +231,7 @@ export function useUpdateBudgetLine() {
 
 export function useDeleteBudgetLine() {
   const queryClient = useQueryClient();
+  const { capture } = useAnalytics();
   const router = useRouter();
 
   return useMutation({
@@ -240,6 +250,7 @@ export function useDeleteBudgetLine() {
         queryKey: budgetVsActualQueries.all(),
       });
       void router.invalidate();
+      capture('budget_line_deleted');
     },
   });
 }

@@ -10,13 +10,16 @@ import { m } from '@/paraglide/messages';
 
 export function useSignOut() {
   const router = useRouter();
-  const { reset } = useAnalytics();
+  const { capture, reset } = useAnalytics();
 
   const { postMessage } = useBroadcastChannel<string>(AUTH_CHANNEL);
 
   function signOut() {
     void authClient
       .signOut()
+      .then(() => {
+        capture('user_signed_out');
+      })
       .catch((error: unknown) => {
         clientLog.error({
           action: 'auth.signOut',

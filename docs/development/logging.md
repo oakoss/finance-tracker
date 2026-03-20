@@ -260,3 +260,35 @@ PostHog handles all error tracking — no Sentry needed.
 
 - **Exception autocapture**: `enableExceptionAutocapture: true` on the posthog-node client
   (`src/lib/analytics-server.ts`). Captures unhandled server exceptions automatically.
+
+## Custom analytics events
+
+Use the `useAnalytics()` hook from `@/hooks/use-analytics` to capture
+custom events. The hook wraps PostHog's `capture` in a try-catch so
+analytics errors never propagate to the UI.
+
+```ts
+const { capture } = useAnalytics();
+capture('account_created', { currency: 'USD', type: 'checking' });
+```
+
+### Conventions
+
+- **Event names**: `snake_case`, `noun_verbed` (e.g., `account_created`,
+  `budget_line_deleted`, `user_signed_in`).
+- **Properties**: non-PII metadata only. Never include raw IDs, names,
+  emails, or amounts. Use booleans (`has_category: true`) or enums
+  (`type: 'checking'`, `direction: 'debit'`).
+- **Placement**: capture in mutation `onSuccess` callbacks, not in
+  server functions (events are client-side).
+
+### Instrumented events
+
+| Module       | Events                                                                                                                 |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| Accounts     | `account_created`, `account_updated`, `account_deleted`                                                                |
+| Transactions | `transaction_created`, `transaction_updated`, `transaction_deleted`                                                    |
+| Imports      | `import_created`, `import_deleted`                                                                                     |
+| Budgets      | `budget_period_created`, `budget_period_deleted`, `budget_period_copied`, `budget_line_created`, `budget_line_deleted` |
+| Categories   | `category_created`, `category_updated`, `category_deleted`                                                             |
+| Auth         | `user_signed_up`, `user_signed_in`, `user_signed_out`, `user_social_auth_started`                                      |
