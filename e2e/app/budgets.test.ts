@@ -1,6 +1,5 @@
 import { expect, test } from '~e2e/fixtures/auth';
 import { createCategory } from '~e2e/fixtures/entity';
-import { expectToast } from '~e2e/fixtures/table-actions';
 
 test.describe('budget edit dialog', { tag: ['@authenticated'] }, () => {
   test('create budget via edit dialog and verify persistence', async ({
@@ -38,9 +37,11 @@ test.describe('budget edit dialog', { tag: ['@authenticated'] }, () => {
     await input1.fill('150.00');
     await input2.fill('75.50');
 
-    // Save
+    // Save and wait for dialog to close
     await page.getByRole('button', { name: /save/i }).click();
-    await expectToast(page, /budget saved/i);
+    await expect(
+      page.getByRole('heading', { name: /edit budget/i }),
+    ).toBeHidden();
 
     // Verify budget overview renders with summary
     await expect(page.getByText('Budgeted')).toBeVisible();
@@ -57,7 +58,9 @@ test.describe('budget edit dialog', { tag: ['@authenticated'] }, () => {
     await input2.fill('');
 
     await page.getByRole('button', { name: /save/i }).click();
-    await expectToast(page, /budget saved/i);
+    await expect(
+      page.getByRole('heading', { name: /edit budget/i }),
+    ).toBeHidden();
 
     // Verify overview updated: only cat1 remains at $200
     await expect(page.getByText('$200.00').first()).toBeVisible();

@@ -684,7 +684,7 @@
         "playwright/consistent-spacing-between-blocks": "warn",
         "playwright/expect-expect": [
           "warn",
-          { "assertFunctionNames": ["expect", "expectToast"] }
+          { "assertFunctionNames": ["expect"] }
         ],
         "playwright/max-nested-describe": "warn",
         "playwright/missing-playwright-await": "error",

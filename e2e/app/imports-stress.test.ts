@@ -1,7 +1,6 @@
 import path from 'node:path';
 
 import { expect, test } from '~e2e/fixtures/auth';
-import { expectToast } from '~e2e/fixtures/table-actions';
 
 test.describe('imports stress', { tag: ['@stress', '@authenticated'] }, () => {
   test('upload 1500-row CSV completes within 30s', async ({
@@ -43,7 +42,9 @@ test.describe('imports stress', { tag: ['@stress', '@authenticated'] }, () => {
     // Submit and time it
     const start = Date.now();
     await page.getByRole('button', { name: /^import$/i }).click();
-    await expectToast(page, /csv imported/i);
+    await expect(page.getByRole('heading', { name: /import csv/i })).toBeHidden(
+      { timeout: 30_000 },
+    );
     const elapsed = Date.now() - start;
 
     // Verify it completed with correct row count

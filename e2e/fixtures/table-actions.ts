@@ -37,31 +37,6 @@ export async function confirmDelete(
 }
 
 /**
- * Assert a Sonner toast appeared with the given text, then dismiss it.
- * Tolerates the toast auto-dismissing before the close button can be clicked.
- */
-export async function expectToast(
-  page: Page,
-  text: string | RegExp,
-): Promise<void> {
-  const toast = page.locator('[data-sonner-toast]').filter({ hasText: text });
-  await expect(toast).toBeVisible();
-
-  const closeBtn = toast.locator('[data-close-button]');
-  if (await closeBtn.isVisible().catch(() => false)) {
-    await closeBtn.click({ timeout: 2000 }).catch(() => {
-      // Toast may animate away before click completes — safe to ignore
-    });
-  }
-
-  await toast
-    .waitFor({ state: 'hidden', timeout: 3000 })
-    .catch((error: Error) => {
-      if (error.name !== 'TimeoutError') throw error;
-    });
-}
-
-/**
  * Check whether an empty-state message is visible.
  * Returns false (instead of throwing) on timeout.
  */

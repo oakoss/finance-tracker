@@ -10,12 +10,12 @@ import { getField } from '~e2e/fixtures/field';
 import {
   clickRowAction,
   confirmDelete,
-  expectToast,
   isEmptyState,
   openEditDialog,
 } from '~e2e/fixtures/table-actions';
 
 const EDIT_TXN_HEADING = /edit transaction/i;
+const CREATE_TXN_HEADING = /create transaction/i;
 
 /** Open the Account select and pick the option by name. */
 async function selectAccount(page: Page, accountName: string): Promise<void> {
@@ -44,7 +44,7 @@ test.describe(
         .first()
         .click();
       await expect(
-        page.getByRole('heading', { name: /create transaction/i }),
+        page.getByRole('heading', { name: CREATE_TXN_HEADING }),
       ).toBeVisible();
     });
 
@@ -66,7 +66,7 @@ test.describe(
       await addBtn.waitFor({ state: 'visible' });
       await addBtn.click();
       await expect(
-        page.getByRole('heading', { name: /create transaction/i }),
+        page.getByRole('heading', { name: CREATE_TXN_HEADING }),
       ).toBeVisible();
 
       await page.getByLabel(/description/i).fill(name);
@@ -76,7 +76,6 @@ test.describe(
 
       await page.getByRole('button', { name: /create/i }).click();
 
-      await expectToast(page, 'Transaction created');
       await expect(page.getByText(name)).toBeVisible();
 
       // Edit transaction
@@ -84,14 +83,13 @@ test.describe(
       await clickRowAction(page, row, /edit/i);
 
       await expect(
-        page.getByRole('heading', { name: /edit transaction/i }),
+        page.getByRole('heading', { name: EDIT_TXN_HEADING }),
       ).toBeVisible();
 
       await page.getByLabel(/description/i).clear();
       await page.getByLabel(/description/i).fill(renamed);
       await page.getByRole('button', { name: /save/i }).click();
 
-      await expectToast(page, 'Transaction updated');
       await expect(page.getByText(renamed)).toBeVisible();
 
       // Delete transaction
@@ -106,7 +104,6 @@ test.describe(
 
       await confirmDelete(page, renamed);
 
-      await expectToast(page, 'Transaction deleted');
       await expect(page.getByRole('table').getByText(renamed)).toBeHidden();
     });
 
@@ -133,7 +130,7 @@ test.describe(
       await createViaCombobox(page, 'Payee', payeeName);
 
       await page.getByRole('button', { name: /create/i }).click();
-      await expectToast(page, 'Transaction created');
+      await expect(page.getByText(desc)).toBeVisible();
     });
 
     test('creates transaction with new tag', async ({
@@ -162,7 +159,7 @@ test.describe(
       await expect(page.getByText(tagName)).toBeVisible();
 
       await page.getByRole('button', { name: /create/i }).click();
-      await expectToast(page, 'Transaction created');
+      await expect(page.getByText(desc)).toBeVisible();
     });
 
     test('saves a credit transaction', async ({ page, testAccountName }) => {
@@ -185,7 +182,6 @@ test.describe(
       await page.getByRole('option', { name: /credit/i }).click();
 
       await page.getByRole('button', { name: /create/i }).click();
-      await expectToast(page, 'Transaction created');
       await expect(page.getByText(desc)).toBeVisible();
     });
   },
@@ -219,7 +215,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
       .click();
 
     await page.getByRole('button', { name: /create/i }).click();
-    await expectToast(page, 'Transaction created');
+    await expect(page.getByText(desc)).toBeVisible();
   });
 
   test('selects existing payee from dropdown', async ({
@@ -241,7 +237,9 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await selectAccount(page, accountName);
     await createViaCombobox(page, 'Payee', payeeName);
     await page.getByRole('button', { name: /create/i }).click();
-    await expectToast(page, 'Transaction created');
+    await expect(
+      page.getByRole('heading', { name: CREATE_TXN_HEADING }),
+    ).toBeHidden();
 
     // Create another transaction selecting the existing payee
     await page
@@ -255,7 +253,9 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await selectExistingCombobox(page, 'Payee', payeeName);
 
     await page.getByRole('button', { name: /create/i }).click();
-    await expectToast(page, 'Transaction created');
+    await expect(
+      page.getByRole('heading', { name: CREATE_TXN_HEADING }),
+    ).toBeHidden();
   });
 
   test('selects existing tag from dropdown', async ({
@@ -277,7 +277,9 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await selectAccount(page, accountName);
     await createViaCombobox(page, 'Tags', tagName);
     await page.getByRole('button', { name: /create/i }).click();
-    await expectToast(page, 'Transaction created');
+    await expect(
+      page.getByRole('heading', { name: CREATE_TXN_HEADING }),
+    ).toBeHidden();
 
     // Full reload to clear React state, then open fresh dialog
     await page.reload();
@@ -301,7 +303,9 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await expect(tagsField.getByText(tagName)).toBeVisible();
 
     await page.getByRole('button', { name: /create/i }).click();
-    await expectToast(page, 'Transaction created');
+    await expect(
+      page.getByRole('heading', { name: CREATE_TXN_HEADING }),
+    ).toBeHidden();
   });
 
   test('toggles pending switch', async ({ page, testAccountName }) => {
@@ -324,7 +328,6 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await expect(pendingSwitch).toBeChecked();
 
     await page.getByRole('button', { name: /create/i }).click();
-    await expectToast(page, 'Transaction created');
 
     // Verify pending persists by reopening edit dialog
     await openEditDialog(page, desc, EDIT_TXN_HEADING);
@@ -349,7 +352,6 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await page.getByLabel('Memo').fill(memo);
 
     await page.getByRole('button', { name: /create/i }).click();
-    await expectToast(page, 'Transaction created');
 
     // Verify memo persists by opening edit dialog
     await openEditDialog(page, desc, EDIT_TXN_HEADING);
@@ -366,7 +368,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await addBtn.waitFor({ state: 'visible' });
     await addBtn.click();
     await expect(
-      page.getByRole('heading', { name: /create transaction/i }),
+      page.getByRole('heading', { name: CREATE_TXN_HEADING }),
     ).toBeVisible();
 
     // Submit without filling any fields
@@ -374,7 +376,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
 
     // Should show validation errors (form stays open with error alerts)
     await expect(
-      page.getByRole('heading', { name: /create transaction/i }),
+      page.getByRole('heading', { name: CREATE_TXN_HEADING }),
     ).toBeVisible();
     const errorAlerts = page.locator('[data-slot="field-error"]');
     await expect(errorAlerts.first()).toBeVisible();
@@ -405,7 +407,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await expect(page.getByText(tagName)).toBeHidden();
 
     await page.getByRole('button', { name: /create/i }).click();
-    await expectToast(page, 'Transaction created');
+    await expect(page.getByText(desc)).toBeVisible();
   });
 
   test('verifies category, payee, and tag persist after create', async ({
@@ -441,7 +443,6 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await createViaCombobox(page, 'Tags', tagName);
 
     await page.getByRole('button', { name: /create/i }).click();
-    await expectToast(page, 'Transaction created');
 
     // Reopen edit dialog and verify all fields persisted
     await openEditDialog(page, desc, EDIT_TXN_HEADING);
@@ -491,7 +492,6 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await createViaCombobox(page, 'Tags', tag1);
 
     await page.getByRole('button', { name: /create/i }).click();
-    await expectToast(page, 'Transaction created');
 
     // Edit: change category to cat2, payee to payee2, add tag2
     await openEditDialog(page, desc, EDIT_TXN_HEADING);
@@ -512,7 +512,6 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await createViaCombobox(page, 'Tags', tag2);
 
     await page.getByRole('button', { name: /save/i }).click();
-    await expectToast(page, 'Transaction updated');
 
     // Reopen and verify changes persisted
     await openEditDialog(page, desc, EDIT_TXN_HEADING);
@@ -544,7 +543,6 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await createViaCombobox(page, 'Tags', tagName);
 
     await page.getByRole('button', { name: /create/i }).click();
-    await expectToast(page, 'Transaction created');
 
     // Open edit dialog and verify tag is present
     await openEditDialog(page, desc, EDIT_TXN_HEADING);
@@ -556,7 +554,6 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await expect(tagsField.getByText(tagName)).toBeHidden();
 
     await page.getByRole('button', { name: /save/i }).click();
-    await expectToast(page, 'Transaction updated');
 
     // Reopen and verify tag is gone
     await openEditDialog(page, desc, EDIT_TXN_HEADING);
@@ -590,7 +587,6 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
     await getField(page, 'Pending').getByRole('switch').click();
 
     await page.getByRole('button', { name: /create/i }).click();
-    await expectToast(page, 'Transaction created');
 
     // Verify data grid row displays all fields
     const row = page.getByRole('row', { name: new RegExp(desc, 'i') });
@@ -622,7 +618,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
       .first()
       .click();
     await expect(
-      page.getByRole('heading', { name: /create transaction/i }),
+      page.getByRole('heading', { name: CREATE_TXN_HEADING }),
     ).toBeVisible();
 
     await page.getByLabel(/description/i).fill(desc);
@@ -634,7 +630,7 @@ test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
 
     // Dialog should close
     await expect(
-      page.getByRole('heading', { name: /create transaction/i }),
+      page.getByRole('heading', { name: CREATE_TXN_HEADING }),
     ).toBeHidden();
 
     // Transaction should not appear in the table

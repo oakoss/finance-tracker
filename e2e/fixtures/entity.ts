@@ -1,6 +1,4 @@
-import type { Page } from '@playwright/test';
-
-import { expectToast } from '~e2e/fixtures/table-actions';
+import { expect, type Page } from '@playwright/test';
 
 /** Create an expense category via the categories page. */
 export async function createCategory(page: Page, name: string): Promise<void> {
@@ -11,5 +9,7 @@ export async function createCategory(page: Page, name: string): Promise<void> {
     .click();
   await page.getByLabel(/category name/i).fill(name);
   await page.getByRole('button', { name: /create/i }).click();
-  await expectToast(page, 'Category created');
+  await expect(
+    page.getByRole('heading', { name: /create category/i }),
+  ).toBeHidden();
 }

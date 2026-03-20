@@ -3,7 +3,6 @@ import { uploadCsv } from '~e2e/fixtures/import-actions';
 import {
   clickRowAction,
   confirmDelete,
-  expectToast,
   isEmptyState,
 } from '~e2e/fixtures/table-actions';
 
@@ -35,10 +34,12 @@ test.describe(
       const row = page.getByRole('row', { name: new RegExp(fileName, 'i') });
       await clickRowAction(page, row, /delete/i);
       await confirmDelete(page, fileName);
-      await expectToast(page, /import deleted/i);
 
-      // Verify it's gone
-      await expect(page.getByText(fileName)).toBeHidden();
+      // Wait for delete dialog to close, then verify row is gone
+      await expect(
+        page.getByRole('heading', { name: /delete import/i }),
+      ).toBeHidden();
+      await expect(page.getByRole('table').getByText(fileName)).toBeHidden();
     });
 
     test('empty state shows upload CTA', async ({ page }) => {

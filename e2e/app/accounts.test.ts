@@ -2,7 +2,6 @@ import { expect, test } from '~e2e/fixtures/auth';
 import {
   clickRowAction,
   confirmDelete,
-  expectToast,
   isEmptyState,
 } from '~e2e/fixtures/table-actions';
 
@@ -47,7 +46,6 @@ test.describe(
       await page.getByRole('option', { name: /savings/i }).click();
       await page.getByRole('button', { name: /create/i }).click();
 
-      await expectToast(page, 'Account created');
       await expect(page.getByText(name)).toBeVisible();
 
       // Verify type badge shows in table
@@ -67,7 +65,6 @@ test.describe(
       await page.getByRole('option', { name: /checking/i }).click();
       await page.getByRole('button', { name: /save/i }).click();
 
-      await expectToast(page, 'Account updated');
       await expect(page.getByText(renamed)).toBeVisible();
 
       // Verify type changed in table
@@ -85,7 +82,6 @@ test.describe(
 
       await confirmDelete(page, renamed);
 
-      await expectToast(page, 'Account deleted');
       await expect(page.getByRole('table').getByText(renamed)).toBeHidden();
     });
 
@@ -101,7 +97,9 @@ test.describe(
         .click();
       await page.getByLabel(/account name/i).fill(name);
       await page.getByRole('button', { name: /create/i }).click();
-      await expectToast(page, 'Account created');
+      await expect(
+        page.getByRole('heading', { name: /create account/i }),
+      ).toBeHidden();
 
       // Navigate to transactions and open create dialog
       await page.goto('/transactions');

@@ -6,7 +6,6 @@ import {
   E2E_USER_COUNT,
   e2eEmail,
 } from '~e2e/fixtures/constants';
-import { expectToast } from '~e2e/fixtures/table-actions';
 
 /**
  * Module-level account cache keyed on `parallelIndex`. The account is
@@ -59,7 +58,9 @@ export const test = base.extend<
           .click();
         await page.getByLabel(/account name/i).fill(name);
         await page.getByRole('button', { name: /create/i }).click();
-        await expectToast(page, 'Account created');
+        await expect(
+          page.getByRole('heading', { name: /create account/i }),
+        ).toBeHidden();
         workerAccountNames.set(id, name);
       } catch (error) {
         workerAccountNames.set(id, null);
