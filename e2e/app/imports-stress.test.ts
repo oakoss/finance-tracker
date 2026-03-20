@@ -20,7 +20,7 @@ test.describe('imports stress', { tag: ['@stress', '@authenticated'] }, () => {
       page.getByRole('heading', { name: /import csv/i }),
     ).toBeVisible();
 
-    // Select account
+    // Step 1: select account + file
     await page
       .getByLabel(/account/i)
       .first()
@@ -29,13 +29,16 @@ test.describe('imports stress', { tag: ['@stress', '@authenticated'] }, () => {
       .getByRole('option', { name: new RegExp(testAccountName, 'i') })
       .click();
 
-    // Upload large CSV
     const csvPath = path.resolve(
       import.meta.dirname,
       '../fixtures/large-import.csv',
     );
     const fileInput = page.locator('input[type="file"]');
     await fileInput.setInputFiles(csvPath);
+
+    // Step 2: column mapper (auto-detected)
+    await page.getByRole('button', { name: /next/i }).click();
+    await expect(page.getByText(/amount format/i)).toBeVisible();
 
     // Submit and time it
     const start = Date.now();

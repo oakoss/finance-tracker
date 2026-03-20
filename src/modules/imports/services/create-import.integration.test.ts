@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
 import type { Db } from '@/db';
+import type { CreateImportInput } from '@/modules/imports/validators';
 
 import { auditLogs } from '@/db/schema';
 import { importRows } from '@/modules/imports/db/schema';
@@ -19,7 +20,7 @@ const SAMPLE_CSV = `Date,Description,Amount
 2024-01-16,Paycheck,2500.00
 2024-01-17,Groceries,-85.23`;
 
-function validInput(accountId: string, overrides?: Record<string, string>) {
+function validInput(accountId: string, overrides?: Partial<CreateImportInput>) {
   return {
     accountId,
     fileContent: SAMPLE_CSV,
@@ -207,6 +208,125 @@ test('create — CSV with quoted fields parses correctly', async ({
     Date: '2024-01-15',
     Description: 'AMAZON.COM, INC.',
   });
+});
+
+test('create — with columnMapping populates normalizedData on rows', async ({
+  serviceDb,
+}) => {
+  const { account, user } = await insertAccountWithUser(serviceDb);
+
+  const csv = `Date,Description,Amount,Category
+2024-01-15,Coffee Shop,-4.50,Food
+2024-01-16,Paycheck,2500.00,Income`;
+
+  const result = await createImportService(
+    asDb(serviceDb),
+    user.id,
+    validInput(account.id, {
+      columnMapping: {
+        amountMode: 'single',
+        mapping: {
+          Amount: 'amount',
+          Category: 'categoryName',
+          Date: 'transactionAt',
+          Description: 'description',
+        },
+      },
+      fileContent: csv,
+      fileHash: 'mapping-test',
+    }),
+  );
+
+  expect(result.columnMapping).toEqual({
+    amountMode: 'single',
+    mapping: {
+      Amount: 'amount',
+      Category: 'categoryName',
+      Date: 'transactionAt',
+      Description: 'description',
+    },
+  });
+
+  const rows = await serviceDb
+    .select()
+    .from(importRows)
+    .where(eq(importRows.importId, result.id));
+
+  expect(rows[0].normalizedData).toEqual({
+    amountCents: -450,
+    categoryName: 'Food',
+    description: 'Coffee Shop',
+    transactionAt: '2024-01-15',
+  });
+  expect(rows[1].normalizedData).toEqual({
+    amountCents: 250_000,
+    categoryName: 'Income',
+    description: 'Paycheck',
+    transactionAt: '2024-01-16',
+  });
+});
+
+test('create — with split debit/credit columnMapping normalizes correctly', async ({
+  serviceDb,
+}) => {
+  const { account, user } = await insertAccountWithUser(serviceDb);
+
+  const csv = `Date,Description,Debit,Credit
+2024-01-15,Purchase,50.00,
+2024-01-16,Deposit,,2500.00`;
+
+  const result = await createImportService(
+    asDb(serviceDb),
+    user.id,
+    validInput(account.id, {
+      columnMapping: {
+        amountMode: 'split',
+        mapping: {
+          Credit: 'creditAmount',
+          Date: 'transactionAt',
+          Debit: 'debitAmount',
+          Description: 'description',
+        },
+      },
+      fileContent: csv,
+      fileHash: 'split-mapping-test',
+    }),
+  );
+
+  const rows = await serviceDb
+    .select()
+    .from(importRows)
+    .where(eq(importRows.importId, result.id));
+
+  expect(rows[0].normalizedData).toEqual({
+    amountCents: -5000,
+    description: 'Purchase',
+    transactionAt: '2024-01-15',
+  });
+  expect(rows[1].normalizedData).toEqual({
+    amountCents: 250_000,
+    description: 'Deposit',
+    transactionAt: '2024-01-16',
+  });
+});
+
+test('create — without columnMapping leaves normalizedData null', async ({
+  serviceDb,
+}) => {
+  const { account, user } = await insertAccountWithUser(serviceDb);
+
+  const result = await createImportService(
+    asDb(serviceDb),
+    user.id,
+    validInput(account.id, { fileHash: 'no-mapping-test' }),
+  );
+
+  const rows = await serviceDb
+    .select()
+    .from(importRows)
+    .where(eq(importRows.importId, result.id));
+
+  expect(rows[0].normalizedData).toBeNull();
 });
 
 test('create — batched insert persists all rows across batch boundaries', async ({

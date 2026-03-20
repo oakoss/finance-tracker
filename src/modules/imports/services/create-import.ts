@@ -9,6 +9,10 @@ import { createError, log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
 import { ledgerAccounts } from '@/modules/accounts/db/schema';
 import { importRows, imports } from '@/modules/imports/db/schema';
+import {
+  applyColumnMapping,
+  buildReverseMap,
+} from '@/modules/imports/lib/apply-column-mapping';
 
 export async function createImportService(
   database: Db,
@@ -85,6 +89,7 @@ export async function createImportService(
       .insert(imports)
       .values({
         accountId: data.accountId,
+        columnMapping: data.columnMapping ?? null,
         createdById: userId,
         fileHash: data.fileHash,
         fileName: data.fileName,
@@ -102,12 +107,38 @@ export async function createImportService(
       });
     }
 
-    const rowValues = parsed.data.map((rawData, index) => ({
-      createdById: userId,
-      importId: importRecord.id,
-      rawData,
-      rowIndex: index,
-    }));
+    const reverseMap = data.columnMapping
+      ? buildReverseMap(data.columnMapping)
+      : null;
+
+    const rowValues = parsed.data.map((rawData, index) => {
+      let normalizedData = null;
+      if (data.columnMapping && reverseMap) {
+        try {
+          normalizedData = applyColumnMapping(
+            rawData,
+            data.columnMapping,
+            reverseMap,
+          );
+        } catch (error) {
+          log.warn({
+            action: 'import.create.normalizationError',
+            outcome: {
+              error: error instanceof Error ? error.message : String(error),
+              rowIndex: index,
+            },
+            user: { idHash: hashId(userId) },
+          });
+        }
+      }
+      return {
+        createdById: userId,
+        importId: importRecord.id,
+        normalizedData,
+        rawData,
+        rowIndex: index,
+      };
+    });
 
     const BATCH_SIZE = 500;
     for (let i = 0; i < rowValues.length; i += BATCH_SIZE) {

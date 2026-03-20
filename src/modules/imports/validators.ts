@@ -1,9 +1,39 @@
 import { type } from 'arktype';
 
+import {
+  TARGET_FIELD_VALUES,
+  type TargetField,
+} from '@/modules/imports/constants';
 import { importsDeleteSchema } from '@/modules/imports/models';
+
+export type { TargetField } from '@/modules/imports/constants';
+
+export const TARGET_FIELD_OPTIONS: readonly TargetField[] = TARGET_FIELD_VALUES;
+
+export const REQUIRED_SINGLE_FIELDS: readonly TargetField[] = [
+  'description',
+  'amount',
+  'transactionAt',
+];
+
+export const REQUIRED_SPLIT_FIELDS: readonly TargetField[] = [
+  'description',
+  'debitAmount',
+  'creditAmount',
+  'transactionAt',
+];
+
+export const columnMappingSchema = type({
+  amountMode: "'single' | 'split'",
+  mapping:
+    "Record<string, 'amount' | 'categoryName' | 'creditAmount' | 'debitAmount' | 'description' | 'memo' | 'payeeName' | 'skip' | 'transactionAt'>",
+});
+
+export type ColumnMapping = typeof columnMappingSchema.infer;
 
 export const createImportSchema = type({
   accountId: 'string > 0',
+  'columnMapping?': columnMappingSchema,
   fileContent: '0 < string <= 5242880',
   fileHash: 'string > 0',
   fileName: '0 < string <= 255',

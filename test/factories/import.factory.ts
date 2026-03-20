@@ -9,6 +9,7 @@ export function createImport(overrides?: Partial<Import>): Import {
   const now = fakeDate();
   return {
     accountId: fakeId(),
+    columnMapping: null,
     createdAt: now,
     createdById: null,
     deletedAt: null,

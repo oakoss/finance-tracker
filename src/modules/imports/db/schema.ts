@@ -10,10 +10,17 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 
+import type { TargetField } from '@/modules/imports/constants';
+
 import { auditFields } from '@/db/shared';
 import { ledgerAccounts } from '@/modules/accounts/db/schema';
 import { users } from '@/modules/auth/db/schema';
 import { transactions } from '@/modules/transactions/db/schema';
+
+export type ColumnMappingDb = {
+  amountMode: 'single' | 'split';
+  mapping: Record<string, TargetField>;
+};
 
 export const importSourceEnum = pgEnum('import_source', [
   'csv',
@@ -41,6 +48,7 @@ export const imports = pgTable(
     accountId: uuid()
       .notNull()
       .references(() => ledgerAccounts.id, { onDelete: 'cascade' }),
+    columnMapping: jsonb().$type<ColumnMappingDb>(),
     fileHash: text(),
     fileName: text(),
     finishedAt: timestamp({ withTimezone: true }),
