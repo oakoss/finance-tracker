@@ -26,7 +26,7 @@ npx playwright show-report                 # open the HTML report viewer
 - **Parallel**: `fullyParallel: true` globally; individual tests run
   in parallel, not just files
 - **Browser**: Chromium desktop + iPhone 15 Pro Max + Pixel 7
-  (add Firefox/WebKit projects as needed)
+  (mobile viewports only run `@mobile`-tagged tests)
 - **Dev server**: Playwright starts `pnpm dev` locally or
   `pnpm start` (production build) in CI (port 3000)
 - **Retries**: 2 in CI, 0 locally
@@ -81,6 +81,30 @@ npx playwright show-report                 # open the HTML report viewer
   enabled globally (including `e2e/`). All Playwright calls (`click`,
   `fill`, `goto`, etc.) return Promises and must be `await`-ed
 
+## Tags
+
+| Tag              | Purpose                 | Where it runs                          |
+| ---------------- | ----------------------- | -------------------------------------- |
+| `@authenticated` | Needs logged-in session | `chromium:authenticated` project       |
+| `@mobile`        | Run on mobile viewports | `iphone` + `pixel` projects            |
+| `@smoke`         | Core happy paths        | PR CI gate (`--grep @smoke`)           |
+| `@stress`        | Perf/load tests         | Local only (`--project stress`)        |
+| `@demo`          | Component demo pages    | Local only (`--project chromium:demo`) |
+| `@a11y`          | Accessibility scans     | Local only (`--grep @a11y`)            |
+
+### CI tiers
+
+- **PR**: `@smoke` on desktop only (fast gate)
+- **Merge to main**: full suite on desktop + mobile (no stress/demo)
+
+### When to add each tag
+
+- `@authenticated` — test imports from `~e2e/fixtures/auth`
+- `@mobile` — test validates responsive layout, dialogs, or
+  navigation on small screens
+- `@smoke` — test covers a core user flow (sign-in, CRUD, import)
+- `@a11y` — test runs axe-core or checks keyboard navigation
+
 ## Directory structure
 
 ```text
@@ -99,22 +123,22 @@ e2e/
     table-actions.ts         # table row action + toast helpers
   app/
     a11y.test.ts             # @a11y
-    accounts.test.ts         # @authenticated
+    accounts.test.ts         # @smoke @authenticated @mobile
     budgets.test.ts          # @authenticated
-    categories.test.ts       # @authenticated
-    dashboard.test.ts        # @smoke @a11y @authenticated
-    imports.test.ts          # @authenticated
+    categories.test.ts       # @smoke @authenticated
+    dashboard.test.ts        # @smoke @authenticated @mobile + @a11y @authenticated
+    imports.test.ts          # @smoke @authenticated @mobile
     imports-stress.test.ts   # @stress @authenticated
     shell.test.ts            # @smoke
-    transactions.test.ts     # @authenticated
+    transactions.test.ts     # @smoke @authenticated
   auth/
-    redirect.test.ts         # @smoke @auth
-    reverse-guard.test.ts    # @smoke @auth @authenticated
-    sign-in.test.ts          # @smoke @auth @a11y
-    sign-up.test.ts          # @smoke @auth @a11y
-    sign-out.test.ts         # @auth
+    redirect.test.ts         # @smoke
+    reverse-guard.test.ts    # @smoke @authenticated
+    sign-in.test.ts          # @smoke @a11y @mobile
+    sign-up.test.ts          # @smoke @a11y
+    sign-out.test.ts         # (no tags)
   demo/
-    components.test.ts       # @demo (screenshot tests, local only)
+    components.test.ts       # @demo (local only)
   .auth/                     # gitignored (per-worker auth state files)
 ```
 
@@ -123,30 +147,15 @@ shell-level and cross-cutting tests, and `demo/` for component
 screenshot tests. Tags are applied per `test.describe`, not per
 file.
 
-## Tags
-
-| Tag              | Purpose                                    | Planned CI gate |
-| ---------------- | ------------------------------------------ | --------------- |
-| `@smoke`         | Page loads, renders, redirects             | Every PR        |
-| `@a11y`          | Contrast, ARIA checks via Axe              | Every PR        |
-| `@auth`          | Sign-in/sign-up/sign-out flows             | Merge to main   |
-| `@authenticated` | Requires auth storageState (project split) | Merge to main   |
-| `@crud`          | Feature happy-path CRUD                    | Merge to main   |
-| `@mobile`        | Mobile-specific tests (not yet in use)     | Every PR        |
-| `@stress`        | Large dataset / load tests (local only)    | Never (local)   |
-
-CI currently runs all tags; per-tag filtering will be added when
-the suite is large enough to benefit.
+### Tag filtering examples
 
 ```bash
-# Single tag
-pnpm test:e2e -- --grep @smoke
-
-# OR — tests matching either tag
-pnpm test:e2e -- --grep "@smoke|@auth"
-
-# AND — tests matching BOTH tags (lookahead syntax)
-pnpm test:e2e -- --grep "(?=.*@smoke)(?=.*@a11y)"
+pnpm test:e2e:smoke                              # smoke tests, desktop only
+pnpm test:e2e:a11y                               # accessibility scans
+pnpm test:e2e:stress                             # perf/load tests
+pnpm test:e2e:demo                               # component demo pages
+pnpm test:e2e -- --grep "@smoke|@a11y"           # OR — either tag
+pnpm test:e2e -- --grep "(?=.*@smoke)(?=.*@a11y)" # AND — both tags
 ```
 
 **Describe-level annotations** — apply custom metadata to an
@@ -484,23 +493,18 @@ npx playwright show-report                 # HTML report
 
 ## CI
 
-- **Sharding**: E2E tests run as 3 parallel CI jobs (one per
-  viewport: chromium, iphone, pixel). Each job runs both
-  `:authenticated` and `:public` projects for its viewport
-  (the `chromium:demo` project is excluded; see below). Blob
-  reports are uploaded per-viewport as separate artifacts
-- **Fail-fast on PRs**: On pull requests, a preliminary
-  `--only-changed=$GITHUB_BASE_REF` run executes only test files
-  affected by the diff before the full suite. This gives faster
-  feedback when changed tests fail
+- **PR gate** (`e2e-smoke`): runs `@smoke` tests on
+  `chromium:authenticated` + `chromium:public` only. Fast
+  feedback on core flows.
+- **Merge to main** (`e2e-full`): runs full suite on
+  `chromium:authenticated` + `chromium:public` + `iphone` +
+  `pixel`. Catches regressions before they hit main.
 - **Production build**: CI builds then serves the production
-  bundle to test against the real build and eliminate Vite dev
-  overhead (HMR, file watchers, on-demand compilation)
-- **Workers**: CI uses 2 workers to reduce CPU contention on
-  shared runners; locally uses 6 (`E2E_USER_COUNT`)
-- **Screenshot tests**: Component demo screenshot tests (`@demo`
-  tag) run in a dedicated `chromium:demo` project excluded from
-  CI. Run locally with `pnpm test:e2e -- --project=chromium:demo`
+  bundle to test against the real build.
+- **Workers**: CI uses 2 workers; locally uses 6
+  (`E2E_USER_COUNT`).
+- **Demo/stress**: excluded from CI. Run locally with
+  `pnpm test:e2e:demo` or `pnpm test:e2e:stress`.
 
 ## Future considerations
 

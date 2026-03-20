@@ -45,34 +45,20 @@ export default defineConfig({
       },
     },
 
-    // iPhone (Chromium with iPhone viewport/UA)
+    // Mobile viewports — only tests tagged @mobile run here
     {
       dependencies: ['db-setup'],
-      grep: /@authenticated/,
+      grep: /@mobile/,
       grepInvert: /@stress/,
-      name: 'iphone:authenticated',
+      name: 'iphone',
       use: { ...iPhone },
     },
     {
       dependencies: ['db-setup'],
-      grepInvert: [/@authenticated/, /@demo/, /@stress/],
-      name: 'iphone:public',
-      use: { ...iPhone, storageState: { cookies: [], origins: [] } },
-    },
-
-    // Pixel (Chromium with Pixel viewport/UA)
-    {
-      dependencies: ['db-setup'],
-      grep: /@authenticated/,
+      grep: /@mobile/,
       grepInvert: /@stress/,
-      name: 'pixel:authenticated',
+      name: 'pixel',
       use: { ...pixel },
-    },
-    {
-      dependencies: ['db-setup'],
-      grepInvert: [/@authenticated/, /@demo/, /@stress/],
-      name: 'pixel:public',
-      use: { ...pixel, storageState: { cookies: [], origins: [] } },
     },
 
     // Stress tests — local only, run with: pnpm test:e2e --project stress

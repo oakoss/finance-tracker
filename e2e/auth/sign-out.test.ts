@@ -27,7 +27,7 @@ async function ensureSidebarOpen(page: Page) {
 
 test.use({ storageState: { cookies: [], origins: [] } });
 
-test.describe('sign out', { tag: '@auth' }, () => {
+test.describe('sign out', () => {
   test('signs out via user menu', async ({ page }) => {
     await test.step('sign in', async () => {
       await signInViaUI(page);

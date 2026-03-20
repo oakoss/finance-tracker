@@ -2,15 +2,19 @@ import { waitForHydration } from '~e2e/fixtures';
 import { a11yScan } from '~e2e/fixtures/a11y';
 import { expect, test } from '~e2e/fixtures/auth';
 
-test.describe('dashboard', { tag: ['@smoke', '@authenticated'] }, () => {
-  test('renders welcome heading', async ({ page }) => {
-    await page.goto('/dashboard');
-    const heading = page.getByRole('heading', { name: /welcome/i });
-    await expect(heading).toBeVisible();
-  });
+test.describe(
+  'dashboard',
+  { tag: ['@smoke', '@authenticated', '@mobile'] },
+  () => {
+    test('renders welcome heading', async ({ page }) => {
+      await page.goto('/dashboard');
+      const heading = page.getByRole('heading', { name: /welcome/i });
+      await expect(heading).toBeVisible();
+    });
 
-  // TODO: Add empty state test when TREK-24 (dashboard widgets) ships
-});
+    // TODO: Add empty state test when TREK-24 (dashboard widgets) ships
+  },
+);
 
 const colorSchemes = ['light', 'dark'] as const;
 

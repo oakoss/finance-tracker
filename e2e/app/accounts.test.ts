@@ -6,114 +6,118 @@ import {
   isEmptyState,
 } from '~e2e/fixtures/table-actions';
 
-test.describe('accounts CRUD', { tag: ['@smoke', '@authenticated'] }, () => {
-  test('empty state CTA opens create dialog', async ({ page }) => {
-    await page.goto('/accounts');
+test.describe(
+  'accounts CRUD',
+  { tag: ['@smoke', '@authenticated', '@mobile'] },
+  () => {
+    test('empty state CTA opens create dialog', async ({ page }) => {
+      await page.goto('/accounts');
 
-    // Skip if accounts exist from other tests on this worker
-    // oxlint-disable-next-line playwright/no-conditional-in-test
-    if (!(await isEmptyState(page, /no accounts yet/i))) return;
+      // Skip if accounts exist from other tests on this worker
+      // oxlint-disable-next-line playwright/no-conditional-in-test
+      if (!(await isEmptyState(page, /no accounts yet/i))) return;
 
-    await page
-      .getByRole('button', { name: /add account/i })
-      .first()
-      .click();
-    await expect(
-      page.getByRole('heading', { name: /create account/i }),
-    ).toBeVisible();
-  });
-
-  test('create, edit, and delete an account', async ({ page }) => {
-    test.slow();
-    const name = `E2E Acct ${Date.now()}`;
-    const renamed = `${name} Renamed`;
-
-    await page.goto('/accounts');
-
-    // Create account with savings type
-    await page
-      .getByRole('button', { name: /add account/i })
-      .first()
-      .click();
-    await expect(
-      page.getByRole('heading', { name: /create account/i }),
-    ).toBeVisible();
-
-    await page.getByLabel(/account name/i).fill(name);
-    await page.getByLabel('Account type').click();
-    await page.getByRole('option', { name: /savings/i }).click();
-    await page.getByRole('button', { name: /create/i }).click();
-
-    await expectToast(page, 'Account created');
-    await expect(page.getByText(name)).toBeVisible();
-
-    // Verify type badge shows in table
-    const row = page.getByRole('row', { name: new RegExp(name, 'i') });
-    await expect(row.getByText('Savings')).toBeVisible();
-
-    // Edit account — rename and change type to checking
-    await clickRowAction(page, row, /edit/i);
-
-    await expect(
-      page.getByRole('heading', { name: /edit account/i }),
-    ).toBeVisible();
-
-    await page.getByLabel(/account name/i).clear();
-    await page.getByLabel(/account name/i).fill(renamed);
-    await page.getByLabel('Account type').click();
-    await page.getByRole('option', { name: /checking/i }).click();
-    await page.getByRole('button', { name: /save/i }).click();
-
-    await expectToast(page, 'Account updated');
-    await expect(page.getByText(renamed)).toBeVisible();
-
-    // Verify type changed in table
-    const updatedRow = page.getByRole('row', {
-      name: new RegExp(renamed, 'i'),
+      await page
+        .getByRole('button', { name: /add account/i })
+        .first()
+        .click();
+      await expect(
+        page.getByRole('heading', { name: /create account/i }),
+      ).toBeVisible();
     });
-    await expect(updatedRow.getByText('Checking')).toBeVisible();
 
-    // Delete account
-    await clickRowAction(page, updatedRow, /delete/i);
+    test('create, edit, and delete an account', async ({ page }) => {
+      test.slow();
+      const name = `E2E Acct ${Date.now()}`;
+      const renamed = `${name} Renamed`;
 
-    await expect(
-      page.getByRole('heading', { name: /delete account/i }),
-    ).toBeVisible();
+      await page.goto('/accounts');
 
-    await confirmDelete(page, renamed);
+      // Create account with savings type
+      await page
+        .getByRole('button', { name: /add account/i })
+        .first()
+        .click();
+      await expect(
+        page.getByRole('heading', { name: /create account/i }),
+      ).toBeVisible();
 
-    await expectToast(page, 'Account deleted');
-    await expect(page.getByRole('table').getByText(renamed)).toBeHidden();
-  });
+      await page.getByLabel(/account name/i).fill(name);
+      await page.getByLabel('Account type').click();
+      await page.getByRole('option', { name: /savings/i }).click();
+      await page.getByRole('button', { name: /create/i }).click();
 
-  test('created account appears in transaction form', async ({ page }) => {
-    const name = `E2E TxnAcct ${Date.now()}`;
+      await expectToast(page, 'Account created');
+      await expect(page.getByText(name)).toBeVisible();
 
-    await page.goto('/accounts');
+      // Verify type badge shows in table
+      const row = page.getByRole('row', { name: new RegExp(name, 'i') });
+      await expect(row.getByText('Savings')).toBeVisible();
 
-    // Create account
-    await page
-      .getByRole('button', { name: /add account/i })
-      .first()
-      .click();
-    await page.getByLabel(/account name/i).fill(name);
-    await page.getByRole('button', { name: /create/i }).click();
-    await expectToast(page, 'Account created');
+      // Edit account — rename and change type to checking
+      await clickRowAction(page, row, /edit/i);
 
-    // Navigate to transactions and open create dialog
-    await page.goto('/transactions');
-    await page
-      .getByRole('button', { name: /add transaction/i })
-      .first()
-      .click();
-    await expect(
-      page.getByRole('heading', { name: /create transaction/i }),
-    ).toBeVisible();
+      await expect(
+        page.getByRole('heading', { name: /edit account/i }),
+      ).toBeVisible();
 
-    // Verify the account appears in the dropdown
-    await page.getByLabel('Account').click();
-    await expect(
-      page.getByRole('option', { name: new RegExp(name, 'i') }),
-    ).toBeVisible();
-  });
-});
+      await page.getByLabel(/account name/i).clear();
+      await page.getByLabel(/account name/i).fill(renamed);
+      await page.getByLabel('Account type').click();
+      await page.getByRole('option', { name: /checking/i }).click();
+      await page.getByRole('button', { name: /save/i }).click();
+
+      await expectToast(page, 'Account updated');
+      await expect(page.getByText(renamed)).toBeVisible();
+
+      // Verify type changed in table
+      const updatedRow = page.getByRole('row', {
+        name: new RegExp(renamed, 'i'),
+      });
+      await expect(updatedRow.getByText('Checking')).toBeVisible();
+
+      // Delete account
+      await clickRowAction(page, updatedRow, /delete/i);
+
+      await expect(
+        page.getByRole('heading', { name: /delete account/i }),
+      ).toBeVisible();
+
+      await confirmDelete(page, renamed);
+
+      await expectToast(page, 'Account deleted');
+      await expect(page.getByRole('table').getByText(renamed)).toBeHidden();
+    });
+
+    test('created account appears in transaction form', async ({ page }) => {
+      const name = `E2E TxnAcct ${Date.now()}`;
+
+      await page.goto('/accounts');
+
+      // Create account
+      await page
+        .getByRole('button', { name: /add account/i })
+        .first()
+        .click();
+      await page.getByLabel(/account name/i).fill(name);
+      await page.getByRole('button', { name: /create/i }).click();
+      await expectToast(page, 'Account created');
+
+      // Navigate to transactions and open create dialog
+      await page.goto('/transactions');
+      await page
+        .getByRole('button', { name: /add transaction/i })
+        .first()
+        .click();
+      await expect(
+        page.getByRole('heading', { name: /create transaction/i }),
+      ).toBeVisible();
+
+      // Verify the account appears in the dropdown
+      await page.getByLabel('Account').click();
+      await expect(
+        page.getByRole('option', { name: new RegExp(name, 'i') }),
+      ).toBeVisible();
+    });
+  },
+);

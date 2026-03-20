@@ -45,6 +45,9 @@ PostgreSQL/Drizzle, Better Auth, Tailwind CSS v4/shadcn.
 | Unit tests        | `pnpm test:unit`                                      |
 | Integration tests | `pnpm test:integration`                               |
 | E2E tests         | `pnpm test:e2e`                                       |
+| E2E smoke         | `pnpm test:e2e:smoke`                                 |
+| E2E a11y          | `pnpm test:e2e:a11y`                                  |
+| E2E stress        | `pnpm test:e2e:stress`                                |
 | DB generate       | `pnpm db:generate`                                    |
 | DB migrate        | `pnpm db:migrate`                                     |
 | DB seed           | `pnpm db:seed` (profiles: `minimal`, `stress`, `e2e`) |

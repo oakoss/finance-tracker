@@ -90,13 +90,10 @@ jobs:
       - name: Integration tests
         run: pnpm test:integration
 
-  e2e-tests:
+  e2e-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        viewport: [chromium, iphone, pixel]
+    if: github.event_name == 'pull_request'
     services:
       postgres:
         image: postgres:18-alpine
@@ -121,9 +118,6 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 1
-      - name: Fetch base branch for --only-changed
-        if: github.event_name == 'pull_request'
-        run: git fetch origin ${{ github.event.pull_request.base.ref }}:${{ github.event.pull_request.base.ref }} --no-tags
       - name: Setup
         uses: ./.github/actions/setup
       - name: Prepare CI environment
@@ -142,24 +136,78 @@ jobs:
         env:
           POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
           POSTHOG_PROJECT_ID: ${{ secrets.POSTHOG_PROJECT_ID }}
-      - name: E2E fail-fast — changed files only
-        if: github.event_name == 'pull_request'
+      - name: E2E smoke (desktop only)
         run: |
           pnpm exec playwright test \
-            --only-changed=$GITHUB_BASE_REF \
-            --pass-with-no-tests \
-            --project="${{ matrix.viewport }}:authenticated" \
-            --project="${{ matrix.viewport }}:public"
-      - name: E2E tests (${{ matrix.viewport }})
-        run: |
-          pnpm test:e2e \
-            --project="${{ matrix.viewport }}:authenticated" \
-            --project="${{ matrix.viewport }}:public"
+            --grep @smoke \
+            --project="chromium:authenticated" \
+            --project="chromium:public"
       - name: Upload blob report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          name: playwright-blob-report-${{ matrix.viewport }}
+          name: playwright-blob-report-smoke
+          path: blob-report/
+          retention-days: 14
+
+  e2e-full:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name == 'push' || github.event_name == 'merge_group'
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: finance_tracker
+          POSTGRES_PASSWORD: finance_tracker_password
+          POSTGRES_DB: finance_tracker_dev
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U finance_tracker"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      mailpit:
+        image: axllent/mailpit:latest
+        ports:
+          - 1025:1025
+          - 8025:8025
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Prepare CI environment
+        uses: ./.github/actions/ci-prepare
+      - name: Migrate and seed database
+        run: pnpm db:migrate && pnpm with:env tsx test/seed/seed-runner.ts e2e
+      - name: Cache Playwright browsers
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install chromium --with-deps
+      - name: Build application
+        run: pnpm build
+        env:
+          POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
+          POSTHOG_PROJECT_ID: ${{ secrets.POSTHOG_PROJECT_ID }}
+      - name: E2E full suite (desktop + mobile)
+        run: |
+          pnpm test:e2e \
+            --project="chromium:authenticated" \
+            --project="chromium:public" \
+            --project="iphone" \
+            --project="pixel"
+      - name: Upload blob report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: playwright-blob-report-full
           path: blob-report/
           retention-days: 14
 
@@ -167,7 +215,7 @@ jobs:
     name: CI Summary
     runs-on: ubuntu-latest
     if: always()
-    needs: [static-analysis, unit-tests, integration-tests, e2e-tests]
+    needs: [static-analysis, unit-tests, integration-tests, e2e-smoke, e2e-full]
     steps:
       - name: Summarize results
         run: |
@@ -178,7 +226,8 @@ jobs:
           echo "| Static analysis | \`${{ needs.static-analysis.result }}\` | ✅ Yes |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Unit tests | \`${{ needs.unit-tests.result }}\` | ✅ Yes |" >> "$GITHUB_STEP_SUMMARY"
           echo "| Integration tests | \`${{ needs.integration-tests.result }}\` | ✅ Yes |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| E2E tests | \`${{ needs.e2e-tests.result }}\` | ⚠️ No |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| E2E smoke (PR) | \`${{ needs.e2e-smoke.result }}\` | ⚠️ PR only |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| E2E full (merge) | \`${{ needs.e2e-full.result }}\` | ⚠️ Merge only |" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
 
           fail_if_bad() {
@@ -198,12 +247,18 @@ jobs:
             fail_if_bad "integration-tests" "${{ needs.integration-tests.result }}"
           fi
 
-          if [ "${{ needs.e2e-tests.result }}" = "success" ]; then
-            echo "✅ All jobs passed" >> "$GITHUB_STEP_SUMMARY"
-          elif [ "${{ needs.e2e-tests.result }}" = "failure" ]; then
-            echo "⚠️ E2E tests failed" >> "$GITHUB_STEP_SUMMARY"
-          elif [ "${{ needs.e2e-tests.result }}" = "cancelled" ]; then
-            echo "⚠️ E2E tests cancelled" >> "$GITHUB_STEP_SUMMARY"
+          # E2E: one of smoke/full will be skipped depending on event type
+          e2e_smoke="${{ needs.e2e-smoke.result }}"
+          e2e_full="${{ needs.e2e-full.result }}"
+
+          if [ "$e2e_smoke" = "success" ] || [ "$e2e_smoke" = "skipped" ]; then
+            true
           else
-            echo "ℹ️ E2E tests skipped" >> "$GITHUB_STEP_SUMMARY"
+            echo "⚠️ E2E smoke: $e2e_smoke" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          if [ "$e2e_full" = "success" ] || [ "$e2e_full" = "skipped" ]; then
+            true
+          else
+            echo "⚠️ E2E full: $e2e_full" >> "$GITHUB_STEP_SUMMARY"
           fi

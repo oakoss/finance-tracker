@@ -2,7 +2,7 @@ import { expect, test } from '~e2e/fixtures/auth';
 
 test.describe(
   'reverse auth guard',
-  { tag: ['@smoke', '@auth', '@authenticated'] },
+  { tag: ['@smoke', '@authenticated'] },
   () => {
     test('authenticated access to /sign-in redirects to dashboard', async ({
       page,

@@ -9,7 +9,7 @@ import {
 
 test.describe(
   'imports CSV upload',
-  { tag: ['@smoke', '@authenticated'] },
+  { tag: ['@smoke', '@authenticated', '@mobile'] },
   () => {
     test('upload CSV happy path', async ({ page, testAccountName }) => {
       test.slow();

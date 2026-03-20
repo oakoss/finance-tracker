@@ -4,7 +4,7 @@ import { E2E_EMAIL, E2E_PASSWORD } from '~e2e/fixtures/constants';
 
 test.use({ storageState: { cookies: [], origins: [] } });
 
-test.describe('sign in', { tag: ['@smoke', '@auth', '@a11y'] }, () => {
+test.describe('sign in', { tag: ['@smoke', '@a11y', '@mobile'] }, () => {
   test('signs in with valid credentials', async ({ page }) => {
     await test.step('navigate to sign-in page', async () => {
       await page.goto('/sign-in');
