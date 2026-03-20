@@ -1,5 +1,10 @@
 import { expect, test } from '~e2e/fixtures/auth';
-import { expectToast, isEmptyState } from '~e2e/fixtures/table-actions';
+import {
+  clickRowAction,
+  confirmDelete,
+  expectToast,
+  isEmptyState,
+} from '~e2e/fixtures/table-actions';
 
 /** Generate a unique CSV so the file hash differs across projects/runs. */
 function uniqueCsv() {
@@ -54,6 +59,43 @@ test.describe(
 
       // Verify import appears in the list
       await expect(page.getByText('chase-sample.csv')).toBeVisible();
+    });
+
+    test('delete import via row action', async ({ page, testAccountName }) => {
+      test.slow();
+
+      // Upload a CSV to delete
+      await page.goto('/imports');
+      await page
+        .getByRole('button', { name: /upload csv/i })
+        .first()
+        .click();
+      await page
+        .getByLabel(/account/i)
+        .first()
+        .click();
+      await page
+        .getByRole('option', { name: new RegExp(testAccountName, 'i') })
+        .click();
+
+      const fileName = 'delete-test.csv';
+      const fileInput = page.locator('input[type="file"]');
+      await fileInput.setInputFiles({
+        buffer: Buffer.from(uniqueCsv()),
+        mimeType: 'text/csv',
+        name: fileName,
+      });
+      await page.getByRole('button', { name: /^import$/i }).click();
+      await expectToast(page, /csv imported/i);
+
+      // Delete it
+      const row = page.getByRole('row', { name: new RegExp(fileName, 'i') });
+      await clickRowAction(page, row, /delete/i);
+      await confirmDelete(page, fileName);
+      await expectToast(page, /import deleted/i);
+
+      // Verify it's gone
+      await expect(page.getByText(fileName)).toBeHidden();
     });
 
     test('empty state shows upload CTA', async ({ page }) => {

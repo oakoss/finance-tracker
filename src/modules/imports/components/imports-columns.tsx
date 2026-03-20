@@ -5,6 +5,7 @@ import type { ImportListItem } from '@/modules/imports/api/list-imports';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatRelativeTime } from '@/lib/i18n/date';
+import { ImportRowActions } from '@/modules/imports/components/import-row-actions';
 import { m } from '@/paraglide/messages';
 
 const columnHelper = createColumnHelper<ImportListItem>();
@@ -84,5 +85,15 @@ export const importColumns = [
       skeleton: <Skeleton className="h-4 w-20" />,
     },
     size: 140,
+  }),
+  columnHelper.display({
+    cell: ({ row }) => <ImportRowActions row={row.original} />,
+    id: 'actions',
+    meta: {
+      cellClassName: 'text-right',
+      headerClassName: 'text-right',
+      skeleton: <Skeleton className="ml-auto size-7" />,
+    },
+    size: 60,
   }),
 ];
