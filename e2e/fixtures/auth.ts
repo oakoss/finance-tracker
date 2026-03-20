@@ -6,6 +6,7 @@ import {
   E2E_USER_COUNT,
   e2eEmail,
 } from '~e2e/fixtures/constants';
+import { createAccount } from '~e2e/fixtures/entity';
 
 /**
  * Module-level account cache keyed on `parallelIndex`. The account is
@@ -25,14 +26,29 @@ export const test = base.extend<
   { testAccountName: string },
   { workerStorageState: string }
 >({
-  page: async ({ page }, use) => {
+  page: async ({ page }, use, testInfo) => {
     const originalGoto = page.goto.bind(page);
     page.goto = async (url, options) => {
       const response = await originalGoto(url, options);
       await waitForHydration(page);
       return response;
     };
+
+    const pageErrors: Error[] = [];
+    page.on('pageerror', (error) => pageErrors.push(error));
+
     await use(page);
+
+    if (pageErrors.length > 0) {
+      const summary = pageErrors.map((e) => e.message).join('\n');
+      await testInfo.attach('page-errors', {
+        body: summary,
+        contentType: 'text/plain',
+      });
+      if (testInfo.status === 'passed') {
+        throw new Error(`Unexpected page errors:\n${summary}`);
+      }
+    }
   },
 
   storageState: ({ workerStorageState }, use) => use(workerStorageState),
@@ -51,16 +67,7 @@ export const test = base.extend<
     if (cached === undefined) {
       const name = `E2E W${id} Acct ${Date.now()}`;
       try {
-        await page.goto('/accounts');
-        await page
-          .getByRole('button', { name: /add account/i })
-          .first()
-          .click();
-        await page.getByLabel(/account name/i).fill(name);
-        await page.getByRole('button', { name: /create/i }).click();
-        await expect(
-          page.getByRole('heading', { name: /create account/i }),
-        ).toBeHidden();
+        await createAccount(page, name);
         workerAccountNames.set(id, name);
       } catch (error) {
         workerAccountNames.set(id, null);

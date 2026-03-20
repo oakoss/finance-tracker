@@ -1,4 +1,4 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 
 /** Generate a unique CSV so the file hash differs across projects/runs. */
 export function uniqueCsv() {
@@ -17,38 +17,44 @@ export async function uploadCsv(
   testAccountName: string,
   fileName: string,
 ) {
-  await page
-    .getByRole('button', { name: /upload csv/i })
-    .first()
-    .click();
-  await expect(
-    page.getByRole('heading', { name: /import csv/i }),
-  ).toBeVisible();
+  await test.step(
+    `Upload CSV: ${fileName}`,
+    async () => {
+      await page
+        .getByRole('button', { name: /upload csv/i })
+        .first()
+        .click();
+      await expect(
+        page.getByRole('heading', { name: /import csv/i }),
+      ).toBeVisible();
 
-  // Step 1: select account + file
-  await page
-    .getByLabel(/account/i)
-    .first()
-    .click();
-  await page
-    .getByRole('option', { name: new RegExp(testAccountName, 'i') })
-    .click();
+      // Step 1: select account + file
+      await page
+        .getByLabel(/account/i)
+        .first()
+        .click();
+      await page
+        .getByRole('option', { name: new RegExp(testAccountName, 'i') })
+        .click();
 
-  const fileInput = page.locator('input[type="file"]');
-  await fileInput.setInputFiles({
-    buffer: Buffer.from(uniqueCsv()),
-    mimeType: 'text/csv',
-    name: fileName,
-  });
+      const fileInput = page.locator('input[type="file"]');
+      await fileInput.setInputFiles({
+        buffer: Buffer.from(uniqueCsv()),
+        mimeType: 'text/csv',
+        name: fileName,
+      });
 
-  // Step 2: column mapper (auto-detected)
-  await page.getByRole('button', { name: /next/i }).click();
-  await expect(page.getByText(/amount format/i)).toBeVisible();
-  await expect(page.getByText(/preview/i)).toBeVisible();
+      // Step 2: column mapper (auto-detected)
+      await page.getByRole('button', { name: /next/i }).click();
+      await expect(page.getByText(/amount format/i)).toBeVisible();
+      await expect(page.getByText(/preview/i)).toBeVisible();
 
-  // Submit and wait for dialog to close (import succeeded)
-  await page.getByRole('button', { name: /^import$/i }).click();
-  await expect(page.getByRole('heading', { name: /import csv/i })).toBeHidden({
-    timeout: 15_000,
-  });
+      // Submit and wait for dialog to close (import succeeded)
+      await page.getByRole('button', { name: /^import$/i }).click();
+      await expect(
+        page.getByRole('heading', { name: /import csv/i }),
+      ).toBeHidden({ timeout: 15_000 });
+    },
+    { box: true },
+  );
 }
