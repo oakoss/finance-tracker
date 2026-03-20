@@ -30,6 +30,8 @@ async function proxy({ request }: { request: Request }) {
     });
 
     const responseHeaders = new Headers(response.headers);
+    responseHeaders.delete('content-encoding');
+    responseHeaders.delete('content-length');
     responseHeaders.delete('set-cookie');
 
     return new Response(response.body, {
