@@ -23,11 +23,15 @@ Project documentation organized by area.
 - `docs/development/cookies.md`
 - `docs/development/toasts.md`
 - `docs/development/styling.md`
+- `docs/development/svg.md`
 - `docs/development/uploads.md`
 - `docs/development/updates.md`
 - `docs/development/seo.md`
 - `docs/development/timezones.md`
 - `docs/development/permissions.md`
+
+## Components
+
 - `docs/development/components/README.md`
 - `docs/development/components/structure.md`
 - `docs/development/components/behavior.md`
@@ -35,6 +39,18 @@ Project documentation organized by area.
 - `docs/development/components/tanstack.md`
 - `docs/development/components/examples/form.md`
 - `docs/development/components/examples/confirm-destructive-dialog.md`
+
+## E2E Testing
+
+- `docs/development/e2e/README.md`
+- `docs/development/e2e/config.md`
+- `docs/development/e2e/fixtures.md`
+- `docs/development/e2e/auth.md`
+- `docs/development/e2e/locators.md`
+- `docs/development/e2e/assertions.md`
+- `docs/development/e2e/network.md`
+- `docs/development/e2e/debugging.md`
+- `docs/development/e2e/accessibility.md`
 
 ## Architecture
 
