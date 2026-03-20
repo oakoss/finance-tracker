@@ -223,7 +223,7 @@ The OTLP drain uses a pipeline for production reliability:
 Logs are sent to PostHog's OTLP log ingestion endpoint with Bearer auth.
 
 ```text
-https://us.i.posthog.com/i/v1/logs
+https://us.i.posthog.com/i
 ```
 
 - Filter by `deployment.environment` to separate dev and production.
@@ -234,7 +234,7 @@ https://us.i.posthog.com/i/v1/logs
 Required production env vars:
 
 ```bash
-OTEL_EXPORTER_OTLP_ENDPOINT=https://us.i.posthog.com/i/v1/logs
+OTEL_EXPORTER_OTLP_ENDPOINT=https://us.i.posthog.com/i
 OTEL_SERVICE_NAME=finance-tracker
 OTEL_RESOURCE_ATTRIBUTES=deployment.environment=production
 POSTHOG_API_KEY=phc_xxx
