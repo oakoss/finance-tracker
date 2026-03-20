@@ -1,6 +1,6 @@
 # Logging
 
-Logging uses [evlog](https://evlog.dev) with a wide-event model: one structured log per request, accumulated throughout the request lifecycle and emitted at the end. Logs are sent to [SigNoz](https://signoz.io) via OTLP.
+Logging uses [evlog](https://evlog.dev) with a wide-event model: one structured log per request, accumulated throughout the request lifecycle and emitted at the end. Logs are sent to [PostHog](https://posthog.com) via OTLP.
 
 See `docs/adr/0020-logging-evlog-signoz.md` for the architectural decision.
 
@@ -201,8 +201,8 @@ Requests with status ≥ 400 or duration > 3000ms are always kept regardless of 
 
 | Variable                      | Required | Description                                                                                                          |
 | ----------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------- |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | prod     | SigNoz OTLP HTTP collector URL                                                                                       |
-| `OTEL_SERVICE_NAME`           | prod     | Service name in SigNoz (e.g. `finance-tracker`)                                                                      |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | prod     | PostHog OTLP log ingestion URL                                                                                       |
+| `OTEL_SERVICE_NAME`           | prod     | Service name in PostHog (e.g. `finance-tracker`)                                                                     |
 | `OTEL_RESOURCE_ATTRIBUTES`    | prod     | e.g. `deployment.environment=production`                                                                             |
 | `LOG_HASH_SECRET`             | both     | Min 32-char secret for HMAC ID hashing. Use separate values per environment. Generate with `openssl rand -base64 32` |
 | `VITE_CLIENT_LOG_LEVEL`       | optional | Min client log level (default: `warn`)                                                                               |
@@ -218,30 +218,45 @@ The OTLP drain uses a pipeline for production reliability:
 - Buffers up to 1000 events; oldest dropped on overflow.
 - Flushes remaining buffer on server shutdown.
 
-## SigNoz
+## PostHog
 
-SigNoz is deployed on Coolify. The OTLP HTTP collector endpoint is:
+Logs are sent to PostHog's OTLP log ingestion endpoint with Bearer auth.
 
 ```text
-https://otelcollectorhttp-finance-tracker.jacebabin.com
+https://us.i.posthog.com/i/v1/logs
 ```
 
-- Logs retention: 30 days.
 - Filter by `deployment.environment` to separate dev and production.
 - Filter by `service.name=finance-tracker` to isolate this app.
 - Dev logs: stdout only by default (omit `OTEL_EXPORTER_OTLP_ENDPOINT` locally).
-- Production logs: sent to SigNoz via OTLP.
+- Production logs: sent to PostHog via OTLP.
 
-Required Coolify env vars for production:
+Required production env vars:
 
 ```bash
-OTEL_EXPORTER_OTLP_ENDPOINT=https://otelcollectorhttp-finance-tracker.jacebabin.com
+OTEL_EXPORTER_OTLP_ENDPOINT=https://us.i.posthog.com/i/v1/logs
 OTEL_SERVICE_NAME=finance-tracker
 OTEL_RESOURCE_ATTRIBUTES=deployment.environment=production
+POSTHOG_API_KEY=phc_xxx
 LOG_HASH_SECRET=<generate with: openssl rand -base64 32>
 ```
 
-Alerts to configure in SigNoz (once traffic is flowing):
+## Error tracking
 
-- Error rate spike (5xx / error logs).
-- Latency spike (duration > threshold).
+PostHog handles all error tracking — no Sentry needed.
+
+### Client-side
+
+- **Unhandled errors and rejections**: autocaptured via `capture_exceptions` config
+  in `src/lib/analytics.tsx`. Console errors are not captured (too noisy).
+- **React render crashes**: the root error boundary (`src/components/errors/root-error-boundary.tsx`)
+  reports to PostHog via `posthog.captureException()`. Reports once per error (ref-guarded).
+- **Source maps**: `@posthog/rollup-plugin` uploads source maps during production builds
+  for readable stack traces. Maps use `sourcemap: 'hidden'` (no `sourceMappingURL` in output)
+  and are deleted after upload. Requires `POSTHOG_PERSONAL_API_KEY` and `POSTHOG_PROJECT_ID`
+  (CI secrets, not needed locally).
+
+### Server-side
+
+- **Exception autocapture**: `enableExceptionAutocapture: true` on the posthog-node client
+  (`src/lib/analytics-server.ts`). Captures unhandled server exceptions automatically.

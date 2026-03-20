@@ -139,6 +139,9 @@ jobs:
         run: pnpm exec playwright install chromium --with-deps
       - name: Build application
         run: pnpm build
+        env:
+          POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
+          POSTHOG_PROJECT_ID: ${{ secrets.POSTHOG_PROJECT_ID }}
       - name: E2E fail-fast — changed files only
         if: github.event_name == 'pull_request'
         run: |

@@ -1,11 +1,34 @@
 import type { ErrorComponentProps } from '@tanstack/react-router';
 
+import posthog from 'posthog-js';
+import { useEffect, useRef } from 'react';
+
 import { Icons } from '@/components/icons';
 import { Button, RouterButton } from '@/components/ui/button';
+import { clientLog } from '@/lib/logging/client-logger';
 
 function RootErrorBoundary({ error, reset }: ErrorComponentProps) {
   const message =
     error instanceof Error ? error.message : 'Something went wrong.';
+
+  const reportedRef = useRef<unknown>(null);
+  useEffect(() => {
+    if (error && error !== reportedRef.current) {
+      reportedRef.current = error;
+      try {
+        posthog.captureException(error);
+      } catch (captureError) {
+        // Analytics must never break the error UI
+        clientLog.error({
+          action: 'error-boundary.capture',
+          error:
+            captureError instanceof Error
+              ? captureError.message
+              : String(captureError),
+        });
+      }
+    }
+  }, [error]);
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 px-6 text-center">

@@ -15,7 +15,7 @@ export const Env = type({
   GOOGLE_CLIENT_SECRET: 'string > 0',
   // Min 32-char secret for HMAC-SHA256 ID hashing in audit logs
   LOG_HASH_SECRET: "string >= 32 = 'dev-placeholder-secret-do-not-use-in-prod'",
-  // Logging (evlog + SigNoz via OTLP) — optional; if unset, logs go to stdout only
+  // Logging (evlog + PostHog via OTLP) — optional; if unset, logs go to stdout only
   'OTEL_EXPORTER_OTLP_ENDPOINT?': 'string.url',
   'OTEL_RESOURCE_ATTRIBUTES?': 'string > 0',
   'OTEL_SERVICE_NAME?': 'string > 0',

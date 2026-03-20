@@ -1,6 +1,7 @@
 import arkenvVitePlugin from '@arkenv/vite-plugin';
 import { config } from '@dotenvx/dotenvx';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
+import posthog from '@posthog/rollup-plugin';
 import babel from '@rolldown/plugin-babel';
 import tailwindcss from '@tailwindcss/vite';
 import { devtools } from '@tanstack/devtools-vite';
@@ -19,7 +20,7 @@ config({ convention: 'flow', quiet: true });
 const isProduction = process.env.NODE_ENV === 'production';
 
 export default defineConfig({
-  build: { target: 'es2023' },
+  build: { sourcemap: 'hidden', target: 'es2023' },
   nitro: {
     modules: [
       evlog({
@@ -94,6 +95,21 @@ export default defineConfig({
       project: './project.inlang',
       strategy: ['cookie', 'preferredLanguage', 'baseLocale'],
     }),
+    ...(process.env.POSTHOG_PERSONAL_API_KEY && process.env.POSTHOG_PROJECT_ID
+      ? [
+          posthog({
+            personalApiKey: process.env.POSTHOG_PERSONAL_API_KEY,
+            projectId: process.env.POSTHOG_PROJECT_ID,
+            sourcemaps: { deleteAfterUpload: true, enabled: isProduction },
+          }),
+        ]
+      : isProduction
+        ? // oxlint-disable-next-line no-console -- build-time warning, no logger available
+          (console.warn(
+            '[build] POSTHOG_PERSONAL_API_KEY or POSTHOG_PROJECT_ID missing — source maps will not be uploaded to PostHog.',
+          ),
+          [])
+        : []),
   ],
   resolve: { tsconfigPaths: true },
   server: { port: 3000, strictPort: true },

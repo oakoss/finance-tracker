@@ -22,7 +22,7 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
 
   if (!otlpEndpoint) {
     console.warn(
-      '[evlog] OTEL_EXPORTER_OTLP_ENDPOINT is not set — logs will not be drained to SigNoz.',
+      '[evlog] OTEL_EXPORTER_OTLP_ENDPOINT is not set — logs will not be drained to PostHog.',
     );
     return;
   }
@@ -32,8 +32,22 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
       .find((attr) => attr.startsWith('deployment.environment='))
       ?.split('=')[1] ?? 'development';
 
+  // PostHog accepts OTLP logs at /i/v1/logs with Bearer auth using the project API key.
+  // Nitro plugin runs before app env is validated — read directly from process.env.
+  const posthogKey = process.env.POSTHOG_API_KEY;
+  const headers: Record<string, string> = {};
+  if (posthogKey) {
+    headers.Authorization = `Bearer ${posthogKey}`;
+  } else if (otlpEndpoint.includes('posthog.com')) {
+    console.warn(
+      '[evlog] OTEL_EXPORTER_OTLP_ENDPOINT points to PostHog but POSTHOG_API_KEY is not set — log drain disabled.',
+    );
+    return;
+  }
+
   const otlpDrain = createOTLPDrain({
     endpoint: otlpEndpoint,
+    headers,
     resourceAttributes: { 'deployment.environment': environment },
     serviceName: 'finance-tracker',
   });
@@ -75,7 +89,7 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
     for (const enricher of enrichers) enricher(ctx);
   });
 
-  // Drain to SigNoz via pipeline (batched + retried + sanitized)
+  // Drain to PostHog via pipeline (batched + retried + sanitized)
   nitroApp.hooks.hook('evlog:drain', drain);
 
   // Flush remaining buffered events on server shutdown

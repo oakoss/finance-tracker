@@ -1,7 +1,7 @@
 # ADR 0020: Logging — evlog + SigNoz
 
 Date: 2026-02-20
-Status: Accepted
+Status: Partially superseded — log drain migrated from SigNoz to PostHog OTLP (2026-03-19). evlog decision still applies.
 
 ## Context
 

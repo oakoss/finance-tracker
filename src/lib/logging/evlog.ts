@@ -10,7 +10,7 @@
  * - Service name, environment, sampling, and route exclusions.
  *
  * OTLP drain + enrichers (src/lib/logging/drain.ts):
- * - Forwards wide events to SigNoz via evlog:drain Nitro hook.
+ * - Forwards wide events to PostHog via evlog:drain Nitro hook.
  * - Enriches with user agent, request size, and trace context.
  * - Sanitizes sensitive fields before sending.
  *

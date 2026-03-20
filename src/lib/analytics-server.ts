@@ -20,6 +20,7 @@ export function getPostHogServer(): PostHog | null {
 
   try {
     client = new PostHog(key, {
+      enableExceptionAutocapture: true,
       flushAt: 1,
       flushInterval: 0,
       host: env.POSTHOG_HOST ?? analyticsConfig.posthogDefaultHost,
