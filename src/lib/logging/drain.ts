@@ -38,7 +38,7 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
   const headers: Record<string, string> = {};
   if (posthogKey) {
     headers.Authorization = `Bearer ${posthogKey}`;
-  } else if (new URL(otlpEndpoint).hostname.endsWith('posthog.com')) {
+  } else if (/(?:^|\.)posthog\.com$/.test(new URL(otlpEndpoint).hostname)) {
     console.warn(
       '[evlog] OTEL_EXPORTER_OTLP_ENDPOINT points to PostHog but POSTHOG_API_KEY is not set — log drain disabled.',
     );
