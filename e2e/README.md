@@ -31,7 +31,7 @@ Locally, an already-running server on port 3000 is reused.
 ```text
 e2e/
   setup/          db.setup.ts — seed + cleanup (runs first via project dependency)
-  app/            feature tests (accounts, transactions, budgets, etc.)
+  app/            feature tests (accounts, transactions-{crud,fields,edit}, budgets, etc.)
   auth/           sign-in, sign-up, sign-out, redirect guard, reverse auth guard
   demo/           component demo screenshot tests
   fixtures/

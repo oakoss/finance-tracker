@@ -4,7 +4,7 @@ import { E2E_EMAIL } from '~e2e/fixtures/constants';
 
 test.use({ storageState: { cookies: [], origins: [] } });
 
-test.describe('sign up', { tag: ['@smoke', '@a11y'] }, () => {
+test.describe('sign up', { tag: ['@smoke', '@a11y', '@mobile'] }, () => {
   test('renders sign-up form with all fields', async ({ page }) => {
     await page.goto('/sign-up');
 
