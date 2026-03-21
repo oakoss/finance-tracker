@@ -37,6 +37,18 @@ export const test = base.extend<
     const pageErrors: Error[] = [];
     page.on('pageerror', (error) => pageErrors.push(error));
 
+    // Auto-dismiss Sonner toasts that may overlay interactive elements
+    await page.addLocatorHandler(
+      page.locator('[data-sonner-toast]'),
+      async () => {
+        const closeBtn = page
+          .locator('[data-sonner-toast] [data-close-button]')
+          .first();
+        // Toast may auto-dismiss before click completes
+        await closeBtn.click({ timeout: 2000 }).catch(() => {});
+      },
+    );
+
     await use(page);
 
     if (pageErrors.length > 0) {

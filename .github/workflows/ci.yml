@@ -154,6 +154,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     if: github.event_name == 'push' || github.event_name == 'merge_group'
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [1, 2]
+        shardTotal: [2]
     services:
       postgres:
         image: postgres:18-alpine
@@ -196,15 +201,42 @@ jobs:
         env:
           POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
           POSTHOG_PROJECT_ID: ${{ secrets.POSTHOG_PROJECT_ID }}
-      - name: E2E full suite (desktop + mobile)
+      - name: E2E full suite (shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
         run: |
           pnpm test:e2e \
             --project="chromium:authenticated" \
             --project="chromium:public" \
             --project="iphone" \
-            --project="pixel"
+            --project="pixel" \
+            --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
       - name: Upload blob report
         if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: playwright-blob-report-full-${{ matrix.shardIndex }}
+          path: blob-report/
+          retention-days: 14
+
+  e2e-full-report:
+    runs-on: ubuntu-latest
+    if: ${{ !cancelled() && needs.e2e-full.result != 'failure' && (github.event_name == 'push' || github.event_name == 'merge_group') }}
+    needs: [e2e-full]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Download blob reports
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
+        with:
+          path: all-blob-reports
+          pattern: playwright-blob-report-full-*
+          merge-multiple: true
+      - name: Merge reports
+        run: pnpm exec playwright merge-reports --reporter=blob ./all-blob-reports
+      - name: Upload merged report
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: playwright-blob-report-full
@@ -215,7 +247,15 @@ jobs:
     name: CI Summary
     runs-on: ubuntu-latest
     if: always()
-    needs: [static-analysis, unit-tests, integration-tests, e2e-smoke, e2e-full]
+    needs:
+      [
+        static-analysis,
+        unit-tests,
+        integration-tests,
+        e2e-smoke,
+        e2e-full,
+        e2e-full-report,
+      ]
     steps:
       - name: Summarize results
         run: |
