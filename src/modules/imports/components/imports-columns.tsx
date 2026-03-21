@@ -4,7 +4,7 @@ import type { ImportListItem } from '@/modules/imports/api/list-imports';
 
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { formatRelativeTime } from '@/lib/i18n/date';
+import { Timestamp } from '@/components/ui/timestamp';
 import { ImportRowActions } from '@/modules/imports/components/import-row-actions';
 import { m } from '@/paraglide/messages';
 
@@ -73,10 +73,10 @@ export const importColumns = [
   columnHelper.accessor('importedAt', {
     cell: ({ getValue }) => {
       const val = getValue();
-      return (
-        <span className="text-muted-foreground">
-          {val ? formatRelativeTime({ value: new Date(val) }) : '—'}
-        </span>
+      return val ? (
+        <Timestamp className="text-muted-foreground" value={val} />
+      ) : (
+        <span className="text-muted-foreground">—</span>
       );
     },
     header: () => m['imports.columns.date'](),
