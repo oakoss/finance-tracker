@@ -1,5 +1,3 @@
-import type { Page } from '@playwright/test';
-
 import { expect, test } from '~e2e/fixtures/auth';
 import {
   createViaCombobox,
@@ -7,17 +5,9 @@ import {
 } from '~e2e/fixtures/combobox';
 import { createCategory } from '~e2e/fixtures/entity';
 import { getField } from '~e2e/fixtures/field';
+import { selectAccount } from '~e2e/fixtures/form-actions';
 
 const CREATE_TXN_HEADING = /create transaction/i;
-
-async function selectAccount(page: Page, accountName: string): Promise<void> {
-  await page.getByLabel('Account').click();
-  const option = page
-    .getByRole('option', { name: new RegExp(accountName, 'i') })
-    .first();
-  await option.scrollIntoViewIfNeeded();
-  await option.click();
-}
 
 test.describe('transaction form fields', { tag: ['@authenticated'] }, () => {
   test('creates transaction with category', async ({

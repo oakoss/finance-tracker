@@ -40,6 +40,7 @@ e2e/
     combobox.ts   createViaCombobox(), selectExistingCombobox()
     table-actions.ts  clickRowAction(), openEditDialog(), confirmDelete(), isEmptyState()
     import-actions.ts uploadCsv(), uniqueCsv()
+    form-actions.ts selectAccount()
     field.ts      getField() — locate form field by label
     a11y.ts       a11yScan() — axe-core WCAG scan
     constants.ts  E2E_EMAIL, E2E_PASSWORD, E2E_USER_COUNT

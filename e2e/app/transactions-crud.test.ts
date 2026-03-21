@@ -1,7 +1,6 @@
-import type { Page } from '@playwright/test';
-
 import { expect, test } from '~e2e/fixtures/auth';
 import { createViaCombobox } from '~e2e/fixtures/combobox';
+import { selectAccount } from '~e2e/fixtures/form-actions';
 import {
   clickRowAction,
   confirmDelete,
@@ -9,15 +8,6 @@ import {
 } from '~e2e/fixtures/table-actions';
 
 const CREATE_TXN_HEADING = /create transaction/i;
-
-async function selectAccount(page: Page, accountName: string): Promise<void> {
-  await page.getByLabel('Account').click();
-  const option = page
-    .getByRole('option', { name: new RegExp(accountName, 'i') })
-    .first();
-  await option.scrollIntoViewIfNeeded();
-  await option.click();
-}
 
 test.describe(
   'transactions CRUD',

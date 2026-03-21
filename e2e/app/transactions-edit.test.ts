@@ -1,21 +1,11 @@
-import type { Page } from '@playwright/test';
-
 import { expect, test } from '~e2e/fixtures/auth';
 import { createViaCombobox } from '~e2e/fixtures/combobox';
 import { createCategory } from '~e2e/fixtures/entity';
 import { getField } from '~e2e/fixtures/field';
+import { selectAccount } from '~e2e/fixtures/form-actions';
 import { openEditDialog } from '~e2e/fixtures/table-actions';
 
 const EDIT_TXN_HEADING = /edit transaction/i;
-
-async function selectAccount(page: Page, accountName: string): Promise<void> {
-  await page.getByLabel('Account').click();
-  const option = page
-    .getByRole('option', { name: new RegExp(accountName, 'i') })
-    .first();
-  await option.scrollIntoViewIfNeeded();
-  await option.click();
-}
 
 test.describe(
   'transaction edit and persistence',
