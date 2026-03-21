@@ -9,6 +9,11 @@ export function e2eEmail(index: number): string {
   return `e2e-worker-${index}@test.local`;
 }
 
+// React hydration mismatches (#418, #423) are expected for relative
+// timestamps and other client-dependent text (TREK-215). Filter them
+// from pageerror detection so they don't fail tests.
+export const HYDRATION_ERROR_RE = /Minified React error #(418|423)/;
+
 /** Display name for a specific worker index. */
 export function e2eDisplayName(index: number): string {
   return `E2E Worker ${index}`;

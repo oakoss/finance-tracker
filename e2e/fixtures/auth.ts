@@ -5,6 +5,7 @@ import {
   E2E_PASSWORD,
   E2E_USER_COUNT,
   e2eEmail,
+  HYDRATION_ERROR_RE,
 } from '~e2e/fixtures/constants';
 import { createAccount } from '~e2e/fixtures/entity';
 
@@ -35,7 +36,11 @@ export const test = base.extend<
     };
 
     const pageErrors: Error[] = [];
-    page.on('pageerror', (error) => pageErrors.push(error));
+    page.on('pageerror', (error) => {
+      if (!HYDRATION_ERROR_RE.test(error.message)) {
+        pageErrors.push(error);
+      }
+    });
 
     // Auto-dismiss Sonner toasts that may overlay interactive elements
     await page.addLocatorHandler(
