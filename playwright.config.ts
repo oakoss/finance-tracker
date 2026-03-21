@@ -12,6 +12,7 @@ const { defaultBrowserType: _iphone, ...iPhone } = devices['iPhone 15 Pro Max'];
 const { defaultBrowserType: _pixel, ...pixel } = devices['Pixel 7'];
 
 export default defineConfig({
+  captureGitInfo: { commit: true, diff: true },
   expect: { timeout: 10_000 },
   failOnFlakyTests: !!process.env.CI,
   forbidOnly: !!process.env.CI,
