@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
+import { Button } from '@/components/ui/button';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
@@ -9,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { autoDetectMapping } from '@/modules/imports/lib/auto-detect-mapping';
 import {
   type ColumnMapping,
   REQUIRED_SINGLE_FIELDS,
@@ -124,25 +126,36 @@ export function ColumnMapper({ headers, onChange, value }: ColumnMapperProps) {
     [value, onChange],
   );
 
+  const handleReset = useCallback(() => {
+    onChange(autoDetectMapping(headers, value.amountMode));
+  }, [headers, value.amountMode, onChange]);
+
   return (
     <div className="flex flex-col gap-4">
-      <Field>
-        <FieldLabel>{m['imports.upload.amountMode.label']()}</FieldLabel>
-        <RadioGroup
-          className="flex flex-row gap-4"
-          value={value.amountMode}
-          onValueChange={(v) => handleAmountModeChange(v as 'single' | 'split')}
-        >
-          <label className="flex items-center gap-2 text-sm">
-            <RadioGroupItem value="single" />
-            {m['imports.upload.amountMode.single']()}
-          </label>
-          <label className="flex items-center gap-2 text-sm">
-            <RadioGroupItem value="split" />
-            {m['imports.upload.amountMode.split']()}
-          </label>
-        </RadioGroup>
-      </Field>
+      <div className="flex items-end justify-between gap-4">
+        <Field className="flex-1">
+          <FieldLabel>{m['imports.upload.amountMode.label']()}</FieldLabel>
+          <RadioGroup
+            className="flex flex-row gap-4"
+            value={value.amountMode}
+            onValueChange={(v) =>
+              handleAmountModeChange(v as 'single' | 'split')
+            }
+          >
+            <label className="flex items-center gap-2 text-sm">
+              <RadioGroupItem value="single" />
+              {m['imports.upload.amountMode.single']()}
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <RadioGroupItem value="split" />
+              {m['imports.upload.amountMode.split']()}
+            </label>
+          </RadioGroup>
+        </Field>
+        <Button size="sm" variant="outline" onClick={handleReset}>
+          {m['imports.upload.resetMapping']()}
+        </Button>
+      </div>
 
       <div className="flex flex-col gap-2">
         {headers.map((header) => (

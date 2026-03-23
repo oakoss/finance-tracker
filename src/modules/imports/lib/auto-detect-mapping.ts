@@ -41,8 +41,11 @@ function detectAmountMode(headers: string[]): 'single' | 'split' {
   return hasDebit && hasCredit ? 'split' : 'single';
 }
 
-export function autoDetectMapping(headers: string[]): ColumnMapping {
-  const amountMode = detectAmountMode(headers);
+export function autoDetectMapping(
+  headers: string[],
+  overrideAmountMode?: 'single' | 'split',
+): ColumnMapping {
+  const amountMode = overrideAmountMode ?? detectAmountMode(headers);
   const patterns = amountMode === 'split' ? SPLIT_PATTERNS : SINGLE_PATTERNS;
   const mapping: Record<string, TargetField> = {};
   const used = new Set<TargetField>();

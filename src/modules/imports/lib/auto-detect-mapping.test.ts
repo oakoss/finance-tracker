@@ -126,4 +126,25 @@ describe('autoDetectMapping', () => {
     expect(result.mapping['Money Out']).toBe('debitAmount');
     expect(result.mapping['Money In']).toBe('creditAmount');
   });
+
+  it('overrides auto-detected amount mode when specified', () => {
+    const headers = ['Date', 'Description', 'Amount'];
+    const result = autoDetectMapping(headers, 'split');
+
+    expect(result.amountMode).toBe('split');
+    expect(result.mapping.Amount).toBe('skip');
+    expect(result.mapping.Date).toBe('transactionAt');
+    expect(result.mapping.Description).toBe('description');
+  });
+
+  it('uses single patterns when overridden to single', () => {
+    const headers = ['Date', 'Description', 'Debit', 'Credit'];
+    const result = autoDetectMapping(headers, 'single');
+
+    expect(result.amountMode).toBe('single');
+    expect(result.mapping.Debit).toBe('skip');
+    expect(result.mapping.Credit).toBe('skip');
+    expect(result.mapping.Date).toBe('transactionAt');
+    expect(result.mapping.Description).toBe('description');
+  });
 });
