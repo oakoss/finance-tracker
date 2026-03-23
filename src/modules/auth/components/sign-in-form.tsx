@@ -21,6 +21,7 @@ import { authClient } from '@/lib/auth/client';
 import { fieldValidators } from '@/lib/form/field';
 import { clientLog } from '@/lib/logging/client-logger';
 import { SocialSignIn } from '@/modules/auth/components/social-sign-in';
+import { sanitizeRedirect } from '@/modules/auth/lib/sanitize-redirect';
 import { emailType, passwordType } from '@/modules/auth/lib/validate-field';
 import { m } from '@/paraglide/messages';
 
@@ -53,11 +54,7 @@ function SignInForm({ redirect }: SignInFormProps) {
             result.error.message ?? m['auth.error.signInFailed'](),
           );
         } else {
-          const to =
-            redirect?.startsWith('/') && !redirect.startsWith('//')
-              ? redirect
-              : '/dashboard';
-          void navigate({ to });
+          void navigate({ to: sanitizeRedirect(redirect) });
           capture('user_signed_in', { method: 'email' });
         }
       } catch (error) {
