@@ -95,6 +95,11 @@ export function ColumnMapper({ headers, onChange, value }: ColumnMapperProps) {
     [value.amountMode],
   );
 
+  const fieldItems = useMemo(
+    () => Object.fromEntries(availableFields.map((f) => [f, getFieldLabel(f)])),
+    [availableFields],
+  );
+
   const handleAmountModeChange = useCallback(
     (mode: 'single' | 'split') => {
       const newMapping = { ...value.mapping };
@@ -147,6 +152,7 @@ export function ColumnMapper({ headers, onChange, value }: ColumnMapperProps) {
             </span>
             <div className="flex-1">
               <Select
+                items={fieldItems}
                 value={value.mapping[header] ?? 'skip'}
                 onValueChange={(v) => {
                   if (v) handleFieldChange(header, v);

@@ -57,6 +57,17 @@ export function CopyBudgetDialog({
     [year, month],
   );
 
+  const periodItems = useMemo(
+    () =>
+      Object.fromEntries(
+        periods.map((p) => [
+          p.id,
+          formatMonthYear({ value: new Date(p.year, p.month - 1, 1) }),
+        ]),
+      ),
+    [periods],
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -76,11 +87,14 @@ export function CopyBudgetDialog({
               {m['budgets.copy.sourcePeriod']()}
             </label>
             <Select
+              items={periodItems}
               value={sourcePeriodId}
               onValueChange={(value) => setSourcePeriodId(value ?? '')}
             >
               <SelectTrigger className="w-full" id="source-period">
-                <SelectValue />
+                <SelectValue
+                  placeholder={m['budgets.copy.sourcePeriodPlaceholder']()}
+                />
               </SelectTrigger>
               <SelectContent>
                 {periods.map((p) => (

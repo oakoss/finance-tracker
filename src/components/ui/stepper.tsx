@@ -212,7 +212,7 @@ function StepperItem({
     <StepItemContext value={{ isDisabled: disabled, isLoading, state, step }}>
       <div
         className={cn(
-          'group/step flex items-center justify-center not-last:flex-1 group-data-[orientation=horizontal]/stepper-nav:flex-row group-data-[orientation=vertical]/stepper-nav:flex-col',
+          'group/step flex items-center justify-center gap-2 not-last:flex-1 group-data-[orientation=horizontal]/stepper-nav:flex-row group-data-[orientation=vertical]/stepper-nav:flex-col',
           className,
         )}
         data-slot="stepper-item"

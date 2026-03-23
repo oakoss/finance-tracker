@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import type { ColumnMapping } from '@/modules/imports/validators';
@@ -52,6 +52,12 @@ export function ImportUploadDialog() {
   const mutation = useCreateImport();
   const { data: accounts } = useSuspenseQuery(accountQueries.list());
   const csv = useCsvHeaders();
+
+  const accountItems = useMemo(
+    () =>
+      Object.fromEntries(accounts.map((a) => [a.account.id, a.account.name])),
+    [accounts],
+  );
 
   const [accountId, setAccountId] = useState('');
   const [step, setStep] = useState(1);
@@ -185,13 +191,16 @@ export function ImportUploadDialog() {
               </FieldLabel>
               <Select
                 disabled={mutation.isPending}
+                items={accountItems}
                 value={accountId}
                 onValueChange={(v) => {
                   if (v) setAccountId(v);
                 }}
               >
                 <SelectTrigger id="import-account">
-                  <SelectValue />
+                  <SelectValue
+                    placeholder={m['imports.upload.accountPlaceholder']()}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {accounts.map((a) => (
@@ -281,7 +290,7 @@ export function ImportUploadDialog() {
           </div>
         )}
 
-        <DialogFooter className="gap-2 sm:gap-0">
+        <DialogFooter>
           {step === 2 && (
             <Button
               disabled={mutation.isPending}

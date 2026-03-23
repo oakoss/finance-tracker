@@ -129,6 +129,7 @@ function DataGridPagination(props: DataGridPaginationProps): React.JSX.Element {
               {m['dataGrid.pagination.rowsPerPage']()}
             </div>
             <Select
+              items={Object.fromEntries(sizes.map((s) => [`${s}`, `${s}`]))}
               value={`${pageSize}`}
               onValueChange={(value) => {
                 const newPageSize = Number(value);
