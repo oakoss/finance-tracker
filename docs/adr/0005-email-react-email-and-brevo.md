@@ -26,7 +26,7 @@ Email styling defaults:
 Expected configuration (see `.env.example`):
 
 - Sender: `no-reply@finance.oakoss.dev`
-- Reply-To: `support@financial.oakoss.dev`
+- Reply-To: `support@finance.oakoss.dev`
 
 ## Alternatives Considered
 

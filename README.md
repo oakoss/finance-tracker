@@ -52,7 +52,7 @@ Production uses the Brevo API (`BREVO_API_KEY`).
 
 - `EMAIL_FROM` (recommended: `no-reply@finance.oakoss.dev`)
 - `EMAIL_FROM_NAME` (recommended: `Finance Tracker`)
-- `EMAIL_REPLY_TO` (recommended: `support@financial.oakoss.dev`)
+- `EMAIL_REPLY_TO` (recommended: `support@finance.oakoss.dev`)
 
 ### OAuth
 
