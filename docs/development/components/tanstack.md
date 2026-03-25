@@ -20,15 +20,41 @@ This doc covers how UI components integrate with TanStack libraries.
   validation logic in the form component.
 - If the form needs a subset or variant, derive it with
   `.pick()` / `.omit()` / `.merge()` — don't write a new schema.
-- Validate on `onBlur` + `onSubmit` (not `onChange`):
+- **Choosing validators** — each fires at a different time and
+  errors persist until that same validator re-runs:
+
+  | Validator       | Fires when              | Best for                                                                  |
+  | --------------- | ----------------------- | ------------------------------------------------------------------------- |
+  | `onSubmit`      | Form submission         | Final gate. Always include.                                               |
+  | `onBlur`        | Field loses focus       | Text inputs — validates after the user stops typing.                      |
+  | `onChange`      | Every value change      | Selects, radios, checkboxes — each change is deliberate, not a keystroke. |
+  | `onChangeAsync` | Value change, debounced | Async checks (uniqueness) — pair with `onChangeAsyncDebounceMs`.          |
+  | `onMount`       | Field mounts            | Pre-populated data sanity checks.                                         |
+
+  **Default pattern for text inputs** — `onBlur` + `onSubmit`:
 
   ```ts
-  validators: { onBlur: createFooSchema, onSubmit: createFooSchema }
+  validators: { onBlur: schema, onSubmit: schema }
   ```
 
-  `onChange` validation fires on every keystroke, showing errors
-  while the user is still typing. Use `onBlur` for feedback after
-  leaving a field and `onSubmit` as the final gate.
+  **Selects, radios, checkboxes** — `onChange` + `onSubmit` is fine
+  since there are no keystrokes to interrupt. For multi-step forms
+  where errors shouldn't show before the first submit attempt, gate
+  on `submissionAttempts`:
+
+  ```ts
+  validators: {
+    onChange: (params) => {
+      if (params.fieldApi.form.state.submissionAttempts === 0) return;
+      // validate...
+    },
+    onSubmit: schema,
+  }
+  ```
+
+  **Error lifecycle**: an `onSubmit` error persists until the next
+  submit. An `onChange` error clears/updates on every change. Pair
+  them so errors clear reactively after a failed submit.
 
 - For optional fields that use empty string as "unset" in the UI
   (e.g. a select with a "None" option), store `undefined` in form
