@@ -40,7 +40,12 @@ test('create — happy path: inserts import + rows', async ({ serviceDb }) => {
   );
 
   expect(result.id).toBeDefined();
-  expect(result.status).toBe('pending');
+  expect(result.status).toBe('completed');
+  expect(result.startedAt).toBeInstanceOf(Date);
+  expect(result.finishedAt).toBeInstanceOf(Date);
+  expect(result.finishedAt!.getTime()).toBeGreaterThanOrEqual(
+    result.startedAt!.getTime(),
+  );
   expect(result.source).toBe('csv');
   expect(result.fileName).toBe('test.csv');
   expect(result.fileHash).toBe('abc123hash');
@@ -140,6 +145,8 @@ test('create — inserts audit log', async ({ serviceDb }) => {
   expect(audit.action).toBe('create');
   expect(audit.tableName).toBe('imports');
   expect(audit.actorId).toBe(user.id);
+  expect(audit.afterData).toMatchObject({ status: 'completed' });
+  expect(audit.afterData).toHaveProperty('finishedAt');
 });
 
 test('create — different users can import same file hash', async ({

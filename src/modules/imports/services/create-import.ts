@@ -140,19 +140,39 @@ export async function createImportService(
       };
     });
 
+    const now = new Date();
+    await tx
+      .update(imports)
+      .set({ startedAt: now, status: 'processing' })
+      .where(eq(imports.id, importRecord.id));
+
     const BATCH_SIZE = 500;
     for (let i = 0; i < rowValues.length; i += BATCH_SIZE) {
       await tx.insert(importRows).values(rowValues.slice(i, i + BATCH_SIZE));
     }
 
+    const [updated] = await tx
+      .update(imports)
+      .set({ finishedAt: new Date(), status: 'completed' })
+      .where(eq(imports.id, importRecord.id))
+      .returning();
+
+    if (!updated) {
+      throw createError({
+        fix: 'Try again. If the problem persists, contact support.',
+        message: 'Failed to finalize import.',
+        status: 500,
+      });
+    }
+
     await insertAuditLog(tx, {
       action: 'create',
       actorId: userId,
-      afterData: importRecord as unknown as Record<string, unknown>,
+      afterData: updated as unknown as Record<string, unknown>,
       entityId: importRecord.id,
       tableName: 'imports',
     });
 
-    return { ...importRecord, rowCount: parsed.data.length };
+    return { ...updated, rowCount: parsed.data.length };
   });
 }
