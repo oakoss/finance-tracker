@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Field, FieldLabel } from '@/components/ui/field';
+import { Field, FieldContent, FieldLabel } from '@/components/ui/field';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Select,
@@ -21,6 +21,7 @@ import {
 import { m } from '@/paraglide/messages';
 
 type ColumnMapperProps = {
+  duplicateFields?: Set<TargetField> | undefined;
   headers: string[];
   onChange: (mapping: ColumnMapping) => void;
   value: ColumnMapping;
@@ -51,8 +52,17 @@ function getAvailableFields(amountMode: 'single' | 'split'): TargetField[] {
   return TARGET_FIELD_OPTIONS.filter((f) => f !== 'amount');
 }
 
-export function validateMapping(mapping: ColumnMapping): string[] {
+export type MappingValidation = {
+  duplicateFields: Set<TargetField>;
+  errors: string[];
+  missingFields: Set<TargetField>;
+};
+
+export function validateMapping(mapping: ColumnMapping): MappingValidation {
   const errors: string[] = [];
+  const missingFields = new Set<TargetField>();
+  const duplicateFields = new Set<TargetField>();
+
   const requiredFields =
     mapping.amountMode === 'single'
       ? REQUIRED_SINGLE_FIELDS
@@ -64,6 +74,7 @@ export function validateMapping(mapping: ColumnMapping): string[] {
 
   for (const field of requiredFields) {
     if (!assignedFields.has(field)) {
+      missingFields.add(field);
       errors.push(
         m['imports.upload.validation.requiredField']({
           field: getFieldLabel(field),
@@ -80,6 +91,7 @@ export function validateMapping(mapping: ColumnMapping): string[] {
   }
   for (const [field, count] of counts) {
     if (count > 1) {
+      duplicateFields.add(field);
       errors.push(
         m['imports.upload.validation.duplicateField']({
           field: getFieldLabel(field),
@@ -88,10 +100,15 @@ export function validateMapping(mapping: ColumnMapping): string[] {
     }
   }
 
-  return errors;
+  return { duplicateFields, errors, missingFields };
 }
 
-export function ColumnMapper({ headers, onChange, value }: ColumnMapperProps) {
+export function ColumnMapper({
+  duplicateFields,
+  headers,
+  onChange,
+  value,
+}: ColumnMapperProps) {
   const availableFields = useMemo(
     () => getAvailableFields(value.amountMode),
     [value.amountMode],
@@ -158,33 +175,46 @@ export function ColumnMapper({ headers, onChange, value }: ColumnMapperProps) {
       </div>
 
       <div className="flex flex-col gap-2">
-        {headers.map((header) => (
-          <div key={header} className="flex items-center gap-3">
-            <span className="w-1/3 min-w-0 truncate text-sm font-medium">
-              {header}
-            </span>
-            <div className="flex-1">
-              <Select
-                items={fieldItems}
-                value={value.mapping[header] ?? 'skip'}
-                onValueChange={(v) => {
-                  if (v) handleFieldChange(header, v);
-                }}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableFields.map((field) => (
-                    <SelectItem key={field} value={field}>
-                      {getFieldLabel(field)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        ))}
+        {headers.map((header) => {
+          const mapped = value.mapping[header] ?? 'skip';
+          const isDuplicate =
+            mapped !== 'skip' && !!duplicateFields?.has(mapped);
+          return (
+            <Field
+              key={header}
+              className="grid grid-cols-[1fr_2fr] items-center gap-3"
+              data-invalid={isDuplicate}
+            >
+              <FieldLabel className="min-w-0 truncate" htmlFor={header}>
+                {header}
+              </FieldLabel>
+              <FieldContent>
+                <Select
+                  items={fieldItems}
+                  value={mapped}
+                  onValueChange={(v) => {
+                    if (v) handleFieldChange(header, v);
+                  }}
+                >
+                  <SelectTrigger
+                    aria-invalid={isDuplicate}
+                    className="w-full"
+                    id={header}
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableFields.map((field) => (
+                      <SelectItem key={field} value={field}>
+                        {getFieldLabel(field)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FieldContent>
+            </Field>
+          );
+        })}
       </div>
     </div>
   );

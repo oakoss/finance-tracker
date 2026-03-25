@@ -289,6 +289,8 @@
   "imports.toast.fileReadError": "Failed to read the file. Try selecting it again.",
   "imports.upload.accountLabel": "Account",
   "imports.upload.accountPlaceholder": "Select an account",
+  "imports.upload.accountRequired": "Account is required",
+  "imports.upload.columnMappingRequired": "Column mapping is required",
   "imports.upload.amountMode.label": "Amount format",
   "imports.upload.amountMode.single": "Single amount column",
   "imports.upload.amountMode.split": "Separate debit and credit columns",

@@ -1,3 +1,4 @@
+import { useForm } from '@tanstack/react-form';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -15,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Field, FieldLabel } from '@/components/ui/field';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import {
   Select,
   SelectContent,
@@ -37,6 +38,7 @@ import { clientLog } from '@/lib/logging/client-logger';
 import { accountQueries } from '@/modules/accounts/hooks/use-accounts';
 import {
   ColumnMapper,
+  type MappingValidation,
   validateMapping,
 } from '@/modules/imports/components/column-mapper';
 import { ColumnMapperPreview } from '@/modules/imports/components/column-mapper-preview';
@@ -45,6 +47,18 @@ import { useCreateImport } from '@/modules/imports/hooks/use-imports';
 import { autoDetectMapping } from '@/modules/imports/lib/auto-detect-mapping';
 import { hashFileContent } from '@/modules/imports/lib/hash-file';
 import { m } from '@/paraglide/messages';
+
+function formatMappingErrors(mapping: ColumnMapping): string | undefined {
+  const { errors } = validateMapping(mapping);
+  return errors.length > 0 ? errors.join('. ') : undefined;
+}
+
+function getMappingValidation(
+  mapping: ColumnMapping,
+  hasErrors: boolean,
+): MappingValidation | undefined {
+  return hasErrors ? validateMapping(mapping) : undefined;
+}
 
 export function ImportUploadDialog() {
   const search = useSearch({ from: '/_app/imports' });
@@ -59,40 +73,64 @@ export function ImportUploadDialog() {
     [accounts],
   );
 
-  const [accountId, setAccountId] = useState('');
   const [step, setStep] = useState(1);
-  const [columnMapping, setColumnMapping] = useState<ColumnMapping | null>(
-    null,
-  );
-  const [fileContent, setFileContent] = useState<string | null>(null);
-  const [fileHash, setFileHash] = useState<string | null>(null);
 
   const [fileState, fileActions] = useFileUpload({
     accept: '.csv',
     maxSize: 5 * 1024 * 1024,
   });
 
+  const form = useForm({
+    defaultValues: {
+      accountId: '',
+      columnMapping: null as ColumnMapping | null,
+      fileContent: '',
+      fileHash: '',
+      fileName: '',
+    },
+    onSubmit: ({ value }) => {
+      if (
+        !value.accountId ||
+        !value.columnMapping ||
+        !value.fileContent ||
+        !value.fileHash
+      ) {
+        clientLog.error({
+          action: 'import.upload.submit',
+          outcome: {
+            accountId: !!value.accountId,
+            columnMapping: !!value.columnMapping,
+            fileContent: !!value.fileContent,
+            fileHash: !!value.fileHash,
+          },
+        });
+        toast.error(m['imports.toast.createError']());
+        return;
+      }
+      mutation.mutate({
+        accountId: value.accountId,
+        columnMapping: value.columnMapping,
+        fileContent: value.fileContent,
+        fileHash: value.fileHash,
+        fileName: value.fileName || 'import.csv',
+      });
+    },
+  });
+
   const open = search.modal === 'upload';
 
   const csvReset = csv.reset;
-  const resetState = useCallback(() => {
-    setAccountId('');
-    setStep(1);
-    setColumnMapping(null);
-    setFileContent(null);
-    setFileHash(null);
-    csvReset();
-    fileActions.clearFiles();
-  }, [csvReset, fileActions]);
-
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {
       if (!nextOpen) {
         void navigate({ search: {}, to: '/imports' });
-        resetState();
+        form.reset();
+        setStep(1);
+        csvReset();
+        fileActions.clearFiles();
       }
     },
-    [navigate, resetState],
+    [navigate, form, csvReset, fileActions],
   );
 
   const selectedFile = fileState.files[0];
@@ -107,13 +145,15 @@ export function ImportUploadDialog() {
 
   const handleNext = useCallback(async () => {
     const file = selectedFile?.file;
-    if (!file || !(file instanceof File) || !accountId) return;
+    if (!file || !(file instanceof File)) return;
+    if (!form.state.values.accountId) return;
 
     try {
       const content = await file.text();
       const hash = await hashFileContent(content);
-      setFileContent(content);
-      setFileHash(hash);
+      form.setFieldValue('fileContent', content);
+      form.setFieldValue('fileHash', hash);
+      form.setFieldValue('fileName', file.name);
     } catch (error) {
       clientLog.error({ action: 'import.upload.readFile', error });
       toast.error(m['imports.toast.createError'](), {
@@ -122,34 +162,17 @@ export function ImportUploadDialog() {
       return;
     }
 
-    if (csv.result) {
-      const detected = autoDetectMapping(csv.result.headers);
-      setColumnMapping(detected);
-    }
-
-    setStep(2);
-  }, [selectedFile, accountId, csv.result]);
-
-  const handleSubmit = useCallback(() => {
-    if (!fileContent || !fileHash || !accountId || !columnMapping) return;
-
-    const errors = validateMapping(columnMapping);
-    if (errors.length > 0) {
-      toast.error(errors[0]);
+    if (!csv.result) {
+      toast.error(m['imports.toast.createError'](), {
+        description: m['imports.upload.csvParseError'](),
+      });
       return;
     }
 
-    mutation.mutate({
-      accountId,
-      columnMapping,
-      fileContent,
-      fileHash,
-      fileName: selectedFile?.file.name ?? 'import.csv',
-    });
-  }, [fileContent, fileHash, accountId, columnMapping, mutation, selectedFile]);
-
-  const canAdvance = !!accountId && !!selectedFile && !!csv.result;
-  const canSubmit = !!columnMapping && !mutation.isPending;
+    const detected = autoDetectMapping(csv.result.headers);
+    form.setFieldValue('columnMapping', detected);
+    setStep(2);
+  }, [selectedFile, csv.result, form]);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -183,136 +206,200 @@ export function ImportUploadDialog() {
           </StepperNav>
         </Stepper>
 
-        {step === 1 && (
-          <div className="flex flex-col gap-4">
-            <Field>
-              <FieldLabel htmlFor="import-account">
-                {m['imports.upload.accountLabel']()}
-              </FieldLabel>
-              <Select
-                disabled={mutation.isPending}
-                items={accountItems}
-                value={accountId}
-                onValueChange={(v) => {
-                  if (v) setAccountId(v);
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            void form.handleSubmit();
+          }}
+        >
+          {step === 1 && (
+            <div className="flex flex-col gap-4">
+              <form.Field
+                name="accountId"
+                validators={{
+                  onChange: (params) => {
+                    if (params.fieldApi.form.state.submissionAttempts === 0)
+                      return;
+                    return !params.value
+                      ? m['imports.upload.accountRequired']()
+                      : undefined;
+                  },
+                  onSubmit: ({ value }) =>
+                    !value ? m['imports.upload.accountRequired']() : undefined,
                 }}
               >
-                <SelectTrigger id="import-account">
-                  <SelectValue
-                    placeholder={m['imports.upload.accountPlaceholder']()}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {accounts.map((a) => (
-                    <SelectItem key={a.account.id} value={a.account.id}>
-                      {a.account.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
-
-            <Field>
-              <FieldLabel>{m['imports.upload.dropzone']()}</FieldLabel>
-              <div
-                className={`flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors ${
-                  fileState.isDragging
-                    ? 'border-primary bg-primary/5'
-                    : 'border-muted-foreground/25 hover:border-muted-foreground/50'
-                }`}
-                role="button"
-                tabIndex={0}
-                onClick={fileActions.openFileDialog}
-                onDragEnter={fileActions.handleDragEnter}
-                onDragLeave={fileActions.handleDragLeave}
-                onDragOver={fileActions.handleDragOver}
-                onDrop={fileActions.handleDrop}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    fileActions.openFileDialog();
-                  }
-                }}
-              >
-                <input
-                  {...fileActions.getInputProps({ className: 'sr-only' })}
-                />
-                {selectedFile ? (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Icons.File className="size-5 text-muted-foreground" />
-                    <span>{selectedFile.file.name}</span>
-                    <button
-                      className="text-muted-foreground hover:text-foreground"
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        fileActions.removeFile(selectedFile.id);
-                        csvReset();
+                {(field) => (
+                  <Field data-invalid={field.state.meta.errors.length > 0}>
+                    <FieldLabel htmlFor="import-account">
+                      {m['imports.upload.accountLabel']()}
+                    </FieldLabel>
+                    <Select
+                      disabled={mutation.isPending}
+                      items={accountItems}
+                      value={field.state.value}
+                      onValueChange={(v) => {
+                        if (v) {
+                          field.handleChange(v);
+                          field.handleBlur();
+                        }
                       }}
                     >
-                      <Icons.X className="size-4" />
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
-                    <Icons.Upload className="size-8" />
-                    <span>{m['imports.upload.dropzone']()}</span>
-                  </div>
+                      <SelectTrigger id="import-account">
+                        <SelectValue
+                          placeholder={m['imports.upload.accountPlaceholder']()}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {accounts.map((a) => (
+                          <SelectItem key={a.account.id} value={a.account.id}>
+                            {a.account.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FieldError errors={field.state.meta.errors} />
+                  </Field>
                 )}
-              </div>
-              {fileState.errors.length > 0 && (
-                <p className="text-sm text-destructive">
-                  {fileState.errors[0]}
-                </p>
-              )}
-              {csv.error && (
-                <p className="text-sm text-destructive">{csv.error}</p>
-              )}
-            </Field>
-          </div>
-        )}
+              </form.Field>
 
-        {step === 2 && (
-          <div className="flex max-h-[60vh] flex-col gap-4 overflow-y-auto">
-            {columnMapping && csv.result && (
-              <>
-                <ColumnMapper
-                  headers={csv.result.headers}
-                  value={columnMapping}
-                  onChange={setColumnMapping}
-                />
-                <ColumnMapperPreview
-                  columnMapping={columnMapping}
-                  sampleRows={csv.result.sampleRows}
-                />
-              </>
-            )}
-          </div>
-        )}
+              <Field>
+                <FieldLabel>{m['imports.upload.dropzone']()}</FieldLabel>
+                <div
+                  className={`flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors ${
+                    fileState.isDragging
+                      ? 'border-primary bg-primary/5'
+                      : 'border-muted-foreground/25 hover:border-muted-foreground/50'
+                  }`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={fileActions.openFileDialog}
+                  onDragEnter={fileActions.handleDragEnter}
+                  onDragLeave={fileActions.handleDragLeave}
+                  onDragOver={fileActions.handleDragOver}
+                  onDrop={fileActions.handleDrop}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      fileActions.openFileDialog();
+                    }
+                  }}
+                >
+                  <input
+                    {...fileActions.getInputProps({ className: 'sr-only' })}
+                  />
+                  {selectedFile ? (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Icons.File className="size-5 text-muted-foreground" />
+                      <span>{selectedFile.file.name}</span>
+                      <button
+                        className="text-muted-foreground hover:text-foreground"
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          fileActions.removeFile(selectedFile.id);
+                          csvReset();
+                        }}
+                      >
+                        <Icons.X className="size-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
+                      <Icons.Upload className="size-8" />
+                      <span>{m['imports.upload.dropzone']()}</span>
+                    </div>
+                  )}
+                </div>
+                {fileState.errors.length > 0 && (
+                  <p className="text-sm text-destructive">
+                    {fileState.errors[0]}
+                  </p>
+                )}
+                {csv.error && (
+                  <p className="text-sm text-destructive">{csv.error}</p>
+                )}
+              </Field>
+            </div>
+          )}
 
-        <DialogFooter>
           {step === 2 && (
-            <Button
-              disabled={mutation.isPending}
-              variant="outline"
-              onClick={() => setStep(1)}
-            >
-              {m['imports.upload.back']()}
-            </Button>
+            <div className="flex max-h-[60vh] flex-col gap-4 overflow-y-auto">
+              <form.Field
+                name="columnMapping"
+                validators={{
+                  onChange: (params) => {
+                    if (params.fieldApi.form.state.submissionAttempts === 0)
+                      return;
+                    if (!params.value) return;
+                    return formatMappingErrors(params.value);
+                  },
+                  onSubmit: ({ value }) => {
+                    if (!value)
+                      return m['imports.upload.columnMappingRequired']();
+                    return formatMappingErrors(value);
+                  },
+                }}
+              >
+                {(field) => {
+                  if (!field.state.value || !csv.result) return null;
+                  const validation = getMappingValidation(
+                    field.state.value,
+                    field.state.meta.errors.length > 0,
+                  );
+                  return (
+                    <>
+                      <ColumnMapper
+                        duplicateFields={validation?.duplicateFields}
+                        headers={csv.result.headers}
+                        value={field.state.value}
+                        onChange={field.handleChange}
+                      />
+                      <FieldError errors={field.state.meta.errors} />
+                      <ColumnMapperPreview
+                        columnMapping={field.state.value}
+                        sampleRows={csv.result.sampleRows}
+                      />
+                    </>
+                  );
+                }}
+              </form.Field>
+            </div>
           )}
-          {step === 1 ? (
-            <Button disabled={!canAdvance} onClick={() => void handleNext()}>
-              {m['imports.upload.next']()}
-            </Button>
-          ) : (
-            <Button disabled={!canSubmit} onClick={handleSubmit}>
-              {mutation.isPending && (
-                <Icons.Loader2 className="size-4 animate-spin" />
-              )}
-              {m['imports.upload.submit']()}
-            </Button>
-          )}
-        </DialogFooter>
+
+          <DialogFooter className="mt-4">
+            {step === 2 && (
+              <Button
+                disabled={mutation.isPending}
+                type="button"
+                variant="outline"
+                onClick={() => setStep(1)}
+              >
+                {m['imports.upload.back']()}
+              </Button>
+            )}
+            {step === 1 ? (
+              <form.Subscribe selector={(s) => s.values.accountId}>
+                {(accountId) => (
+                  <Button
+                    disabled={!accountId || !selectedFile || !csv.result}
+                    type="button"
+                    onClick={() => void handleNext()}
+                  >
+                    {m['imports.upload.next']()}
+                  </Button>
+                )}
+              </form.Subscribe>
+            ) : (
+              <Button disabled={mutation.isPending} type="submit">
+                {mutation.isPending && (
+                  <Icons.Loader2 className="size-4 animate-spin" />
+                )}
+                {m['imports.upload.submit']()}
+              </Button>
+            )}
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
