@@ -1,7 +1,6 @@
 //  @ts-check
 
 import pluginReact from '@eslint-react/eslint-plugin';
-import js from '@eslint/js';
 import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import oxlint from 'eslint-plugin-oxlint';
 import { defineConfig, globalIgnores } from 'eslint/config';
@@ -25,47 +24,13 @@ export default defineConfig(
   ]),
   { languageOptions: { ecmaVersion: 'latest', globals: globals.browser } },
   {
-    extends: [js.configs.recommended],
-    rules: { eqeqeq: 'error', 'no-console': 'warn' },
-  },
-  {
-    extends: [
-      ...tseslint.configs.recommendedTypeChecked,
-      ...tseslint.configs.stylisticTypeChecked,
-    ],
+    extends: [tseslint.configs.base],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
-    },
-    rules: {
-      '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
-      '@typescript-eslint/consistent-type-exports': 'error',
-      '@typescript-eslint/consistent-type-imports': [
-        'error',
-        { fixStyle: 'inline-type-imports' },
-      ],
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/no-misused-promises': [
-        'error',
-        { checksVoidReturn: { attributes: false } },
-      ],
-      '@typescript-eslint/no-unnecessary-condition': 'off',
-      '@typescript-eslint/no-unsafe-argument': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
-      ],
-      '@typescript-eslint/only-throw-error': 'off',
-      '@typescript-eslint/prefer-return-this-type': 'error',
-      '@typescript-eslint/restrict-template-expressions': 'off',
     },
   },
   {
@@ -95,23 +60,6 @@ export default defineConfig(
         rootFontSize: 16,
         tsconfig: './tsconfig.json',
       },
-    },
-  },
-  {
-    files: [
-      'src/configs/env.ts',
-      'src/lib/db/seed/**/*',
-      'src/lib/db/reset.ts',
-      'src/lib/logger.ts',
-      '**/*.stories.*',
-      '**/*.test.*',
-      '**/*.spec.*',
-      'e2e/**/*',
-      'test/**/*',
-    ],
-    rules: {
-      '@typescript-eslint/no-empty-function': 'off',
-      'no-console': 'off',
     },
   },
   {

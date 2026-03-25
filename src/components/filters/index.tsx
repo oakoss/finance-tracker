@@ -352,7 +352,7 @@ function Filters<T = unknown>({
                   className="flex max-h-[min(var(--available-height),24rem)] w-full scroll-py-2 flex-col overscroll-contain"
                   id={`${rootId}-listbox`}
                   role="listbox"
-                  tabIndex={0}
+                  tabIndex={-1}
                   onMouseEnter={() => setActiveMenu('root')}
                 >
                   <ScrollArea className="**:data-[slot=scroll-area-scrollbar]:m-0">
