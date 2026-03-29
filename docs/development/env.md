@@ -41,10 +41,10 @@ No `VITE_` prefix needed. The `@sensitive` / `@public` decorators in
 - `@public` vars are replaced at build time in client code.
 - `@sensitive` vars are never bundled — only available server-side
   via `process.env`.
-- `@preventLeaks` (enabled by default) scans HTTP responses for
-  sensitive values and throws if found.
-- `@redactLogs` (enabled by default) masks sensitive values in
-  console output as `▒▒▒▒▒`.
+- `@preventLeaks` (production only via `forEnv(production)`) scans
+  HTTP responses for sensitive values and throws if found.
+- `@redactLogs` (production only via `forEnv(production)`) masks
+  sensitive values in console output as `▒▒▒▒▒`.
 
 ## Environment-aware validation
 
@@ -102,9 +102,8 @@ precedence, so Coolify's values override schema defaults. Set
 
 ## Docker Compose variables
 
-These variables in `.env.schema` configure the local Postgres and
-Mailpit containers (`pnpm docker:up`). They are only used by
-`docker-compose.yml`:
+These variables are used by `docker-compose.yml` with inline defaults.
+They are not managed by varlock. Override via `.env.local` if needed:
 
 | Variable            | Default                    |
 | ------------------- | -------------------------- |

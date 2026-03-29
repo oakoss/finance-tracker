@@ -11,7 +11,7 @@ const LOG_LEVEL_PRIORITY: Record<LogLevel, number> = {
   warn: 2,
 };
 
-const minLevel: LogLevel = ENV.CLIENT_LOG_LEVEL;
+const minLevel: LogLevel = ENV.CLIENT_LOG_LEVEL ?? 'warn';
 
 let initialized = false;
 

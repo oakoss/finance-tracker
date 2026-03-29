@@ -19,7 +19,7 @@ const enrichers = [
 ];
 
 export default function evlogDrainPlugin(nitroApp: NitroApp) {
-  const otlpEndpoint = process.env.OTEL_EXPORTER_OTLP_ENDPOINT;
+  const otlpEndpoint = ENV.OTEL_EXPORTER_OTLP_ENDPOINT;
 
   if (!otlpEndpoint) {
     console.warn(
@@ -29,7 +29,7 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
   }
 
   const environment =
-    process.env.OTEL_RESOURCE_ATTRIBUTES?.split(',')
+    ENV.OTEL_RESOURCE_ATTRIBUTES?.split(',')
       .find((attr) => attr.startsWith('deployment.environment='))
       ?.split('=')[1] ?? 'development';
 
