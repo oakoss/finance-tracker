@@ -8,6 +8,9 @@ on:
     branches: [main]
   merge_group:
 
+env:
+  APP_ENV: test
+
 defaults:
   run:
     shell: bash
@@ -134,7 +137,6 @@ jobs:
       - name: Build application
         run: pnpm build
         env:
-          APP_ENV: test
           POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
           POSTHOG_PROJECT_ID: ${{ secrets.POSTHOG_PROJECT_ID }}
       - name: E2E smoke (desktop only)
@@ -200,7 +202,6 @@ jobs:
       - name: Build application
         run: pnpm build
         env:
-          APP_ENV: test
           POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
           POSTHOG_PROJECT_ID: ${{ secrets.POSTHOG_PROJECT_ID }}
       - name: E2E full suite (shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }})

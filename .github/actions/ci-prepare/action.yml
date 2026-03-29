@@ -6,7 +6,7 @@ runs:
   steps:
     - name: Generate varlock env types
       shell: bash
-      run: APP_ENV=test pnpm exec varlock typegen
+      run: pnpm exec varlock typegen
 
     - name: Compile paraglide
       shell: bash
