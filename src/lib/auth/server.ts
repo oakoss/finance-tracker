@@ -18,7 +18,7 @@ export const auth = betterAuth({
       enabled: true,
       trustedProviders: ['email-password', 'google', 'github'],
     },
-    encryptOAuthTokens: process.env.NODE_ENV === 'production',
+    encryptOAuthTokens: ENV.APP_ENV === 'production',
   },
   advanced: {
     database: { generateId: 'uuid' },
@@ -52,11 +52,7 @@ export const auth = betterAuth({
   },
   experimental: { joins: true },
   plugins: [tanstackStartCookies()],
-  rateLimit: {
-    enabled: process.env.NODE_ENV === 'production',
-    max: 100,
-    window: 60,
-  },
+  rateLimit: { enabled: ENV.APP_ENV === 'production', max: 100, window: 60 },
   secret: ENV.BETTER_AUTH_SECRET,
   session: {
     expiresIn: 60 * 60 * 24 * 7,
