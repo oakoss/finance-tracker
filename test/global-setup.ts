@@ -1,5 +1,3 @@
-import 'varlock/auto-load';
-
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { reset } from 'drizzle-seed';
