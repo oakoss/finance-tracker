@@ -126,7 +126,11 @@ jobs:
       - name: Prepare CI environment
         uses: ./.github/actions/ci-prepare
       - name: Create test database
-        run: psql "postgres://finance_tracker:finance_tracker_password@localhost:5432/finance_tracker_dev" -c "CREATE DATABASE finance_tracker_test" || true
+        run: |
+          psql "$MAINTENANCE_DB" -tc "SELECT 1 FROM pg_database WHERE datname='finance_tracker_test'" | grep -q 1 || \
+          psql "$MAINTENANCE_DB" -c "CREATE DATABASE finance_tracker_test"
+        env:
+          MAINTENANCE_DB: postgres://finance_tracker:finance_tracker_password@localhost:5432/finance_tracker_dev
       - name: Migrate and seed database
         run: pnpm db:migrate && pnpm with:env tsx test/seed/seed-runner.ts e2e
       - name: Cache Playwright browsers
@@ -193,7 +197,11 @@ jobs:
       - name: Prepare CI environment
         uses: ./.github/actions/ci-prepare
       - name: Create test database
-        run: psql "postgres://finance_tracker:finance_tracker_password@localhost:5432/finance_tracker_dev" -c "CREATE DATABASE finance_tracker_test" || true
+        run: |
+          psql "$MAINTENANCE_DB" -tc "SELECT 1 FROM pg_database WHERE datname='finance_tracker_test'" | grep -q 1 || \
+          psql "$MAINTENANCE_DB" -c "CREATE DATABASE finance_tracker_test"
+        env:
+          MAINTENANCE_DB: postgres://finance_tracker:finance_tracker_password@localhost:5432/finance_tracker_dev
       - name: Migrate and seed database
         run: pnpm db:migrate && pnpm with:env tsx test/seed/seed-runner.ts e2e
       - name: Cache Playwright browsers

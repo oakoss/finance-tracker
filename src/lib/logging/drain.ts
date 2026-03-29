@@ -22,6 +22,7 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
   const otlpEndpoint = ENV.OTEL_EXPORTER_OTLP_ENDPOINT;
 
   if (!otlpEndpoint) {
+    // console is intentional — drain plugin runs before evlog pipeline is wired
     console.warn(
       '[evlog] OTEL_EXPORTER_OTLP_ENDPOINT is not set — logs will not be drained to PostHog.',
     );
@@ -38,11 +39,21 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
   const headers: Record<string, string> = {};
   if (posthogKey) {
     headers.Authorization = `Bearer ${posthogKey}`;
-  } else if (/(?:^|\.)posthog\.com$/.test(new URL(otlpEndpoint).hostname)) {
-    console.warn(
-      '[evlog] OTEL_EXPORTER_OTLP_ENDPOINT points to PostHog but POSTHOG_KEY is not set — log drain disabled.',
-    );
-    return;
+  } else {
+    try {
+      if (/(?:^|\.)posthog\.com$/.test(new URL(otlpEndpoint).hostname)) {
+        // console is intentional — drain plugin runs before evlog pipeline is wired
+        console.warn(
+          '[evlog] OTEL_EXPORTER_OTLP_ENDPOINT points to PostHog but POSTHOG_KEY is not set — log drain disabled.',
+        );
+        return;
+      }
+    } catch {
+      console.error(
+        `[evlog] OTEL_EXPORTER_OTLP_ENDPOINT is not a valid URL: "${otlpEndpoint}"`,
+      );
+      return;
+    }
   }
 
   const otlpDrain = createOTLPDrain({
@@ -57,6 +68,7 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
     batch: { intervalMs: 5000, size: 50 },
     maxBufferSize: 1000,
     onDropped: (events, error) => {
+      // console is intentional — cannot use evlog to report evlog drain failures
       console.error(
         `[evlog] dropped ${events.length} event(s) after retries exhausted`,
         error,

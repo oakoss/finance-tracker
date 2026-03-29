@@ -13,14 +13,21 @@ type SendEmailOptions = {
   to: EmailRecipient[];
 };
 
-const defaultSender: EmailRecipient = {
-  email: ENV.EMAIL_FROM,
-  name: ENV.EMAIL_FROM_NAME,
-};
+let defaultSender: EmailRecipient | undefined;
 
-const defaultReplyTo = ENV.EMAIL_REPLY_TO
-  ? { email: ENV.EMAIL_REPLY_TO }
-  : undefined;
+function getDefaultSender(): EmailRecipient {
+  defaultSender ??= { email: ENV.EMAIL_FROM, name: ENV.EMAIL_FROM_NAME };
+  return defaultSender;
+}
+
+let defaultReplyTo: EmailRecipient | undefined;
+
+function getDefaultReplyTo(): EmailRecipient | undefined {
+  defaultReplyTo ??= ENV.EMAIL_REPLY_TO
+    ? { email: ENV.EMAIL_REPLY_TO }
+    : undefined;
+  return defaultReplyTo;
+}
 
 let smtpTransport: ReturnType<typeof createTransport> | undefined;
 
@@ -33,12 +40,11 @@ function getSmtpTransport() {
 }
 
 async function sendViaSmtp(options: SendEmailOptions) {
-  const replyTo = options.replyTo ?? defaultReplyTo;
+  const sender = getDefaultSender();
+  const replyTo = options.replyTo ?? getDefaultReplyTo();
 
   await getSmtpTransport().sendMail({
-    from: defaultSender.name
-      ? `${defaultSender.name} <${defaultSender.email}>`
-      : defaultSender.email,
+    from: sender.name ? `${sender.name} <${sender.email}>` : sender.email,
     html: options.html,
     ...(replyTo ? { replyTo: replyTo.email } : {}),
     subject: options.subject,
@@ -62,14 +68,15 @@ async function getBrevoClient() {
 
 async function sendViaBrevo(options: SendEmailOptions) {
   const brevo = await getBrevoClient();
-  const replyTo = options.replyTo ?? defaultReplyTo;
+  const sender = getDefaultSender();
+  const replyTo = options.replyTo ?? getDefaultReplyTo();
 
   await brevo.transactionalEmails.sendTransacEmail({
     htmlContent: options.html,
     ...(replyTo !== undefined && { replyTo }),
     sender: {
-      email: defaultSender.email,
-      ...(defaultSender.name !== undefined && { name: defaultSender.name }),
+      email: sender.email,
+      ...(sender.name !== undefined && { name: sender.name }),
     },
     subject: options.subject,
     ...(options.text !== undefined && { textContent: options.text }),

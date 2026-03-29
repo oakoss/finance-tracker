@@ -11,7 +11,8 @@ export async function setup() {
   const testUrl = process.env.DATABASE_URL;
   if (!testUrl) throw new Error('DATABASE_URL is not set');
 
-  // Derive the test DB name and a maintenance connection URL
+  // Derive the test DB name and connect to the default postgres DB
+  // to run CREATE DATABASE (requires a postgres DB on the server)
   const url = new URL(testUrl);
   const testDbName = url.pathname.slice(1);
   url.pathname = '/postgres';
