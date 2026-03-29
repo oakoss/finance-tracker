@@ -8,7 +8,9 @@ import * as schema from '@/db/schema';
  * One connection = one session, so the caller can BEGIN/ROLLBACK.
  */
 export async function createTestDb() {
-  const url = process.env.DATABASE_URL;
+  // TEST_DATABASE_URL is set by global-setup.ts — use it over DATABASE_URL
+  // to avoid varlock/env re-initialization overwriting the test DB URL.
+  const url = process.env.TEST_DATABASE_URL ?? process.env.DATABASE_URL;
   if (!url) throw new Error('DATABASE_URL is not set');
 
   const client = new pg.Client({ connectionString: url });

@@ -1,3 +1,5 @@
+import 'varlock/auto-load';
+
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { reset } from 'drizzle-seed';
@@ -11,9 +13,9 @@ export async function setup() {
   const originalUrl = process.env.DATABASE_URL;
   if (!originalUrl) throw new Error('DATABASE_URL is not set');
 
-  // Parse the original URL and swap the DB name to the test DB
+  // Derive the test DB URL from the configured DATABASE_URL
   const url = new URL(originalUrl);
-  const maintenanceDb = url.pathname.slice(1); // original DB name
+  const maintenanceDb = url.pathname.slice(1);
   url.pathname = `/${TEST_DB_NAME}`;
   const testUrl = url.toString();
 
@@ -34,12 +36,11 @@ export async function setup() {
     });
   }
 
-  // Rewrite DATABASE_URL to point at the test DB
-  process.env.DATABASE_URL = testUrl;
+  // Set TEST_DATABASE_URL for workers — varlock/env cannot overwrite this
+  // since it's not a varlock-managed variable. test/db.ts reads it.
+  process.env.TEST_DATABASE_URL = testUrl;
 
   // Run migrations then reset all schema tables for a clean baseline.
-  // Individual test files use BEGIN/ROLLBACK so nothing commits during
-  // the run, but stale data from previous runs must be cleared once.
   const migrationClient = new pg.Client({ connectionString: testUrl });
   try {
     await migrationClient.connect();
