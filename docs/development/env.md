@@ -59,17 +59,13 @@ SMTP_HOST=localhost
 ```
 
 `APP_ENV` falls back to `NODE_ENV` via
-`fallback($NODE_ENV, development)`, so it works automatically in
-dev, CI, and production without explicit configuration.
+`fallback($NODE_ENV, development)`.
 
 ## Type generation
 
 Types are auto-generated to `src/env.d.ts` whenever varlock runs
 (dev server, build, `varlock run`, `varlock load`). The file is
-gitignored — it regenerates on demand.
-
-The `@generateTypes(lang=ts, path=src/env.d.ts, auto=true)` root
-decorator controls this.
+gitignored.
 
 ## Secrets management
 
@@ -101,9 +97,8 @@ action generates varlock types and compiles Paraglide.
 
 ### Production (Coolify)
 
-Set env vars in the Coolify UI. `process.env` takes highest
-precedence, so Coolify's values override schema defaults. Set
-`APP_ENV=production` to activate `forEnv(production)` requirements.
+Set env vars in the Coolify UI. Set `APP_ENV=production` to
+activate `forEnv(production)` requirements.
 
 ## Adding a new variable
 

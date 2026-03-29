@@ -20,9 +20,7 @@ const ensureClientLogger = (): void => {
   initialized = true;
 
   try {
-    // createBrowserLogDrain handles batching and page-hide flush automatically.
-    // No remote endpoint is configured — dev-only console output via pretty mode.
-    // To enable remote ingestion later, set drain.endpoint to a server ingest URL.
+    // No remote endpoint — dev-only console output via pretty mode.
     const drain = createBrowserLogDrain({
       drain: { endpoint: '' },
       pipeline: { batch: { intervalMs: 3000, size: 20 } },
