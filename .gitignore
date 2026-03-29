@@ -24,6 +24,7 @@ __unconfig*
 .env
 .env*
 !.env.schema
+!.env.test
 *.local
 
 # Generated types (varlock)

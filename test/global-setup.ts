@@ -7,40 +7,35 @@ import pg from 'pg';
 
 import * as schema from '@/db/schema';
 
-const TEST_DB_NAME = 'finance_tracker_test';
-
 export async function setup() {
-  const originalUrl = process.env.DATABASE_URL;
-  if (!originalUrl) throw new Error('DATABASE_URL is not set');
+  const testUrl = process.env.DATABASE_URL;
+  if (!testUrl) throw new Error('DATABASE_URL is not set');
 
-  // Derive the test DB URL from the configured DATABASE_URL
-  const url = new URL(originalUrl);
-  const maintenanceDb = url.pathname.slice(1);
-  url.pathname = `/${TEST_DB_NAME}`;
-  const testUrl = url.toString();
+  // Derive the test DB name and a maintenance connection URL
+  const url = new URL(testUrl);
+  const testDbName = url.pathname.slice(1);
+  url.pathname = '/postgres';
+  const maintenanceUrl = url.toString();
 
-  // Connect to the maintenance DB to create the test DB (idempotent)
-  url.pathname = `/${maintenanceDb}`;
-  const client = new pg.Client({ connectionString: url.toString() });
+  // Create the test DB (idempotent) via the default postgres DB
+  const client = new pg.Client({ connectionString: maintenanceUrl });
   try {
     await client.connect();
-    await client.query(`CREATE DATABASE ${TEST_DB_NAME}`);
-    console.log(`Created database: ${TEST_DB_NAME}`);
+    await client.query(`CREATE DATABASE "${testDbName}"`);
+    console.log(`Created database: ${testDbName}`);
   } catch (error: unknown) {
     // 42P04 = duplicate_database — already exists, that's fine
     if ((error as { code?: string }).code !== '42P04') throw error;
-    console.log(`Database ${TEST_DB_NAME} already exists`);
+    console.log(`Database ${testDbName} already exists`);
   } finally {
     await client.end().catch((error: unknown) => {
       console.warn('[test-setup] Failed to close maintenance client:', error);
     });
   }
 
-  // Set TEST_DATABASE_URL for workers — varlock/env cannot overwrite this
-  // since it's not a varlock-managed variable. test/db.ts reads it.
-  process.env.TEST_DATABASE_URL = testUrl;
-
   // Run migrations then reset all schema tables for a clean baseline.
+  // Individual test files use BEGIN/ROLLBACK so nothing commits during
+  // the run, but stale data from previous runs must be cleared once.
   const migrationClient = new pg.Client({ connectionString: testUrl });
   try {
     await migrationClient.connect();
@@ -52,7 +47,7 @@ export async function setup() {
     console.log('Reset all schema tables');
   } catch (error) {
     console.error(
-      `Failed to run migrations against ${TEST_DB_NAME}. ` +
+      `Failed to run migrations against ${testDbName}. ` +
         `Ensure ./drizzle folder exists and DATABASE_URL is reachable.`,
     );
     throw error;
