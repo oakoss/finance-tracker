@@ -40,8 +40,9 @@ pnpm test -- -t "test name"
   integration).
 - **Test setup**: `test/setup.ts` (cleanup, jest-dom matchers).
 - **Globals**: `describe`, `it`, `expect` are available without imports.
-- **Env loading**: varlock auto-load in `test/setup.ts` and
-  `test/global-setup.ts`.
+- **Env loading**: `varlock/auto-load` in `test/setup.ts` (unit) and
+  `test/global-setup.ts` (integration). Integration tests set
+  `APP_ENV=test` to load `.env.test` (test database URL).
 
 ### Why a separate vitest config?
 

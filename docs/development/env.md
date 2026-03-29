@@ -82,10 +82,22 @@ defaults. Alternatively, use
 [1Password Environments](https://developer.1password.com/docs/environments)
 to mount a virtual `.env` file.
 
+### Testing
+
+`.env.test` (committed) overrides `DATABASE_URL` to point at
+`finance_tracker_test`. It loads automatically when `APP_ENV=test`:
+
+- Integration tests: script sets `APP_ENV=test`
+- E2E: Playwright config sets `APP_ENV=test` on build + start
+- CI: `APP_ENV=test` at the workflow level
+
+Use `pnpm db:migrate:test` to migrate the test database locally.
+
 ### CI
 
-`.env.schema` defaults provide valid dummy values for CI. The
-`ci-prepare` action compiles Paraglide — no `.env` file copy needed.
+`APP_ENV=test` is set at the workflow level. `.env.schema` defaults
+plus `.env.test` overrides provide all values. The `ci-prepare`
+action generates varlock types and compiles Paraglide.
 
 ### Production (Coolify)
 
