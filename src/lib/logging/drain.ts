@@ -42,7 +42,6 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
   } else {
     try {
       if (/(?:^|\.)posthog\.com$/.test(new URL(otlpEndpoint).hostname)) {
-        // console is intentional — drain plugin runs before evlog pipeline is wired
         console.warn(
           '[evlog] OTEL_EXPORTER_OTLP_ENDPOINT points to PostHog but POSTHOG_KEY is not set — log drain disabled.',
         );
@@ -94,7 +93,13 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
     }
   });
 
-  if (!nitroApp.hooks) return;
+  if (!nitroApp.hooks) {
+    // console is intentional — drain plugin runs before evlog pipeline is wired
+    console.warn(
+      '[evlog] nitroApp.hooks is not available — drain plugin cannot register hooks.',
+    );
+    return;
+  }
 
   // Enrich events with user agent, request size, and trace context
   nitroApp.hooks.hook('evlog:enrich', (ctx: EnrichContext) => {
