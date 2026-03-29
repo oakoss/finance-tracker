@@ -30,7 +30,7 @@
     "schema:auth:generate": "pnpm with:env pnpm dlx @better-auth/cli generate --config src/lib/auth/server.ts --output src/modules/auth/db/schema.ts --yes",
     "schema:auth:postprocess": "tsx scripts/postprocess-auth-schema.ts",
     "start": "pnpm with:env node .output/server/index.mjs",
-    "test": "vitest run",
+    "test": "APP_ENV=test vitest run",
     "test:coverage": "vitest run --coverage --project unit",
     "test:e2e": "playwright test",
     "test:e2e:a11y": "playwright test --grep @a11y",
@@ -40,7 +40,7 @@
     "test:e2e:ui": "playwright test --ui",
     "test:integration": "APP_ENV=test vitest run --project integration",
     "test:unit": "vitest run --project unit",
-    "test:watch": "vitest",
+    "test:watch": "APP_ENV=test vitest",
     "typecheck": "tsc --noEmit",
     "with:env": "varlock run --"
   },

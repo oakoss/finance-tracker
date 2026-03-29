@@ -115,7 +115,8 @@ precedence, so Coolify's values override schema defaults. Set
 ## Docker Compose variables
 
 These variables are used by `docker-compose.yml` with inline defaults.
-They are not managed by varlock. Override via `.env.local` if needed:
+They are not managed by varlock. Override via `.env` or
+`docker compose --env-file .env.local up`:
 
 | Variable            | Default                    |
 | ------------------- | -------------------------- |

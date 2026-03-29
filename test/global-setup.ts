@@ -9,6 +9,12 @@ import { ENV } from 'varlock/env';
 import * as schema from '@/db/schema';
 
 export async function setup() {
+  if (ENV.APP_ENV !== 'test') {
+    throw new Error(
+      `Refusing to run integration setup with APP_ENV="${ENV.APP_ENV}". Set APP_ENV=test to avoid wiping the dev database.`,
+    );
+  }
+
   const testUrl = process.env.DATABASE_URL;
   if (!testUrl) throw new Error('DATABASE_URL is not set');
 
