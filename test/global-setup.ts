@@ -19,11 +19,9 @@ export async function setup() {
   if (!testUrl) throw new Error('DATABASE_URL is not set');
 
   const dbName = ENV.DB_NAME;
+  const maintenanceUrl = `postgres://${ENV.DB_USER}:${ENV.DB_PASSWORD}@${ENV.DB_HOST}:${ENV.DB_PORT}/postgres`;
 
   // Connect to the default postgres DB to create the test DB (idempotent)
-  const parsed = new URL(testUrl);
-  parsed.pathname = '/postgres';
-  const maintenanceUrl = parsed.toString();
   const client = new pg.Client({ connectionString: maintenanceUrl });
   try {
     await client.connect();
