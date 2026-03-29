@@ -3,7 +3,7 @@ import { ENV } from 'varlock/env';
 
 export const Route = createFileRoute('/_demo')({
   beforeLoad: () => {
-    if (!ENV.DEMO_PAGES) {
+    if (ENV.APP_ENV === 'production') {
       throw notFound();
     }
   },
