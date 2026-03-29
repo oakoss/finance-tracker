@@ -115,7 +115,6 @@ full exclude list.
 | File                      | What to test                                                                                                                                                           |
 | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/lib/i18n.ts`         | `formatCurrency`, `formatNumber`, `formatDate`, `formatDateTime`, `formatMonthYear` with various locales, currencies, and time zones. Mock `getLocale` from paraglide. |
-| `.env.schema`             | Varlock schema validation, `@required`/`@optional` decorators, `forEnv()` conditionals, type generation.                                                               |
 | `src/lib/logging/hash.ts` | Deterministic HMAC output, different secrets produce different hashes. Already has tests.                                                                              |
 | `src/lib/cookies.ts`      | `serializeServerCookie` output format, `createServerCookies` parsing, `appendSetCookieHeaders` appending.                                                              |
 | `src/lib/utils.ts`        | `cn` class merging (tailwind-merge + clsx).                                                                                                                            |
@@ -261,7 +260,7 @@ Test jobs run in `.github/workflows/ci.yml`.
 
 ### Unit tests (`unit-tests`)
 
-1. `.env.schema` defaults provide valid dummy values.
+1. Generates varlock types and compiles Paraglide messages.
 2. Runs `pnpm test:coverage`.
 3. Posts a coverage summary via
    [vitest-coverage-report-action](https://github.com/davelosert/vitest-coverage-report-action)
@@ -275,12 +274,13 @@ Test jobs run in `.github/workflows/ci.yml`.
 
 ### E2E tests (`e2e-tests`)
 
-1. Compiles Paraglide messages.
-2. Caches Playwright browsers (`~/.cache/ms-playwright`, keyed on
+1. Generates varlock types and compiles Paraglide messages.
+2. Creates test database and runs migrations.
+3. Caches Playwright browsers (`~/.cache/ms-playwright`, keyed on
    lockfile).
-3. Installs Chromium with system dependencies.
-4. Runs `pnpm test:e2e` with `failOnFlakyTests` enabled.
-5. Uploads blob report as artifact (14-day retention).
+4. Installs Chromium with system dependencies.
+5. Runs `pnpm test:e2e` with `failOnFlakyTests` enabled.
+6. Uploads blob report as artifact (14-day retention).
 
 To debug CI failures locally from blob reports:
 
