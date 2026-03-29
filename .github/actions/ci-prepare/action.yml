@@ -1,9 +1,13 @@
 name: Prepare CI environment
-description: Compile Paraglide messages.
+description: Generate varlock types and compile Paraglide messages.
 
 runs:
   using: composite
   steps:
+    - name: Generate varlock env types
+      shell: bash
+      run: APP_ENV=test pnpm exec varlock typegen
+
     - name: Compile paraglide
       shell: bash
       run: pnpm paraglide:compile
