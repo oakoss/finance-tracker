@@ -21,7 +21,9 @@ export async function setup() {
   const dbName = ENV.DB_NAME;
 
   // Connect to the default postgres DB to create the test DB (idempotent)
-  const maintenanceUrl = testUrl.replace(`/${dbName}`, '/postgres');
+  const parsed = new URL(testUrl);
+  parsed.pathname = '/postgres';
+  const maintenanceUrl = parsed.toString();
   const client = new pg.Client({ connectionString: maintenanceUrl });
   try {
     await client.connect();
