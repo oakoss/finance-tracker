@@ -37,7 +37,7 @@
     "test:e2e:smoke": "playwright test --grep @smoke --project=chromium:authenticated --project=chromium:public",
     "test:e2e:stress": "playwright test --project=stress",
     "test:e2e:ui": "playwright test --ui",
-    "test:integration": "vitest run --project integration",
+    "test:integration": "APP_ENV=test vitest run --project integration",
     "test:unit": "vitest run --project unit",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
