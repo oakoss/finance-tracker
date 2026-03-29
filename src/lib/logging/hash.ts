@@ -1,6 +1,5 @@
 import { createHmac } from 'node:crypto';
-
-import { env } from '@/configs/env';
+import { ENV } from 'varlock/env';
 
 /**
  * Hashes an ID using HMAC-SHA256 with LOG_HASH_SECRET.
@@ -8,5 +7,5 @@ import { env } from '@/configs/env';
  * Falls back to a static placeholder secret in development if not set.
  */
 export const hashId = (id: string): string => {
-  return createHmac('sha256', env.LOG_HASH_SECRET).update(id).digest('hex');
+  return createHmac('sha256', ENV.LOG_HASH_SECRET).update(id).digest('hex');
 };

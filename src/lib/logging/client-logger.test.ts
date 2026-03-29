@@ -6,6 +6,9 @@ vi.mock('evlog/browser', () => ({
 
 vi.mock('evlog', () => ({ initLogger: mockInitLogger, log: mockLog }));
 
+const mockEnv = { CLIENT_LOG_LEVEL: 'warn' as string };
+vi.mock('varlock/env', () => ({ ENV: mockEnv }));
+
 const mockLog = {
   debug: vi.fn(),
   error: vi.fn(),
@@ -16,11 +19,11 @@ const mockInitLogger = vi.fn();
 const mockCreateBrowserLogDrain = vi.fn(() => 'mock-drain');
 
 // Helper to import a fresh client-logger module with specific env values
-const importClientLogger = async (env: { VITE_CLIENT_LOG_LEVEL?: string }) => {
+const importClientLogger = async (env: { CLIENT_LOG_LEVEL?: string }) => {
   vi.resetModules();
 
-  if (env.VITE_CLIENT_LOG_LEVEL !== undefined) {
-    vi.stubEnv('VITE_CLIENT_LOG_LEVEL', env.VITE_CLIENT_LOG_LEVEL);
+  if (env.CLIENT_LOG_LEVEL !== undefined) {
+    mockEnv.CLIENT_LOG_LEVEL = env.CLIENT_LOG_LEVEL;
   }
 
   const mod = await import('./client-logger');
@@ -39,9 +42,7 @@ describe('clientLog', () => {
 
   describe('initialization', () => {
     it('calls initLogger on first log call', async () => {
-      const clientLog = await importClientLogger({
-        VITE_CLIENT_LOG_LEVEL: 'debug',
-      });
+      const clientLog = await importClientLogger({ CLIENT_LOG_LEVEL: 'debug' });
 
       clientLog.info({ message: 'first' });
 
@@ -49,9 +50,7 @@ describe('clientLog', () => {
     });
 
     it('only calls initLogger once (idempotent)', async () => {
-      const clientLog = await importClientLogger({
-        VITE_CLIENT_LOG_LEVEL: 'debug',
-      });
+      const clientLog = await importClientLogger({ CLIENT_LOG_LEVEL: 'debug' });
 
       clientLog.info({ message: 'first' });
       clientLog.warn({ message: 'second' });
@@ -61,9 +60,7 @@ describe('clientLog', () => {
     });
 
     it('creates a browser log drain', async () => {
-      const clientLog = await importClientLogger({
-        VITE_CLIENT_LOG_LEVEL: 'debug',
-      });
+      const clientLog = await importClientLogger({ CLIENT_LOG_LEVEL: 'debug' });
 
       clientLog.info({ message: 'trigger init' });
 
@@ -74,9 +71,7 @@ describe('clientLog', () => {
     });
 
     it('passes the drain to initLogger', async () => {
-      const clientLog = await importClientLogger({
-        VITE_CLIENT_LOG_LEVEL: 'debug',
-      });
+      const clientLog = await importClientLogger({ CLIENT_LOG_LEVEL: 'debug' });
 
       clientLog.info({ message: 'trigger init' });
 
@@ -88,47 +83,37 @@ describe('clientLog', () => {
 
   describe('delegation', () => {
     it('delegates debug to log.debug', async () => {
-      const clientLog = await importClientLogger({
-        VITE_CLIENT_LOG_LEVEL: 'debug',
-      });
+      const clientLog = await importClientLogger({ CLIENT_LOG_LEVEL: 'debug' });
 
       clientLog.debug({ message: 'test-debug' });
       expect(mockLog.debug).toHaveBeenCalledWith({ message: 'test-debug' });
     });
 
     it('delegates info to log.info', async () => {
-      const clientLog = await importClientLogger({
-        VITE_CLIENT_LOG_LEVEL: 'debug',
-      });
+      const clientLog = await importClientLogger({ CLIENT_LOG_LEVEL: 'debug' });
 
       clientLog.info({ message: 'test-info' });
       expect(mockLog.info).toHaveBeenCalledWith({ message: 'test-info' });
     });
 
     it('delegates warn to log.warn', async () => {
-      const clientLog = await importClientLogger({
-        VITE_CLIENT_LOG_LEVEL: 'debug',
-      });
+      const clientLog = await importClientLogger({ CLIENT_LOG_LEVEL: 'debug' });
 
       clientLog.warn({ message: 'test-warn' });
       expect(mockLog.warn).toHaveBeenCalledWith({ message: 'test-warn' });
     });
 
     it('delegates error to log.error', async () => {
-      const clientLog = await importClientLogger({
-        VITE_CLIENT_LOG_LEVEL: 'debug',
-      });
+      const clientLog = await importClientLogger({ CLIENT_LOG_LEVEL: 'debug' });
 
       clientLog.error({ message: 'test-error' });
       expect(mockLog.error).toHaveBeenCalledWith({ message: 'test-error' });
     });
   });
 
-  describe('sampling rates based on VITE_CLIENT_LOG_LEVEL', () => {
+  describe('sampling rates based on CLIENT_LOG_LEVEL', () => {
     it('enables all levels when minLevel is debug', async () => {
-      const clientLog = await importClientLogger({
-        VITE_CLIENT_LOG_LEVEL: 'debug',
-      });
+      const clientLog = await importClientLogger({ CLIENT_LOG_LEVEL: 'debug' });
 
       clientLog.info({ message: 'init' });
 
@@ -142,9 +127,7 @@ describe('clientLog', () => {
     });
 
     it('disables debug when minLevel is info', async () => {
-      const clientLog = await importClientLogger({
-        VITE_CLIENT_LOG_LEVEL: 'info',
-      });
+      const clientLog = await importClientLogger({ CLIENT_LOG_LEVEL: 'info' });
 
       clientLog.info({ message: 'init' });
 
@@ -158,9 +141,7 @@ describe('clientLog', () => {
     });
 
     it('disables debug and info when minLevel is warn', async () => {
-      const clientLog = await importClientLogger({
-        VITE_CLIENT_LOG_LEVEL: 'warn',
-      });
+      const clientLog = await importClientLogger({ CLIENT_LOG_LEVEL: 'warn' });
 
       clientLog.info({ message: 'init' });
 
@@ -174,9 +155,7 @@ describe('clientLog', () => {
     });
 
     it('only enables error when minLevel is error', async () => {
-      const clientLog = await importClientLogger({
-        VITE_CLIENT_LOG_LEVEL: 'error',
-      });
+      const clientLog = await importClientLogger({ CLIENT_LOG_LEVEL: 'error' });
 
       clientLog.info({ message: 'init' });
 
@@ -190,10 +169,7 @@ describe('clientLog', () => {
     });
 
     it('always enables error regardless of minLevel', async () => {
-      // error rate is hardcoded to 100, not based on minLevel comparison
-      const clientLog = await importClientLogger({
-        VITE_CLIENT_LOG_LEVEL: 'error',
-      });
+      const clientLog = await importClientLogger({ CLIENT_LOG_LEVEL: 'error' });
 
       clientLog.error({ message: 'init' });
 

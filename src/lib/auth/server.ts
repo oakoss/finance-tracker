@@ -1,9 +1,9 @@
 import { drizzleAdapter } from '@better-auth/drizzle-adapter';
 import { betterAuth } from 'better-auth';
 import { tanstackStartCookies } from 'better-auth/tanstack-start';
+import { ENV } from 'varlock/env';
 
 import { appConfig } from '@/configs/app';
-import { env } from '@/configs/env';
 import { db } from '@/db';
 import {
   sendResetPasswordEmail,
@@ -25,7 +25,7 @@ export const auth = betterAuth({
     ipAddress: { ipAddressHeaders: ['cf-connecting-ip', 'x-forwarded-for'] },
   },
   appName: appConfig.name,
-  baseURL: env.BETTER_AUTH_URL,
+  baseURL: ENV.BETTER_AUTH_URL,
   database: drizzleAdapter(db, { provider: 'pg', usePlural: true }),
   emailAndPassword: {
     enabled: true,
@@ -57,7 +57,7 @@ export const auth = betterAuth({
     max: 100,
     window: 60,
   },
-  secret: env.BETTER_AUTH_SECRET,
+  secret: ENV.BETTER_AUTH_SECRET,
   session: {
     expiresIn: 60 * 60 * 24 * 7,
     freshAge: 60 * 60 * 24,
@@ -65,23 +65,23 @@ export const auth = betterAuth({
   },
   socialProviders: {
     github: {
-      clientId: env.GITHUB_CLIENT_ID,
-      clientSecret: env.GITHUB_CLIENT_SECRET,
+      clientId: ENV.GITHUB_CLIENT_ID,
+      clientSecret: ENV.GITHUB_CLIENT_SECRET,
       mapProfileToUser: (profile) => ({
         image: profile.avatar_url,
         name: profile.name,
       }),
     },
     google: {
-      clientId: env.GOOGLE_CLIENT_ID,
-      clientSecret: env.GOOGLE_CLIENT_SECRET,
+      clientId: ENV.GOOGLE_CLIENT_ID,
+      clientSecret: ENV.GOOGLE_CLIENT_SECRET,
       mapProfileToUser: (profile) => ({
         image: profile.picture,
         name: profile.name,
       }),
     },
   },
-  trustedOrigins: env.TRUSTED_ORIGINS.split(',')
+  trustedOrigins: ENV.TRUSTED_ORIGINS.split(',')
     .map((origin) => origin.trim())
     .filter(Boolean),
   user: {

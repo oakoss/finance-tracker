@@ -1,4 +1,5 @@
-import { config } from '@dotenvx/dotenvx';
+import 'varlock/auto-load';
+
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { reset } from 'drizzle-seed';
@@ -9,9 +10,6 @@ import * as schema from '@/db/schema';
 const TEST_DB_NAME = 'finance_tracker_test';
 
 export async function setup() {
-  // Load .env so DATABASE_URL is available
-  config({ convention: 'flow', quiet: true });
-
   const originalUrl = process.env.DATABASE_URL;
   if (!originalUrl) throw new Error('DATABASE_URL is not set');
 

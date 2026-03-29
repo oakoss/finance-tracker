@@ -23,7 +23,7 @@ Email styling defaults:
   tokens from `:root` in `src/styles/globals.css`.
 - System font stack applied at the base email wrapper for broad client support.
 
-Expected configuration (see `.env.example`):
+Expected configuration (see `.env.schema`):
 
 - Sender: `no-reply@finance.oakoss.dev`
 - Reply-To: `support@finance.oakoss.dev`

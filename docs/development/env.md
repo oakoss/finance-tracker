@@ -1,55 +1,75 @@
 # Environment Variables
 
-Environment variables are validated at runtime using
-[ArkEnv](https://github.com/yamcodes/arkenv) (ArkType). The schema and
-validation live in `src/configs/env.ts`.
+Environment variables are managed by
+[varlock](https://varlock.dev). The schema, defaults, validation,
+and documentation live in `.env.schema`.
 
 ## How env loading works
 
-Env files are loaded automatically using
-[dotenvx](https://dotenvx.com) with the `flow` convention, which loads
-files based on `NODE_ENV` in this order:
+Varlock loads env files in this order (increasing precedence):
 
-1. `.env.{NODE_ENV}.local`
-2. `.env.{NODE_ENV}`
-3. `.env.local`
-4. `.env`
+1. `.env.schema` — schema + defaults (committed)
+2. `.env` — general overrides
+3. `.env.local` — personal overrides (gitignored)
+4. `.env.[APP_ENV]` — environment-specific
+5. `.env.[APP_ENV].local` — environment-specific local (gitignored)
+6. `process.env` — always wins
 
-Each config file loads env independently:
+The Vite plugin (`@varlock/vite-integration`) handles loading during
+`pnpm dev` and `pnpm build`. Outside Vite (tests, scripts, drizzle-kit),
+use `import 'varlock/auto-load'` or the `pnpm with:env` wrapper
+(`varlock run --`).
 
-| Config file         | Loads env via                            |
-| ------------------- | ---------------------------------------- |
-| `vite.config.ts`    | `dotenvx config({ convention: 'flow' })` |
-| `vitest.config.ts`  | `dotenvx config({ convention: 'flow' })` |
-| `drizzle.config.ts` | `dotenvx config({ convention: 'flow' })` |
+## Accessing env vars
 
-Scripts that don't go through a config file still use `pnpm with:env`:
-
-- `pnpm start`
-- `pnpm schema:auth:generate`
-
-## Validation
-
-The `env` export in `src/configs/env.ts` is a lazy proxy (similar to
-t3-env). Validation runs on first property access, not at import time.
-This allows `.env` files to be loaded before validation triggers.
+Use the `ENV` import everywhere — server and client:
 
 ```ts
-import { env } from '@/configs/env';
+import { ENV } from 'varlock/env';
 
-// Validation happens here, on first access
-const url = env.BETTER_AUTH_URL;
+const url = ENV.BETTER_AUTH_URL;
+const key = ENV.POSTHOG_KEY;
 ```
 
-Set `SKIP_ENV_VALIDATION=true` to bypass validation (useful for CI
-builds or Coolify/Nixpacks where runtime secrets aren't available at
-build time).
+No `VITE_` prefix needed. The `@sensitive` / `@public` decorators in
+`.env.schema` control what gets bundled into the client.
 
-## Client-side typing
+## Sensitivity
 
-`VITE_*` variables are exposed to the browser via the
-`@arkenv/vite-plugin` in `vite.config.ts`. TypeScript types for
-`import.meta.env` are augmented in `src/vite-env.d.ts`.
+- `@defaultSensitive=true` — all vars are sensitive (server-only)
+  unless explicitly marked `@public`.
+- `@public` vars are replaced at build time in client code.
+- `@sensitive` vars are never bundled — only available server-side
+  via `process.env`.
+- `@preventLeaks` (enabled by default) scans HTTP responses for
+  sensitive values and throws if found.
+- `@redactLogs` (enabled by default) masks sensitive values in
+  console output as `▒▒▒▒▒`.
+
+## Environment-aware validation
+
+`@currentEnv=$APP_ENV` enables `forEnv()` conditionals:
+
+```bash
+# @sensitive @required=forEnv(production)
+BREVO_API_KEY=
+
+# @sensitive @required=forEnv(development, test)
+SMTP_HOST=localhost
+```
+
+`APP_ENV` falls back to `NODE_ENV` via
+`fallback($NODE_ENV, development)`, so it works automatically in
+dev, CI, and production without explicit configuration.
+
+## Type generation
+
+Types are auto-generated to `src/env.d.ts` whenever varlock runs
+(dev server, build, `varlock run`, `varlock load`). The file is
+gitignored — it regenerates on demand.
+
+The `@generateTypes(lang=ts, path=src/env.d.ts, auto=true)` root
+decorator controls this.
 
 ## Secrets management
 
@@ -57,47 +77,34 @@ Never commit real secrets. No encrypted `.env` files are checked in.
 
 ### Local development
 
-Local env is managed via
-[1Password Environments](https://developer.1password.com/docs/environments),
-which mounts a virtual `.env` file at the project root. No plaintext
-secrets on disk.
-
-Alternatively, copy `.env.example` to `.env` for a working set of dummy
-values. Use `pnpm with:env <command>` when a script needs env vars
-outside a config file.
+Use `.env.local` (gitignored) for personal overrides on top of schema
+defaults. Alternatively, use
+[1Password Environments](https://developer.1password.com/docs/environments)
+to mount a virtual `.env` file.
 
 ### CI
 
-CI copies `.env.example` to `.env` before running tests:
-
-```yaml
-- run: cp .env.example .env
-- run: pnpm test
-```
-
-`.env.example` contains valid dummy values that pass ArkEnv validation.
+`.env.schema` defaults provide valid dummy values for CI. The
+`ci-prepare` action compiles Paraglide — no `.env` file copy needed.
 
 ### Production (Coolify)
 
-Set env vars directly in the Coolify UI. The lazy proxy in
-`src/configs/env.ts` validates at server startup. No `.env` files are
-used in production. Keep `BETTER_AUTH_SECRET` unique per environment.
+Set env vars in the Coolify UI. `process.env` takes highest
+precedence, so Coolify's values override schema defaults. Set
+`APP_ENV=production` to activate `forEnv(production)` requirements.
 
 ## Adding a new variable
 
-1. Add the key + ArkType constraint to the `Env` schema in
-   `src/configs/env.ts`.
-2. Add a dummy value to `.env.example`.
-3. Add the real value to 1Password Environments (local) and Coolify
+1. Add the key + decorators to `.env.schema`.
+2. Add the real value to 1Password / `.env.local` (local) and Coolify
    (production).
-4. If it's a `VITE_*` variable, it will be typed automatically via the
-   Vite plugin.
+3. Types regenerate automatically on next dev/build.
 
 ## Docker Compose variables
 
-These variables in `.env.example` configure the local Postgres container
-(`pnpm docker:up`). They are not validated by the app and are only used
-by `docker-compose.yml`:
+These variables in `.env.schema` configure the local Postgres and
+Mailpit containers (`pnpm docker:up`). They are only used by
+`docker-compose.yml`:
 
 | Variable            | Default                    |
 | ------------------- | -------------------------- |
@@ -109,10 +116,9 @@ by `docker-compose.yml`:
 | `MAILPIT_SMTP_PORT` | `1025`                     |
 | `MAILPIT_UI_PORT`   | `8025`                     |
 
-`DATABASE_URL` in the app connects to this container using these values.
-
 ## Notes
 
 - Email configuration and templates: `docs/development/emails.md`.
 - Logging env vars: `docs/development/logging.md`.
-- Deployment assumptions: `docs/adr/0006-deployment-coolify-cloudflare-tunnel.md`.
+- Deployment assumptions:
+  `docs/adr/0006-deployment-coolify-cloudflare-tunnel.md`.

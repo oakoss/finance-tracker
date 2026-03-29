@@ -21,6 +21,7 @@ export default defineConfig(
     'storybook-static',
     '**/paraglide',
     '**/*.gen.ts',
+    'src/env.d.ts',
   ]),
   { languageOptions: { ecmaVersion: 'latest', globals: globals.browser } },
   {

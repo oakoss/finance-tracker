@@ -508,8 +508,8 @@ npx playwright show-report                 # HTML report
 
 ## Future considerations
 
-- Secrets for authenticated tests via `dotenvx encrypt` (encrypted
-  `.env.production.local` in repo for CI).
+- Secrets for authenticated tests via varlock secret manager plugins
+  (e.g. 1Password, AWS Secrets Manager).
 - Firefox/WebKit projects for cross-browser coverage.
 - `webServer.wait` to detect server readiness by stdout pattern
   instead of port polling.

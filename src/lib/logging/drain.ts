@@ -8,6 +8,7 @@ import {
 } from 'evlog/enrichers';
 import { createOTLPDrain } from 'evlog/otlp';
 import { createDrainPipeline } from 'evlog/pipeline';
+import { ENV } from 'varlock/env';
 
 import { sanitizeEvent } from './sanitize';
 
@@ -33,14 +34,13 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
       ?.split('=')[1] ?? 'development';
 
   // PostHog accepts OTLP logs at /i/v1/logs with Bearer auth using the project API key.
-  // Nitro plugin runs before app env is validated — read directly from process.env.
-  const posthogKey = process.env.POSTHOG_API_KEY;
+  const posthogKey = ENV.POSTHOG_KEY;
   const headers: Record<string, string> = {};
   if (posthogKey) {
     headers.Authorization = `Bearer ${posthogKey}`;
   } else if (/(?:^|\.)posthog\.com$/.test(new URL(otlpEndpoint).hostname)) {
     console.warn(
-      '[evlog] OTEL_EXPORTER_OTLP_ENDPOINT points to PostHog but POSTHOG_API_KEY is not set — log drain disabled.',
+      '[evlog] OTEL_EXPORTER_OTLP_ENDPOINT points to PostHog but POSTHOG_KEY is not set — log drain disabled.',
     );
     return;
   }

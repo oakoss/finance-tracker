@@ -1,4 +1,5 @@
-import { config } from '@dotenvx/dotenvx';
+import 'varlock/auto-load';
+
 import { test as setup } from '@playwright/test';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
@@ -7,8 +8,6 @@ import * as schema from '@/db/schema';
 import { E2E_USER_COUNT, e2eEmail } from '~e2e/fixtures/constants';
 import { seedCreditCardCatalog } from '~test/seed/credit-card-catalog';
 import { seedE2eUser, seedE2eWorkerUsers } from '~test/seed/e2e-user';
-
-config({ convention: 'flow', quiet: true });
 
 /**
  * Wipe ledger accounts and categories owned by an E2E user so every

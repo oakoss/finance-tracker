@@ -1,8 +1,7 @@
 import type { BrevoClient } from '@getbrevo/brevo';
 
 import { createTransport } from 'nodemailer';
-
-import { env } from '@/configs/env';
+import { ENV } from 'varlock/env';
 
 type EmailRecipient = { email: string; name?: string | undefined };
 
@@ -15,20 +14,20 @@ type SendEmailOptions = {
 };
 
 const defaultSender: EmailRecipient = {
-  email: env.EMAIL_FROM,
-  name: env.EMAIL_FROM_NAME,
+  email: ENV.EMAIL_FROM,
+  name: ENV.EMAIL_FROM_NAME,
 };
 
-const defaultReplyTo = env.EMAIL_REPLY_TO
-  ? { email: env.EMAIL_REPLY_TO }
+const defaultReplyTo = ENV.EMAIL_REPLY_TO
+  ? { email: ENV.EMAIL_REPLY_TO }
   : undefined;
 
 let smtpTransport: ReturnType<typeof createTransport> | undefined;
 
 function getSmtpTransport() {
   smtpTransport ??= createTransport({
-    host: env.SMTP_HOST,
-    port: env.SMTP_PORT ?? 1025,
+    host: ENV.SMTP_HOST,
+    port: ENV.SMTP_PORT ?? 1025,
   });
   return smtpTransport;
 }
@@ -52,11 +51,11 @@ let brevoClient: BrevoClient | undefined;
 
 async function getBrevoClient() {
   if (!brevoClient) {
-    if (!env.BREVO_API_KEY) {
+    if (!ENV.BREVO_API_KEY) {
       throw new Error('BREVO_API_KEY is required when SMTP_HOST is not set');
     }
     const { BrevoClient: Client } = await import('@getbrevo/brevo');
-    brevoClient = new Client({ apiKey: env.BREVO_API_KEY });
+    brevoClient = new Client({ apiKey: ENV.BREVO_API_KEY });
   }
   return brevoClient;
 }
@@ -82,5 +81,5 @@ async function sendViaBrevo(options: SendEmailOptions) {
 }
 
 export async function sendEmail(options: SendEmailOptions) {
-  await (env.SMTP_HOST ? sendViaSmtp(options) : sendViaBrevo(options));
+  await (ENV.SMTP_HOST ? sendViaSmtp(options) : sendViaBrevo(options));
 }

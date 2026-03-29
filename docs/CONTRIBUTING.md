@@ -14,8 +14,8 @@ pnpm dev
 
 ## Environment Setup
 
-1. Copy `.env.example` to `.env`.
-2. Fill in required values. See `docs/development/env.md` for details.
+1. `.env.schema` provides defaults. Create `.env.local` for personal
+   overrides. See `docs/development/env.md` for details.
 
 ## Database
 
