@@ -4,6 +4,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { reset } from 'drizzle-seed';
 import pg from 'pg';
+import { ENV } from 'varlock/env';
 
 import * as schema from '@/db/schema';
 
@@ -11,23 +12,19 @@ export async function setup() {
   const testUrl = process.env.DATABASE_URL;
   if (!testUrl) throw new Error('DATABASE_URL is not set');
 
-  // Derive the test DB name and connect to the default postgres DB
-  // to run CREATE DATABASE (requires a postgres DB on the server)
-  const url = new URL(testUrl);
-  const testDbName = url.pathname.slice(1);
-  url.pathname = '/postgres';
-  const maintenanceUrl = url.toString();
+  const dbName = ENV.DB_NAME;
 
-  // Create the test DB (idempotent) via the default postgres DB
+  // Connect to the default postgres DB to create the test DB (idempotent)
+  const maintenanceUrl = testUrl.replace(`/${dbName}`, '/postgres');
   const client = new pg.Client({ connectionString: maintenanceUrl });
   try {
     await client.connect();
-    await client.query(`CREATE DATABASE "${testDbName}"`);
-    console.log(`Created database: ${testDbName}`);
+    await client.query(`CREATE DATABASE "${dbName}"`);
+    console.log(`Created database: ${dbName}`);
   } catch (error: unknown) {
     // 42P04 = duplicate_database — already exists, that's fine
     if ((error as { code?: string }).code !== '42P04') throw error;
-    console.log(`Database ${testDbName} already exists`);
+    console.log(`Database ${dbName} already exists`);
   } finally {
     await client.end().catch((error: unknown) => {
       console.warn('[test-setup] Failed to close maintenance client:', error);
@@ -48,7 +45,7 @@ export async function setup() {
     console.log('Reset all schema tables');
   } catch (error) {
     console.error(
-      `Failed to run migrations against ${testDbName}. ` +
+      `Failed to run migrations against ${dbName}. ` +
         `Ensure ./drizzle folder exists and DATABASE_URL is reachable.`,
     );
     throw error;
