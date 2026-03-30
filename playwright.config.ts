@@ -2,6 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 import { E2E_USER_COUNT } from '~e2e/fixtures/constants';
 
+process.env.APP_ENV ??= 'test';
+
 const PORT = 3000;
 const BASE_URL = `http://localhost:${PORT}`;
 
@@ -83,7 +85,7 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
   webServer: {
-    command: 'APP_ENV=test pnpm build && APP_ENV=test pnpm start',
+    command: 'pnpm build && pnpm start',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
     url: BASE_URL,
