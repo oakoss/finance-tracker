@@ -1,0 +1,51 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: >-
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main')
+    timeout-minutes: 5
+    steps:
+      - name: Trigger Coolify deployment
+        run: |
+          response=$(curl -sS --connect-timeout 10 --max-time 30 \
+            -w "\n%{http_code}" \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+            -H "CF-Access-Client-Id: ${{ secrets.CF_ACCESS_CLIENT_ID }}" \
+            -H "CF-Access-Client-Secret: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}" \
+            "${{ vars.COOLIFY_WEBHOOK }}") || {
+            echo "::error::Coolify webhook request failed (curl exit $?)"
+            exit 1
+          }
+          http_code=$(echo "$response" | tail -1)
+          body=$(echo "$response" | head -n -1)
+          echo "Response: $body"
+          if [ "$http_code" -lt 200 ] || [ "$http_code" -ge 300 ]; then
+            echo "::error::Coolify deploy failed with HTTP $http_code"
+            exit 1
+          fi
+
+      - name: Summary
+        run: |
+          echo "## Deploy triggered" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **SHA**: \`${{ github.event.workflow_run.head_sha || github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Target**: finance.oakoss.dev" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Coolify accepted the webhook. Check Coolify for build/deploy status." >> "$GITHUB_STEP_SUMMARY"

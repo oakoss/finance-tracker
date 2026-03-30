@@ -1,0 +1,52 @@
+# syntax=docker/dockerfile:1
+
+# --- varlock binary ---
+FROM ghcr.io/dmno-dev/varlock:latest AS varlock
+
+# --- base ---
+FROM node:24-alpine@sha256:01743339035a5c3c11a373cd7c83aeab6ed1457b55da6a69e014a95ac4e4700b AS base
+RUN corepack enable pnpm
+WORKDIR /app
+
+# --- deps ---
+FROM base AS deps
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile
+
+# --- build ---
+FROM deps AS build
+COPY . .
+ENV APP_ENV=test
+RUN pnpm exec varlock typegen \
+ && pnpm paraglide:compile \
+ && pnpm build
+
+# --- production ---
+# Nitro bundles the app into .output/. Only drizzle-orm + pg needed
+# for the programmatic migration script.
+FROM node:24-alpine@sha256:01743339035a5c3c11a373cd7c83aeab6ed1457b55da6a69e014a95ac4e4700b AS production
+COPY --from=varlock /usr/local/bin/varlock /usr/local/bin/varlock
+RUN apk add --no-cache tini curl \
+ && addgroup --system --gid 1001 nodejs \
+ && adduser --system --uid 1001 nodejs
+WORKDIR /app
+RUN mkdir -p src && chown nodejs:nodejs src
+
+ENV NODE_ENV=production
+ENV NITRO_PORT=3000
+
+# Migration deps (keep versions in sync with package.json)
+COPY --from=build --chown=nodejs:nodejs /app/drizzle/ ./drizzle/
+COPY --chown=nodejs:nodejs scripts/migrate.mjs ./scripts/
+RUN npm install --no-save drizzle-orm@0.45.2 pg@8.20.0
+
+COPY --from=build --chown=nodejs:nodejs /app/.env.schema ./.env.schema
+COPY --from=build --chown=nodejs:nodejs /app/.output ./.output
+COPY --chown=nodejs:nodejs scripts/docker-entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+USER nodejs
+EXPOSE 3000
+ENTRYPOINT ["tini", "--"]
+CMD ["/entrypoint.sh"]
