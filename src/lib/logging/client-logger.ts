@@ -1,5 +1,6 @@
 import { initLogger, log } from 'evlog';
 import { createBrowserLogDrain } from 'evlog/browser';
+import { ENV } from 'varlock/env';
 
 type LogLevel = 'debug' | 'error' | 'info' | 'warn';
 
@@ -10,8 +11,7 @@ const LOG_LEVEL_PRIORITY: Record<LogLevel, number> = {
   warn: 2,
 };
 
-// import.meta.env is fully typed via src/vite-env.d.ts — no casts needed
-const minLevel: LogLevel = import.meta.env.VITE_CLIENT_LOG_LEVEL;
+const minLevel: LogLevel = ENV.CLIENT_LOG_LEVEL ?? 'warn';
 
 let initialized = false;
 
@@ -20,9 +20,7 @@ const ensureClientLogger = (): void => {
   initialized = true;
 
   try {
-    // createBrowserLogDrain handles batching and page-hide flush automatically.
-    // No remote endpoint is configured — dev-only console output via pretty mode.
-    // To enable remote ingestion later, set drain.endpoint to a server ingest URL.
+    // No remote endpoint — dev-only console output via pretty mode.
     const drain = createBrowserLogDrain({
       drain: { endpoint: '' },
       pipeline: { batch: { intervalMs: 3000, size: 20 } },
@@ -53,7 +51,7 @@ const ensureClientLogger = (): void => {
 /**
  * Client-side logger.
  * All levels always initialize the logger; sampling rates controlled
- * by VITE_CLIENT_LOG_LEVEL (default: warn) determine which emit.
+ * by CLIENT_LOG_LEVEL (default: warn) determine which emit.
  * Error is always sampled at 100%.
  */
 export const clientLog = {

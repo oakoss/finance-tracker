@@ -7,8 +7,8 @@ CI policy and automation decisions are defined in
 
 ## Prerequisites
 
-- Copy `.env.example` to `.env` for local runs (or use 1Password
-  Environments).
+- `.env.schema` provides defaults. Create `.env.local` for personal
+  overrides (or use 1Password Environments).
 
 ## Commands
 
@@ -40,7 +40,9 @@ pnpm test -- -t "test name"
   integration).
 - **Test setup**: `test/setup.ts` (cleanup, jest-dom matchers).
 - **Globals**: `describe`, `it`, `expect` are available without imports.
-- **Env loading**: dotenvx `flow` convention loads `.env` automatically.
+- **Env loading**: `varlock/auto-load` in `test/setup.ts` (unit) and
+  `test/global-setup.ts` (integration). Integration tests set
+  `APP_ENV=test` to load `.env.test` (test database URL).
 
 ### Why a separate vitest config?
 
@@ -113,7 +115,6 @@ full exclude list.
 | File                      | What to test                                                                                                                                                           |
 | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/lib/i18n.ts`         | `formatCurrency`, `formatNumber`, `formatDate`, `formatDateTime`, `formatMonthYear` with various locales, currencies, and time zones. Mock `getLocale` from paraglide. |
-| `src/configs/env.ts`      | Lazy proxy behavior: validates on first access, `SKIP_ENV_VALIDATION` bypass, missing required vars throw, defaults applied.                                           |
 | `src/lib/logging/hash.ts` | Deterministic HMAC output, different secrets produce different hashes. Already has tests.                                                                              |
 | `src/lib/cookies.ts`      | `serializeServerCookie` output format, `createServerCookies` parsing, `appendSetCookieHeaders` appending.                                                              |
 | `src/lib/utils.ts`        | `cn` class merging (tailwind-merge + clsx).                                                                                                                            |
@@ -259,8 +260,7 @@ Test jobs run in `.github/workflows/ci.yml`.
 
 ### Unit tests (`unit-tests`)
 
-1. Copies `.env.example` to `.env` (provides dummy values that pass
-   validation).
+1. Generates varlock types and compiles Paraglide messages.
 2. Runs `pnpm test:coverage`.
 3. Posts a coverage summary via
    [vitest-coverage-report-action](https://github.com/davelosert/vitest-coverage-report-action)
@@ -269,14 +269,13 @@ Test jobs run in `.github/workflows/ci.yml`.
 ### Integration tests (`integration-tests`)
 
 1. Starts a `postgres:18-alpine` service container.
-2. Copies `.env.example` to `.env`.
-3. Runs `pnpm test:integration` — `globalSetup` creates the test DB
+2. Runs `pnpm test:integration` — `globalSetup` creates the test DB
    and migrates it.
 
 ### E2E tests (`e2e-tests`)
 
-1. Copies `.env.example` to `.env`.
-2. Compiles Paraglide messages.
+1. Generates varlock types and compiles Paraglide messages.
+2. Creates test database and runs migrations.
 3. Caches Playwright browsers (`~/.cache/ms-playwright`, keyed on
    lockfile).
 4. Installs Chromium with system dependencies.

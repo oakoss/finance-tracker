@@ -1,8 +1,4 @@
-import { config } from '@dotenvx/dotenvx';
 import { defineConfig } from 'vitest/config';
-
-// Auto-load .env files using dotenv-flow convention (.env.{NODE_ENV}.local, .env.{NODE_ENV}, .env.local, .env)
-config({ convention: 'flow', quiet: true });
 
 export default defineConfig({
   resolve: { tsconfigPaths: true },

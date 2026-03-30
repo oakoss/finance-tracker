@@ -1,9 +1,10 @@
 import { PostHogProvider as Provider } from 'posthog-js/react';
+import { ENV } from 'varlock/env';
 
 import { analyticsConfig } from '@/configs/analytics';
 
-const key = import.meta.env.VITE_PUBLIC_POSTHOG_KEY;
-const host = import.meta.env.VITE_PUBLIC_POSTHOG_HOST;
+const key = ENV.POSTHOG_KEY;
+const host = ENV.POSTHOG_HOST;
 
 const options = {
   api_host: host ?? analyticsConfig.posthogProxyPath,

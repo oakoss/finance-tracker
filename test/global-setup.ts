@@ -1,45 +1,41 @@
-import { config } from '@dotenvx/dotenvx';
+import 'varlock/auto-load';
+
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { reset } from 'drizzle-seed';
 import pg from 'pg';
+import { ENV } from 'varlock/env';
 
 import * as schema from '@/db/schema';
 
-const TEST_DB_NAME = 'finance_tracker_test';
-
 export async function setup() {
-  // Load .env so DATABASE_URL is available
-  config({ convention: 'flow', quiet: true });
+  if (ENV.APP_ENV !== 'test') {
+    throw new Error(
+      `Refusing to run integration setup with APP_ENV="${ENV.APP_ENV}". Set APP_ENV=test to avoid wiping the dev database.`,
+    );
+  }
 
-  const originalUrl = process.env.DATABASE_URL;
-  if (!originalUrl) throw new Error('DATABASE_URL is not set');
+  const testUrl = process.env.DATABASE_URL;
+  if (!testUrl) throw new Error('DATABASE_URL is not set');
 
-  // Parse the original URL and swap the DB name to the test DB
-  const url = new URL(originalUrl);
-  const maintenanceDb = url.pathname.slice(1); // original DB name
-  url.pathname = `/${TEST_DB_NAME}`;
-  const testUrl = url.toString();
+  const dbName = ENV.DB_NAME;
+  const maintenanceUrl = `postgres://${ENV.DB_USER}:${ENV.DB_PASSWORD}@${ENV.DB_HOST}:${ENV.DB_PORT}/postgres`;
 
-  // Connect to the maintenance DB to create the test DB (idempotent)
-  url.pathname = `/${maintenanceDb}`;
-  const client = new pg.Client({ connectionString: url.toString() });
+  // Connect to the default postgres DB to create the test DB (idempotent)
+  const client = new pg.Client({ connectionString: maintenanceUrl });
   try {
     await client.connect();
-    await client.query(`CREATE DATABASE ${TEST_DB_NAME}`);
-    console.log(`Created database: ${TEST_DB_NAME}`);
+    await client.query(`CREATE DATABASE "${dbName}"`);
+    console.log(`Created database: ${dbName}`);
   } catch (error: unknown) {
     // 42P04 = duplicate_database — already exists, that's fine
     if ((error as { code?: string }).code !== '42P04') throw error;
-    console.log(`Database ${TEST_DB_NAME} already exists`);
+    console.log(`Database ${dbName} already exists`);
   } finally {
     await client.end().catch((error: unknown) => {
       console.warn('[test-setup] Failed to close maintenance client:', error);
     });
   }
-
-  // Rewrite DATABASE_URL to point at the test DB
-  process.env.DATABASE_URL = testUrl;
 
   // Run migrations then reset all schema tables for a clean baseline.
   // Individual test files use BEGIN/ROLLBACK so nothing commits during
@@ -55,7 +51,7 @@ export async function setup() {
     console.log('Reset all schema tables');
   } catch (error) {
     console.error(
-      `Failed to run migrations against ${TEST_DB_NAME}. ` +
+      `Failed to run migrations against ${dbName}. ` +
         `Ensure ./drizzle folder exists and DATABASE_URL is reachable.`,
     );
     throw error;

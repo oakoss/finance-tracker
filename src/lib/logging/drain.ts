@@ -8,6 +8,7 @@ import {
 } from 'evlog/enrichers';
 import { createOTLPDrain } from 'evlog/otlp';
 import { createDrainPipeline } from 'evlog/pipeline';
+import { ENV } from 'varlock/env';
 
 import { sanitizeEvent } from './sanitize';
 
@@ -18,9 +19,10 @@ const enrichers = [
 ];
 
 export default function evlogDrainPlugin(nitroApp: NitroApp) {
-  const otlpEndpoint = process.env.OTEL_EXPORTER_OTLP_ENDPOINT;
+  const otlpEndpoint = ENV.OTEL_EXPORTER_OTLP_ENDPOINT;
 
   if (!otlpEndpoint) {
+    // console is intentional — drain plugin runs before evlog pipeline is wired
     console.warn(
       '[evlog] OTEL_EXPORTER_OTLP_ENDPOINT is not set — logs will not be drained to PostHog.',
     );
@@ -28,21 +30,29 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
   }
 
   const environment =
-    process.env.OTEL_RESOURCE_ATTRIBUTES?.split(',')
+    ENV.OTEL_RESOURCE_ATTRIBUTES?.split(',')
       .find((attr) => attr.startsWith('deployment.environment='))
       ?.split('=')[1] ?? 'development';
 
   // PostHog accepts OTLP logs at /i/v1/logs with Bearer auth using the project API key.
-  // Nitro plugin runs before app env is validated — read directly from process.env.
-  const posthogKey = process.env.POSTHOG_API_KEY;
+  const posthogKey = ENV.POSTHOG_KEY;
   const headers: Record<string, string> = {};
   if (posthogKey) {
     headers.Authorization = `Bearer ${posthogKey}`;
-  } else if (/(?:^|\.)posthog\.com$/.test(new URL(otlpEndpoint).hostname)) {
-    console.warn(
-      '[evlog] OTEL_EXPORTER_OTLP_ENDPOINT points to PostHog but POSTHOG_API_KEY is not set — log drain disabled.',
-    );
-    return;
+  } else {
+    try {
+      if (/(?:^|\.)posthog\.com$/.test(new URL(otlpEndpoint).hostname)) {
+        console.warn(
+          '[evlog] OTEL_EXPORTER_OTLP_ENDPOINT points to PostHog but POSTHOG_KEY is not set — log drain disabled.',
+        );
+        return;
+      }
+    } catch {
+      console.error(
+        `[evlog] OTEL_EXPORTER_OTLP_ENDPOINT is not a valid URL: "${otlpEndpoint}"`,
+      );
+      return;
+    }
   }
 
   const otlpDrain = createOTLPDrain({
@@ -57,6 +67,7 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
     batch: { intervalMs: 5000, size: 50 },
     maxBufferSize: 1000,
     onDropped: (events, error) => {
+      // console is intentional — cannot use evlog to report evlog drain failures
       console.error(
         `[evlog] dropped ${events.length} event(s) after retries exhausted`,
         error,
@@ -82,7 +93,13 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
     }
   });
 
-  if (!nitroApp.hooks) return;
+  if (!nitroApp.hooks) {
+    // console is intentional — drain plugin runs before evlog pipeline is wired
+    console.warn(
+      '[evlog] nitroApp.hooks is not available — drain plugin cannot register hooks.',
+    );
+    return;
+  }
 
   // Enrich events with user agent, request size, and trace context
   nitroApp.hooks.hook('evlog:enrich', (ctx: EnrichContext) => {

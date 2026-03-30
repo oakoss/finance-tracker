@@ -50,6 +50,7 @@ PostgreSQL/Drizzle, Better Auth, Tailwind CSS v4/shadcn.
 | E2E stress        | `pnpm test:e2e:stress`                                |
 | DB generate       | `pnpm db:generate`                                    |
 | DB migrate        | `pnpm db:migrate`                                     |
+| DB migrate (test) | `pnpm db:migrate:test`                                |
 | DB seed           | `pnpm db:seed` (profiles: `minimal`, `stress`, `e2e`) |
 | DB start          | `pnpm docker:up`                                      |
 | DB reset          | `pnpm docker:reset`                                   |

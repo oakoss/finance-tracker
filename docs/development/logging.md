@@ -167,11 +167,11 @@ log.set({
 
 ## Client logging
 
-Client logging is controlled by `VITE_CLIENT_LOG_LEVEL` (default: `warn`).
+Client logging is controlled by `CLIENT_LOG_LEVEL` (default: `warn`).
 All levels always delegate to evlog; sampling rates determine which emit.
 
 ```bash
-VITE_CLIENT_LOG_LEVEL=warn   # debug | info | warn | error
+CLIENT_LOG_LEVEL=warn   # debug | info | warn | error
 ```
 
 ```ts
@@ -206,7 +206,7 @@ Requests with status ≥ 400 or duration > 3000ms are always kept regardless of 
 | `OTEL_SERVICE_NAME`           | prod     | Service name in PostHog (e.g. `finance-tracker`)                                                                     |
 | `OTEL_RESOURCE_ATTRIBUTES`    | prod     | e.g. `deployment.environment=production`                                                                             |
 | `LOG_HASH_SECRET`             | both     | Min 32-char secret for HMAC ID hashing. Use separate values per environment. Generate with `openssl rand -base64 32` |
-| `VITE_CLIENT_LOG_LEVEL`       | optional | Min client log level (default: `warn`)                                                                               |
+| `CLIENT_LOG_LEVEL`            | optional | Min client log level (default: `warn`)                                                                               |
 
 If `OTEL_EXPORTER_OTLP_ENDPOINT` is unset, logs go to stdout only (pretty in dev, JSON in prod).
 
@@ -238,7 +238,7 @@ Required production env vars:
 OTEL_EXPORTER_OTLP_ENDPOINT=https://us.i.posthog.com/i
 OTEL_SERVICE_NAME=finance-tracker
 OTEL_RESOURCE_ATTRIBUTES=deployment.environment=production
-POSTHOG_API_KEY=phc_xxx
+POSTHOG_KEY=phc_xxx
 LOG_HASH_SECRET=<generate with: openssl rand -base64 32>
 ```
 

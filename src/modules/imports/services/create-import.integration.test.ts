@@ -360,7 +360,8 @@ test('create — batched insert persists all rows across batch boundaries', asyn
   const persisted = await serviceDb
     .select()
     .from(importRows)
-    .where(eq(importRows.importId, result.id));
+    .where(eq(importRows.importId, result.id))
+    .orderBy(importRows.rowIndex);
 
   expect(persisted).toHaveLength(501);
   expect(persisted[0].rowIndex).toBe(0);

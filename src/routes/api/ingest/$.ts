@@ -1,11 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { ENV } from 'varlock/env';
 
 import { analyticsConfig } from '@/configs/analytics';
-import { env } from '@/configs/env';
 import { log } from '@/lib/logging/evlog';
 
 function getPostHogHost() {
-  return env.POSTHOG_HOST ?? analyticsConfig.posthogDefaultHost;
+  return ENV.POSTHOG_HOST ?? analyticsConfig.posthogDefaultHost;
 }
 
 async function proxy({ request }: { request: Request }) {

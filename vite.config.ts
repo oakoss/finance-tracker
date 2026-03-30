@@ -1,21 +1,15 @@
-import arkenvVitePlugin from '@arkenv/vite-plugin';
-import { config } from '@dotenvx/dotenvx';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import posthog from '@posthog/rollup-plugin';
 import babel from '@rolldown/plugin-babel';
 import tailwindcss from '@tailwindcss/vite';
 import { devtools } from '@tanstack/devtools-vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
+import { varlockVitePlugin } from '@varlock/vite-integration';
 import viteReact, { reactCompilerPreset } from '@vitejs/plugin-react';
 import evlog from 'evlog/nitro/v3';
 import { nitro } from 'nitro/vite';
 import { defineConfig } from 'vite';
 import killerInstincts from 'vite-plugin-killer-instincts';
-
-import { Env } from './src/configs/env';
-
-// Auto-load .env files using dotenv-flow convention
-config({ convention: 'flow', quiet: true });
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -54,7 +48,7 @@ export default defineConfig({
   plugins: [
     devtools(),
     killerInstincts({ autoKill: true }),
-    arkenvVitePlugin(Env),
+    varlockVitePlugin(),
     tailwindcss(),
     tanstackStart(),
     nitro(),

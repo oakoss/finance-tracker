@@ -29,6 +29,7 @@
   "editor.formatOnSaveMode": "file",
   "editor.quickSuggestions": { "strings": "on" },
   "eslint.workingDirectories": [{ "mode": "auto" }],
+  "files.associations": { ".env.schema": "env-spec" },
   "files.readonlyInclude": {
     "**/.tanstack/**/*": true,
     "**/routeTree.gen.ts": true,

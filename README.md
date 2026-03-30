@@ -31,8 +31,9 @@ pnpm build
 
 ## Environment Variables
 
-Copy `.env.example` to `.env` and fill in the values.
-See `docs/development/env.md` for full details.
+`.env.schema` contains defaults for local development. Create
+`.env.local` to override values. See `docs/development/env.md` for
+full details.
 
 ### Auth
 
@@ -61,11 +62,10 @@ Production uses the Brevo API (`BREVO_API_KEY`).
 
 ### Optional
 
-- `POSTHOG_API_KEY` / `POSTHOG_HOST` — server-side analytics
-- `VITE_PUBLIC_POSTHOG_KEY` / `VITE_PUBLIC_POSTHOG_HOST` — client-side analytics
+- `POSTHOG_KEY` / `POSTHOG_HOST` — analytics (client + server)
 - `OTEL_EXPORTER_OTLP_ENDPOINT` — OpenTelemetry export
 - `LOG_HASH_SECRET` — PII hashing in logs
-- `VITE_CLIENT_LOG_LEVEL` — client log level (default: `warn`)
+- `CLIENT_LOG_LEVEL` — client log level (default: `warn`)
 
 ## Contributing
 

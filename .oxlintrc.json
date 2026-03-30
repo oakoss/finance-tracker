@@ -623,7 +623,6 @@
     },
     {
       "files": [
-        "src/configs/env.ts",
         "src/lib/audit/**/*",
         "src/lib/db/seed/**/*",
         "src/lib/db/reset.ts",

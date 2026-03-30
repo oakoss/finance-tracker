@@ -23,8 +23,12 @@ __unconfig*
 # Env files
 .env
 .env*
-!.env.example
+!.env.schema
+!.env.test
 *.local
+
+# Generated types (varlock)
+src/env.d.ts
 
 # Local files
 count.txt

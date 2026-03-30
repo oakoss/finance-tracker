@@ -5,7 +5,8 @@ services:
     ports:
       - '${POSTGRES_PORT:-5432}:5432'
     env_file:
-      - .env
+      - path: .env
+        required: false
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-finance_tracker}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-finance_tracker_password}
