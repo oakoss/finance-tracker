@@ -33,7 +33,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NITRO_PORT=3000
 
-COPY --link drizzle/ ./drizzle/
+COPY --from=build --chown=nodejs:nodejs /app/drizzle/ ./drizzle/
 COPY --from=build --chown=nodejs:nodejs /app/.output ./.output
 COPY --chown=nodejs:nodejs scripts/docker-entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
