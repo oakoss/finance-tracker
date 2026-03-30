@@ -1,7 +1,6 @@
 //  @ts-check
 
 import pluginReact from '@eslint-react/eslint-plugin';
-import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import oxlint from 'eslint-plugin-oxlint';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
@@ -38,30 +37,6 @@ export default defineConfig(
     extends: [pluginReact.configs['recommended-type-checked']],
     files: ['**/*.{jsx,tsx}'],
     languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },
-  },
-  {
-    files: ['**/*.{js,jsx,ts,tsx}'],
-    plugins: { 'better-tailwindcss': betterTailwindcss },
-    rules: {
-      ...betterTailwindcss.configs.recommended.rules,
-      'better-tailwindcss/enforce-consistent-class-order': 'off',
-      'better-tailwindcss/enforce-consistent-important-position': 'off',
-      'better-tailwindcss/enforce-consistent-line-wrapping': 'off',
-      'better-tailwindcss/enforce-consistent-variable-syntax': 'off',
-      'better-tailwindcss/enforce-shorthand-classes': 'warn',
-      'better-tailwindcss/no-contradicting-classes': 'off',
-      'better-tailwindcss/no-deprecated-classes': 'warn',
-      'better-tailwindcss/no-duplicate-classes': 'warn',
-      'better-tailwindcss/no-unknown-classes': 'off',
-      'better-tailwindcss/no-unregistered-classes': 'off',
-    },
-    settings: {
-      'better-tailwindcss': {
-        entryPoint: 'src/styles/globals.css',
-        rootFontSize: 16,
-        tsconfig: './tsconfig.json',
-      },
-    },
   },
   {
     files: ['**/*.{ts,tsx}'],
