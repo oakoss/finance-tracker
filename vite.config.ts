@@ -48,7 +48,7 @@ export default defineConfig({
   plugins: [
     devtools(),
     killerInstincts({ autoKill: true }),
-    varlockVitePlugin(),
+    varlockVitePlugin({ ssrInjectMode: 'auto-load' }),
     tailwindcss(),
     tanstackStart(),
     nitro(),
