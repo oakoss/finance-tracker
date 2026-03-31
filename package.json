@@ -142,7 +142,7 @@
     "eslint-plugin-oxlint": "^1.57.0",
     "eslint-plugin-perfectionist": "^5.7.0",
     "eslint-plugin-playwright": "^2.10.1",
-    "eslint-plugin-react-hooks": "7.1.0-canary-74568e86-20260328",
+    "eslint-plugin-react-hooks": "7.1.0-canary-fd524fe0-20251121",
     "eslint-plugin-unicorn": "^64.0.0",
     "globals": "^17.4.0",
     "jsdom": "^29.0.1",
