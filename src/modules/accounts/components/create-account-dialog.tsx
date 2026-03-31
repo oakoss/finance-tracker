@@ -53,7 +53,7 @@ export function CreateAccountDialog() {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{m['accounts.create.title']()}</DialogTitle>
           <DialogDescription>

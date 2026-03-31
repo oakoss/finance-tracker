@@ -63,7 +63,7 @@ export function EditCategoryDialog({ categories }: EditCategoryDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{m['categories.edit.title']()}</DialogTitle>
           <DialogDescription>

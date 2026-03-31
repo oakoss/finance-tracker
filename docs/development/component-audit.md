@@ -51,20 +51,20 @@ autocomplete usage guidance (P2).
 
 ## 3. Overlays (TREK-135)
 
-| Component     | Base UI | Variants      | Verdict | Priority | Notes                                                                                                                                                                                                              |
-| ------------- | ------- | ------------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| dialog        | Yes     | None          | update  | P1       | `showCloseButton` on content (default true) and footer (default false). Desktop `sm:max-w-sm` may be too narrow for complex forms. Add size variants (sm/default/lg), preserving mobile `max-w-[calc(100%-2rem)]`. |
-| alert-dialog  | Yes     | size (2)      | keep    | skip     | AlertDialogMedia for icon placement. Grid layout with responsive breakpoints.                                                                                                                                      |
-| sheet         | Yes     | side (4)      | keep    | skip     | Proper side variants with directional animations. Close button via render prop.                                                                                                                                    |
-| drawer        | Yes     | direction (4) | keep    | skip     | Base UI Drawer primitive (swipe-to-dismiss). Viewport wrapper for proper containment.                                                                                                                              |
-| popover       | Yes     | None          | keep    | skip     | Clean positioner pattern. Has header/title/description sub-components.                                                                                                                                             |
-| tooltip       | Yes     | None          | keep    | P2       | Has arrow. Uses `data-[state=delayed-open]` alongside `data-open` — verify if Radix-era selector is still needed.                                                                                                  |
-| hover-card    | Yes     | None          | keep    | skip     | Uses `PreviewCard` primitive correctly.                                                                                                                                                                            |
-| context-menu  | Yes     | None          | keep    | skip     | Full compound with sub-menus, checkboxes, radio items.                                                                                                                                                             |
-| dropdown-menu | Yes     | None          | keep    | skip     | Full compound with sub-menus, checkboxes, radio items. Mirrors context-menu API.                                                                                                                                   |
+| Component     | Base UI | Variants      | Verdict | Priority | Notes                                                                                              |
+| ------------- | ------- | ------------- | ------- | -------- | -------------------------------------------------------------------------------------------------- |
+| dialog        | Yes     | size (6)      | keep    | ~~P1~~   | Size variants added (sm/md/default/lg/xl/full). Default changed to `sm:max-w-lg`. Done (TREK-135). |
+| alert-dialog  | Yes     | size (2)      | keep    | skip     | AlertDialogMedia for icon placement. Grid layout with responsive breakpoints.                      |
+| sheet         | Yes     | side (4)      | keep    | skip     | Proper side variants with directional animations. Close button via render prop.                    |
+| drawer        | Yes     | direction (4) | keep    | skip     | Base UI Drawer primitive (swipe-to-dismiss). Viewport wrapper for proper containment.              |
+| popover       | Yes     | None          | keep    | skip     | Clean positioner pattern. Has header/title/description sub-components.                             |
+| tooltip       | Yes     | None          | keep    | ~~P2~~   | Removed dead Radix `data-[state=delayed-open]` selectors. Done (TREK-135).                         |
+| hover-card    | Yes     | None          | keep    | skip     | Uses `PreviewCard` primitive correctly.                                                            |
+| context-menu  | Yes     | None          | keep    | skip     | Full compound with sub-menus, checkboxes, radio items.                                             |
+| dropdown-menu | Yes     | None          | keep    | skip     | Full compound with sub-menus, checkboxes, radio items. Mirrors context-menu API.                   |
 
-**Summary for TREK-135:** Consider adding size variants to dialog
-(P1). Verify Radix-era `data-[state=*]` selectors in tooltip (P2).
+**Summary for TREK-135:** Done. Dialog size variants added,
+tooltip Radix selectors removed.
 
 ---
 
@@ -278,7 +278,7 @@ could be useful for rich text editing if added later.
 | ------------------------- | ---------------------------------------------------------------------------------------------------- | ---------- |
 | TREK-133 (Forms)          | Add size variants to Input                                                                           | P2         |
 | TREK-134 (Selection)      | Document combobox vs autocomplete                                                                    | P2         |
-| TREK-135 (Overlays)       | Add size variants to Dialog. Verify Radix-era selectors in Tooltip                                   | P1, P2     |
+| TREK-135 (Overlays)       | ~~Add size variants to Dialog. Verify Radix-era selectors in Tooltip~~ (done)                        | ~~P1, P2~~ |
 | TREK-136 (Data Display)   | None                                                                                                 | skip       |
 | TREK-137 (Navigation)     | None                                                                                                 | skip       |
 | TREK-138 (Date/Time)      | None (future: Base UI Calendar, range picker)                                                        | skip       |

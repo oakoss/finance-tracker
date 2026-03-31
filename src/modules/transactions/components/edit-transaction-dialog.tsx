@@ -105,7 +105,7 @@ export function EditTransactionDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent size="lg">
         <DialogHeader>
           <DialogTitle>{m['transactions.edit.title']()}</DialogTitle>
           <DialogDescription>

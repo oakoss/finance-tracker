@@ -86,7 +86,7 @@ export function EditAccountDialog({ accounts }: EditAccountDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{m['accounts.edit.title']()}</DialogTitle>
           <DialogDescription>
