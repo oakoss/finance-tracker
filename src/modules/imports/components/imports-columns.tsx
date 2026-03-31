@@ -11,13 +11,15 @@ import { m } from '@/paraglide/messages';
 const columnHelper = createColumnHelper<ImportListItem>();
 
 const statusVariant = {
-  completed: 'success',
+  committed: 'success',
+  completed: 'outline',
   failed: 'destructive',
   pending: 'secondary',
   processing: 'info',
 } as const;
 
 const statusLabel: Record<keyof typeof statusVariant, () => string> = {
+  committed: () => m['imports.status.committed'](),
   completed: () => m['imports.status.completed'](),
   failed: () => m['imports.status.failed'](),
   pending: () => m['imports.status.pending'](),

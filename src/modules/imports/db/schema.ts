@@ -32,6 +32,7 @@ export const importStatusEnum = pgEnum('import_status', [
   'pending',
   'processing',
   'completed',
+  'committed',
   'failed',
 ]);
 
@@ -40,6 +41,7 @@ export const importRowStatusEnum = pgEnum('import_row_status', [
   'ignored',
   'duplicate',
   'error',
+  'committed',
 ]);
 
 export const imports = pgTable(
