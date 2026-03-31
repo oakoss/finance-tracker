@@ -66,6 +66,10 @@ The `@theme inline` section mirrors the same tokens for Tailwind usage:
 - Components should use semantic tokens, not raw values.
 - Avoid hard-coded colors in `ui` components.
 - Keep tokens theme-friendly (light/dark/future brand themes).
+- Use `text-muted-foreground` for text (descriptions, captions,
+  labels). Use `text-muted-icon` for standalone decorative icons
+  (chevrons, status dots). `--muted-foreground` meets 4.5:1 AA
+  for text; `--muted-icon` meets 3:1 for non-text UI (SC 1.4.11).
 
 ## Typography
 

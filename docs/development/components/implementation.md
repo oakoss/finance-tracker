@@ -25,6 +25,45 @@ Common examples (not exhaustive):
 shadcn/ui. Always destructure custom props before spreading `...props`
 so they don't leak to the DOM.
 
+When `size` replaces the native HTML `size` attribute (e.g., on
+`<input>`), use `Omit` to prevent type conflicts:
+
+```tsx
+function Input({
+  size = 'default',
+  ...props
+}: Omit<React.ComponentProps<'input'>, 'size'> & {
+  size?: 'default' | 'lg' | 'sm' | undefined;
+}) { ... }
+```
+
+Components that consume `Input` via spread props should either
+pass `size` through explicitly or destructure it out:
+
+```tsx
+// Pass through (PasswordInput)
+}: Omit<React.ComponentProps<typeof Input>, 'type'>) {
+
+// Strip (InputGroupInput — grouped inputs fill the container)
+}: React.ComponentProps<'input'>) {
+  const { size: _size, ...rest } = props;
+```
+
+### Size variants via data attributes
+
+For components with a single variant axis, use `data-[size=*]`
+selectors instead of CVA. This matches Select and Dialog:
+
+```tsx
+<Popup
+  className="data-[size=sm]:sm:max-w-sm data-[size=default]:sm:max-w-lg"
+  data-size={size}
+/>
+```
+
+Use CVA when there are multiple variant axes (e.g., Button has
+both `size` and `variant`).
+
 ## Base UI render pattern
 
 Base UI uses `render` and `children` instead of `asChild`.

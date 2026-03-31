@@ -25,6 +25,14 @@ Base UI change handlers receive `(value, eventDetails)`.
 - Add `aria-invalid` when invalid and `data-invalid` on wrappers.
 - Maintain visible focus indicators.
 
+## Reduced motion
+
+A global `@media (prefers-reduced-motion: reduce)` rule in
+`src/styles/globals.css` sets `transition-duration` and
+`animation-duration` to near-zero for all elements. Per-component
+`motion-reduce:` overrides are not needed. `tw-animate-css`
+provides additional keyframe guards.
+
 ## Do not do
 
 - Divs acting like buttons.
