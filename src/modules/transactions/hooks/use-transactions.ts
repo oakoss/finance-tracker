@@ -9,6 +9,9 @@ import { toast } from 'sonner';
 import type {
   CreateTransactionInput,
   DeleteTransactionInput,
+  SplitTransactionInput,
+  UnsplitTransactionInput,
+  UpdateSplitLinesInput,
   UpdateTransactionInput,
 } from '@/modules/transactions/validators';
 
@@ -20,6 +23,9 @@ import { deleteTransaction } from '@/modules/transactions/api/delete-transaction
 import { listPayees } from '@/modules/transactions/api/list-payees';
 import { listTags } from '@/modules/transactions/api/list-tags';
 import { listTransactions } from '@/modules/transactions/api/list-transactions';
+import { splitTransaction } from '@/modules/transactions/api/split-transaction';
+import { unsplitTransaction } from '@/modules/transactions/api/unsplit-transaction';
+import { updateSplitLines } from '@/modules/transactions/api/update-split-lines';
 import { updateTransaction } from '@/modules/transactions/api/update-transaction';
 import { m } from '@/paraglide/messages';
 
@@ -134,6 +140,83 @@ export function useDeleteTransaction() {
       });
       void router.invalidate();
       capture('transaction_deleted');
+    },
+  });
+}
+
+export function useSplitTransaction() {
+  const queryClient = useQueryClient();
+  const { capture } = useAnalytics();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (data: SplitTransactionInput) => splitTransaction({ data }),
+    onError: (error) => {
+      const parsed = parseError(error);
+      clientLog.error({ action: 'transaction.split.failed', error });
+      toast.error(m['transactions.toast.splitError'](), {
+        description: parsed.fix ?? parsed.why,
+      });
+    },
+    onSuccess: (_data, variables) => {
+      toast.success(m['transactions.toast.splitSuccess']());
+      void queryClient.invalidateQueries({
+        queryKey: transactionQueries.all(),
+      });
+      void router.invalidate();
+      capture('transaction_split', { line_count: variables.lines.length });
+    },
+  });
+}
+
+export function useUnsplitTransaction() {
+  const queryClient = useQueryClient();
+  const { capture } = useAnalytics();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (data: UnsplitTransactionInput) => unsplitTransaction({ data }),
+    onError: (error) => {
+      const parsed = parseError(error);
+      clientLog.error({ action: 'transaction.unsplit.failed', error });
+      toast.error(m['transactions.toast.unsplitError'](), {
+        description: parsed.fix ?? parsed.why,
+      });
+    },
+    onSuccess: () => {
+      toast.success(m['transactions.toast.unsplitSuccess']());
+      void queryClient.invalidateQueries({
+        queryKey: transactionQueries.all(),
+      });
+      void router.invalidate();
+      capture('transaction_unsplit');
+    },
+  });
+}
+
+export function useUpdateSplitLines() {
+  const queryClient = useQueryClient();
+  const { capture } = useAnalytics();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (data: UpdateSplitLinesInput) => updateSplitLines({ data }),
+    onError: (error) => {
+      const parsed = parseError(error);
+      clientLog.error({ action: 'transaction.updateSplitLines.failed', error });
+      toast.error(m['transactions.toast.updateSplitLinesError'](), {
+        description: parsed.fix ?? parsed.why,
+      });
+    },
+    onSuccess: (_data, variables) => {
+      toast.success(m['transactions.toast.updateSplitLinesSuccess']());
+      void queryClient.invalidateQueries({
+        queryKey: transactionQueries.all(),
+      });
+      void router.invalidate();
+      capture('transaction_split_lines_updated', {
+        line_count: variables.lines.length,
+      });
     },
   });
 }

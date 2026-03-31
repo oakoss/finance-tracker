@@ -2,6 +2,7 @@ import { expect } from 'vitest';
 
 import type { Db } from '@/db';
 
+import { splitLines } from '@/db/schema';
 import { getBudgetVsActualService } from '@/modules/budgets/services/get-budget-vs-actual';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
 import { fakeId, type Db as TestDb } from '~test/factories/base';
@@ -500,4 +501,70 @@ test('vs-actual — returns projected columns only', async ({ serviceDb }) => {
       'categoryName',
     ].toSorted(),
   );
+});
+
+test('vs-actual — counts split line amounts per category, not parent', async ({
+  serviceDb,
+}) => {
+  const { account, user } = await insertAccountWithUser(serviceDb);
+  const catA = await insertCategory(serviceDb, {
+    name: 'Food',
+    userId: user.id,
+  });
+  const catB = await insertCategory(serviceDb, {
+    name: 'Household',
+    userId: user.id,
+  });
+  const period = await insertBudgetPeriod(serviceDb, {
+    month: 6,
+    userId: user.id,
+    year: 2025,
+  });
+  await insertBudgetLine(serviceDb, {
+    amountCents: 50_000,
+    budgetPeriodId: period.id,
+    categoryId: catA.id,
+  });
+  await insertBudgetLine(serviceDb, {
+    amountCents: 30_000,
+    budgetPeriodId: period.id,
+    categoryId: catB.id,
+  });
+
+  // Create a split transaction: $100 total, $70 food + $30 household
+  const txn = await insertTransaction(serviceDb, {
+    accountId: account.id,
+    amountCents: 10_000,
+    categoryId: null,
+    direction: 'debit',
+    isSplit: true,
+    postedAt: new Date('2025-06-15T12:00:00Z'),
+  });
+
+  await serviceDb.insert(splitLines).values([
+    {
+      amountCents: 7000,
+      categoryId: catA.id,
+      sortOrder: 0,
+      transactionId: txn.id,
+    },
+    {
+      amountCents: 3000,
+      categoryId: catB.id,
+      sortOrder: 1,
+      transactionId: txn.id,
+    },
+  ]);
+
+  const rows = await getBudgetVsActualService(
+    asDb(serviceDb),
+    user.id,
+    period.id,
+  );
+
+  expect(rows).toHaveLength(2);
+  const food = rows.find((r) => r.categoryName === 'Food');
+  const household = rows.find((r) => r.categoryName === 'Household');
+  expect(food?.actualDebitCents).toBe(7000);
+  expect(household?.actualDebitCents).toBe(3000);
 });

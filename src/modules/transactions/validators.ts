@@ -43,6 +43,27 @@ export const deleteTransactionSchema = transactionsDeleteSchema;
 
 export type DeleteTransactionInput = typeof deleteTransactionSchema.infer;
 
+const splitLineSchema = type({
+  amountCents: 'number.integer > 0',
+  'categoryId?': '(string > 0) | null',
+  'memo?': '(string <= 1000) | null',
+});
+
+export const splitTransactionSchema = type({
+  id: 'string > 0',
+  lines: splitLineSchema.array().atLeastLength(2),
+});
+
+export type SplitTransactionInput = typeof splitTransactionSchema.infer;
+
+export const unsplitTransactionSchema = transactionsDeleteSchema;
+
+export type UnsplitTransactionInput = typeof unsplitTransactionSchema.infer;
+
+export const updateSplitLinesSchema = splitTransactionSchema;
+
+export type UpdateSplitLinesInput = typeof updateSplitLinesSchema.infer;
+
 export const createPayeeSchema = type({ name: '0 < string <= 200' });
 
 export type CreatePayeeInput = typeof createPayeeSchema.infer;

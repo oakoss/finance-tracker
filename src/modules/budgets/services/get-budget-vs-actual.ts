@@ -1,4 +1,4 @@
-import { and, asc, eq, gte, inArray, lt, sql } from 'drizzle-orm';
+import { and, asc, eq, sql } from 'drizzle-orm';
 
 import type { Db } from '@/db';
 
@@ -7,7 +7,7 @@ import { ensureFound } from '@/lib/form/validation';
 import { ledgerAccounts } from '@/modules/accounts/db/schema';
 import { budgetLines } from '@/modules/budgets/db/schema';
 import { categories } from '@/modules/categories/db/schema';
-import { transactions } from '@/modules/transactions/db/schema';
+import { splitLines, transactions } from '@/modules/transactions/db/schema';
 
 export async function getBudgetVsActualService(
   database: Db,
@@ -35,14 +35,38 @@ export async function getBudgetVsActualService(
     .from(ledgerAccounts)
     .where(eq(ledgerAccounts.userId, userId));
 
+  // Raw SQL UNION ALL: non-split rows use transaction.categoryId,
+  // split rows use split_lines.categoryId. Drizzle's .unionAll()
+  // doesn't support .as() for subqueries, so we drop to sql``.
+  const actualSubquery = sql`
+    (
+        SELECT ${transactions.categoryId}, ${transactions.amountCents}, ${transactions.direction}
+        FROM ${transactions}
+        WHERE ${transactions.accountId} IN (${userAccountIds})
+          AND ${transactions.postedAt} >= ${startDate}
+          AND ${transactions.postedAt} < ${endDate}
+          AND ${transactions.deletedAt} IS NULL
+          AND ${transactions.isSplit} = false
+        UNION ALL
+        SELECT ${splitLines.categoryId}, ${splitLines.amountCents}, ${transactions.direction}
+        FROM ${splitLines}
+        INNER JOIN ${transactions} ON ${splitLines.transactionId} = ${transactions.id}
+        WHERE ${transactions.accountId} IN (${userAccountIds})
+          AND ${transactions.postedAt} >= ${startDate}
+          AND ${transactions.postedAt} < ${endDate}
+          AND ${transactions.deletedAt} IS NULL
+          AND ${transactions.isSplit} = true
+      )
+  `;
+
   return database
     .select({
       actualCreditCents:
-        sql<number>`coalesce(sum(${transactions.amountCents}) filter (where ${transactions.direction} = 'credit'), 0)`.mapWith(
+        sql<number>`coalesce(sum(aa.amount_cents) filter (where aa.direction = 'credit'), 0)`.mapWith(
           Number,
         ),
       actualDebitCents:
-        sql<number>`coalesce(sum(${transactions.amountCents}) filter (where ${transactions.direction} = 'debit'), 0)`.mapWith(
+        sql<number>`coalesce(sum(aa.amount_cents) filter (where aa.direction = 'debit'), 0)`.mapWith(
           Number,
         ),
       budgetedCents: budgetLines.amountCents,
@@ -53,14 +77,8 @@ export async function getBudgetVsActualService(
     .from(budgetLines)
     .innerJoin(categories, eq(budgetLines.categoryId, categories.id))
     .leftJoin(
-      transactions,
-      and(
-        eq(transactions.categoryId, budgetLines.categoryId),
-        inArray(transactions.accountId, userAccountIds),
-        gte(transactions.postedAt, startDate),
-        lt(transactions.postedAt, endDate),
-        notDeleted(transactions.deletedAt),
-      ),
+      sql`${actualSubquery} as aa`,
+      sql`aa.category_id = ${budgetLines.categoryId}`,
     )
     .where(
       and(

@@ -19,10 +19,12 @@ export async function listTransactionsService(database: Db, userId: string) {
       description: true,
       direction: true,
       id: true,
+      isSplit: true,
       memo: true,
       payeeId: true,
       pending: true,
       transactionAt: true,
+      transferId: true,
     },
     orderBy: (t) => desc(t.transactionAt),
     where: (t, { and }) =>
@@ -31,6 +33,17 @@ export async function listTransactionsService(database: Db, userId: string) {
       account: { columns: { name: true } },
       category: { columns: { name: true, type: true } },
       payee: { columns: { deletedAt: true, name: true } },
+      splitLines: {
+        columns: {
+          amountCents: true,
+          categoryId: true,
+          id: true,
+          memo: true,
+          sortOrder: true,
+        },
+        orderBy: (sl, { asc }) => asc(sl.sortOrder),
+        with: { category: { columns: { name: true } } },
+      },
       transactionTags: { with: { tag: { columns: { id: true, name: true } } } },
     },
   });
@@ -45,11 +58,21 @@ export async function listTransactionsService(database: Db, userId: string) {
     description: row.description,
     direction: row.direction,
     id: row.id,
+    isSplit: row.isSplit,
     memo: row.memo,
     payeeId: row.payeeId,
     payeeName: row.payee?.deletedAt === null ? row.payee.name : null,
     pending: row.pending,
+    splitLines: row.splitLines.map((sl) => ({
+      amountCents: sl.amountCents,
+      categoryId: sl.categoryId,
+      categoryName: sl.category?.name ?? null,
+      id: sl.id,
+      memo: sl.memo,
+      sortOrder: sl.sortOrder,
+    })),
     tags: row.transactionTags.map((tt) => tt.tag).filter((tag) => tag !== null),
     transactionAt: row.transactionAt,
+    transferId: row.transferId,
   }));
 }

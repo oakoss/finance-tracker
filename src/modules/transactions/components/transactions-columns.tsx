@@ -46,8 +46,17 @@ export function createTransactionColumns() {
       size: 160,
     }),
     columnHelper.accessor('categoryName', {
-      cell: ({ getValue }) => {
+      cell: ({ getValue, row }) => {
         const name = getValue();
+        if (row.original.isSplit) {
+          return (
+            <Badge variant="secondary">
+              {m['transactions.split.label']({
+                count: String(row.original.splitLines.length),
+              })}
+            </Badge>
+          );
+        }
         return <span className="text-muted-foreground">{name ?? '--'}</span>;
       },
       header: () => m['transactions.columns.category'](),

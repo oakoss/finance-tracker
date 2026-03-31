@@ -51,6 +51,15 @@ export async function updateTransactionService(
       'Transaction',
     );
 
+    if (existing.isSplit && (fields.categoryId || fields.amountCents)) {
+      const field = fields.categoryId ? 'category' : 'amount';
+      throw createError({
+        fix: `Unsplit the transaction before changing its ${field}.`,
+        message: `Cannot change ${field} on a split transaction.`,
+        status: 422,
+      });
+    }
+
     if (fields.categoryId) {
       const category = await tx.query.categories.findFirst({
         where: (t, { and: a, eq: e }) =>

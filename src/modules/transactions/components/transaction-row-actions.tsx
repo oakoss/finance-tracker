@@ -10,9 +10,14 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useDeleteTransaction } from '@/modules/transactions/hooks/use-transactions';
+import { SplitDialog } from '@/modules/transactions/components/split-dialog';
+import {
+  useDeleteTransaction,
+  useUnsplitTransaction,
+} from '@/modules/transactions/hooks/use-transactions';
 import { m } from '@/paraglide/messages';
 
 type TransactionRowActionsProps = { row: TransactionListItem };
@@ -20,7 +25,11 @@ type TransactionRowActionsProps = { row: TransactionListItem };
 export function TransactionRowActions({ row }: TransactionRowActionsProps) {
   const navigate = useNavigate();
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const mutation = useDeleteTransaction();
+  const [splitOpen, setSplitOpen] = useState(false);
+  const deleteMutation = useDeleteTransaction();
+  const unsplitMutation = useUnsplitTransaction();
+
+  const isTransfer = !!row.transferId;
 
   return (
     <>
@@ -42,6 +51,31 @@ export function TransactionRowActions({ row }: TransactionRowActionsProps) {
             <Icons.Settings2 className="size-4" />
             {m['actions.edit']()}
           </DropdownMenuItem>
+          {!isTransfer && (
+            <>
+              <DropdownMenuSeparator />
+              {row.isSplit ? (
+                <>
+                  <DropdownMenuItem onClick={() => setSplitOpen(true)}>
+                    <Icons.Settings2 className="size-4" />
+                    {m['transactions.split.editTitle']()}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => unsplitMutation.mutate({ id: row.id })}
+                  >
+                    <Icons.Undo2 className="size-4" />
+                    {m['transactions.split.unsplit']()}
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <DropdownMenuItem onClick={() => setSplitOpen(true)}>
+                  <Icons.Scissors className="size-4" />
+                  {m['transactions.split.title']()}
+                </DropdownMenuItem>
+              )}
+            </>
+          )}
+          <DropdownMenuSeparator />
           <DropdownMenuItem
             className="text-destructive"
             onClick={() => setDeleteOpen(true)}
@@ -54,17 +88,24 @@ export function TransactionRowActions({ row }: TransactionRowActionsProps) {
       <ConfirmDestructiveDialog
         confirmPhrase={row.description}
         description={m['transactions.delete.description']()}
-        loading={mutation.isPending}
+        loading={deleteMutation.isPending}
         open={deleteOpen}
         title={m['transactions.delete.title']()}
         onConfirm={() =>
-          mutation.mutate(
+          deleteMutation.mutate(
             { id: row.id },
             { onSettled: () => setDeleteOpen(false) },
           )
         }
         onOpenChange={setDeleteOpen}
       />
+      {splitOpen && (
+        <SplitDialog
+          open={splitOpen}
+          transaction={row}
+          onOpenChange={setSplitOpen}
+        />
+      )}
     </>
   );
 }
