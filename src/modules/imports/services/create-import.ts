@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, inArray, isNull } from 'drizzle-orm';
 
 import type { Db } from '@/db';
 import type { CreateImportInput } from '@/modules/imports/validators';
@@ -11,8 +11,12 @@ import { importRows, imports } from '@/modules/imports/db/schema';
 import {
   applyColumnMapping,
   buildReverseMap,
+  type ProcessedNormalizedRow,
 } from '@/modules/imports/lib/apply-column-mapping';
+import { computeRowFingerprint } from '@/modules/imports/lib/compute-row-fingerprint';
 import { parseCsvString } from '@/modules/imports/lib/parse-csv';
+import { validateImportRow } from '@/modules/imports/lib/validate-import-row';
+import { transactions } from '@/modules/transactions/db/schema';
 
 export async function createImportService(
   database: Db,
@@ -108,8 +112,18 @@ export async function createImportService(
       ? buildReverseMap(data.columnMapping)
       : null;
 
-    const rowValues = parsed.data.map((rawData, index) => {
-      let normalizedData = null;
+    // Phase 1: Map, validate, and fingerprint each row
+    type ProcessedRow = {
+      normalizedData: ProcessedNormalizedRow | null;
+      rawData: Record<string, string>;
+      rowIndex: number;
+      status: 'duplicate' | 'error' | 'mapped';
+    };
+
+    const processedRows: ProcessedRow[] = parsed.data.map((rawData, index) => {
+      let normalizedData: ProcessedNormalizedRow | null = null;
+      let status: 'duplicate' | 'error' | 'mapped' = 'mapped';
+
       if (data.columnMapping && reverseMap) {
         try {
           normalizedData = applyColumnMapping(
@@ -126,16 +140,93 @@ export async function createImportService(
             },
             user: { idHash: hashId(userId) },
           });
+          status = 'error';
+          normalizedData = {
+            errorReason: `Column mapping failed: ${error instanceof Error ? error.message : String(error)}`,
+          };
+        }
+
+        if (normalizedData && status !== 'error') {
+          const validation = validateImportRow(normalizedData);
+          if (!validation.valid) {
+            status = 'error';
+            normalizedData.errorReason = validation.errors.join('; ');
+          } else {
+            const fp = computeRowFingerprint(normalizedData);
+            if (fp) {
+              normalizedData.fingerprint = fp;
+            } else {
+              log.error({
+                action: 'import.create.fingerprintMissing',
+                outcome: { rowIndex: index },
+                user: { idHash: hashId(userId) },
+              });
+            }
+          }
         }
       }
-      return {
-        createdById: userId,
-        importId: importRecord.id,
-        normalizedData,
-        rawData,
-        rowIndex: index,
-      };
+
+      return { normalizedData, rawData, rowIndex: index, status };
     });
+
+    // Phase 2: Intra-CSV dedupe
+    const fingerprintFirstSeen = new Map<string, number>();
+    for (const row of processedRows) {
+      if (row.status !== 'mapped') continue;
+      const fp = row.normalizedData?.fingerprint;
+      if (!fp) continue;
+      if (fingerprintFirstSeen.has(fp)) {
+        row.status = 'duplicate';
+      } else {
+        fingerprintFirstSeen.set(fp, row.rowIndex);
+      }
+    }
+
+    // Phase 3: DB dedupe against existing transactions
+    const uniqueFingerprints = [...fingerprintFirstSeen.keys()];
+    if (uniqueFingerprints.length > 0) {
+      const existingSet = new Set<string>();
+      const FP_BATCH = 1000;
+      for (let i = 0; i < uniqueFingerprints.length; i += FP_BATCH) {
+        const batch = uniqueFingerprints.slice(i, i + FP_BATCH);
+        const existing = await tx
+          .select({ fingerprint: transactions.fingerprint })
+          .from(transactions)
+          .where(
+            and(
+              eq(transactions.accountId, data.accountId),
+              inArray(transactions.fingerprint, batch),
+              isNull(transactions.deletedAt),
+            ),
+          );
+        for (const row of existing) {
+          if (row.fingerprint) existingSet.add(row.fingerprint);
+        }
+      }
+
+      if (existingSet.size > 0) {
+        for (const row of processedRows) {
+          if (row.status !== 'mapped') continue;
+          const fp = row.normalizedData?.fingerprint;
+          if (fp && existingSet.has(fp)) row.status = 'duplicate';
+        }
+      }
+    }
+
+    // Build insert values
+    const rowValues = processedRows.map((row) => ({
+      createdById: userId,
+      importId: importRecord.id,
+      normalizedData: row.normalizedData,
+      rawData: row.rawData,
+      rowIndex: row.rowIndex,
+      status: row.status,
+    }));
+
+    const counts = { duplicate: 0, error: 0, mapped: 0 };
+    for (const row of processedRows) {
+      counts[row.status]++;
+    }
 
     const now = new Date();
     await tx
@@ -170,6 +261,13 @@ export async function createImportService(
       tableName: 'imports',
     });
 
-    return { ...updated, rowCount: parsed.data.length };
+    return {
+      ...updated,
+      duplicateCount: counts.duplicate,
+      errorCount: counts.error,
+      mappedCount: counts.mapped,
+      parseErrorCount: parsed.errorCount,
+      rowCount: parsed.data.length,
+    };
   });
 }

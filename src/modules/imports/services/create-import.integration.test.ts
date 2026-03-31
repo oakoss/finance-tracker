@@ -6,10 +6,12 @@ import type { CreateImportInput } from '@/modules/imports/validators';
 
 import { auditLogs } from '@/db/schema';
 import { importRows } from '@/modules/imports/db/schema';
+import { computeRowFingerprint } from '@/modules/imports/lib/compute-row-fingerprint';
 import { createImportService } from '@/modules/imports/services/create-import';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
 import { fakeId, type Db as TestDb } from '~test/factories/base';
 import { insertImport } from '~test/factories/import.factory';
+import { insertTransaction } from '~test/factories/transaction.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
 
@@ -259,13 +261,13 @@ test('create — with columnMapping populates normalizedData on rows', async ({
     .from(importRows)
     .where(eq(importRows.importId, result.id));
 
-  expect(rows[0].normalizedData).toEqual({
+  expect(rows[0].normalizedData).toMatchObject({
     amountCents: -450,
     categoryName: 'Food',
     description: 'Coffee Shop',
     transactionAt: '2024-01-15',
   });
-  expect(rows[1].normalizedData).toEqual({
+  expect(rows[1].normalizedData).toMatchObject({
     amountCents: 250_000,
     categoryName: 'Income',
     description: 'Paycheck',
@@ -305,12 +307,12 @@ test('create — with split debit/credit columnMapping normalizes correctly', as
     .from(importRows)
     .where(eq(importRows.importId, result.id));
 
-  expect(rows[0].normalizedData).toEqual({
+  expect(rows[0].normalizedData).toMatchObject({
     amountCents: -5000,
     description: 'Purchase',
     transactionAt: '2024-01-15',
   });
-  expect(rows[1].normalizedData).toEqual({
+  expect(rows[1].normalizedData).toMatchObject({
     amountCents: 250_000,
     description: 'Deposit',
     transactionAt: '2024-01-16',
@@ -366,4 +368,196 @@ test('create — batched insert persists all rows across batch boundaries', asyn
   expect(persisted).toHaveLength(501);
   expect(persisted[0].rowIndex).toBe(0);
   expect(persisted[500].rowIndex).toBe(500);
+});
+
+// --- Validation + dedupe tests (TREK-21) ---
+
+const MAPPED_COLUMN_MAPPING = {
+  amountMode: 'single' as const,
+  mapping: {
+    Amount: 'amount' as const,
+    Date: 'transactionAt' as const,
+    Description: 'description' as const,
+  },
+};
+
+test('create — row with missing description gets status=error', async ({
+  serviceDb,
+}) => {
+  const { account, user } = await insertAccountWithUser(serviceDb);
+
+  const csv = `Date,Description,Amount
+2024-01-15,Coffee,-4.50
+2024-01-16,,-10.00`;
+
+  const result = await createImportService(
+    asDb(serviceDb),
+    user.id,
+    validInput(account.id, {
+      columnMapping: MAPPED_COLUMN_MAPPING,
+      fileContent: csv,
+      fileHash: 'missing-desc',
+    }),
+  );
+
+  const rows = await serviceDb
+    .select()
+    .from(importRows)
+    .where(eq(importRows.importId, result.id))
+    .orderBy(importRows.rowIndex);
+
+  expect(rows[0].status).toBe('mapped');
+  expect(rows[1].status).toBe('error');
+  expect(
+    (rows[1].normalizedData as Record<string, unknown>).errorReason,
+  ).toMatch(/description/i);
+});
+
+test('create — row with non-numeric amount gets status=error', async ({
+  serviceDb,
+}) => {
+  const { account, user } = await insertAccountWithUser(serviceDb);
+
+  const csv = `Date,Description,Amount
+2024-01-15,Coffee,N/A`;
+
+  const result = await createImportService(
+    asDb(serviceDb),
+    user.id,
+    validInput(account.id, {
+      columnMapping: MAPPED_COLUMN_MAPPING,
+      fileContent: csv,
+      fileHash: 'bad-amount',
+    }),
+  );
+
+  const rows = await serviceDb
+    .select()
+    .from(importRows)
+    .where(eq(importRows.importId, result.id));
+
+  expect(rows[0].status).toBe('error');
+  expect(
+    (rows[0].normalizedData as Record<string, unknown>).errorReason,
+  ).toMatch(/parse amount.*N\/A/i);
+});
+
+test('create — two identical rows: second is duplicate', async ({
+  serviceDb,
+}) => {
+  const { account, user } = await insertAccountWithUser(serviceDb);
+
+  const csv = `Date,Description,Amount
+2024-01-15,Coffee,-4.50
+2024-01-15,Coffee,-4.50`;
+
+  const result = await createImportService(
+    asDb(serviceDb),
+    user.id,
+    validInput(account.id, {
+      columnMapping: MAPPED_COLUMN_MAPPING,
+      fileContent: csv,
+      fileHash: 'intra-dupe',
+    }),
+  );
+
+  const rows = await serviceDb
+    .select()
+    .from(importRows)
+    .where(eq(importRows.importId, result.id))
+    .orderBy(importRows.rowIndex);
+
+  expect(rows[0].status).toBe('mapped');
+  expect(rows[1].status).toBe('duplicate');
+});
+
+test('create — row matching existing transaction fingerprint is duplicate', async ({
+  serviceDb,
+}) => {
+  const { account, user } = await insertAccountWithUser(serviceDb);
+
+  const fp = computeRowFingerprint({
+    amountCents: -450,
+    description: 'Coffee',
+    transactionAt: '2024-01-15',
+  });
+
+  await insertTransaction(serviceDb, {
+    accountId: account.id,
+    amountCents: 450,
+    createdById: user.id,
+    description: 'Coffee',
+    fingerprint: fp,
+    postedAt: new Date('2024-01-15'),
+    transactionAt: new Date('2024-01-15'),
+  });
+
+  const csv = `Date,Description,Amount
+2024-01-15,Coffee,-4.50`;
+
+  const result = await createImportService(
+    asDb(serviceDb),
+    user.id,
+    validInput(account.id, {
+      columnMapping: MAPPED_COLUMN_MAPPING,
+      fileContent: csv,
+      fileHash: 'db-dupe',
+    }),
+  );
+
+  const rows = await serviceDb
+    .select()
+    .from(importRows)
+    .where(eq(importRows.importId, result.id));
+
+  expect(rows[0].status).toBe('duplicate');
+});
+
+test('create — mixed valid, error, and duplicate rows', async ({
+  serviceDb,
+}) => {
+  const { account, user } = await insertAccountWithUser(serviceDb);
+
+  const csv = `Date,Description,Amount
+2024-01-15,Coffee,-4.50
+2024-01-16,,-10.00
+2024-01-17,Groceries,N/A
+2024-01-15,Coffee,-4.50`;
+
+  const result = await createImportService(
+    asDb(serviceDb),
+    user.id,
+    validInput(account.id, {
+      columnMapping: MAPPED_COLUMN_MAPPING,
+      fileContent: csv,
+      fileHash: 'mixed',
+    }),
+  );
+
+  expect(result.status).toBe('completed');
+  expect(result.rowCount).toBe(4);
+  expect(result.mappedCount).toBe(1);
+  expect(result.errorCount).toBe(2);
+  expect(result.duplicateCount).toBe(1);
+});
+
+test('create — without columnMapping rows stay status=mapped', async ({
+  serviceDb,
+}) => {
+  const { account, user } = await insertAccountWithUser(serviceDb);
+
+  const result = await createImportService(
+    asDb(serviceDb),
+    user.id,
+    validInput(account.id, { fileHash: 'no-mapping-status' }),
+  );
+
+  const rows = await serviceDb
+    .select()
+    .from(importRows)
+    .where(eq(importRows.importId, result.id));
+
+  for (const row of rows) {
+    expect(row.status).toBe('mapped');
+  }
 });

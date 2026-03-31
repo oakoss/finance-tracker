@@ -2,11 +2,17 @@ import type { ColumnMapping, TargetField } from '@/modules/imports/validators';
 
 export type NormalizedRow = {
   amountCents?: number;
+  amountRaw?: string;
   categoryName?: string;
   description?: string;
   memo?: string;
   payeeName?: string;
   transactionAt?: string;
+};
+
+export type ProcessedNormalizedRow = NormalizedRow & {
+  errorReason?: string;
+  fingerprint?: string;
 };
 
 /** Parses an amount string (e.g. "$1,234.56", "(4.50)") to cents. Returns null if unparseable. */
@@ -68,11 +74,15 @@ export function applyColumnMapping(
   if (memo) result.memo = memo;
 
   if (columnMapping.amountMode === 'single') {
-    const cents = parseAmountToCents(getValue('amount'));
+    const rawAmount = getValue('amount');
+    const cents = parseAmountToCents(rawAmount);
     if (cents !== null) result.amountCents = cents;
+    else if (rawAmount.trim()) result.amountRaw = rawAmount.trim();
   } else {
-    const debitCents = parseAmountToCents(getValue('debitAmount'));
-    const creditCents = parseAmountToCents(getValue('creditAmount'));
+    const rawDebit = getValue('debitAmount');
+    const rawCredit = getValue('creditAmount');
+    const debitCents = parseAmountToCents(rawDebit);
+    const creditCents = parseAmountToCents(rawCredit);
 
     if (debitCents !== null && debitCents !== 0) {
       result.amountCents = debitCents > 0 ? -debitCents : debitCents;
@@ -80,6 +90,11 @@ export function applyColumnMapping(
       result.amountCents = Math.abs(creditCents);
     } else if (debitCents === 0 && creditCents === 0) {
       result.amountCents = 0;
+    } else {
+      const raw = [rawDebit.trim(), rawCredit.trim()]
+        .filter(Boolean)
+        .join(' / ');
+      if (raw) result.amountRaw = raw;
     }
   }
 
