@@ -241,21 +241,12 @@ tabs (default list uses `bg-muted`), badge (secondary variant).
 **Action:** No change needed for MVP. Flag for TREK-141 follow-up
 if visual differentiation is needed.
 
-### P2: prefers-reduced-motion gaps
+### ~~P2: prefers-reduced-motion gaps~~ (resolved, TREK-224)
 
-`tw-animate-css` guards its keyframe animations behind
-`prefers-reduced-motion`. Accordion keyframes from
-`shadcn/tailwind.css` also respect the preference. However,
-plain `transition-*` utilities (`transition-all`,
-`transition-colors`) do **not** automatically disable for
-motion-sensitive users. Components using these (button, link,
-tabs, navigation-menu, select, input, and others) still
-animate transitions regardless of the user's preference.
-
-**Action:** During the revamp, add `motion-reduce:transition-none`
-to components with `transition-*` classes, or add a global
-`@media (prefers-reduced-motion: reduce)` rule to disable
-transitions.
+Added global `@media (prefers-reduced-motion: reduce)` rule in
+`src/styles/globals.css` that sets `transition-duration: 0.01ms`
+and `animation-duration: 0.01ms` on all elements. Covers all 27
+UI files with `transition-*` classes.
 
 ### Info: Missing components vs coss UI
 
@@ -273,13 +264,13 @@ could be useful for rich text editing if added later.
 
 ## Summary by Downstream Task
 
-| Task                      | Action Items                                                                                         | Priority   |
-| ------------------------- | ---------------------------------------------------------------------------------------------------- | ---------- |
-| TREK-133 (Forms)          | ~~Add size variants to Input~~ (done)                                                                | ~~P2~~     |
-| TREK-134 (Selection)      | ~~Document combobox vs autocomplete~~ (done)                                                         | ~~P2~~     |
-| TREK-135 (Overlays)       | ~~Add size variants to Dialog. Verify Radix-era selectors in Tooltip~~ (done)                        | ~~P1, P2~~ |
-| TREK-136 (Data Display)   | None                                                                                                 | skip       |
-| TREK-137 (Navigation)     | None                                                                                                 | skip       |
-| TREK-138 (Date/Time)      | None (future: Base UI Calendar, range picker)                                                        | skip       |
-| TREK-139 (Layout/Utility) | None                                                                                                 | skip       |
-| Cross-cutting             | ~~Darken --muted-foreground token~~ (done). Add motion-reduce overrides for transition-\* components | ~~P0~~, P2 |
+| Task                      | Action Items                                                                       | Priority   |
+| ------------------------- | ---------------------------------------------------------------------------------- | ---------- |
+| TREK-133 (Forms)          | ~~Add size variants to Input~~ (done)                                              | ~~P2~~     |
+| TREK-134 (Selection)      | ~~Document combobox vs autocomplete~~ (done)                                       | ~~P2~~     |
+| TREK-135 (Overlays)       | ~~Add size variants to Dialog. Verify Radix-era selectors in Tooltip~~ (done)      | ~~P1, P2~~ |
+| TREK-136 (Data Display)   | None                                                                               | skip       |
+| TREK-137 (Navigation)     | None                                                                               | skip       |
+| TREK-138 (Date/Time)      | None (future: Base UI Calendar, range picker)                                      | skip       |
+| TREK-139 (Layout/Utility) | None                                                                               | skip       |
+| Cross-cutting             | ~~Darken --muted-foreground token~~ (done). ~~Add motion-reduce overrides~~ (done) | ~~P0, P2~~ |
