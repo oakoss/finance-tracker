@@ -173,7 +173,7 @@ test('create — CSV with parse errors but valid rows succeeds', async ({
 }) => {
   const { account, user } = await insertAccountWithUser(serviceDb);
 
-  // Row 2 has an extra field — PapaParse reports an error but still parses rows
+  // Row 2 has an extra field — parser reports an error but still returns valid rows
   const csvWithErrors = `Date,Description,Amount
 2024-01-15,Coffee Shop,-4.50
 2024-01-16,Paycheck,2500.00,extrafield

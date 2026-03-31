@@ -1,5 +1,4 @@
 import { and, eq } from 'drizzle-orm';
-import Papa from 'papaparse';
 
 import type { Db } from '@/db';
 import type { CreateImportInput } from '@/modules/imports/validators';
@@ -13,6 +12,7 @@ import {
   applyColumnMapping,
   buildReverseMap,
 } from '@/modules/imports/lib/apply-column-mapping';
+import { parseCsvString } from '@/modules/imports/lib/parse-csv';
 
 export async function createImportService(
   database: Db,
@@ -53,12 +53,9 @@ export async function createImportService(
       });
     }
 
-    const parsed = Papa.parse<Record<string, string>>(data.fileContent, {
-      header: true,
-      skipEmptyLines: true,
-    });
+    const parsed = parseCsvString(data.fileContent, { skipEmptyLines: true });
 
-    if (parsed.errors.length > 0 && parsed.data.length === 0) {
+    if (parsed.errorCount > 0 && parsed.data.length === 0) {
       throw createError({
         fix: 'Check the CSV format and try again.',
         message: 'Failed to parse CSV.',
@@ -66,11 +63,11 @@ export async function createImportService(
       });
     }
 
-    if (parsed.errors.length > 0 && parsed.data.length > 0) {
+    if (parsed.errorCount > 0 && parsed.data.length > 0) {
       log.warn({
         action: 'import.create.partialParse',
         outcome: {
-          errorCount: parsed.errors.length,
+          errorCount: parsed.errorCount,
           successCount: parsed.data.length,
         },
         user: { idHash: hashId(userId) },
