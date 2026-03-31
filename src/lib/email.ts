@@ -88,5 +88,5 @@ async function sendViaBrevo(options: SendEmailOptions) {
 }
 
 export async function sendEmail(options: SendEmailOptions) {
-  await (ENV.SMTP_HOST ? sendViaSmtp(options) : sendViaBrevo(options));
+  await (ENV.BREVO_API_KEY ? sendViaBrevo(options) : sendViaSmtp(options));
 }
