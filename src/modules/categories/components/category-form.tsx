@@ -44,7 +44,7 @@ export function CategoryForm({
   const form = useForm({
     defaultValues: { ...DEFAULT_VALUES, ...defaultValues },
     onSubmit: ({ value }) => onSubmit(value),
-    validators: { onBlur: categoryFormSchema, onSubmit: categoryFormSchema },
+    validators: { onSubmit: categoryFormSchema },
   });
 
   const categoryTypeItems = toSelectItems(categoryTypeEnum.enumValues, (t) =>
@@ -64,6 +64,7 @@ export function CategoryForm({
 
   return (
     <form
+      noValidate
       className="grid gap-4"
       id="category-form"
       onSubmit={(e) => {

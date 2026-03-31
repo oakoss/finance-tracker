@@ -55,7 +55,16 @@ function validatePassword(value: string): string[] | undefined {
 }
 
 const passwordValidators = {
-  onBlur: ({ value }: { value: string }) => validatePassword(value),
+  onBlur: ({
+    fieldApi,
+    value,
+  }: {
+    fieldApi: { form: { state: { submissionAttempts: number } } };
+    value: string;
+  }) => {
+    if (fieldApi.form.state.submissionAttempts === 0) return;
+    return validatePassword(value);
+  },
   onSubmit: ({ value }: { value: string }) => validatePassword(value),
 };
 
@@ -111,6 +120,7 @@ function SignUpForm() {
 
       <CardContent className="grid gap-6">
         <form
+          noValidate
           className="grid gap-4"
           onSubmit={(e) => {
             e.preventDefault();

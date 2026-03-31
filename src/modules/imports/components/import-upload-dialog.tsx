@@ -207,6 +207,7 @@ export function ImportUploadDialog() {
         </Stepper>
 
         <form
+          noValidate
           onSubmit={(e) => {
             e.preventDefault();
             e.stopPropagation();

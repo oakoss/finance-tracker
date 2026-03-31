@@ -172,14 +172,12 @@ export function TransactionForm({
       }
       onSubmit(value, payeeState, { newTagNames, tagIds: selectedTagIds });
     },
-    validators: {
-      onBlur: transactionFormSchema,
-      onSubmit: transactionFormSchema,
-    },
+    validators: { onSubmit: transactionFormSchema },
   });
 
   return (
     <form
+      noValidate
       className="grid gap-4"
       id="transaction-form"
       onSubmit={(e) => {

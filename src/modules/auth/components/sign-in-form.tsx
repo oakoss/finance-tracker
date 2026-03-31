@@ -78,6 +78,7 @@ function SignInForm({ redirect }: SignInFormProps) {
 
       <CardContent className="grid gap-6">
         <form
+          noValidate
           className="grid gap-4"
           onSubmit={(e) => {
             e.preventDefault();

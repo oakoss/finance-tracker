@@ -100,11 +100,12 @@ export function AccountForm({
   const form = useForm({
     defaultValues: { ...DEFAULT_VALUES, ...defaultValues },
     onSubmit: ({ value }) => onSubmit(value),
-    validators: { onBlur: accountFormSchema, onSubmit: accountFormSchema },
+    validators: { onSubmit: accountFormSchema },
   });
 
   return (
     <form
+      noValidate
       className="grid gap-4"
       id="account-form"
       onSubmit={(e) => {

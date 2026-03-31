@@ -11,6 +11,9 @@ This doc covers how UI components integrate with TanStack libraries.
 
 - Use `useForm` and `form.Field` render props.
 - Add `data-invalid` to `Field` and `aria-invalid` to inputs.
+- Always add `noValidate` to `<form>` elements. Native HTML5
+  validation (e.g., `type="email"`) blocks the submit event
+  before TanStack Form can run its validators.
 
 ### Validation
 
@@ -31,16 +34,32 @@ This doc covers how UI components integrate with TanStack libraries.
   | `onChangeAsync` | Value change, debounced | Async checks (uniqueness) — pair with `onChangeAsyncDebounceMs`.          |
   | `onMount`       | Field mounts            | Pre-populated data sanity checks.                                         |
 
-  **Default pattern for text inputs** — `onBlur` + `onSubmit`:
+  **Default pattern** — gate `onBlur` behind `submissionAttempts`
+  so empty fields don't show errors before the user tries to submit.
+  After the first attempt, blur validation fires normally and errors
+  clear as users fix them.
+
+  For field-level validators, use `fieldValidators()` from
+  `@/lib/form/field`:
 
   ```ts
-  validators: { onBlur: schema, onSubmit: schema }
+  import { fieldValidators } from '@/lib/form/field';
+
+  <form.Field name="email" validators={fieldValidators(emailType)}>
   ```
 
-  **Selects, radios, checkboxes** — `onChange` + `onSubmit` is fine
-  since there are no keystrokes to interrupt. For multi-step forms
-  where errors shouldn't show before the first submit attempt, gate
-  on `submissionAttempts`:
+  For form-level validators, use `onSubmit` only — do not add
+  form-level `onBlur`. Field-level `handleBlur` on each input
+  handles per-field feedback:
+
+  ```ts
+  validators: {
+    onSubmit: schema;
+  }
+  ```
+
+  **Selects, radios, checkboxes** — `onChange` + `onSubmit`. Same
+  `submissionAttempts` gate applies:
 
   ```ts
   validators: {
@@ -53,8 +72,9 @@ This doc covers how UI components integrate with TanStack libraries.
   ```
 
   **Error lifecycle**: an `onSubmit` error persists until the next
-  submit. An `onChange` error clears/updates on every change. Pair
-  them so errors clear reactively after a failed submit.
+  submit. An `onBlur`/`onChange` error clears when that event
+  re-fires. Pair them so errors clear reactively after a failed
+  submit.
 
 - For optional fields that use empty string as "unset" in the UI
   (e.g. a select with a "None" option), store `undefined` in form

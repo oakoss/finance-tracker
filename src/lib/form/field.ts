@@ -17,12 +17,23 @@ function validateField(
 
 /**
  * Build TanStack Form field-level validators (onBlur, onSubmit)
- * from an ArkType schema.
+ * from an ArkType schema. Blur validation only fires after the
+ * first submit attempt so empty fields don't show errors on focus.
  */
 function fieldValidators(schema: (value: string) => unknown) {
-  const validate = ({ value }: { value: string }) =>
-    validateField(schema, value);
-  return { onBlur: validate, onSubmit: validate };
+  return {
+    onBlur: ({
+      fieldApi,
+      value,
+    }: {
+      fieldApi: { form: { state: { submissionAttempts: number } } };
+      value: string;
+    }) => {
+      if (fieldApi.form.state.submissionAttempts === 0) return;
+      return validateField(schema, value);
+    },
+    onSubmit: ({ value }: { value: string }) => validateField(schema, value),
+  };
 }
 
 /**
