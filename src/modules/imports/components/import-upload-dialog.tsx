@@ -290,7 +290,7 @@ export function ImportUploadDialog() {
                   />
                   {selectedFile ? (
                     <div className="flex items-center gap-2 text-sm">
-                      <Icons.File className="size-5 text-muted-foreground" />
+                      <Icons.File className="size-5 text-muted-icon" />
                       <span>{selectedFile.file.name}</span>
                       <button
                         className="text-muted-foreground hover:text-foreground"

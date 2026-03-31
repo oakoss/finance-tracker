@@ -184,28 +184,13 @@ column header controls (sort/pin/move/visibility), and pagination.
 
 ## Cross-Cutting Findings
 
-### P0: muted-foreground contrast
+### ~~P0: muted-foreground contrast~~ (resolved, TREK-223)
 
-From theme audit (TREK-141): `--muted-foreground` at L=0.54 gives
-~3.5:1 contrast, below WCAG AA 4.5:1 for text.
-
-**Affected components** (using `text-muted-foreground`):
-
-- Forms: field (FieldDescription), select (SelectLabel, SelectIcon),
-  combobox (ComboboxLabel, ComboboxEmpty), autocomplete, native-select
-- Overlays: dialog (DialogDescription), sheet (SheetDescription),
-  alert-dialog (AlertDialogDescription), popover (PopoverDescription),
-  drawer (DrawerDescription)
-- Data display: card (CardDescription), empty (EmptyDescription),
-  table (TableCaption)
-- Navigation: tabs (TabsTrigger inactive state), breadcrumb
-- Layout: alert (AlertDescription), banner (BannerDescription)
-- Feedback: progress (ProgressValue)
-
-**Action:** Darken `--muted-foreground` to ~L=0.46 in globals.css
-(one-line fix). Then audit each usage: keep for descriptions/helper
-text (now passing), switch pure-icon or decorative uses to
-`text-muted-icon`.
+Darkened `--muted-foreground` from L=0.54 (~3.5:1) to L=0.46
+(~5.3:1) in `src/styles/globals.css`. Migrated 11 standalone
+icon usages to `text-muted-icon` (select, combobox,
+native-select, phone-input, tree, chart, calendar,
+import-upload-dialog). Remaining usages are text.
 
 ### P1: Dialog size variants
 
@@ -289,13 +274,13 @@ could be useful for rich text editing if added later.
 
 ## Summary by Downstream Task
 
-| Task                      | Action Items                                                                              | Priority |
-| ------------------------- | ----------------------------------------------------------------------------------------- | -------- |
-| TREK-133 (Forms)          | Add size variants to Input                                                                | P2       |
-| TREK-134 (Selection)      | Document combobox vs autocomplete                                                         | P2       |
-| TREK-135 (Overlays)       | Add size variants to Dialog. Verify Radix-era selectors in Tooltip                        | P1, P2   |
-| TREK-136 (Data Display)   | None                                                                                      | skip     |
-| TREK-137 (Navigation)     | None                                                                                      | skip     |
-| TREK-138 (Date/Time)      | None (future: Base UI Calendar, range picker)                                             | skip     |
-| TREK-139 (Layout/Utility) | None                                                                                      | skip     |
-| Cross-cutting             | Darken --muted-foreground token. Add motion-reduce overrides for transition-\* components | P0, P2   |
+| Task                      | Action Items                                                                                         | Priority   |
+| ------------------------- | ---------------------------------------------------------------------------------------------------- | ---------- |
+| TREK-133 (Forms)          | Add size variants to Input                                                                           | P2         |
+| TREK-134 (Selection)      | Document combobox vs autocomplete                                                                    | P2         |
+| TREK-135 (Overlays)       | Add size variants to Dialog. Verify Radix-era selectors in Tooltip                                   | P1, P2     |
+| TREK-136 (Data Display)   | None                                                                                                 | skip       |
+| TREK-137 (Navigation)     | None                                                                                                 | skip       |
+| TREK-138 (Date/Time)      | None (future: Base UI Calendar, range picker)                                                        | skip       |
+| TREK-139 (Layout/Utility) | None                                                                                                 | skip       |
+| Cross-cutting             | ~~Darken --muted-foreground token~~ (done). Add motion-reduce overrides for transition-\* components | ~~P0~~, P2 |

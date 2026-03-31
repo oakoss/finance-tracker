@@ -181,19 +181,19 @@ function TreeItemLabel<T = any>({
         (toggleIconType === 'plus-minus' ? (
           item.isExpanded() ? (
             <Icons.Minus
-              className="size-3.5 text-muted-foreground"
+              className="size-3.5 text-muted-icon"
               stroke="currentColor"
               strokeWidth="1"
             />
           ) : (
             <Icons.Plus
-              className="size-3.5 text-muted-foreground"
+              className="size-3.5 text-muted-icon"
               stroke="currentColor"
               strokeWidth="1"
             />
           )
         ) : (
-          <Icons.ChevronDown className="size-4 text-muted-foreground in-aria-[expanded=false]:-rotate-90" />
+          <Icons.ChevronDown className="size-4 text-muted-icon in-aria-[expanded=false]:-rotate-90" />
         ))}
       {children ??
         (typeof item.getItemName === 'function' ? item.getItemName() : null)}

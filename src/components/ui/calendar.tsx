@@ -94,7 +94,7 @@ function Calendar({
           'font-medium select-none',
           captionLayout === 'label'
             ? 'text-sm'
-            : 'flex items-center gap-1 rounded-(--cell-radius) text-sm [&>svg]:size-3.5 [&>svg]:text-muted-foreground',
+            : 'flex items-center gap-1 rounded-(--cell-radius) text-sm [&>svg]:size-3.5 [&>svg]:text-muted-icon',
           defaultClassNames.caption_label,
         ),
         day: cn(

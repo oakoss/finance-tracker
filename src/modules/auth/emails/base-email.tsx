@@ -35,7 +35,7 @@ export function BaseEmail({ children, lang = 'en', preview }: BaseEmailProps) {
                 card: 'oklch(1 0 0)',
                 foreground: 'oklch(0.141 0.005 247)',
                 muted: 'oklch(0.967 0.001 247)',
-                'muted-foreground': 'oklch(0.54 0.016 247)',
+                'muted-foreground': 'oklch(0.46 0.016 247)',
                 primary: 'oklch(0.45 0.08 245)',
                 'primary-foreground': 'oklch(0.985 0 0)',
                 secondary: 'oklch(0.967 0.001 247)',

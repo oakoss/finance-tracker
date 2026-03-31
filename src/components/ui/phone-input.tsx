@@ -225,7 +225,7 @@ function FlagPreview({ country, countryName }: FlagPreviewProps) {
     </span>
   ) : (
     <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted">
-      <Icons.Globe className="size-4 text-muted-foreground" />
+      <Icons.Globe className="size-4 text-muted-icon" />
     </span>
   );
 }

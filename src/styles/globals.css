@@ -20,9 +20,9 @@
   /* UI tokens foregrounds */
   --primary-foreground: oklch(0.985 0 0);
   --secondary-foreground: oklch(0.21 0.006 247);
-  --muted-foreground: oklch(0.54 0.016 247);
-  /* Text needs 4.5:1 (SC 1.4.3) but icons only need 3:1 (SC 1.4.11).
-     In light mode this allows a slightly lighter shade than --muted-foreground. */
+  --muted-foreground: oklch(0.46 0.016 247);
+  /* Icons only need 3:1 contrast (SC 1.4.11) vs 4.5:1 for text.
+     --muted-icon is lighter than --muted-foreground for decorative icons. */
   --muted-icon: oklch(0.552 0.016 247);
   --accent-foreground: oklch(0.21 0.006 247);
   --link-foreground: oklch(0.26 0.12 245);

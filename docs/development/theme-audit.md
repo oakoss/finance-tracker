@@ -147,10 +147,10 @@ z-index behavior and add tokens if needed.
 
 ## Summary
 
-| Priority | Change                                      | Reason                                |
-| -------- | ------------------------------------------- | ------------------------------------- |
-| P0       | Darken `--muted-foreground` to ~L=0.46      | WCAG AA 4.5:1 for text                |
-| P1       | Audit 151 `text-muted-foreground` usages    | Some may need `text-muted-icon`       |
-| P2       | Differentiate `--accent` from `--secondary` | Currently identical values            |
-| P2       | Add duration tokens                         | Consistency for revamp transitions    |
-| P3       | Add z-index token scale                     | Only if stacked overlay issues emerge |
+| Priority | Change                                       | Reason                                |
+| -------- | -------------------------------------------- | ------------------------------------- |
+| ~~P0~~   | ~~Darken `--muted-foreground` to ~L=0.46~~   | Done (TREK-223)                       |
+| ~~P1~~   | ~~Audit 151 `text-muted-foreground` usages~~ | Done — all are text, none need change |
+| P2       | Differentiate `--accent` from `--secondary`  | Currently identical values            |
+| P2       | Add duration tokens                          | Consistency for revamp transitions    |
+| P3       | Add z-index token scale                      | Only if stacked overlay issues emerge |
