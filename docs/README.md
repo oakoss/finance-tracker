@@ -23,6 +23,7 @@ Project documentation organized by area.
 - `docs/development/cookies.md`
 - `docs/development/toasts.md`
 - `docs/development/styling.md`
+- `docs/development/component-audit.md`
 - `docs/development/theme-audit.md`
 - `docs/development/svg.md`
 - `docs/development/uploads.md`
