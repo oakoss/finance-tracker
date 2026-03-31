@@ -98,7 +98,7 @@ export function TransactionForm({
   tags: tagList,
 }: TransactionFormProps) {
   // Payee state
-  const [selectedPayeeId, setSelectedPayeeId] = useState<string | null>(
+  const [selectedPayeeId, setSelectedPayeeId] = useState(
     defaultValues?.payeeId ?? null,
   );
   const [newPayeeName, setNewPayeeName] = useState<string | null>(null);
@@ -111,7 +111,7 @@ export function TransactionForm({
   });
 
   // Tag state
-  const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
+  const [selectedTagIds, setSelectedTagIds] = useState(
     defaultValues?.tagIds ?? [],
   );
   const [newTagNames, setNewTagNames] = useState<string[]>([]);

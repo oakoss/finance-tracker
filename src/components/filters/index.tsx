@@ -75,7 +75,7 @@ function Filters<T = unknown>({
 }: FiltersProps<T>) {
   const [addFilterOpen, setAddFilterOpen] = useState(false);
   const [menuSearchInput, setMenuSearchInput] = useState('');
-  const [activeMenu, setActiveMenu] = useState<string>('root');
+  const [activeMenu, setActiveMenu] = useState('root');
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [lastAddedFilterId, setLastAddedFilterId] = useState<string | null>(

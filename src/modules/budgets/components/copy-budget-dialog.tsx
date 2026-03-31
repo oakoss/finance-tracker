@@ -36,7 +36,7 @@ export function CopyBudgetDialog({
   year: number;
 }) {
   const mutation = useCopyBudgetPeriod();
-  const [sourcePeriodId, setSourcePeriodId] = useState<string>('');
+  const [sourcePeriodId, setSourcePeriodId] = useState('');
 
   function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();

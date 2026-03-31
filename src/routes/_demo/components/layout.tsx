@@ -566,7 +566,7 @@ const INITIAL_TASKS: SortableTask[] = [
 ];
 
 function SortableDemo() {
-  const [tasks, setTasks] = useState<SortableTask[]>(INITIAL_TASKS);
+  const [tasks, setTasks] = useState(INITIAL_TASKS);
 
   return (
     <Section title="Sortable">
