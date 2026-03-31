@@ -13,25 +13,24 @@ skip (fine as-is).
 
 ## 1. Forms (TREK-133)
 
-| Component      | Base UI            | Variants        | Verdict | Priority | Notes                                                                                                                    |
-| -------------- | ------------------ | --------------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------ |
-| field          | No                 | orientation (3) | keep    | skip     | 10 exports. FieldError dedupes. More complete than shadcn and coss equivalents.                                          |
-| input          | Yes                | None            | update  | P2       | Single size (h-8). shadcn latest adds size variants (sm/default/lg). Consider adding for consistency with select/button. |
-| textarea       | No                 | None            | keep    | skip     | Uses `field-sizing-content` for auto-grow. Clean.                                                                        |
-| checkbox       | Yes                | None            | keep    | skip     | Proper Base UI compound. Touch target via `after:` pseudo.                                                               |
-| switch         | Yes                | size (2)        | keep    | skip     | Has sm/default sizes. Touch target via `after:` pseudo.                                                                  |
-| radio-group    | Yes                | None            | keep    | skip     | Clean Base UI wrapper.                                                                                                   |
-| select         | Yes                | size (2)        | keep    | skip     | Full compound with scroll arrows, positioner, separator.                                                                 |
-| native-select  | No                 | size (2)        | keep    | skip     | Proper fallback for mobile. Custom chevron icon.                                                                         |
-| number-field   | Yes                | size (3)        | keep    | skip     | Context-based compound with scrub area. More capable than shadcn and coss.                                               |
-| label          | No                 | None            | keep    | skip     | Simple, correct.                                                                                                         |
-| password-input | No                 | None            | keep    | P2       | i18n-ready toggle labels. Consider extracting toggle logic to a generic `InputReveal` pattern.                           |
-| input-otp      | No (input-otp lib) | None            | keep    | skip     | Uses `input-otp` package. Standard implementation.                                                                       |
-| input-group    | No                 | align (4)       | keep    | skip     | Flexible addon system with auto-focus. Not in shadcn/coss.                                                               |
-| phone-input    | No                 | None            | keep    | skip     | International phone input with country selector.                                                                         |
+| Component      | Base UI            | Variants        | Verdict | Priority | Notes                                                                                          |
+| -------------- | ------------------ | --------------- | ------- | -------- | ---------------------------------------------------------------------------------------------- |
+| field          | No                 | orientation (3) | keep    | skip     | 10 exports. FieldError dedupes. More complete than shadcn and coss equivalents.                |
+| input          | Yes                | size (3)        | keep    | ~~P2~~   | Size variants added (sm/default/lg). Done (TREK-133).                                          |
+| textarea       | No                 | None            | keep    | skip     | Uses `field-sizing-content` for auto-grow. Clean.                                              |
+| checkbox       | Yes                | None            | keep    | skip     | Proper Base UI compound. Touch target via `after:` pseudo.                                     |
+| switch         | Yes                | size (2)        | keep    | skip     | Has sm/default sizes. Touch target via `after:` pseudo.                                        |
+| radio-group    | Yes                | None            | keep    | skip     | Clean Base UI wrapper.                                                                         |
+| select         | Yes                | size (2)        | keep    | skip     | Full compound with scroll arrows, positioner, separator.                                       |
+| native-select  | No                 | size (2)        | keep    | skip     | Proper fallback for mobile. Custom chevron icon.                                               |
+| number-field   | Yes                | size (3)        | keep    | skip     | Context-based compound with scrub area. More capable than shadcn and coss.                     |
+| label          | No                 | None            | keep    | skip     | Simple, correct.                                                                               |
+| password-input | No                 | None            | keep    | P2       | i18n-ready toggle labels. Consider extracting toggle logic to a generic `InputReveal` pattern. |
+| input-otp      | No (input-otp lib) | None            | keep    | skip     | Uses `input-otp` package. Standard implementation.                                             |
+| input-group    | No                 | align (4)       | keep    | skip     | Flexible addon system with auto-focus. Not in shadcn/coss.                                     |
+| phone-input    | No                 | None            | keep    | skip     | International phone input with country selector.                                               |
 
-**Summary for TREK-133:** One action item: add size variants
-to `input` (P2).
+**Summary for TREK-133:** Done. Input size variants added.
 
 ---
 
@@ -276,7 +275,7 @@ could be useful for rich text editing if added later.
 
 | Task                      | Action Items                                                                                         | Priority   |
 | ------------------------- | ---------------------------------------------------------------------------------------------------- | ---------- |
-| TREK-133 (Forms)          | Add size variants to Input                                                                           | P2         |
+| TREK-133 (Forms)          | ~~Add size variants to Input~~ (done)                                                                | ~~P2~~     |
 | TREK-134 (Selection)      | ~~Document combobox vs autocomplete~~ (done)                                                         | ~~P2~~     |
 | TREK-135 (Overlays)       | ~~Add size variants to Dialog. Verify Radix-era selectors in Tooltip~~ (done)                        | ~~P1, P2~~ |
 | TREK-136 (Data Display)   | None                                                                                                 | skip       |

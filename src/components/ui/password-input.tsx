@@ -9,7 +9,7 @@ import { m } from '@/paraglide/messages';
 function PasswordInput({
   className,
   ...props
-}: Omit<React.ComponentProps<'input'>, 'type'>) {
+}: Omit<React.ComponentProps<typeof Input>, 'type'>) {
   const [visible, setVisible] = useState(false);
 
   return (
