@@ -61,7 +61,7 @@ function getMappingValidation(
 }
 
 export function ImportUploadDialog() {
-  const search = useSearch({ from: '/_app/imports' });
+  const search = useSearch({ from: '/_app/imports/' });
   const navigate = useNavigate();
   const mutation = useCreateImport();
   const { data: accounts } = useSuspenseQuery(accountQueries.list());

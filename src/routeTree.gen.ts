@@ -17,12 +17,13 @@ import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as AppTransactionsRouteImport } from './routes/_app/transactions'
-import { Route as AppImportsRouteImport } from './routes/_app/imports'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppCategoriesRouteImport } from './routes/_app/categories'
 import { Route as AppBudgetsRouteImport } from './routes/_app/budgets'
 import { Route as AppAccountsRouteImport } from './routes/_app/accounts'
 import { Route as DemoComponentsRouteRouteImport } from './routes/_demo/components/route'
+import { Route as AppImportsRouteRouteImport } from './routes/_app/imports/route'
+import { Route as AppImportsIndexRouteImport } from './routes/_app/imports/index'
 import { Route as ApiIngestSplatRouteImport } from './routes/api/ingest/$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as DemoComponentsSelectionsRouteImport } from './routes/_demo/components/selections'
@@ -32,6 +33,7 @@ import { Route as DemoComponentsLayoutRouteImport } from './routes/_demo/compone
 import { Route as DemoComponentsFormsRouteImport } from './routes/_demo/components/forms'
 import { Route as DemoComponentsDateRouteImport } from './routes/_demo/components/date'
 import { Route as DemoComponentsDataRouteImport } from './routes/_demo/components/data'
+import { Route as AppImportsImportIdRouteImport } from './routes/_app/imports/$importId'
 
 const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
@@ -69,11 +71,6 @@ const AppTransactionsRoute = AppTransactionsRouteImport.update({
   path: '/transactions',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppImportsRoute = AppImportsRouteImport.update({
-  id: '/imports',
-  path: '/imports',
-  getParentRoute: () => AppRouteRoute,
-} as any)
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -98,6 +95,16 @@ const DemoComponentsRouteRoute = DemoComponentsRouteRouteImport.update({
   id: '/components',
   path: '/components',
   getParentRoute: () => DemoRouteRoute,
+} as any)
+const AppImportsRouteRoute = AppImportsRouteRouteImport.update({
+  id: '/imports',
+  path: '/imports',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppImportsIndexRoute = AppImportsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppImportsRouteRoute,
 } as any)
 const ApiIngestSplatRoute = ApiIngestSplatRouteImport.update({
   id: '/api/ingest/$',
@@ -146,18 +153,24 @@ const DemoComponentsDataRoute = DemoComponentsDataRouteImport.update({
   path: '/data',
   getParentRoute: () => DemoComponentsRouteRoute,
 } as any)
+const AppImportsImportIdRoute = AppImportsImportIdRouteImport.update({
+  id: '/$importId',
+  path: '/$importId',
+  getParentRoute: () => AppImportsRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
+  '/imports': typeof AppImportsRouteRouteWithChildren
   '/components': typeof DemoComponentsRouteRouteWithChildren
   '/accounts': typeof AppAccountsRoute
   '/budgets': typeof AppBudgetsRoute
   '/categories': typeof AppCategoriesRoute
   '/dashboard': typeof AppDashboardRoute
-  '/imports': typeof AppImportsRoute
   '/transactions': typeof AppTransactionsRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
+  '/imports/$importId': typeof AppImportsImportIdRoute
   '/components/data': typeof DemoComponentsDataRoute
   '/components/date': typeof DemoComponentsDateRoute
   '/components/forms': typeof DemoComponentsFormsRoute
@@ -167,6 +180,7 @@ export interface FileRoutesByFullPath {
   '/components/selections': typeof DemoComponentsSelectionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/ingest/$': typeof ApiIngestSplatRoute
+  '/imports/': typeof AppImportsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
@@ -175,10 +189,10 @@ export interface FileRoutesByTo {
   '/budgets': typeof AppBudgetsRoute
   '/categories': typeof AppCategoriesRoute
   '/dashboard': typeof AppDashboardRoute
-  '/imports': typeof AppImportsRoute
   '/transactions': typeof AppTransactionsRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
+  '/imports/$importId': typeof AppImportsImportIdRoute
   '/components/data': typeof DemoComponentsDataRoute
   '/components/date': typeof DemoComponentsDateRoute
   '/components/forms': typeof DemoComponentsFormsRoute
@@ -188,6 +202,7 @@ export interface FileRoutesByTo {
   '/components/selections': typeof DemoComponentsSelectionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/ingest/$': typeof ApiIngestSplatRoute
+  '/imports': typeof AppImportsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -195,16 +210,17 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_demo': typeof DemoRouteRouteWithChildren
   '/_public': typeof PublicRouteRouteWithChildren
+  '/_app/imports': typeof AppImportsRouteRouteWithChildren
   '/_demo/components': typeof DemoComponentsRouteRouteWithChildren
   '/_app/accounts': typeof AppAccountsRoute
   '/_app/budgets': typeof AppBudgetsRoute
   '/_app/categories': typeof AppCategoriesRoute
   '/_app/dashboard': typeof AppDashboardRoute
-  '/_app/imports': typeof AppImportsRoute
   '/_app/transactions': typeof AppTransactionsRoute
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/_public/': typeof PublicIndexRoute
+  '/_app/imports/$importId': typeof AppImportsImportIdRoute
   '/_demo/components/data': typeof DemoComponentsDataRoute
   '/_demo/components/date': typeof DemoComponentsDateRoute
   '/_demo/components/forms': typeof DemoComponentsFormsRoute
@@ -214,20 +230,22 @@ export interface FileRoutesById {
   '/_demo/components/selections': typeof DemoComponentsSelectionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/ingest/$': typeof ApiIngestSplatRoute
+  '/_app/imports/': typeof AppImportsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/imports'
     | '/components'
     | '/accounts'
     | '/budgets'
     | '/categories'
     | '/dashboard'
-    | '/imports'
     | '/transactions'
     | '/sign-in'
     | '/sign-up'
+    | '/imports/$importId'
     | '/components/data'
     | '/components/date'
     | '/components/forms'
@@ -237,6 +255,7 @@ export interface FileRouteTypes {
     | '/components/selections'
     | '/api/auth/$'
     | '/api/ingest/$'
+    | '/imports/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -245,10 +264,10 @@ export interface FileRouteTypes {
     | '/budgets'
     | '/categories'
     | '/dashboard'
-    | '/imports'
     | '/transactions'
     | '/sign-in'
     | '/sign-up'
+    | '/imports/$importId'
     | '/components/data'
     | '/components/date'
     | '/components/forms'
@@ -258,22 +277,24 @@ export interface FileRouteTypes {
     | '/components/selections'
     | '/api/auth/$'
     | '/api/ingest/$'
+    | '/imports'
   id:
     | '__root__'
     | '/_app'
     | '/_auth'
     | '/_demo'
     | '/_public'
+    | '/_app/imports'
     | '/_demo/components'
     | '/_app/accounts'
     | '/_app/budgets'
     | '/_app/categories'
     | '/_app/dashboard'
-    | '/_app/imports'
     | '/_app/transactions'
     | '/_auth/sign-in'
     | '/_auth/sign-up'
     | '/_public/'
+    | '/_app/imports/$importId'
     | '/_demo/components/data'
     | '/_demo/components/date'
     | '/_demo/components/forms'
@@ -283,6 +304,7 @@ export interface FileRouteTypes {
     | '/_demo/components/selections'
     | '/api/auth/$'
     | '/api/ingest/$'
+    | '/_app/imports/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -352,13 +374,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTransactionsRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/imports': {
-      id: '/_app/imports'
-      path: '/imports'
-      fullPath: '/imports'
-      preLoaderRoute: typeof AppImportsRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
     '/_app/dashboard': {
       id: '/_app/dashboard'
       path: '/dashboard'
@@ -393,6 +408,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/components'
       preLoaderRoute: typeof DemoComponentsRouteRouteImport
       parentRoute: typeof DemoRouteRoute
+    }
+    '/_app/imports': {
+      id: '/_app/imports'
+      path: '/imports'
+      fullPath: '/imports'
+      preLoaderRoute: typeof AppImportsRouteRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/imports/': {
+      id: '/_app/imports/'
+      path: '/'
+      fullPath: '/imports/'
+      preLoaderRoute: typeof AppImportsIndexRouteImport
+      parentRoute: typeof AppImportsRouteRoute
     }
     '/api/ingest/$': {
       id: '/api/ingest/$'
@@ -457,24 +486,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoComponentsDataRouteImport
       parentRoute: typeof DemoComponentsRouteRoute
     }
+    '/_app/imports/$importId': {
+      id: '/_app/imports/$importId'
+      path: '/$importId'
+      fullPath: '/imports/$importId'
+      preLoaderRoute: typeof AppImportsImportIdRouteImport
+      parentRoute: typeof AppImportsRouteRoute
+    }
   }
 }
 
+interface AppImportsRouteRouteChildren {
+  AppImportsImportIdRoute: typeof AppImportsImportIdRoute
+  AppImportsIndexRoute: typeof AppImportsIndexRoute
+}
+
+const AppImportsRouteRouteChildren: AppImportsRouteRouteChildren = {
+  AppImportsImportIdRoute: AppImportsImportIdRoute,
+  AppImportsIndexRoute: AppImportsIndexRoute,
+}
+
+const AppImportsRouteRouteWithChildren = AppImportsRouteRoute._addFileChildren(
+  AppImportsRouteRouteChildren,
+)
+
 interface AppRouteRouteChildren {
+  AppImportsRouteRoute: typeof AppImportsRouteRouteWithChildren
   AppAccountsRoute: typeof AppAccountsRoute
   AppBudgetsRoute: typeof AppBudgetsRoute
   AppCategoriesRoute: typeof AppCategoriesRoute
   AppDashboardRoute: typeof AppDashboardRoute
-  AppImportsRoute: typeof AppImportsRoute
   AppTransactionsRoute: typeof AppTransactionsRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppImportsRouteRoute: AppImportsRouteRouteWithChildren,
   AppAccountsRoute: AppAccountsRoute,
   AppBudgetsRoute: AppBudgetsRoute,
   AppCategoriesRoute: AppCategoriesRoute,
   AppDashboardRoute: AppDashboardRoute,
-  AppImportsRoute: AppImportsRoute,
   AppTransactionsRoute: AppTransactionsRoute,
 }
 

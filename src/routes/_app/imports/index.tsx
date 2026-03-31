@@ -15,7 +15,7 @@ import { importQueries } from '@/modules/imports/hooks/use-imports';
 
 const searchSchema = type({ 'modal?': type.enumerated('upload') });
 
-export const Route = createFileRoute('/_app/imports')({
+export const Route = createFileRoute('/_app/imports/')({
   component: ImportsPage,
   errorComponent: ImportsError,
   validateSearch: (raw) => {

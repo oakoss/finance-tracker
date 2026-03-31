@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router';
 import { useState } from 'react';
 
 import type { ImportListItem } from '@/modules/imports/api/list-imports';
@@ -32,6 +33,14 @@ export function ImportRowActions({ row }: ImportRowActionsProps) {
           }
         />
         <DropdownMenuContent align="end">
+          <DropdownMenuItem
+            render={
+              <Link params={{ importId: row.id }} to="/imports/$importId" />
+            }
+          >
+            <Icons.Eye className="size-4" />
+            {m['imports.detail.review']()}
+          </DropdownMenuItem>
           <DropdownMenuItem
             className="text-destructive"
             onClick={() => setDeleteOpen(true)}
