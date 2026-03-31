@@ -24,7 +24,9 @@ pnpm db:seed --profile e2e  # seed E2E test users
 | `pnpm test:e2e -- e2e/app/accounts.test.ts` | Single file                            |
 
 The web server starts automatically (`pnpm build && pnpm start`).
-Locally, an already-running server on port 3000 is reused.
+E2E runs on port 3001 to avoid colliding with a dev server on
+port 3000. If a server is already running on 3001, it is reused
+locally.
 
 ## Project Structure
 

@@ -281,8 +281,9 @@ all running tests are aborted.
 
 ## webServer
 
-The `webServer` config starts the dev server automatically before
-tests run. Our config uses `pnpm dev` on port 3000.
+The `webServer` config starts the app server automatically before
+tests run. Our config uses `pnpm build && pnpm start` on port 3001
+(set via `process.env.PORT` in `playwright.config.ts`).
 
 **Key options:**
 
@@ -290,8 +291,8 @@ tests run. Our config uses `pnpm dev` on port 3000.
 // playwright.config.ts
 export default defineConfig({
   webServer: {
-    command: 'pnpm dev',
-    url: 'http://localhost:3000', // readiness probe (polled until 2xx-403)
+    command: 'pnpm build && pnpm start',
+    url: 'http://localhost:3001', // readiness probe (polled until 2xx-403)
     reuseExistingServer: !process.env.CI, // reuse if already running locally
     timeout: 120_000, // startup timeout (default 60s, bump for cold starts)
     stdout: 'pipe', // forward dev server output to terminal
@@ -311,9 +312,9 @@ export default defineConfig({
 ```
 
 **`reuseExistingServer`** — set to `!process.env.CI` so locally
-the tests use your already-running `pnpm dev`, while CI always
-starts a fresh server. Without this, starting tests when `pnpm dev`
-is already running either fails or double-starts.
+the tests reuse a server already running on port 3001, while CI
+always starts a fresh build. Without this, starting tests when a
+server is already running either fails or double-starts.
 
 **`webServer.url` vs `use.baseURL`** — these serve different
 purposes:
@@ -326,15 +327,15 @@ purposes:
 They are usually the same value but are independent settings.
 
 **Multiple servers** — start additional services (mock SMTP,
-background workers) alongside the dev server:
+background workers) alongside the app server:
 
 ```ts
 export default defineConfig({
   webServer: [
     {
       name: 'app',
-      command: 'pnpm dev',
-      url: 'http://localhost:3000',
+      command: 'pnpm build && pnpm start',
+      url: 'http://localhost:3001',
       reuseExistingServer: !process.env.CI,
     },
     {

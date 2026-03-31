@@ -21,6 +21,7 @@ export default defineConfig(
     '**/paraglide',
     '**/*.gen.ts',
     'src/env.d.ts',
+    '.env*',
   ]),
   { languageOptions: { ecmaVersion: 'latest', globals: globals.browser } },
   {

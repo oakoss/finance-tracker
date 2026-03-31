@@ -3,9 +3,9 @@ import { defineConfig, devices } from '@playwright/test';
 import { E2E_USER_COUNT } from '~e2e/fixtures/constants';
 
 process.env.APP_ENV ??= 'test';
+process.env.PORT ??= '3001';
 
-const PORT = 3000;
-const BASE_URL = `http://localhost:${PORT}`;
+const BASE_URL = `http://localhost:${process.env.PORT}`;
 
 // Strip defaultBrowserType so iPhone uses Chromium instead of WebKit
 // (avoids requiring a WebKit install). Pixel already defaults to

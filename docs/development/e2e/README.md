@@ -27,8 +27,8 @@ npx playwright show-report                 # open the HTML report viewer
   in parallel, not just files
 - **Browser**: Chromium desktop + iPhone 15 Pro Max + Pixel 7
   (mobile viewports only run `@mobile`-tagged tests)
-- **Dev server**: Playwright starts `pnpm dev` locally or
-  `pnpm start` (production build) in CI (port 3000)
+- **Server**: `pnpm build && pnpm start` on port 3001 (avoids
+  colliding with dev on 3000). Reuses existing server locally
 - **Retries**: 2 in CI, 0 locally
 - **Timeouts**: 30s test, 10s action, 15s navigation, 10s assertion.
   Override `actionTimeout` per-test or per-describe with
