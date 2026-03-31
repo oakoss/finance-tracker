@@ -105,6 +105,22 @@ test.describe(
         ).toBeVisible();
       });
 
+      await test.step('edit a cell via click-to-edit', async () => {
+        const editBtn = page
+          .getByRole('button', { name: /starbucks/i })
+          .first();
+        await editBtn.click();
+        // Input appears in the same cell — use page-scoped locator
+        // since the row name changes after fill
+        const input = page.getByRole('textbox').first();
+        await expect(input).toBeFocused();
+        await input.fill('EDITED COFFEE');
+        await page.keyboard.press('Enter');
+        await expect(
+          page.getByRole('button', { name: /edited coffee/i }).first(),
+        ).toBeVisible();
+      });
+
       await test.step('commit import', async () => {
         const commitBtn = page.getByRole('button', { name: /commit import/i });
         await expect(commitBtn).toBeEnabled();
@@ -119,11 +135,18 @@ test.describe(
         ).toBeVisible();
       });
 
+      await test.step('committed rows are not editable', async () => {
+        const descCell = page
+          .getByRole('cell', { name: /edited coffee/i })
+          .first();
+        await expect(descCell.getByRole('button')).toHaveCount(0);
+      });
+
       await test.step('verify transactions were created', async () => {
         await page.goto('/transactions');
         await expect(page.getByRole('table')).toBeVisible();
         await expect(
-          page.getByRole('cell', { name: /starbucks/i }).first(),
+          page.getByRole('cell', { name: /edited coffee/i }).first(),
         ).toBeVisible();
       });
     });
@@ -143,7 +166,6 @@ test.describe(
         await navigateToImportDetail(page, fileName);
 
         const table = page.getByRole('table');
-        // Should have mixed statuses in table cells
         await expect(
           table.getByRole('cell', { name: /^mapped$/i }).first(),
         ).toBeVisible();
@@ -152,6 +174,48 @@ test.describe(
         ).toBeVisible();
         await expect(
           table.getByRole('cell', { name: /^duplicate$/i }).first(),
+        ).toBeVisible();
+      });
+
+      await test.step('toggle hidden for error and duplicate rows', async () => {
+        const table = page.getByRole('table');
+        const errorRow = table
+          .getByRole('row')
+          .filter({ has: table.getByRole('cell', { name: /^error/i }) });
+        await expect(
+          errorRow.getByRole('button', { name: /ignore/i }),
+        ).toHaveCount(0);
+        const dupeRow = table
+          .getByRole('row')
+          .filter({ has: table.getByRole('cell', { name: /^duplicate$/i }) });
+        await expect(
+          dupeRow.getByRole('button', { name: /ignore/i }),
+        ).toHaveCount(0);
+      });
+    });
+
+    test('invalid amount edit does not save', async ({
+      page,
+      testAccountName,
+    }) => {
+      test.slow();
+
+      await page.goto('/imports');
+
+      const fileName = `amount-${Date.now()}.csv`;
+      await uploadCsv(page, testAccountName, fileName);
+      await navigateToImportDetail(page, fileName);
+
+      await test.step('edit amount with non-numeric value', async () => {
+        const row = page.getByRole('row', { name: /starbucks/i }).first();
+        await row.getByRole('button', { name: /-5\.75/i }).click();
+        const input = row.getByRole('textbox');
+        await input.fill('not-a-number');
+        await input.press('Enter');
+
+        // Cell should revert to original value
+        await expect(
+          row.getByRole('button', { name: /-5\.75/i }),
         ).toBeVisible();
       });
     });
