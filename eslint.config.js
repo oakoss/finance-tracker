@@ -55,5 +55,18 @@ export default defineConfig(
       ],
     },
   },
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: ['**/*.test.{ts,tsx}', 'src/lib/email.ts'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          message: 'Use static import instead of dynamic import().',
+          selector: 'ImportExpression',
+        },
+      ],
+    },
+  },
   ...oxlint.buildFromOxlintConfigFile('./.oxlintrc.json'),
 );
