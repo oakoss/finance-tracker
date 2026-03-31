@@ -13,6 +13,7 @@ import {
 import { attachments } from '@/modules/statements/db/schema';
 import {
   payees,
+  splitLines,
   tags,
   transactions,
   transactionTags,
@@ -37,6 +38,7 @@ export const transactionsRelations = relations(
       references: [payees.id],
     }),
     promoBucketTransactions: many(promoBucketTransactions),
+    splitLines: many(splitLines),
     transactionTags: many(transactionTags),
     transfer: one(transfers, {
       fields: [transactions.transferId],
@@ -44,6 +46,17 @@ export const transactionsRelations = relations(
     }),
   }),
 );
+
+export const splitLinesRelations = relations(splitLines, ({ one }) => ({
+  category: one(categories, {
+    fields: [splitLines.categoryId],
+    references: [categories.id],
+  }),
+  transaction: one(transactions, {
+    fields: [splitLines.transactionId],
+    references: [transactions.id],
+  }),
+}));
 
 export const transactionTagsRelations = relations(
   transactionTags,

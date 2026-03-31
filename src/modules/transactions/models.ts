@@ -6,6 +6,7 @@ import {
 
 import {
   payees,
+  splitLines,
   tags,
   transactions,
   transactionTags,
@@ -34,6 +35,14 @@ export const transactionsDeleteSchema = transactionsSelectSchema.pick('id');
 
 export type Transaction = typeof transactionsSelectSchema.infer;
 export type TransactionInsert = typeof transactionsInsertSchema.infer;
+
+export const splitLinesSelectSchema = createSelectSchema(splitLines);
+export const splitLinesInsertSchema = createInsertSchema(splitLines);
+export const splitLinesUpdateSchema = createUpdateSchema(splitLines);
+export const splitLinesDeleteSchema = splitLinesSelectSchema.pick('id');
+
+export type SplitLine = typeof splitLinesSelectSchema.infer;
+export type SplitLineInsert = typeof splitLinesInsertSchema.infer;
 
 export const transactionTagsSelectSchema = createSelectSchema(transactionTags);
 export const transactionTagsInsertSchema = createInsertSchema(transactionTags);

@@ -40,6 +40,7 @@ export function createTransaction(
     externalId: null,
     fingerprint: null,
     id: fakeId(),
+    isSplit: false,
     memo: null,
     payeeId: null,
     payeeNameRaw: null,

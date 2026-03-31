@@ -88,6 +88,7 @@ export const transactions = pgTable(
     id: uuid()
       .primaryKey()
       .default(sql`uuidv7()`),
+    isSplit: boolean().notNull().default(false),
     memo: text(),
     payeeId: uuid().references(() => payees.id, { onDelete: 'set null' }),
     payeeNameRaw: text(),
@@ -125,6 +126,29 @@ export const transactions = pgTable(
       table.accountId,
       table.fingerprint,
     ),
+  ],
+);
+
+export const splitLines = pgTable(
+  'split_lines',
+  {
+    amountCents: integer().notNull(),
+    categoryId: uuid().references(() => categories.id, {
+      onDelete: 'set null',
+    }),
+    id: uuid()
+      .primaryKey()
+      .default(sql`uuidv7()`),
+    memo: text(),
+    sortOrder: integer().notNull(),
+    transactionId: uuid()
+      .notNull()
+      .references(() => transactions.id, { onDelete: 'cascade' }),
+    ...auditFields,
+  },
+  (table) => [
+    index('split_lines_transaction_id_idx').on(table.transactionId),
+    index('split_lines_category_id_idx').on(table.categoryId),
   ],
 );
 
