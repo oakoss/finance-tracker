@@ -7,6 +7,7 @@ import { useNavigate, useRouter } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
 import type {
+  CommitImportInput,
   CreateImportInput,
   DeleteImportInput,
 } from '@/modules/imports/validators';
@@ -14,6 +15,7 @@ import type {
 import { useAnalytics } from '@/hooks/use-analytics';
 import { clientLog } from '@/lib/logging/client-logger';
 import { parseError } from '@/lib/logging/evlog';
+import { commitImport } from '@/modules/imports/api/commit-import';
 import { createImport } from '@/modules/imports/api/create-import';
 import { deleteImport } from '@/modules/imports/api/delete-import';
 import { listImports } from '@/modules/imports/api/list-imports';
@@ -49,6 +51,33 @@ export function useCreateImport() {
       void queryClient.invalidateQueries({ queryKey: importQueries.all() });
       void router.invalidate();
       capture('import_created');
+    },
+  });
+}
+
+export function useCommitImport() {
+  const queryClient = useQueryClient();
+  const { capture } = useAnalytics();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (data: CommitImportInput) => commitImport({ data }),
+    onError: (error) => {
+      const parsed = parseError(error);
+      clientLog.error({ action: 'import.commit.failed', error });
+      toast.error(m['imports.toast.commitError'](), {
+        description: parsed.fix ?? parsed.why,
+      });
+    },
+    onSuccess: (result) => {
+      toast.success(m['imports.toast.commitSuccess'](), {
+        description: m['imports.toast.commitSuccessDescription']({
+          count: result.committedCount,
+        }),
+      });
+      void queryClient.invalidateQueries({ queryKey: importQueries.all() });
+      void router.invalidate();
+      capture('import_committed');
     },
   });
 }

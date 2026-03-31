@@ -41,5 +41,8 @@ export const createImportSchema = type({
 
 export type CreateImportInput = typeof createImportSchema.infer;
 
+export const commitImportSchema = type({ importId: 'string > 0' });
+export type CommitImportInput = typeof commitImportSchema.infer;
+
 export const deleteImportSchema = importsDeleteSchema;
 export type DeleteImportInput = typeof deleteImportSchema.infer;
