@@ -46,3 +46,26 @@ export type CommitImportInput = typeof commitImportSchema.infer;
 
 export const deleteImportSchema = importsDeleteSchema;
 export type DeleteImportInput = typeof deleteImportSchema.infer;
+
+export const listImportRowsSchema = type({ importId: 'string > 0' });
+export type ListImportRowsInput = typeof listImportRowsSchema.infer;
+
+export const updateImportRowStatusSchema = type({
+  id: 'string > 0',
+  status: "'mapped' | 'ignored'",
+});
+export type UpdateImportRowStatusInput =
+  typeof updateImportRowStatusSchema.infer;
+
+export const updateImportRowDataSchema = type({
+  id: 'string > 0',
+  normalizedData: type({
+    'amountCents?': 'number',
+    'categoryName?': 'string',
+    'description?': 'string',
+    'memo?': 'string',
+    'payeeName?': 'string',
+    'transactionAt?': 'string',
+  }),
+});
+export type UpdateImportRowDataInput = typeof updateImportRowDataSchema.infer;
