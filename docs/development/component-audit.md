@@ -44,8 +44,8 @@ to `input` (P2).
 | toggle       | Yes     | variant (2), size (4) | keep    | skip     | Clean Base UI Toggle.Root wrapper.                                                                                                                                     |
 | toggle-group | Yes     | variant (2), size (4) | keep    | skip     | Compound with context for size/variant inheritance.                                                                                                                    |
 
-**Summary for TREK-134:** One action item: document combobox vs
-autocomplete usage guidance (P2).
+**Summary for TREK-134:** Done. Usage guidance added to
+`docs/development/components/README.md`.
 
 ---
 
@@ -277,7 +277,7 @@ could be useful for rich text editing if added later.
 | Task                      | Action Items                                                                                         | Priority   |
 | ------------------------- | ---------------------------------------------------------------------------------------------------- | ---------- |
 | TREK-133 (Forms)          | Add size variants to Input                                                                           | P2         |
-| TREK-134 (Selection)      | Document combobox vs autocomplete                                                                    | P2         |
+| TREK-134 (Selection)      | ~~Document combobox vs autocomplete~~ (done)                                                         | ~~P2~~     |
 | TREK-135 (Overlays)       | ~~Add size variants to Dialog. Verify Radix-era selectors in Tooltip~~ (done)                        | ~~P1, P2~~ |
 | TREK-136 (Data Display)   | None                                                                                                 | skip       |
 | TREK-137 (Navigation)     | None                                                                                                 | skip       |
