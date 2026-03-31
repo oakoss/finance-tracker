@@ -4,7 +4,7 @@
 FROM ghcr.io/dmno-dev/varlock:latest AS varlock
 
 # --- base ---
-FROM node:24-alpine@sha256:01743339035a5c3c11a373cd7c83aeab6ed1457b55da6a69e014a95ac4e4700b AS base
+FROM node:24.14.1-alpine@sha256:01743339035a5c3c11a373cd7c83aeab6ed1457b55da6a69e014a95ac4e4700b AS base
 RUN corepack enable pnpm
 WORKDIR /app
 
@@ -25,7 +25,7 @@ RUN pnpm exec varlock typegen \
 # --- production ---
 # Nitro bundles the app into .output/. Only drizzle-orm + pg needed
 # for the programmatic migration script.
-FROM node:24-alpine@sha256:01743339035a5c3c11a373cd7c83aeab6ed1457b55da6a69e014a95ac4e4700b AS production
+FROM node:24.14.1-alpine@sha256:01743339035a5c3c11a373cd7c83aeab6ed1457b55da6a69e014a95ac4e4700b AS production
 COPY --from=varlock /usr/local/bin/varlock /usr/local/bin/varlock
 RUN apk add --no-cache tini curl \
  && addgroup --system --gid 1001 nodejs \
