@@ -6,7 +6,8 @@ import type { UnsplitTransactionInput } from '@/modules/transactions/validators'
 import { insertAuditLog } from '@/lib/audit/insert-audit-log';
 import { notDeleted } from '@/lib/audit/soft-delete';
 import { ensureFound } from '@/lib/form/validation';
-import { createError } from '@/lib/logging/evlog';
+import { createError, log } from '@/lib/logging/evlog';
+import { hashId } from '@/lib/logging/hash';
 import { ledgerAccounts } from '@/modules/accounts/db/schema';
 import { splitLines, transactions } from '@/modules/transactions/db/schema';
 
@@ -43,7 +44,17 @@ export async function unsplitTransactionService(
       });
     }
 
-    await tx.delete(splitLines).where(eq(splitLines.transactionId, data.id));
+    const deleted = await tx
+      .delete(splitLines)
+      .where(eq(splitLines.transactionId, data.id))
+      .returning({ id: splitLines.id });
+
+    if (deleted.length === 0) {
+      log.warn({
+        action: 'transaction.unsplit.noLines',
+        outcome: { transactionIdHash: hashId(data.id) },
+      });
+    }
 
     // categoryId stays null; user re-assigns after unsplit
     const [updated] = await tx

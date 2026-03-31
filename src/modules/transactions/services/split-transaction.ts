@@ -84,7 +84,7 @@ export async function splitTransactionService(
       });
     }
 
-    await tx
+    const inserted = await tx
       .insert(splitLines)
       .values(
         data.lines.map((line, index) => ({
@@ -95,7 +95,16 @@ export async function splitTransactionService(
           sortOrder: index,
           transactionId: data.id,
         })),
-      );
+      )
+      .returning({ id: splitLines.id });
+
+    if (inserted.length !== data.lines.length) {
+      throw createError({
+        fix: 'Refresh and try again.',
+        message: `Expected ${data.lines.length} split lines, created ${inserted.length}.`,
+        status: 500,
+      });
+    }
 
     await insertAuditLog(tx, {
       action: 'update',

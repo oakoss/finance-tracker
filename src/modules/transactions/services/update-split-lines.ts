@@ -60,9 +60,14 @@ export async function updateSplitLinesService(
       });
     }
 
+    const previousLines = await tx
+      .select()
+      .from(splitLines)
+      .where(eq(splitLines.transactionId, data.id));
+
     await tx.delete(splitLines).where(eq(splitLines.transactionId, data.id));
 
-    await tx
+    const inserted = await tx
       .insert(splitLines)
       .values(
         data.lines.map((line, index) => ({
@@ -73,13 +78,17 @@ export async function updateSplitLinesService(
           sortOrder: index,
           transactionId: data.id,
         })),
-      );
+      )
+      .returning();
 
     await insertAuditLog(tx, {
       action: 'update',
       actorId: userId,
-      afterData: { lines: data.lines } as unknown as Record<string, unknown>,
-      beforeData: existing as unknown as Record<string, unknown>,
+      afterData: { lines: inserted } as unknown as Record<string, unknown>,
+      beforeData: { lines: previousLines } as unknown as Record<
+        string,
+        unknown
+      >,
       entityId: data.id,
       tableName: 'transactions',
     });
