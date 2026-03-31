@@ -287,6 +287,10 @@
   },
   "overrides": [
     {
+      "files": ["**/routes/**/$*.tsx"],
+      "rules": { "unicorn/filename-case": "off" }
+    },
+    {
       "files": ["**/*.{ts,tsx}"],
       "plugins": ["typescript"],
       "rules": {
