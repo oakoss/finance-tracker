@@ -46,6 +46,7 @@ export async function uploadCsv(
   page: Page,
   testAccountName: string,
   fileName: string,
+  csvContent?: string,
 ) {
   await test.step(
     `Upload CSV: ${fileName}`,
@@ -69,7 +70,7 @@ export async function uploadCsv(
 
       const fileInput = page.locator('input[type="file"]');
       await fileInput.setInputFiles({
-        buffer: Buffer.from(uniqueCsv()),
+        buffer: Buffer.from(csvContent ?? uniqueCsv()),
         mimeType: 'text/csv',
         name: fileName,
       });

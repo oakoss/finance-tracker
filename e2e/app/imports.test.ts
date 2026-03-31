@@ -83,31 +83,47 @@ test.describe(
       });
 
       await test.step('verify row table with mapped rows', async () => {
-        await expect(page.getByText(/mapped/i).first()).toBeVisible();
-        // Verify at least one data cell is visible
-        await expect(page.getByRole('table')).toBeVisible();
+        const table = page.getByRole('table');
+        await expect(table).toBeVisible();
+        await expect(
+          table.getByRole('cell', { name: /^mapped$/i }).first(),
+        ).toBeVisible();
       });
 
       await test.step('toggle row to ignored and back', async () => {
+        const table = page.getByRole('table');
         const ignoreBtn = page.getByRole('button', { name: /ignore/i }).first();
         await ignoreBtn.click();
-        await expect(page.getByText(/ignored/i).first()).toBeVisible();
+        await expect(
+          table.getByRole('cell', { name: /^ignored$/i }).first(),
+        ).toBeVisible();
 
         const mapBtn = page.getByRole('button', { name: /^map$/i }).first();
         await mapBtn.click();
-        await expect(page.getByText(/mapped/i).first()).toBeVisible();
+        await expect(
+          table.getByRole('cell', { name: /^mapped$/i }).first(),
+        ).toBeVisible();
       });
 
       await test.step('commit import', async () => {
         const commitBtn = page.getByRole('button', { name: /commit import/i });
+        await expect(commitBtn).toBeEnabled();
         await commitBtn.click();
 
         // Wait for commit to complete — button becomes disabled
         await expect(commitBtn).toBeDisabled({ timeout: 15_000 });
 
-        // Verify rows show committed status
+        // Verify rows show committed status in table cells
         await expect(
-          page.getByRole('cell', { name: /committed/i }).first(),
+          page.getByRole('cell', { name: /^committed$/i }).first(),
+        ).toBeVisible();
+      });
+
+      await test.step('verify transactions were created', async () => {
+        await page.goto('/transactions');
+        await expect(page.getByRole('table')).toBeVisible();
+        await expect(
+          page.getByRole('cell', { name: /starbucks/i }).first(),
         ).toBeVisible();
       });
     });
@@ -121,48 +137,22 @@ test.describe(
       await page.goto('/imports');
 
       const fileName = `errors-${Date.now()}.csv`;
-
-      // Upload CSV with errors using the same flow but custom CSV
-      await test.step('upload CSV with errors', async () => {
-        await page
-          .getByRole('button', { name: /upload csv/i })
-          .first()
-          .click();
-        await expect(
-          page.getByRole('heading', { name: /import csv/i }),
-        ).toBeVisible();
-
-        await page
-          .getByLabel(/account/i)
-          .first()
-          .click();
-        await page
-          .getByRole('option', { name: new RegExp(testAccountName, 'i') })
-          .click();
-
-        const fileInput = page.locator('input[type="file"]');
-        await fileInput.setInputFiles({
-          buffer: Buffer.from(uniqueCsvWithErrors()),
-          mimeType: 'text/csv',
-          name: fileName,
-        });
-
-        await page.getByRole('button', { name: /next/i }).click();
-        await expect(page.getByText(/amount format/i)).toBeVisible();
-
-        await page.getByRole('button', { name: /^import$/i }).click();
-        await expect(
-          page.getByRole('heading', { name: /import csv/i }),
-        ).toBeHidden({ timeout: 15_000 });
-      });
+      await uploadCsv(page, testAccountName, fileName, uniqueCsvWithErrors());
 
       await test.step('navigate to detail and verify statuses', async () => {
         await navigateToImportDetail(page, fileName);
 
-        // Should have mixed statuses
-        await expect(page.getByText(/mapped/i).first()).toBeVisible();
-        await expect(page.getByText(/error/i).first()).toBeVisible();
-        await expect(page.getByText(/duplicate/i).first()).toBeVisible();
+        const table = page.getByRole('table');
+        // Should have mixed statuses in table cells
+        await expect(
+          table.getByRole('cell', { name: /^mapped$/i }).first(),
+        ).toBeVisible();
+        await expect(
+          table.getByRole('cell', { name: /^error/i }).first(),
+        ).toBeVisible();
+        await expect(
+          table.getByRole('cell', { name: /^duplicate$/i }).first(),
+        ).toBeVisible();
       });
     });
 
