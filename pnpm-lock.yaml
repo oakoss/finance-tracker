@@ -136,7 +136,7 @@ importers:
         version: 0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       nodemailer:
         specifier: ^8.0.4
-        version: 8.0.4
+        version: 8.0.5
       papaparse:
         specifier: ^5.5.3
         version: 5.5.3
@@ -4206,6 +4206,9 @@ packages:
   defu@6.1.6:
     resolution: {integrity: sha512-f8mefEW4WIVg4LckePx3mALjQSPQgFlg9U8yaPdlsbdYcHQyj9n2zL2LJEA52smeYxOvmd/nB7TpMtHGMTHcug==}
 
+  defu@6.1.7:
+    resolution: {integrity: sha512-7z22QmUWiQ/2d0KkdYmANbRUVABpZ9SNYyH5vx6PZ+nE5bcC0l7uFvEfHlyld/HcGBFTL536ClDt3DEcSlEJAQ==}
+
   delayed-stream@1.0.0:
     resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
     engines: {node: '>=0.4.0'}
@@ -6056,8 +6059,8 @@ packages:
   node-releases@2.0.37:
     resolution: {integrity: sha512-1h5gKZCF+pO/o3Iqt5Jp7wc9rH3eJJ0+nh/CIoiRwjRxde/hAHyLPXYN4V3CqKAbiZPSeJFSWHmJsbkicta0Eg==}
 
-  nodemailer@8.0.4:
-    resolution: {integrity: sha512-k+jf6N8PfQJ0Fe8ZhJlgqU5qJU44Lpvp2yvidH3vp1lPnVQMgi4yEEMPXg5eJS1gFIJTVq1NHBk7Ia9ARdSBdQ==}
+  nodemailer@8.0.5:
+    resolution: {integrity: sha512-0PF8Yb1yZuQfQbq+5/pZJrtF6WQcjTd5/S4JOHs9PGFxuTqoB/icwuB44pOdURHJbRKX1PPoJZtY7R4VUoCC8w==}
     engines: {node: '>=6.0.0'}
 
   normalize-path@3.0.0:
@@ -6975,6 +6978,10 @@ packages:
 
   tinyexec@1.0.4:
     resolution: {integrity: sha512-u9r3uZC0bdpGOXtlxUIdwf9pkmvhqJdrVCH9fapQtgy/OeTTMZ1nqH7agtvEfmGui6e1XxjcdrlxvxJvc3sMqw==}
+    engines: {node: '>=18'}
+
+  tinyexec@1.1.1:
+    resolution: {integrity: sha512-VKS/ZaQhhkKFMANmAOhhXVoIfBXblQxGX1myCQ2faQrfmobMftXeJPcZGp0gS07ocvGJWDLZGyOZDadDBqYIJg==}
     engines: {node: '>=18'}
 
   tinyglobby@0.2.15:
@@ -10674,7 +10681,7 @@ snapshots:
     dependencies:
       chokidar: 4.0.3
       confbox: 0.2.4
-      defu: 6.1.6
+      defu: 6.1.7
       dotenv: 16.6.1
       exsolve: 1.0.8
       giget: 2.0.0
@@ -11098,6 +11105,9 @@ snapshots:
       object-keys: 1.1.1
 
   defu@6.1.6: {}
+
+  defu@6.1.7:
+    optional: true
 
   delayed-stream@1.0.0: {}
 
@@ -11975,7 +11985,7 @@ snapshots:
     dependencies:
       citty: 0.1.6
       consola: 3.4.2
-      defu: 6.1.6
+      defu: 6.1.7
       node-fetch-native: 1.6.7
       nypm: 0.6.5
       pathe: 2.0.3
@@ -13083,7 +13093,7 @@ snapshots:
 
   node-releases@2.0.37: {}
 
-  nodemailer@8.0.4: {}
+  nodemailer@8.0.5: {}
 
   normalize-path@3.0.0: {}
 
@@ -13104,7 +13114,7 @@ snapshots:
     dependencies:
       citty: 0.2.2
       pathe: 2.0.3
-      tinyexec: 1.0.4
+      tinyexec: 1.1.1
     optional: true
 
   object-assign@4.1.1: {}
@@ -13555,7 +13565,7 @@ snapshots:
 
   rc9@2.1.2:
     dependencies:
-      defu: 6.1.6
+      defu: 6.1.7
       destr: 2.0.5
     optional: true
 
@@ -14179,6 +14189,9 @@ snapshots:
   tinybench@2.9.0: {}
 
   tinyexec@1.0.4: {}
+
+  tinyexec@1.1.1:
+    optional: true
 
   tinyglobby@0.2.15:
     dependencies:
