@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1
 
 # --- varlock binary ---
-FROM ghcr.io/dmno-dev/varlock:latest AS varlock
+# Keep version in sync with the `varlock` entry in package.json.
+FROM ghcr.io/dmno-dev/varlock:0.7.2 AS varlock
 
 # --- base ---
 FROM node:24.14.1-alpine@sha256:01743339035a5c3c11a373cd7c83aeab6ed1457b55da6a69e014a95ac4e4700b AS base

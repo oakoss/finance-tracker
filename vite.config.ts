@@ -8,14 +8,27 @@ import { varlockVitePlugin } from '@varlock/vite-integration';
 import viteReact, { reactCompilerPreset } from '@vitejs/plugin-react';
 import evlog from 'evlog/nitro/v3';
 import { nitro } from 'nitro/vite';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import killerInstincts from 'vite-plugin-killer-instincts';
+
+const projectDir = path.dirname(fileURLToPath(import.meta.url));
 
 const isProduction = process.env.NODE_ENV === 'production';
 
 export default defineConfig({
   build: { sourcemap: 'hidden', target: 'es2023' },
   nitro: {
+    // Replace `varlock/env` in the server bundle with our
+    // process.env-backed shim. See src/lib/varlock-env-shim.ts for
+    // the full reasoning. The client bundle is unaffected because
+    // this alias only applies to the Nitro server build; on the
+    // client the varlock vite plugin still statically inlines
+    // `@public` values at build time.
+    alias: {
+      'varlock/env': path.resolve(projectDir, 'src/lib/varlock-env-shim.ts'),
+    },
     modules: [
       evlog({
         env: { service: 'finance-tracker' },
