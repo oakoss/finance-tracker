@@ -17,6 +17,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { FileUpload } from '@/components/ui/file-upload';
 import {
   Select,
   SelectContent,
@@ -266,57 +267,13 @@ export function ImportUploadDialog() {
 
               <Field>
                 <FieldLabel>{m['imports.upload.dropzone']()}</FieldLabel>
-                <div
-                  className={`flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors ${
-                    fileState.isDragging
-                      ? 'border-primary bg-primary/5'
-                      : 'border-muted-foreground/25 hover:border-muted-foreground/50'
-                  }`}
-                  role="button"
-                  tabIndex={0}
-                  onClick={fileActions.openFileDialog}
-                  onDragEnter={fileActions.handleDragEnter}
-                  onDragLeave={fileActions.handleDragLeave}
-                  onDragOver={fileActions.handleDragOver}
-                  onDrop={fileActions.handleDrop}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      fileActions.openFileDialog();
-                    }
-                  }}
-                >
-                  <input
-                    {...fileActions.getInputProps({ className: 'sr-only' })}
-                  />
-                  {selectedFile ? (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Icons.File className="size-5 text-muted-icon" />
-                      <span>{selectedFile.file.name}</span>
-                      <button
-                        className="text-muted-foreground hover:text-foreground"
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          fileActions.removeFile(selectedFile.id);
-                          csvReset();
-                        }}
-                      >
-                        <Icons.X className="size-4" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
-                      <Icons.Upload className="size-8" />
-                      <span>{m['imports.upload.dropzone']()}</span>
-                    </div>
-                  )}
-                </div>
-                {fileState.errors.length > 0 && (
-                  <p className="text-sm text-destructive">
-                    {fileState.errors[0]}
-                  </p>
-                )}
+                <FileUpload
+                  actions={fileActions}
+                  emptyLabel={m['imports.upload.dropzone']()}
+                  removeLabel={m['imports.upload.removeFile']()}
+                  state={fileState}
+                  onRemove={csvReset}
+                />
                 {csv.error && (
                   <p className="text-sm text-destructive">{csv.error}</p>
                 )}

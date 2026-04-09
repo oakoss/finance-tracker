@@ -366,6 +366,7 @@
   "imports.upload.mapColumnsDescription": "Map CSV columns to transaction fields. Unmapped columns will be skipped.",
   "imports.upload.next": "Next",
   "imports.upload.preview": "Preview",
+  "imports.upload.removeFile": "Remove file",
   "imports.upload.resetMapping": "Reset",
   "imports.upload.step.mapColumns": "Map columns",
   "imports.upload.step.upload": "Upload",

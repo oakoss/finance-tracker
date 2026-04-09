@@ -16,6 +16,7 @@ import {
   FieldSeparator,
   FieldSet,
 } from '@/components/ui/field';
+import { FileUpload } from '@/components/ui/file-upload';
 import { Input } from '@/components/ui/input';
 import {
   InputGroup,
@@ -45,6 +46,7 @@ import { Rating } from '@/components/ui/rating';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import { useFileUpload } from '@/hooks/use-file-upload';
 import { Section, Subsection } from '@/routes/_demo/components/-shared';
 
 export const Route = createFileRoute('/_demo/components/forms')({
@@ -57,6 +59,13 @@ const noop = () => {};
 function FormsPage() {
   const [ratingValue, setRatingValue] = React.useState(3);
   const [dateValue, setDateValue] = React.useState('');
+  const [defaultUploadState, defaultUploadActions] = useFileUpload({
+    maxSize: 5 * 1024 * 1024,
+  });
+  const [csvUploadState, csvUploadActions] = useFileUpload({
+    accept: '.csv',
+    maxSize: 5 * 1024 * 1024,
+  });
 
   return (
     <div className="space-y-10">
@@ -507,6 +516,26 @@ function FormsPage() {
               onValueChange={noop}
             />
           </div>
+        </Subsection>
+      </Section>
+
+      <Section title="FileUpload">
+        <Subsection className="block max-w-md" label="Default (any file)">
+          <FileUpload
+            actions={defaultUploadActions}
+            emptyHint="Up to 5 MB"
+            emptyLabel="Drop a file or click to browse"
+            state={defaultUploadState}
+          />
+        </Subsection>
+
+        <Subsection className="block max-w-md" label="Accept filter (CSV only)">
+          <FileUpload
+            actions={csvUploadActions}
+            emptyHint=".csv up to 5 MB"
+            emptyLabel="Drop a CSV file or click to browse"
+            state={csvUploadState}
+          />
         </Subsection>
       </Section>
 
