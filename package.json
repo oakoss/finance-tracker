@@ -55,7 +55,7 @@
     "@fontsource-variable/ibm-plex-sans": "^5.2.8",
     "@fontsource-variable/outfit": "^5.2.8",
     "@fontsource/ibm-plex-mono": "^5.2.7",
-    "@getbrevo/brevo": "^5.0.3",
+    "@getbrevo/brevo": "^5.0.4",
     "@headless-tree/core": "^1.6.3",
     "@react-email/components": "^1.0.12",
     "@react-email/render": "^2.0.6",

@@ -51,8 +51,8 @@ importers:
         specifier: ^5.2.7
         version: 5.2.7
       '@getbrevo/brevo':
-        specifier: ^5.0.3
-        version: 5.0.3
+        specifier: ^5.0.4
+        version: 5.0.4
       '@headless-tree/core':
         specifier: ^1.6.3
         version: 1.6.3
@@ -1263,8 +1263,8 @@ packages:
   '@fontsource/ibm-plex-mono@5.2.7':
     resolution: {integrity: sha512-MKAb8qV+CaiMQn2B0dIi1OV3565NYzp3WN5b4oT6LTkk+F0jR6j0ZN+5BKJiIhffDC3rtBULsYZE65+0018z9w==}
 
-  '@getbrevo/brevo@5.0.3':
-    resolution: {integrity: sha512-AIAFXiUkk5fpl8cVttGWZfxt84PFPS7DnB0+fRqd70kFsbwPvNfdYhrnD0tXL5jLmGrSeLv2pfACkzFD7gYeeA==}
+  '@getbrevo/brevo@5.0.4':
+    resolution: {integrity: sha512-wN4mHE6O0Pb/d/Dh3E4MAm2zCHbLLUcFF8/wgwTeMPy9KzHBYLu7S/nsJbzd0AWL09MHn8vwue8ULL9YOzluOQ==}
     engines: {node: '>=18.0.0'}
 
   '@headless-tree/core@1.6.3':
@@ -8321,7 +8321,7 @@ snapshots:
 
   '@fontsource/ibm-plex-mono@5.2.7': {}
 
-  '@getbrevo/brevo@5.0.3': {}
+  '@getbrevo/brevo@5.0.4': {}
 
   '@headless-tree/core@1.6.3': {}
 
