@@ -12,6 +12,7 @@ import { ProfileInfoSection } from '@/modules/auth/components/profile-info-secti
 import { ProfileNameForm } from '@/modules/auth/components/profile-name-form';
 import { ProfilePasswordSection } from '@/modules/auth/components/profile-password-section';
 import { linkedAccountQueries } from '@/modules/auth/hooks/use-linked-accounts';
+import { DataExportSection } from '@/modules/export/components/data-export-section';
 import { m } from '@/paraglide/messages';
 
 export const Route = createFileRoute('/_app/profile')({
@@ -36,6 +37,7 @@ function ProfilePage() {
         <ProfileEmailSection />
         {hasPassword && <ProfilePasswordSection />}
         <LinkedAccountsSection />
+        <DataExportSection />
         <DangerZoneSection />
       </div>
     </div>

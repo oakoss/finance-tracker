@@ -1,3 +1,5 @@
+import JSZip from 'jszip';
+
 import { expect, test } from '~e2e/fixtures/auth';
 
 test.describe('profile page', { tag: ['@smoke', '@authenticated'] }, () => {
@@ -34,6 +36,67 @@ test.describe('profile page', { tag: ['@smoke', '@authenticated'] }, () => {
       await expect(page.getByLabel(/display name/i)).toHaveValue(
         'E2E Test User',
       );
+    });
+  });
+
+  test('export data as CSV ZIP', async ({ page }) => {
+    await page.goto('/profile');
+
+    await test.step('click download with CSV format', async () => {
+      const downloadPromise = page.waitForEvent('download');
+      await page.getByRole('button', { name: /download/i }).click();
+      const download = await downloadPromise;
+
+      expect(download.suggestedFilename()).toBe('finance-tracker-export.zip');
+
+      const buffer = Buffer.from(
+        await download.createReadStream().then((stream) => {
+          const chunks: Buffer[] = [];
+          return new Promise<Buffer>((resolve, reject) => {
+            stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+            stream.on('end', () => resolve(Buffer.concat(chunks)));
+            stream.on('error', reject);
+          });
+        }),
+      );
+
+      const zip = await JSZip.loadAsync(buffer);
+      const fileNames = Object.keys(zip.files);
+      expect(fileNames).toContain('accounts.csv');
+      expect(fileNames).toContain('transactions.csv');
+      expect(fileNames).toContain('categories.csv');
+    });
+  });
+
+  test('export data as JSON', async ({ page }) => {
+    await page.goto('/profile');
+
+    await test.step('select JSON format and download', async () => {
+      await page.getByLabel(/format/i).click();
+      await page.getByRole('option', { name: /json/i }).click();
+
+      const downloadPromise = page.waitForEvent('download');
+      await page.getByRole('button', { name: /download/i }).click();
+      const download = await downloadPromise;
+
+      expect(download.suggestedFilename()).toBe('finance-tracker-export.json');
+
+      const content = await download.createReadStream().then((stream) => {
+        const chunks: Buffer[] = [];
+        return new Promise<string>((resolve, reject) => {
+          stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+          stream.on('end', () =>
+            resolve(Buffer.concat(chunks).toString('utf8')),
+          );
+          stream.on('error', reject);
+        });
+      });
+
+      const json = JSON.parse(content);
+      expect(json.exportedAt).toBeDefined();
+      expect(json.accounts).toBeInstanceOf(Array);
+      expect(json.transactions).toBeInstanceOf(Array);
+      expect(json.categories).toBeInstanceOf(Array);
     });
   });
 

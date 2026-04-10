@@ -36,3 +36,4 @@ Use `docs/research/0000-template.md` for new research docs.
 - `0001-profile-page-ux.md` — profile page patterns in finance apps
 - `0002-base-ui-combobox-empty-state.md` — ComboboxEmpty requires
   items prop
+- `0003-data-export.md` — data export patterns in finance apps
