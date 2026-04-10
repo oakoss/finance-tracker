@@ -111,7 +111,11 @@ src/modules/{module}/
 ```
 
 - **`api/`** — thin handler: `requireUserId` -> call service -> log
-  -> return. No business logic.
+  -> return. No business logic. **Only `createServerFn` definitions
+  and type re-exports** — no plain exported functions. TanStack Start
+  strips the `.handler()` body on the client, but sibling exports
+  survive bundling and drag their imports (db, server-only deps) into
+  the browser. Anything callable directly belongs in `services/`.
 - **`services/`** — pure business logic: accepts `db: Db` + `userId`
   \+ `data`, wraps in `db.transaction()`, does authorization checks,
   mutations, audit logging. Tested directly in integration tests.

@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from 'next-themes';
+import { useState } from 'react';
 
 import { Icons } from '@/components/icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -25,6 +26,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { useSignOut } from '@/modules/auth/hooks/use-sign-out';
+import { PreferencesDialog } from '@/modules/preferences/components/preferences-dialog';
 import { m } from '@/paraglide/messages';
 
 function ThemeIcon({ theme }: { theme: string | undefined }) {
@@ -52,6 +54,7 @@ export function NavUser({
   const { isMobile } = useSidebar();
   const { setTheme, theme } = useTheme();
   const handleSignOut = useSignOut();
+  const [preferencesOpen, setPreferencesOpen] = useState(false);
 
   return (
     <SidebarMenu>
@@ -97,6 +100,10 @@ export function NavUser({
               </DropdownMenuLabel>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => setPreferencesOpen(true)}>
+              <Icons.Settings />
+              {m['nav.preferences']()}
+            </DropdownMenuItem>
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>
                 <ThemeIcon theme={theme} />
@@ -127,6 +134,10 @@ export function NavUser({
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
+      <PreferencesDialog
+        open={preferencesOpen}
+        onOpenChange={setPreferencesOpen}
+      />
     </SidebarMenu>
   );
 }

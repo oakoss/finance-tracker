@@ -39,3 +39,4 @@ const createData = createServerFn({ method: 'POST' })
 - Log with `log.info()` using `action`/`outcome` structure.
 - Route loaders call server functions for SSR data: `loader: async () => await getData()`.
 - Client-side mutation: call server function, then `void router.invalidate()` to refetch.
+- **`api/` files contain only `createServerFn` definitions and type re-exports.** TanStack Start strips the `.handler()` body on the client, but plain sibling exports survive bundling and pull their imports (db, `node:crypto`, etc.) into the browser. Anything that needs to be callable directly (tests, other server code) lives in `services/` and is imported by the api file.

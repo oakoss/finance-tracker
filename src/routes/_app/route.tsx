@@ -4,6 +4,7 @@ import { AppHeader } from '@/components/layouts/app/app-header';
 import { SidebarShell } from '@/components/layouts/shells/sidebar-shell';
 import { usePostHogIdentity } from '@/hooks/use-posthog-identity';
 import { getSession } from '@/modules/auth/api/get-session';
+import { preferencesQueries } from '@/modules/preferences/hooks/use-preferences';
 
 export const Route = createFileRoute('/_app')({
   beforeLoad: async ({ location }) => {
@@ -16,6 +17,9 @@ export const Route = createFileRoute('/_app')({
     return { session };
   },
   component: AppLayout,
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(preferencesQueries.detail());
+  },
 });
 
 function AppLayout() {

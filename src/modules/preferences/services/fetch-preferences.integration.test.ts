@@ -1,7 +1,7 @@
 import type { Db } from '@/db';
 
-import { fetchUserPreferences } from '@/modules/preferences/api/get-preferences';
 import { DEFAULT_USER_PREFERENCES } from '@/modules/preferences/services/bootstrap';
+import { fetchUserPreferences } from '@/modules/preferences/services/fetch-preferences';
 import type { Db as TestDb } from '~test/factories/base';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';

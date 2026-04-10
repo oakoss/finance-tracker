@@ -580,9 +580,16 @@ Use Combobox for closed lists that benefit from filtering (e.g.
 currency codes). No extra classes are needed on `InputGroup` —
 alignment resets are built in.
 
+**Always pass `items` to `<Combobox>` and render rows via
+`<ComboboxCollection>`.** `<ComboboxEmpty>` only renders correctly
+when the root tracks the collection through its `items` prop. With
+manually mapped children, the empty state fires unconditionally and
+"No results found." appears stuck above the list.
+
 ```tsx
 import {
   Combobox,
+  ComboboxCollection,
   ComboboxContent,
   ComboboxEmpty,
   ComboboxInput,
@@ -597,6 +604,7 @@ const CURRENCY_CODES = Intl.supportedValuesOf('currency');
 <Field data-invalid={field.state.meta.errors.length > 0}>
   <FieldLabel>Currency</FieldLabel>
   <Combobox
+    items={CURRENCY_CODES}
     value={field.state.value}
     onValueChange={(v) => {
       if (v) field.handleChange(v);
@@ -610,11 +618,13 @@ const CURRENCY_CODES = Intl.supportedValuesOf('currency');
     <ComboboxContent>
       <ComboboxList>
         <ComboboxEmpty>No results found</ComboboxEmpty>
-        {CURRENCY_CODES.map((code) => (
-          <ComboboxItem key={code} value={code}>
-            {code}
-          </ComboboxItem>
-        ))}
+        <ComboboxCollection>
+          {(code: string) => (
+            <ComboboxItem key={code} value={code}>
+              {code}
+            </ComboboxItem>
+          )}
+        </ComboboxCollection>
       </ComboboxList>
     </ComboboxContent>
   </Combobox>
