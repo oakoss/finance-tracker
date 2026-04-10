@@ -16,7 +16,7 @@ ADRs capture:
 
 ## Template
 
-Use `docs/adr/template.md` for new ADRs.
+Use `docs/adr/0000-template.md` for new ADRs.
 
 ## Index
 

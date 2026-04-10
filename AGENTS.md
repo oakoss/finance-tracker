@@ -57,7 +57,21 @@ PostgreSQL/Drizzle, Better Auth, Tailwind CSS v4/shadcn.
 | Auth schema       | `pnpm schema:auth`                                    |
 | Clean all         | `pnpm clean`                                          |
 
-## Task Workflow
+## Design Workflow
+
+The broader pipeline flows: ideas → ADRs → specs → implementation
+(tracked by Trekker). Reviews can happen at any stage.
+
+- `docs/ideas/` — rough concepts before committing to scope
+- `docs/adr/` — decisions with context, alternatives, consequences
+- `docs/specs/` — scoped feature designs (per-epic or per-feature)
+- `docs/research/` — prior art, community findings, library behavior
+
+During planning-phase research, save findings to `docs/research/`
+so they persist across conversations. Specs are the shared reference
+that keeps tasks in an epic aligned.
+
+## Implementation Workflow
 
 **Never commit proactively.** Complete the full loop, present a
 summary, and wait for the user's explicit "commit."
@@ -69,8 +83,8 @@ are always required.
 
 1. **Review** — `trekker ready`, check task context, deps, blockers.
    Set task to `in_progress`.
-2. **Research** — read relevant files, `docs/`, schemas.
-   `/component-patterns` before any UI work.
+2. **Research** — read relevant files, `docs/` (specs, ADRs,
+   research), schemas. `/component-patterns` before any UI work.
 3. **Plan** — for non-trivial work, align with user. Sacrifice
    grammar for concision. List unresolved questions at the end.
    - `/tracer-bullets` — decompose epics into vertical slices

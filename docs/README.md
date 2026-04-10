@@ -54,6 +54,9 @@ Project documentation organized by area.
 - `docs/development/e2e/debugging.md`
 - `docs/development/e2e/accessibility.md`
 
-## Architecture
+## Design Pipeline
 
-- `docs/adr/`
+- `docs/ideas/` — rough concepts and explorations
+- `docs/adr/` — architecture decision records
+- `docs/specs/` — scoped feature designs
+- `docs/research/` — prior art and community findings
