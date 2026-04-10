@@ -24,10 +24,14 @@ import { cn } from '@/lib/utils';
 type PhoneInputSize = 'sm' | 'default' | 'lg';
 
 const PhoneInputContext = createContext<{
+  countryEmptyText?: string | undefined;
+  countrySearchPlaceholder?: string | undefined;
   popupClassName?: string | undefined;
   scrollAreaClassName?: string | undefined;
   variant: PhoneInputSize;
 }>({
+  countryEmptyText: undefined,
+  countrySearchPlaceholder: undefined,
   popupClassName: undefined,
   scrollAreaClassName: undefined,
   variant: 'default',
@@ -41,6 +45,8 @@ type PhoneInputProps = Omit<
     BasePhoneInput.Props<typeof BasePhoneInput.default>,
     'onChange' | 'variant' | 'popupClassName' | 'scrollAreaClassName'
   > & {
+    countryEmptyText?: string;
+    countrySearchPlaceholder?: string;
     onChange?: (value: BasePhoneInput.Value) => void;
     popupClassName?: string;
     scrollAreaClassName?: string;
@@ -49,6 +55,8 @@ type PhoneInputProps = Omit<
 
 function PhoneInput({
   className,
+  countryEmptyText,
+  countrySearchPlaceholder,
   onChange,
   popupClassName,
   scrollAreaClassName,
@@ -59,7 +67,13 @@ function PhoneInput({
   const phoneInputSize = variant ?? 'default';
   return (
     <PhoneInputContext
-      value={{ popupClassName, scrollAreaClassName, variant: phoneInputSize }}
+      value={{
+        countryEmptyText,
+        countrySearchPlaceholder,
+        popupClassName,
+        scrollAreaClassName,
+        variant: phoneInputSize,
+      }}
     >
       {/* @ts-expect-error -- react-phone-number-input Props lack `| undefined` on optional fields, incompatible with exactOptionalPropertyTypes */}
       <BasePhoneInput.default
@@ -120,7 +134,12 @@ function CountrySelect({
   options: countryList,
   value: selectedCountry,
 }: CountrySelectProps) {
-  const { popupClassName, variant } = use(PhoneInputContext);
+  const {
+    countryEmptyText,
+    countrySearchPlaceholder,
+    popupClassName,
+    variant,
+  } = use(PhoneInputContext);
   const [searchValue, setSearchValue] = useState('');
 
   const filteredCountries = useMemo(() => {
@@ -169,14 +188,14 @@ function CountrySelect({
       >
         <ComboboxInput
           className="rounded-none border-0 border-input px-0 py-2.5 shadow-none ring-0! outline-none! focus-visible:border-border focus-visible:ring-0 focus-visible:ring-offset-0"
-          placeholder="e.g. United States"
+          placeholder={countrySearchPlaceholder ?? 'e.g. United States'}
           showTrigger={false}
           value={searchValue}
           onChange={(event) => setSearchValue(event.target.value)}
         />
         <ComboboxSeparator />
         <ComboboxEmpty className="px-4 py-2.5 text-sm">
-          No country found.
+          {countryEmptyText ?? 'No country found.'}
         </ComboboxEmpty>
         <ComboboxList>
           <div className="relative flex max-h-full">

@@ -2,6 +2,7 @@ import { useForm } from '@tanstack/react-form';
 
 import {
   Combobox,
+  ComboboxCollection,
   ComboboxContent,
   ComboboxEmpty,
   ComboboxInput,
@@ -174,6 +175,7 @@ export function AccountForm({
                 {m['accounts.form.currency']()}
               </FieldLabel>
               <Combobox
+                items={CURRENCY_CODES}
                 value={field.state.value}
                 onValueChange={(v) => {
                   if (v) field.handleChange(v);
@@ -190,11 +192,13 @@ export function AccountForm({
                     <ComboboxEmpty>
                       {m['filters.noResultsFound']()}
                     </ComboboxEmpty>
-                    {CURRENCY_CODES.map((code) => (
-                      <ComboboxItem key={code} value={code}>
-                        {code}
-                      </ComboboxItem>
-                    ))}
+                    <ComboboxCollection>
+                      {(code: string) => (
+                        <ComboboxItem key={code} value={code}>
+                          {code}
+                        </ComboboxItem>
+                      )}
+                    </ComboboxCollection>
                   </ComboboxList>
                 </ComboboxContent>
               </Combobox>

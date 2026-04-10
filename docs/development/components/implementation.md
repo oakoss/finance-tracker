@@ -7,6 +7,10 @@ This doc covers typing and Base UI render patterns.
 - Use `type` aliases, not interfaces.
 - Wrap a single element per `ui` component.
 - Export `<ComponentName>Props` for reuse.
+- **Expose user-facing text as props** with English defaults. `ui/`
+  components must not import Paraglide, but any visible text
+  (placeholders, empty states, labels) must be overridable so
+  consumers can pass i18n strings.
 
 ```tsx
 export type CardProps = React.ComponentProps<'div'> & {

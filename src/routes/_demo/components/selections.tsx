@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/autocomplete';
 import {
   Combobox,
+  ComboboxCollection,
   ComboboxContent,
   ComboboxEmpty,
   ComboboxInput,
@@ -168,11 +169,13 @@ function SelectionsPage() {
               <ComboboxContent>
                 <ComboboxEmpty>No framework found.</ComboboxEmpty>
                 <ComboboxList>
-                  {FRAMEWORKS.map((f) => (
-                    <ComboboxItem key={f.value} value={f.value}>
-                      {f.label}
-                    </ComboboxItem>
-                  ))}
+                  <ComboboxCollection>
+                    {(f: (typeof FRAMEWORKS)[number]) => (
+                      <ComboboxItem key={f.value} value={f.value}>
+                        {f.label}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxCollection>
                 </ComboboxList>
               </ComboboxContent>
             </Combobox>
@@ -186,11 +189,13 @@ function SelectionsPage() {
               <ComboboxContent>
                 <ComboboxEmpty>No framework found.</ComboboxEmpty>
                 <ComboboxList>
-                  {FRAMEWORKS.map((f) => (
-                    <ComboboxItem key={f.value} value={f.value}>
-                      {f.label}
-                    </ComboboxItem>
-                  ))}
+                  <ComboboxCollection>
+                    {(f: (typeof FRAMEWORKS)[number]) => (
+                      <ComboboxItem key={f.value} value={f.value}>
+                        {f.label}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxCollection>
                 </ComboboxList>
               </ComboboxContent>
             </Combobox>
@@ -206,11 +211,13 @@ function SelectionsPage() {
                 <ComboboxContent>
                   <ComboboxEmpty>No framework found.</ComboboxEmpty>
                   <ComboboxList>
-                    {FRAMEWORKS.map((f) => (
-                      <ComboboxItem key={f.value} value={f.value}>
-                        {f.label}
-                      </ComboboxItem>
-                    ))}
+                    <ComboboxCollection>
+                      {(f: (typeof FRAMEWORKS)[number]) => (
+                        <ComboboxItem key={f.value} value={f.value}>
+                          {f.label}
+                        </ComboboxItem>
+                      )}
+                    </ComboboxCollection>
                   </ComboboxList>
                 </ComboboxContent>
               </Combobox>
