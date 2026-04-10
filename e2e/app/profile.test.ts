@@ -1,6 +1,7 @@
 import JSZip from 'jszip';
 
 import { expect, test } from '~e2e/fixtures/auth';
+import { e2eEmail } from '~e2e/fixtures/constants';
 
 test.describe('profile page', { tag: ['@smoke', '@authenticated'] }, () => {
   test('view profile and update display name', async ({ page }) => {
@@ -97,6 +98,62 @@ test.describe('profile page', { tag: ['@smoke', '@authenticated'] }, () => {
       expect(json.accounts).toBeInstanceOf(Array);
       expect(json.transactions).toBeInstanceOf(Array);
       expect(json.categories).toBeInstanceOf(Array);
+    });
+  });
+
+  test.describe('account deletion', () => {
+    // Leak guard: if the deletion test fails mid-flow, the pending request
+    // persists in the DB and poisons every subsequent test in this worker
+    // via the grace period banner. Cancel on the way out if it's still there.
+    test.afterEach(async ({ page }) => {
+      await page.goto('/profile');
+      const banner = page.getByText(/account deletion scheduled/i);
+      if (await banner.isVisible().catch(() => false)) {
+        await page.getByRole('button', { name: /cancel deletion/i }).click();
+        await expect(banner).toBeHidden();
+      }
+    });
+
+    test('initiate and cancel from the banner', async ({
+      page,
+    }, workerInfo) => {
+      const email = e2eEmail(workerInfo.parallelIndex);
+      await page.goto('/profile');
+
+      await test.step('open export prompt from danger zone', async () => {
+        await page
+          .getByRole('button', { name: /delete account/i })
+          .first()
+          .click();
+        await expect(
+          page.getByRole('heading', { name: /export your data first/i }),
+        ).toBeVisible();
+      });
+
+      const confirmDialog = page.getByRole('alertdialog').last();
+
+      await test.step('continue to type-to-confirm dialog', async () => {
+        await page.getByRole('button', { name: /continue to delete/i }).click();
+        await expect(
+          confirmDialog.getByRole('heading', { name: /delete account/i }),
+        ).toBeVisible();
+      });
+
+      await test.step('type email and confirm', async () => {
+        await confirmDialog.getByRole('textbox').fill(email);
+        await confirmDialog.getByRole('button', { name: /^delete$/i }).click();
+      });
+
+      const banner = page.getByText(/account deletion scheduled/i);
+
+      await test.step('grace period banner appears', async () => {
+        await expect(banner).toBeVisible({ timeout: 10_000 });
+      });
+
+      await test.step('cancel deletion from banner', async () => {
+        await page.getByRole('button', { name: /cancel deletion/i }).click();
+        await expect(banner).toBeHidden();
+      });
     });
   });
 

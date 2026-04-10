@@ -29,6 +29,7 @@ export default defineConfig({
     alias: {
       'varlock/env': path.resolve(projectDir, 'src/lib/varlock-env-shim.ts'),
     },
+    experimental: { tasks: true },
     modules: [
       evlog({
         env: { service: 'finance-tracker' },
@@ -57,6 +58,16 @@ export default defineConfig({
       }),
     ],
     plugins: ['./src/lib/logging/drain.ts'],
+    scheduledTasks: { '0 * * * *': ['purge-deleted-accounts'] },
+    tasks: {
+      'purge-deleted-accounts': {
+        description: 'Hard-deletes accounts past the 7-day grace period.',
+        handler: path.resolve(
+          projectDir,
+          'src/tasks/purge-deleted-accounts.ts',
+        ),
+      },
+    },
   },
   plugins: [
     devtools(),

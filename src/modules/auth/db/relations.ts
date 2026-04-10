@@ -1,6 +1,7 @@
 import { relations } from 'drizzle-orm';
 
 import { ledgerAccounts } from '@/modules/accounts/db/schema';
+import { deletionRequests } from '@/modules/auth/db/deletion-requests';
 import {
   accounts,
   sessions,
@@ -24,6 +25,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   attachments: many(attachments),
   categories: many(categories),
   debtStrategies: many(debtStrategies),
+  deletionRequest: one(deletionRequests),
   imports: many(imports),
   ledgerAccounts: many(ledgerAccounts),
   merchantRules: many(merchantRules),
@@ -43,5 +45,15 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
 export const accountsRelations = relations(accounts, ({ one }) => ({
   users: one(users, { fields: [accounts.userId], references: [users.id] }),
 }));
+
+export const deletionRequestsRelations = relations(
+  deletionRequests,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [deletionRequests.userId],
+      references: [users.id],
+    }),
+  }),
+);
 
 export const verificationsRelations = relations(verifications, () => ({}));

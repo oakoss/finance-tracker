@@ -1,12 +1,17 @@
 import { eq } from 'drizzle-orm';
+import { ENV } from 'varlock/env';
 
 import { db } from '@/db';
 import { createServerCookies } from '@/lib/cookies';
 import { sendEmail } from '@/lib/email';
+import { formatDate } from '@/lib/i18n/date';
 import { userPreferences } from '@/modules/preferences/db/schema';
 import { m } from '@/paraglide/messages';
 import { isLocale } from '@/paraglide/runtime';
 
+import { DeletionCancelledEmail } from './deletion-cancelled';
+import { DeletionCompleteEmail } from './deletion-complete';
+import { DeletionScheduledEmail } from './deletion-scheduled';
 import { type EmailLocale, renderEmail } from './email-render';
 import { ResetPasswordEmail } from './reset-password-email';
 import { VerificationEmail } from './verification-email';
@@ -87,6 +92,79 @@ export async function sendResetPasswordEmail(params: {
   await sendEmail({
     html,
     subject: subject ?? m['email.resetPassword.subject'](),
+    text,
+    to: [{ email: params.user.email, name: recipientName }],
+  });
+}
+
+export async function sendDeletionScheduledEmail(params: {
+  purgeAfter: Date;
+  user: EmailPerson;
+}) {
+  const recipientName =
+    params.user.name === null ? undefined : params.user.name;
+  const resolvedLocale = await getUserLocale(params.user.id);
+  const purgeDate = formatDate(
+    resolvedLocale
+      ? { locale: resolvedLocale, value: params.purgeAfter }
+      : { value: params.purgeAfter },
+  );
+  const profileUrl = `${ENV.BETTER_AUTH_URL}/profile`;
+  const { html, subject, text } = await renderEmail(
+    <DeletionScheduledEmail
+      name={params.user.name}
+      profileUrl={profileUrl}
+      purgeDate={purgeDate}
+    />,
+    {
+      locale: resolvedLocale,
+      subject: () => m['email.deletionScheduled.subject'](),
+    },
+  );
+
+  await sendEmail({
+    html,
+    subject: subject ?? m['email.deletionScheduled.subject'](),
+    text,
+    to: [{ email: params.user.email, name: recipientName }],
+  });
+}
+
+export async function sendDeletionCancelledEmail(params: {
+  user: EmailPerson;
+}) {
+  const recipientName =
+    params.user.name === null ? undefined : params.user.name;
+  const resolvedLocale = await getUserLocale(params.user.id);
+  const { html, subject, text } = await renderEmail(
+    <DeletionCancelledEmail name={params.user.name} />,
+    {
+      locale: resolvedLocale,
+      subject: () => m['email.deletionCancelled.subject'](),
+    },
+  );
+
+  await sendEmail({
+    html,
+    subject: subject ?? m['email.deletionCancelled.subject'](),
+    text,
+    to: [{ email: params.user.email, name: recipientName }],
+  });
+}
+
+export async function sendDeletionCompleteEmail(params: {
+  user: { email: string; name?: string | null };
+}) {
+  const recipientName =
+    params.user.name === null ? undefined : params.user.name;
+  const { html, subject, text } = await renderEmail(
+    <DeletionCompleteEmail name={params.user.name} />,
+    { subject: () => m['email.deletionComplete.subject']() },
+  );
+
+  await sendEmail({
+    html,
+    subject: subject ?? m['email.deletionComplete.subject'](),
     text,
     to: [{ email: params.user.email, name: recipientName }],
   });

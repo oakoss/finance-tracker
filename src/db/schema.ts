@@ -2,6 +2,7 @@ export * from '@/db/audit';
 export * from '@/db/audit-relations';
 export * from '@/modules/accounts/db/relations';
 export * from '@/modules/accounts/db/schema';
+export * from '@/modules/auth/db/deletion-requests';
 export * from '@/modules/auth/db/relations';
 export * from '@/modules/auth/db/schema';
 export * from '@/modules/budgets/db/relations';

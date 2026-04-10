@@ -121,15 +121,7 @@ export const auth = betterAuth({
           user: { email: user.email, id: user.id, name: user.name },
         }),
     },
-    deleteUser: {
-      enabled: true,
-      sendDeleteAccountVerification: async ({ url, user }, request) =>
-        sendVerificationEmail({
-          cookie: request?.headers.get('cookie') ?? null,
-          url,
-          user: { email: user.email, id: user.id, name: user.name },
-        }),
-    },
+    deleteUser: { enabled: false },
   },
 });
 

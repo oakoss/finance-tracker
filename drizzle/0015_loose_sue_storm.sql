@@ -1,0 +1,1 @@
+DROP INDEX "deletion_requests_user_id_idx";
