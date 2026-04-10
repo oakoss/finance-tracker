@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
@@ -10,6 +11,7 @@ import { m } from '@/paraglide/messages';
 
 export function useSignOut() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { capture, reset } = useAnalytics();
 
   const { postMessage } = useBroadcastChannel<string>(AUTH_CHANNEL);
@@ -29,6 +31,7 @@ export function useSignOut() {
         toast.warning(m['auth.error.signOutIncomplete']());
       })
       .finally(() => {
+        queryClient.clear();
         reset();
         const broadcasted = postMessage('sign-out');
         if (!broadcasted) {

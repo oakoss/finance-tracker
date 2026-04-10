@@ -6,6 +6,12 @@ const mockNavigate = vi.fn();
 const mockPostMessage = vi.fn(() => true);
 const mockSignOut = vi.fn();
 
+const mockQueryClientClear = vi.fn();
+
+vi.mock('@tanstack/react-query', () => ({
+  useQueryClient: () => ({ clear: mockQueryClientClear }),
+}));
+
 vi.mock('@tanstack/react-router', () => ({
   useRouter: () => ({ navigate: mockNavigate }),
 }));
@@ -40,6 +46,7 @@ vi.mock('@/paraglide/messages', () => ({
 describe('useSignOut', () => {
   beforeEach(() => {
     mockNavigate.mockClear();
+    mockQueryClientClear.mockClear();
     mockUseBroadcastChannel.mockClear();
     mockPostMessage.mockClear().mockReturnValue(true);
     mockSignOut.mockClear().mockResolvedValue({});
@@ -63,7 +70,29 @@ describe('useSignOut', () => {
     });
 
     expect(mockSignOut).toHaveBeenCalled();
+    expect(mockQueryClientClear).toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledWith({ to: '/sign-in' });
+  });
+
+  it('clears query cache before navigating', async () => {
+    const callOrder: string[] = [];
+    mockQueryClientClear.mockImplementation(() => {
+      callOrder.push('clear');
+    });
+    mockNavigate.mockImplementation(() => {
+      callOrder.push('navigate');
+    });
+
+    const { result } = renderHook(() => useSignOut());
+
+    await act(async () => {
+      result.current();
+      await vi.waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalled();
+      });
+    });
+
+    expect(callOrder).toEqual(['clear', 'navigate']);
   });
 
   it('broadcasts sign-out message on success', async () => {
