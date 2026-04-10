@@ -7,6 +7,7 @@ import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { useHydrated } from '@/hooks/use-hydrated';
 import { formatMonthYear } from '@/lib/i18n/date';
+import { MutationGate } from '@/modules/auth/components/mutation-gate';
 import { CopyBudgetDialog } from '@/modules/budgets/components/copy-budget-dialog';
 import { m } from '@/paraglide/messages';
 
@@ -55,7 +56,7 @@ export function BudgetsPageHeader({
           {m['budgets.title']()}
         </h1>
         <div className="flex items-center gap-2">
-          <Button
+          <MutationGate
             disabled={!hydrated}
             size="sm"
             variant="outline"
@@ -63,9 +64,9 @@ export function BudgetsPageHeader({
           >
             <Icons.Pencil className="size-4" />
             {m['budgets.editBudget']()}
-          </Button>
+          </MutationGate>
           {periods.length > 0 && (
-            <Button
+            <MutationGate
               disabled={!hydrated}
               size="sm"
               variant="outline"
@@ -73,7 +74,7 @@ export function BudgetsPageHeader({
             >
               <Icons.Copy className="size-4" />
               {m['budgets.copyPrevious']()}
-            </Button>
+            </MutationGate>
           )}
         </div>
       </div>

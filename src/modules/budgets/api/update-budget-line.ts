@@ -5,13 +5,16 @@ import { arkValidator } from '@/lib/form/validation';
 import { log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
 import { handleServerFnError } from '@/lib/server-fn/handle-error';
-import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
+import {
+  requireUserId,
+  verifiedMutationMiddleware,
+} from '@/modules/auth/middleware';
 import { updateBudgetLineService } from '@/modules/budgets/services/update-budget-line';
 import { updateBudgetLineSchema } from '@/modules/budgets/validators';
 
 export const updateBudgetLine = createServerFn({ method: 'POST' })
   .inputValidator(arkValidator(updateBudgetLineSchema))
-  .middleware([authMiddleware])
+  .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);
 

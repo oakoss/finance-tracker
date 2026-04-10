@@ -5,13 +5,16 @@ import { arkValidator } from '@/lib/form/validation';
 import { log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
 import { handleServerFnError } from '@/lib/server-fn/handle-error';
-import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
+import {
+  requireUserId,
+  verifiedMutationMiddleware,
+} from '@/modules/auth/middleware';
 import { createImportService } from '@/modules/imports/services/create-import';
 import { createImportSchema } from '@/modules/imports/validators';
 
 export const createImport = createServerFn({ method: 'POST' })
   .inputValidator(arkValidator(createImportSchema))
-  .middleware([authMiddleware])
+  .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);
 

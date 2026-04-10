@@ -1,7 +1,6 @@
 import { useNavigate } from '@tanstack/react-router';
 
 import { Icons } from '@/components/icons';
-import { Button } from '@/components/ui/button';
 import {
   Empty,
   EmptyDescription,
@@ -9,6 +8,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
+import { MutationGate } from '@/modules/auth/components/mutation-gate';
 import { m } from '@/paraglide/messages';
 
 export function TransactionsEmpty() {
@@ -25,7 +25,7 @@ export function TransactionsEmpty() {
           {m['transactions.empty.description']()}
         </EmptyDescription>
       </EmptyHeader>
-      <Button
+      <MutationGate
         size="sm"
         onClick={() =>
           void navigate({ search: { modal: 'create' }, to: '/transactions' })
@@ -33,7 +33,7 @@ export function TransactionsEmpty() {
       >
         <Icons.Plus className="size-4" />
         {m['transactions.addTransaction']()}
-      </Button>
+      </MutationGate>
     </Empty>
   );
 }

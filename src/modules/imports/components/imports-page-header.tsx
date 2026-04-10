@@ -1,8 +1,8 @@
 import { useNavigate } from '@tanstack/react-router';
 
 import { Icons } from '@/components/icons';
-import { Button } from '@/components/ui/button';
 import { useHydrated } from '@/hooks/use-hydrated';
+import { MutationGate } from '@/modules/auth/components/mutation-gate';
 import { m } from '@/paraglide/messages';
 
 export function ImportsPageHeader() {
@@ -14,7 +14,7 @@ export function ImportsPageHeader() {
       <h1 className="text-2xl font-semibold tracking-tight">
         {m['imports.title']()}
       </h1>
-      <Button
+      <MutationGate
         disabled={!hydrated}
         size="sm"
         onClick={() =>
@@ -23,7 +23,7 @@ export function ImportsPageHeader() {
       >
         <Icons.Plus className="size-4" />
         {m['imports.uploadCsv']()}
-      </Button>
+      </MutationGate>
     </div>
   );
 }

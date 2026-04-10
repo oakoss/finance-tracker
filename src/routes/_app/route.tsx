@@ -6,6 +6,7 @@ import { usePostHogIdentity } from '@/hooks/use-posthog-identity';
 import { getDeletionRequest } from '@/modules/auth/api/get-deletion-request';
 import { getSession } from '@/modules/auth/api/get-session';
 import { DeletionBanner } from '@/modules/auth/components/deletion-banner';
+import { VerificationBanner } from '@/modules/auth/components/verification-banner';
 import { preferencesQueries } from '@/modules/preferences/hooks/use-preferences';
 
 export const Route = createFileRoute('/_app')({
@@ -45,6 +46,9 @@ function AppLayout() {
       }}
     >
       <AppHeader />
+      {!session.user.emailVerified && (
+        <VerificationBanner email={session.user.email} />
+      )}
       {deletionRequest && (
         <DeletionBanner purgeAfter={deletionRequest.purgeAfter} />
       )}

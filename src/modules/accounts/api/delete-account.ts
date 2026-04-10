@@ -7,11 +7,14 @@ import { hashId } from '@/lib/logging/hash';
 import { handleServerFnError } from '@/lib/server-fn/handle-error';
 import { deleteAccountService } from '@/modules/accounts/services/delete-account';
 import { deleteAccountSchema } from '@/modules/accounts/validators';
-import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
+import {
+  requireUserId,
+  verifiedMutationMiddleware,
+} from '@/modules/auth/middleware';
 
 export const deleteAccount = createServerFn({ method: 'POST' })
   .inputValidator(arkValidator(deleteAccountSchema))
-  .middleware([authMiddleware])
+  .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);
 

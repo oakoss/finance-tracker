@@ -7,11 +7,14 @@ import { hashId } from '@/lib/logging/hash';
 import { handleServerFnError } from '@/lib/server-fn/handle-error';
 import { updateAccountService } from '@/modules/accounts/services/update-account';
 import { updateAccountSchema } from '@/modules/accounts/validators';
-import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
+import {
+  requireUserId,
+  verifiedMutationMiddleware,
+} from '@/modules/auth/middleware';
 
 export const updateAccount = createServerFn({ method: 'POST' })
   .inputValidator(arkValidator(updateAccountSchema))
-  .middleware([authMiddleware])
+  .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);
 
