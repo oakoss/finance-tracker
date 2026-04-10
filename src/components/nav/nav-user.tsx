@@ -1,5 +1,6 @@
 'use client';
 
+import { useNavigate } from '@tanstack/react-router';
 import { useTheme } from 'next-themes';
 import { useState } from 'react';
 
@@ -26,6 +27,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { useSignOut } from '@/modules/auth/hooks/use-sign-out';
+import { getInitials } from '@/modules/auth/lib/get-initials';
 import { PreferencesDialog } from '@/modules/preferences/components/preferences-dialog';
 import { m } from '@/paraglide/messages';
 
@@ -35,17 +37,6 @@ function ThemeIcon({ theme }: { theme: string | undefined }) {
   return <Icons.Monitor />;
 }
 
-function getInitials(name: string): string {
-  const initials = name
-    .split(' ')
-    .filter(Boolean)
-    .map((part) => part[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-  return initials || '?';
-}
-
 export function NavUser({
   user,
 }: {
@@ -53,6 +44,7 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const { setTheme, theme } = useTheme();
+  const navigate = useNavigate();
   const handleSignOut = useSignOut();
   const [preferencesOpen, setPreferencesOpen] = useState(false);
 
@@ -100,6 +92,10 @@ export function NavUser({
               </DropdownMenuLabel>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => void navigate({ to: '/profile' })}>
+              <Icons.User />
+              {m['nav.profile']()}
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setPreferencesOpen(true)}>
               <Icons.Settings />
               {m['nav.preferences']()}
