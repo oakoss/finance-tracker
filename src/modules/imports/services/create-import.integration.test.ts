@@ -370,7 +370,7 @@ test('create — batched insert persists all rows across batch boundaries', asyn
   expect(persisted[500].rowIndex).toBe(500);
 });
 
-// --- Validation + dedupe tests (TREK-21) ---
+// --- Validation + dedupe tests ---
 
 const MAPPED_COLUMN_MAPPING = {
   amountMode: 'single' as const,

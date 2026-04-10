@@ -12,7 +12,7 @@ test.describe(
       await expect(heading).toBeVisible();
     });
 
-    // TODO: Add empty state test when TREK-24 (dashboard widgets) ships
+    // TODO: Add empty state test once the dashboard widgets ship.
   },
 );
 
