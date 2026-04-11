@@ -55,8 +55,17 @@ export function useCreateImport() {
         description: parsed.fix ?? parsed.why,
       });
     },
-    onSuccess: () => {
-      toast.success(m['imports.toast.createSuccess']());
+    onSuccess: (result) => {
+      toast.success(m['imports.toast.createSuccess'](), {
+        action: {
+          label: m['imports.detail.review'](),
+          onClick: () =>
+            void navigate({
+              params: { importId: result.id },
+              to: '/imports/$importId',
+            }),
+        },
+      });
       void navigate({ search: {}, to: '/imports' });
       void queryClient.invalidateQueries({ queryKey: importQueries.all() });
       void router.invalidate();
