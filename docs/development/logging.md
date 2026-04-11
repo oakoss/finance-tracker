@@ -258,10 +258,14 @@ PostHog handles all error tracking — no Sentry needed.
   sets `deleteAfterUpload: true` so they're removed from `.output` after the
   upload. The Dockerfile mounts PostHog credentials as BuildKit secrets
   (`--mount=type=secret`), so they reach only the `pnpm build` process and
-  never land in any image layer, layer metadata, or build cache. Configure
-  both secrets in Coolify's build-secrets UI with ids
-  `posthog_personal_api_key` and `posthog_project_id`. Both mounts are
-  `required=false`, so a local
+  never land in any image layer, layer metadata, or build cache. Coolify
+  setup: add `POSTHOG_PERSONAL_API_KEY` and `POSTHOG_PROJECT_ID` on the app's
+  Environment Variables page with Build Variable checked, then turn on
+  **Use Docker Build Secrets** at the top of that page. With that toggle on,
+  Coolify passes each build var as `--secret id=KEY,env=KEY` where `KEY`
+  matches the env var name verbatim; the Dockerfile IDs
+  (`POSTHOG_PERSONAL_API_KEY`, `POSTHOG_PROJECT_ID`) must stay uppercase
+  because BuildKit secret IDs are case-sensitive. Both mounts are `required=false`, so a local
   `docker build` without the secrets still succeeds and `vite.config.ts`
   skips the plugin via its env-gate. The Playwright build steps in
   `.github/workflows/ci.yml` intentionally skip the upload, so Coolify stays

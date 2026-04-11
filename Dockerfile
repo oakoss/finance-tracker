@@ -22,13 +22,21 @@ ENV APP_ENV=test
 # PostHog sourcemap upload runs during `pnpm build` when both env
 # vars are set (see vite.config.ts). BuildKit secret mounts expose
 # the values to this one RUN command only — they're never written
-# to any image layer, layer metadata, or build cache. Coolify
-# configures the two secrets (`posthog_personal_api_key`,
-# `posthog_project_id`) in its build-secrets UI. If either is
-# missing at build time, the mount still succeeds with an empty
-# string and vite.config.ts skips the plugin via its env-gate.
-RUN --mount=type=secret,id=posthog_personal_api_key,env=POSTHOG_PERSONAL_API_KEY,required=false \
-    --mount=type=secret,id=posthog_project_id,env=POSTHOG_PROJECT_ID,required=false \
+# to any image layer, layer metadata, or build cache.
+#
+# Coolify delivers the values when "Use Docker Build Secrets" is
+# enabled on the app's Environment Variables page; it then passes
+# each build var as `--secret id=KEY,env=KEY` where `KEY` matches
+# the env var name verbatim. BuildKit secret IDs are case-
+# sensitive, so `id=POSTHOG_PERSONAL_API_KEY` below must stay
+# uppercase. `required=false` leaves the env unset when a secret
+# is missing, so vite.config.ts's env-gate skips the plugin
+# cleanly — the same path a plain local `docker build` takes.
+# Don't promote these to ARG/ENV: that would leak the values
+# into image layer metadata and defeat the BuildKit-mount
+# isolation this block depends on.
+RUN --mount=type=secret,id=POSTHOG_PERSONAL_API_KEY,env=POSTHOG_PERSONAL_API_KEY,required=false \
+    --mount=type=secret,id=POSTHOG_PROJECT_ID,env=POSTHOG_PROJECT_ID,required=false \
     pnpm exec varlock typegen \
  && pnpm paraglide:compile \
  && pnpm build
