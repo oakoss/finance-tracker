@@ -140,10 +140,10 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install chromium --with-deps
       - name: Build application
+        # Sourcemap upload is intentionally skipped in this step.
+        # Coolify's Dockerfile build is the sole source of uploaded
+        # sourcemaps so error tracking matches what actually ships.
         run: pnpm build
-        env:
-          POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
-          POSTHOG_PROJECT_ID: ${{ secrets.POSTHOG_PROJECT_ID }}
       - name: E2E smoke (desktop only)
         run: |
           pnpm exec playwright test \
@@ -210,10 +210,10 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install chromium --with-deps
       - name: Build application
+        # Sourcemap upload is intentionally skipped in this step.
+        # Coolify's Dockerfile build is the sole source of uploaded
+        # sourcemaps so error tracking matches what actually ships.
         run: pnpm build
-        env:
-          POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
-          POSTHOG_PROJECT_ID: ${{ secrets.POSTHOG_PROJECT_ID }}
       - name: E2E full suite (shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
         run: |
           pnpm test:e2e \

@@ -635,6 +635,7 @@
         "src/lib/db/reset.ts",
         "src/lib/logger.ts",
         "src/lib/logging/**/*",
+        "vite.config.ts",
         "**/*.stories.*",
         "**/*.test.*",
         "**/*.spec.*",
@@ -647,6 +648,10 @@
         "no-empty-pattern": "off",
         "unicorn/prefer-top-level-await": "off"
       }
+    },
+    {
+      "files": ["vite.config.ts"],
+      "rules": { "preserve-caught-error": "off" }
     },
     {
       "files": ["**/*.test.*", "**/*.spec.*", "test/**/*"],

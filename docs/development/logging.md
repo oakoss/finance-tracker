@@ -252,10 +252,25 @@ PostHog handles all error tracking — no Sentry needed.
   in `src/lib/analytics.tsx`. Console errors are not captured (too noisy).
 - **React render crashes**: the root error boundary (`src/components/errors/root-error-boundary.tsx`)
   reports to PostHog via `posthog.captureException()`. Reports once per error (ref-guarded).
-- **Source maps**: `@posthog/rollup-plugin` uploads source maps during production builds
-  for readable stack traces. Maps use `sourcemap: 'hidden'` (no `sourceMappingURL` in output)
-  and are deleted after upload. Requires `POSTHOG_PERSONAL_API_KEY` and `POSTHOG_PROJECT_ID`
-  (CI secrets, not needed locally).
+- **Source maps**: `@posthog/rollup-plugin` uploads source maps during the Coolify
+  Docker build so stack traces in PostHog match the shipped release. Maps use
+  `sourcemap: 'hidden'` (no `sourceMappingURL` in output) and `vite.config.ts`
+  sets `deleteAfterUpload: true` so they're removed from `.output` after the
+  upload. The Dockerfile mounts PostHog credentials as BuildKit secrets
+  (`--mount=type=secret`), so they reach only the `pnpm build` process and
+  never land in any image layer, layer metadata, or build cache. Configure
+  both secrets in Coolify's build-secrets UI with ids
+  `posthog_personal_api_key` and `posthog_project_id`. Both mounts are
+  `required=false`, so a local
+  `docker build` without the secrets still succeeds and `vite.config.ts`
+  skips the plugin via its env-gate. The Playwright build steps in
+  `.github/workflows/ci.yml` intentionally skip the upload, so Coolify stays
+  the single source of truth. Upload failures are non-fatal:
+  `nonFatalWriteBundle` in `vite.config.ts` catches `writeBundle` errors,
+  deletes the orphaned `.map` files so they never ship, and lets the deploy
+  continue. Set `STRICT_SOURCEMAPS=1` for a one-off build to disable the
+  wrapper and see the underlying CLI error (useful during Coolify setup to
+  distinguish auth failures from outages).
 
 ### Server-side
 

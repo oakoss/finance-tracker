@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1.10
 
 # --- varlock binary ---
 # Keep version in sync with the `varlock` entry in package.json.
@@ -19,7 +19,17 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
 FROM deps AS build
 COPY . .
 ENV APP_ENV=test
-RUN pnpm exec varlock typegen \
+# PostHog sourcemap upload runs during `pnpm build` when both env
+# vars are set (see vite.config.ts). BuildKit secret mounts expose
+# the values to this one RUN command only — they're never written
+# to any image layer, layer metadata, or build cache. Coolify
+# configures the two secrets (`posthog_personal_api_key`,
+# `posthog_project_id`) in its build-secrets UI. If either is
+# missing at build time, the mount still succeeds with an empty
+# string and vite.config.ts skips the plugin via its env-gate.
+RUN --mount=type=secret,id=posthog_personal_api_key,env=POSTHOG_PERSONAL_API_KEY,required=false \
+    --mount=type=secret,id=posthog_project_id,env=POSTHOG_PROJECT_ID,required=false \
+    pnpm exec varlock typegen \
  && pnpm paraglide:compile \
  && pnpm build
 
