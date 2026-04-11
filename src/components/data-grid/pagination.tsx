@@ -115,7 +115,7 @@ function DataGridPagination(props: DataGridPaginationProps): React.JSX.Element {
   return (
     <div
       className={cn(
-        'flex grow flex-col flex-wrap items-center justify-between gap-2.5 py-2.5 sm:flex-row sm:py-0',
+        'flex grow flex-col flex-wrap items-center justify-between gap-2.5 border-t border-border px-4 py-2.5 sm:flex-row',
         props.className,
       )}
       data-slot="data-grid-pagination"
@@ -136,7 +136,7 @@ function DataGridPagination(props: DataGridPaginationProps): React.JSX.Element {
                 table.setPageSize(newPageSize);
               }}
             >
-              <SelectTrigger className="w-14" size="sm">
+              <SelectTrigger className="w-18" size="sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="min-w-18" side="top">
