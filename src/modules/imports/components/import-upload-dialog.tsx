@@ -253,11 +253,17 @@ export function ImportUploadDialog() {
                         />
                       </SelectTrigger>
                       <SelectContent>
-                        {accounts.map((a) => (
-                          <SelectItem key={a.account.id} value={a.account.id}>
-                            {a.account.name}
-                          </SelectItem>
-                        ))}
+                        {accounts.length === 0 ? (
+                          <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                            {m['imports.upload.noAccounts']()}
+                          </div>
+                        ) : (
+                          accounts.map((a) => (
+                            <SelectItem key={a.account.id} value={a.account.id}>
+                              {a.account.name}
+                            </SelectItem>
+                          ))
+                        )}
                       </SelectContent>
                     </Select>
                     <FieldError errors={field.state.meta.errors} />
