@@ -209,6 +209,7 @@ export function ImportUploadDialog() {
 
         <form
           noValidate
+          id="import-upload-form"
           onSubmit={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -331,40 +332,44 @@ export function ImportUploadDialog() {
               </form.Field>
             </div>
           )}
-
-          <DialogFooter className="mt-4">
-            {step === 2 && (
-              <Button
-                disabled={mutation.isPending}
-                type="button"
-                variant="outline"
-                onClick={() => setStep(1)}
-              >
-                {m['imports.upload.back']()}
-              </Button>
-            )}
-            {step === 1 ? (
-              <form.Subscribe selector={(s) => s.values.accountId}>
-                {(accountId) => (
-                  <Button
-                    disabled={!accountId || !selectedFile || !csv.result}
-                    type="button"
-                    onClick={() => void handleNext()}
-                  >
-                    {m['imports.upload.next']()}
-                  </Button>
-                )}
-              </form.Subscribe>
-            ) : (
-              <Button disabled={mutation.isPending} type="submit">
-                {mutation.isPending && (
-                  <Icons.Loader2 className="size-4 animate-spin" />
-                )}
-                {m['imports.upload.submit']()}
-              </Button>
-            )}
-          </DialogFooter>
         </form>
+
+        <DialogFooter>
+          {step === 2 && (
+            <Button
+              disabled={mutation.isPending}
+              type="button"
+              variant="outline"
+              onClick={() => setStep(1)}
+            >
+              {m['imports.upload.back']()}
+            </Button>
+          )}
+          {step === 1 ? (
+            <form.Subscribe selector={(s) => s.values.accountId}>
+              {(accountId) => (
+                <Button
+                  disabled={!accountId || !selectedFile || !csv.result}
+                  type="button"
+                  onClick={() => void handleNext()}
+                >
+                  {m['imports.upload.next']()}
+                </Button>
+              )}
+            </form.Subscribe>
+          ) : (
+            <Button
+              disabled={mutation.isPending}
+              form="import-upload-form"
+              type="submit"
+            >
+              {mutation.isPending && (
+                <Icons.Loader2 className="size-4 animate-spin" />
+              )}
+              {m['imports.upload.submit']()}
+            </Button>
+          )}
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
