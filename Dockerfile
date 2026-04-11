@@ -19,25 +19,44 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
 FROM deps AS build
 COPY . .
 ENV APP_ENV=test
-# PostHog sourcemap upload runs during `pnpm build` when both env
-# vars are set (see vite.config.ts). BuildKit secret mounts expose
-# the values to this one RUN command only — they're never written
-# to any image layer, layer metadata, or build cache.
+# The build RUN needs two kinds of env vars:
+#   1. Every @public var in .env.schema, because varlock's vite
+#      plugin inlines them into the client bundle during
+#      `pnpm build` (POSTHOG_KEY, BETTER_AUTH_URL, etc.).
+#   2. POSTHOG_PERSONAL_API_KEY + POSTHOG_PROJECT_ID for the
+#      sourcemap upload plugin in vite.config.ts.
 #
-# Coolify delivers the values when "Use Docker Build Secrets" is
-# enabled on the app's Environment Variables page; it then passes
-# each build var as `--secret id=KEY,env=KEY` where `KEY` matches
-# the env var name verbatim. BuildKit secret IDs are case-
-# sensitive, so `id=POSTHOG_PERSONAL_API_KEY` below must stay
-# uppercase. `required=false` leaves the env unset when a secret
-# is missing, so vite.config.ts's env-gate skips the plugin
-# cleanly — the same path a plain local `docker build` takes.
-# Don't promote these to ARG/ENV: that would leak the values
-# into image layer metadata and defeat the BuildKit-mount
-# isolation this block depends on.
-RUN --mount=type=secret,id=POSTHOG_PERSONAL_API_KEY,env=POSTHOG_PERSONAL_API_KEY,required=false \
-    --mount=type=secret,id=POSTHOG_PROJECT_ID,env=POSTHOG_PROJECT_ID,required=false \
-    pnpm exec varlock typegen \
+# Do NOT add explicit `--mount=type=secret` flags here. Coolify's
+# "Use Docker Build Secrets" rewriter (enabled on the app's
+# Environment Variables page) injects mounts for every build var
+# onto each RUN — but it skips any RUN that already has its own
+# `--mount=type=secret`. The check is in coollabsio/coolify at
+# `app/Jobs/ApplicationDeploymentJob.php`:
+#     if (str_contains($line, '--mount=type=secret') || …) {
+#         return $line;  // untouched
+#     }
+# A single explicit mount starves this step of every other build
+# var Coolify would inject, which silently ships the client
+# bundle with `.env.schema` test defaults (empty POSTHOG_KEY →
+# Rolldown's minifier dead-code-eliminates the PostHogProvider
+# branch since `const key = ""` is always falsy).
+#
+# To verify after a deploy: fetch the production client bundle
+# (`main-*.js` from the site root) and grep for `phc_` — the
+# real POSTHOG_KEY prefix. Zero matches means this trap has
+# re-triggered.
+#
+# Local `docker build` outside Coolify has no secret-mount path
+# for the two PostHog vars and cannot upload sourcemaps; that's
+# intentional. Coolify is the only authoritative upload source
+# (CI workflows also intentionally skip — see ci.yml). A plain
+# local build still succeeds: vite.config.ts's env-gate skips
+# the sourcemap plugin when the vars are unset, and varlock
+# falls back to the `APP_ENV=test` defaults in `.env.schema`.
+#
+# Do NOT convert these to ARG/ENV either — that would leak the
+# values into image layer metadata.
+RUN pnpm exec varlock typegen \
  && pnpm paraglide:compile \
  && pnpm build
 

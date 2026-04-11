@@ -252,24 +252,25 @@ PostHog handles all error tracking — no Sentry needed.
   in `src/lib/analytics.tsx`. Console errors are not captured (too noisy).
 - **React render crashes**: the root error boundary (`src/components/errors/root-error-boundary.tsx`)
   reports to PostHog via `posthog.captureException()`. Reports once per error (ref-guarded).
-- **Source maps**: `@posthog/rollup-plugin` uploads source maps during the Coolify
-  Docker build so stack traces in PostHog match the shipped release. Maps use
-  `sourcemap: 'hidden'` (no `sourceMappingURL` in output) and `vite.config.ts`
-  sets `deleteAfterUpload: true` so they're removed from `.output` after the
-  upload. The Dockerfile mounts PostHog credentials as BuildKit secrets
-  (`--mount=type=secret`), so they reach only the `pnpm build` process and
-  never land in any image layer, layer metadata, or build cache. Coolify
-  setup: add `POSTHOG_PERSONAL_API_KEY` and `POSTHOG_PROJECT_ID` on the app's
-  Environment Variables page with Build Variable checked, then turn on
-  **Use Docker Build Secrets** at the top of that page. With that toggle on,
-  Coolify passes each build var as `--secret id=KEY,env=KEY` where `KEY`
-  matches the env var name verbatim; the Dockerfile IDs
-  (`POSTHOG_PERSONAL_API_KEY`, `POSTHOG_PROJECT_ID`) must stay uppercase
-  because BuildKit secret IDs are case-sensitive. Both mounts are `required=false`, so a local
-  `docker build` without the secrets still succeeds and `vite.config.ts`
-  skips the plugin via its env-gate. The Playwright build steps in
-  `.github/workflows/ci.yml` intentionally skip the upload, so Coolify stays
-  the single source of truth. Upload failures are non-fatal:
+- **Source maps**: `@posthog/rollup-plugin` uploads source maps during the
+  Coolify Docker build so stack traces in PostHog match the shipped release.
+  Maps use `sourcemap: 'hidden'` (no `sourceMappingURL` in output) and
+  `vite.config.ts` sets `deleteAfterUpload: true` so they're removed from
+  `.output` after the upload. Coolify setup: add `POSTHOG_PERSONAL_API_KEY`
+  and `POSTHOG_PROJECT_ID` on the app's Environment Variables page with
+  Build Variable checked, then turn on **Use Docker Build Secrets** at the
+  top of that page. With the toggle on, Coolify rewrites the Dockerfile to
+  inject `--mount=type=secret,id=KEY,env=KEY` for every build var onto each
+  RUN, so the values reach only the `pnpm build` process and never land in
+  any image layer, layer metadata, or build cache. **Do not add explicit
+  `--mount=type=secret` flags to the build RUN in the Dockerfile** —
+  Coolify's rewriter skips any RUN that already has one (the check is in
+  `coollabsio/coolify` at `app/Jobs/ApplicationDeploymentJob.php`, a
+  literal substring match on `--mount=type=secret`), which would starve
+  the step of the other build vars (`POSTHOG_KEY`, `BETTER_AUTH_URL`,
+  etc.) that varlock inlines into the client bundle. The Playwright build steps in
+  `.github/workflows/ci.yml` intentionally skip the upload, so Coolify
+  stays the single source of truth. Upload failures are non-fatal:
   `nonFatalWriteBundle` in `vite.config.ts` catches `writeBundle` errors,
   deletes the orphaned `.map` files so they never ship, and lets the deploy
   continue. Set `STRICT_SOURCEMAPS=1` for a one-off build to disable the
