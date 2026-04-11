@@ -93,7 +93,7 @@
   /* Surface */
   --background: oklch(0.141 0 0);
   --card: oklch(0.21 0 0);
-  --popover: oklch(0.21 0 0);
+  --popover: oklch(0.245 0 0);
 
   /* Surface foregrounds */
   --foreground: oklch(0.985 0 0);
