@@ -1,4 +1,5 @@
-import { createHash } from 'node:crypto';
+import { sha256 } from '@noble/hashes/sha2.js';
+import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
 
 import type { NormalizedRow } from '@/modules/imports/lib/apply-column-mapping';
 
@@ -11,9 +12,11 @@ export function computeRowFingerprint(row: NormalizedRow): string | null {
     return null;
   }
 
-  return createHash('sha256')
-    .update(
-      `${row.transactionAt}|${row.amountCents}|${row.description}|${row.memo ?? ''}`,
-    )
-    .digest('hex');
+  return bytesToHex(
+    sha256(
+      utf8ToBytes(
+        `${row.transactionAt}|${row.amountCents}|${row.description}|${row.memo ?? ''}`,
+      ),
+    ),
+  );
 }
