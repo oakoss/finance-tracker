@@ -1,3 +1,4 @@
+import { useNavigate } from '@tanstack/react-router';
 import {
   getCoreRowModel,
   getPaginationRowModel,
@@ -14,6 +15,8 @@ import { importColumns } from '@/modules/imports/components/imports-columns';
 type ImportsDataGridProps = { data: ImportListItem[]; isLoading?: boolean };
 
 export function ImportsDataGrid({ data, isLoading }: ImportsDataGridProps) {
+  const navigate = useNavigate();
+
   // oxlint-disable-next-line react-compiler/incompatible-library -- TanStack Table API is Compiler-incompatible by design
   const table = useReactTable({
     columns: importColumns,
@@ -29,6 +32,12 @@ export function ImportsDataGrid({ data, isLoading }: ImportsDataGridProps) {
       loadingMode="skeleton"
       recordCount={data.length}
       table={table}
+      onRowClick={(row) =>
+        void navigate({
+          params: { importId: row.id },
+          to: '/imports/$importId',
+        })
+      }
     >
       <DataGridContainer>
         <DataGridTable />

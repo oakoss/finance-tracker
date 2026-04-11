@@ -46,6 +46,26 @@ test.describe(
       await expect(page.getByRole('table').getByText(fileName)).toBeHidden();
     });
 
+    test('row click navigates to detail page', async ({
+      page,
+      testAccountName,
+    }) => {
+      test.slow();
+
+      await page.goto('/imports');
+
+      const fileName = `row-click-${Date.now()}.csv`;
+      await uploadCsv(page, testAccountName, fileName);
+
+      // Click the file name cell (not the action menu) and expect
+      // to land on the detail page. Guards against the DataGrid
+      // row click handler silently filtering legitimate clicks.
+      const row = page.getByRole('row', { name: new RegExp(fileName, 'i') });
+      await row.getByText(fileName).click();
+      await page.waitForURL(/\/imports\/[^/]+$/);
+      await expect(page.getByText(fileName)).toBeVisible();
+    });
+
     test('empty state shows upload CTA', async ({ page }) => {
       await page.goto('/imports');
 

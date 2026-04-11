@@ -314,7 +314,29 @@ function DataGridTableBodyRow<TData>({
           : undefined
       }
       style={{ ...(dndStyle ?? null) }}
-      onClick={() => props.onRowClick?.(row.original)}
+      onClick={(event) => {
+        // Two bubble sources can reach this handler unintentionally:
+        // 1. Portal-rendered content (dropdown menus, dialogs). React
+        //    bubbles synthetic events through the component tree even
+        //    though the portal lives outside the <tr> in the real DOM,
+        //    so currentTarget.contains(target) rejects them.
+        // 2. Interactive elements inside the row cells. A click on an
+        //    action button, a link, a form control, or any element
+        //    with an ARIA interactive role should fire that element's
+        //    own handler, not the row click. A label forwards clicks
+        //    to its associated input, so it counts as interactive too.
+        // Callers can opt any element out of row-click propagation by
+        // setting `data-stop-row-click` on it or an ancestor cell.
+        const target = event.target as Element;
+        if (!event.currentTarget.contains(target)) return;
+        const interactive = target.closest(
+          'button, a, input, select, textarea, label, [role="button"], [role="link"], [role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"], [role="checkbox"], [role="radio"], [role="switch"], [role="tab"], [data-stop-row-click]',
+        );
+        // Scope closest() to the row: if it matched an ancestor
+        // outside this <tr> (e.g., a wrapping <a>), ignore it.
+        if (interactive && event.currentTarget.contains(interactive)) return;
+        props.onRowClick?.(row.original);
+      }}
     >
       {children}
     </tr>
