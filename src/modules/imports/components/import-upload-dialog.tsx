@@ -254,7 +254,8 @@ export function ImportUploadDialog() {
                       </SelectTrigger>
                       <SelectContent>
                         {accounts.length === 0 ? (
-                          <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                          <div className="flex flex-col items-center gap-2 px-4 py-6 text-center text-sm text-muted-foreground">
+                            <Icons.Wallet className="size-5" />
                             {m['imports.upload.noAccounts']()}
                           </div>
                         ) : (
