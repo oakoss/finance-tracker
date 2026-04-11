@@ -3,6 +3,7 @@ import 'varlock/auto-load';
 import { test as setup } from '@playwright/test';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
+import { migrate } from 'drizzle-orm/node-postgres/migrator';
 
 import * as schema from '@/db/schema';
 import { E2E_USER_COUNT, e2eEmail } from '~e2e/fixtures/constants';
@@ -49,6 +50,11 @@ setup('ensure e2e seed data', async () => {
 
   const db = drizzle(databaseUrl, { casing: 'snake_case', schema });
   try {
+    // Idempotent: drizzle's migrator tracks applied migrations in
+    // __drizzle_migrations and no-ops on a fully-migrated DB.
+    // Running it here lets `pnpm test:e2e` work right after a
+    // `docker:reset` without a manual migrate step in between.
+    await migrate(db, { migrationsFolder: './drizzle' });
     await seedCreditCardCatalog(db);
     await seedE2eUser(db);
     await seedE2eWorkerUsers(db, E2E_USER_COUNT);
