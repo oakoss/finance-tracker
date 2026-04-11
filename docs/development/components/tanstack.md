@@ -110,6 +110,79 @@ Do **not** disable inputs with `form.state.isSubmitting`. If
 correct validation errors. Only disable the **submit button** via
 `form.Subscribe`.
 
+### Forms in dialogs
+
+Render `<form>` and `<DialogFooter>` as siblings of
+`DialogContent`, not as parent and child. `DialogContent`
+uses a CSS grid to space its direct children, so nesting
+the footer inside the form drops it out of the grid and
+forces manual margin compensation.
+
+```tsx
+<DialogContent>
+  <DialogHeader>…</DialogHeader>
+
+  <form
+    id="account-form"
+    noValidate
+    onSubmit={(e) => {
+      e.preventDefault();
+      void form.handleSubmit();
+    }}
+  >
+    <form.Field name="name">…</form.Field>
+  </form>
+
+  <DialogFooter>
+    <Button variant="outline" onClick={close}>
+      Cancel
+    </Button>
+    <Button form="account-form" type="submit" loading={isPending}>
+      Save
+    </Button>
+  </DialogFooter>
+</DialogContent>
+```
+
+The submit button's HTML5 `form` attribute points at the form
+by ID. Clicking it fires `form.handleSubmit()`, validation
+runs, and Enter-key submission on fields still works. Form
+IDs must be unique across any dialogs mounted at the same
+time.
+
+**`form.Subscribe` works outside the `<form>` element.** It
+reads from the form's internal store via closure over the
+`form` object returned by `useForm()`, not via React context
+or DOM ancestry. `src/modules/auth/components/sign-in-form.tsx`
+already uses `form.Subscribe` as a sibling after the closing
+`</form>` tag — the same mechanism applies inside a
+`DialogFooter`. Subscribe there to reactively enable or
+disable the submit button based on form state:
+
+```tsx
+<DialogFooter>
+  <form.Subscribe selector={(s) => s.canSubmit}>
+    {(canSubmit) => (
+      <Button disabled={!canSubmit} form="my-form" type="submit">
+        Save
+      </Button>
+    )}
+  </form.Subscribe>
+</DialogFooter>
+```
+
+**Multi-step wizards.** Intermediate Next / Back buttons use
+`type="button"` with an `onClick` handler; only the final
+step's button uses `type="submit" form="<id>"`. Next and Back
+must not fire the form's submit event.
+
+**If you must nest the footer inside the form** (rare —
+almost never required with TanStack Form), compensate with
+`className="mt-4"` on the `<DialogFooter>`. The grid gap from
+`DialogContent` doesn't reach descendants of a grid child, so
+without the margin the content above will sit flush against
+the footer's `border-t`.
+
 ## Query (TanStack Query)
 
 - Use `useMutation` for submissions.
