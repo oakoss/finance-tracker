@@ -209,6 +209,7 @@ export function ImportUploadDialog() {
 
         <form
           noValidate
+          className="min-w-0"
           id="import-upload-form"
           onSubmit={(e) => {
             e.preventDefault();

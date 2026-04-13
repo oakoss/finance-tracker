@@ -74,7 +74,7 @@ export function ColumnMapperPreview({
   return (
     <div className="flex flex-col gap-2">
       <p className="text-sm font-medium">{m['imports.upload.preview']()}</p>
-      <div className="rounded-lg border">
+      <div className="overflow-x-auto rounded-lg border">
         <Table>
           <TableHeader>
             <TableRow>
