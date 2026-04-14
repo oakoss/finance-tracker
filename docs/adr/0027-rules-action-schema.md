@@ -57,6 +57,13 @@ ArkType schema. A typed JSONB column fits better.
   `default`. Borrowed from Actual Budget's three-stage model,
   which their users rely on to express "this rule has to fire
   before / after that one" without juggling priorities by hand.
+  The canonical use for the `pre` stage is **descriptor
+  normalization**: rules that rewrite raw bank descriptors
+  ("SQ \*COFFEE SHOP #12", "AMZN MKTPLACE US") into canonical
+  payee references before categorization runs in `default`.
+  Payee aliases (ADR 0024) handle the majority of this, but
+  merchant-name cleanup rules in the `pre` stage cover cases
+  aliases can't express (amount- or account-scoped rewrites).
 - Provide a DB-side CHECK constraint that `jsonb_typeof(actions) =
 'array'` to catch malformed inserts.
 - Application-side: never read `actions` as raw JSON. The rules

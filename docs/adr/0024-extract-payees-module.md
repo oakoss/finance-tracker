@@ -108,3 +108,10 @@ footprint today. This ADR addresses only `payees`.
   TREK-57 or a new task ahead of it. Revisit `tags` extraction
   when a concrete cross-module need appears (e.g., when the rules
   module ships a "set tag" action).
+- **Open question for the Payees module**: once extracted, does
+  the module own merchant-logo resolution and caching? Candidates
+  live there naturally — a `payee_logos` cache table keyed by
+  payee id, populated on demand from Brandfetch / Clearbit (or a
+  user-uploaded override). Defer the decision to the eventual
+  Payees CRUD spec (paired with TREK-57); the column shape is
+  additive and can land without a further ADR.

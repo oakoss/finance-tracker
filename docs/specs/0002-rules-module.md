@@ -297,3 +297,10 @@ Server functions in `src/modules/rules/api/`:
 - **Rule simulator**: a "what would happen if I ran all active
   rules right now?" batch preview. Useful but could be a follow-
   on. Defer to v2.
+- **Default merchant-cleanup rule pack**: ship a starter set of
+  `pre`-stage rules for common descriptor junk ("SQ \*",
+  "TST\* ", "SP " prefixes, "#12345" suffixes) so new users get
+  clean transaction lists out of the box? Or leave it entirely
+  to user-created rules + community contributions? Actual's
+  approach is community rules; a small curated pack would be
+  nicer UX but creates a maintenance burden.
