@@ -1,5 +1,5 @@
 import { initLogger, log } from 'evlog';
-import { createBrowserLogDrain } from 'evlog/browser';
+import { createHttpLogDrain } from 'evlog/http';
 import { ENV } from 'varlock/env';
 
 type LogLevel = 'debug' | 'error' | 'info' | 'warn';
@@ -20,8 +20,8 @@ const ensureClientLogger = (): void => {
   initialized = true;
 
   try {
-    // No remote endpoint — dev-only console output via pretty mode.
-    const drain = createBrowserLogDrain({
+    // Empty endpoint disables HTTP transport; pretty mode handles dev output.
+    const drain = createHttpLogDrain({
       drain: { endpoint: '' },
       pipeline: { batch: { intervalMs: 3000, size: 20 } },
     });

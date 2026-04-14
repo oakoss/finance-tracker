@@ -1,8 +1,6 @@
 import { vi } from 'vitest';
 
-vi.mock('evlog/browser', () => ({
-  createBrowserLogDrain: mockCreateBrowserLogDrain,
-}));
+vi.mock('evlog/http', () => ({ createHttpLogDrain: mockCreateHttpLogDrain }));
 
 vi.mock('evlog', () => ({ initLogger: mockInitLogger, log: mockLog }));
 
@@ -16,7 +14,7 @@ const mockLog = {
   warn: vi.fn(),
 };
 const mockInitLogger = vi.fn();
-const mockCreateBrowserLogDrain = vi.fn(() => 'mock-drain');
+const mockCreateHttpLogDrain = vi.fn(() => 'mock-drain');
 
 // Helper to import a fresh client-logger module with specific env values
 const importClientLogger = async (env: { CLIENT_LOG_LEVEL?: string }) => {
@@ -37,7 +35,7 @@ describe('clientLog', () => {
     mockLog.info.mockClear();
     mockLog.warn.mockClear();
     mockInitLogger.mockClear();
-    mockCreateBrowserLogDrain.mockClear();
+    mockCreateHttpLogDrain.mockClear();
   });
 
   describe('initialization', () => {
@@ -59,12 +57,12 @@ describe('clientLog', () => {
       expect(mockInitLogger).toHaveBeenCalledOnce();
     });
 
-    it('creates a browser log drain', async () => {
+    it('creates an http log drain', async () => {
       const clientLog = await importClientLogger({ CLIENT_LOG_LEVEL: 'debug' });
 
       clientLog.info({ message: 'trigger init' });
 
-      expect(mockCreateBrowserLogDrain).toHaveBeenCalledExactlyOnceWith({
+      expect(mockCreateHttpLogDrain).toHaveBeenCalledExactlyOnceWith({
         drain: { endpoint: '' },
         pipeline: { batch: { intervalMs: 3000, size: 20 } },
       });
