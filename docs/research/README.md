@@ -41,3 +41,5 @@ Use `docs/research/0000-template.md` for new research docs.
   apps
 - `0005-copilot-comparison.md` — Copilot Money feature comparison and
   prioritized ideas
+- `0006-oss-budget-apps.md` — Actual Budget and kingfisherfox/budget
+  comparison and prioritized ideas
