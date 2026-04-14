@@ -96,14 +96,24 @@ Per ADR 0027:
 | Column                                                | Type     | Notes                                                         |
 | ----------------------------------------------------- | -------- | ------------------------------------------------------------- |
 | `id`, `userId`, `priority`, `isActive`, `auditFields` | existing | unchanged                                                     |
+| `stage`                                               | enum     | `pre`, `default`, `post`. Default `default`. Per ADR 0027     |
 | `match`                                               | jsonb    | Replaces `matchType` + `matchValue`. See ArkType schema below |
 | `actions`                                             | jsonb    | Array of `RuleAction`. See ADR 0027                           |
 
 CHECK constraints: `jsonb_typeof(actions) = 'array'`,
 `jsonb_array_length(actions) > 0`.
 
-Indexes: `(userId, priority)` for list rendering,
-`(userId, isActive) WHERE isActive = true` for the apply pass.
+Indexes: `(userId, stage, priority)` for list rendering and the
+apply pass (stage comes first so the apply loop sees `pre` rules
+before `default` before `post`); `(userId, isActive) WHERE
+isActive = true` partial index for quick active-rule lookups.
+
+Evaluation order: iterate rules by `(stage, priority)`. Within a
+single apply pass, later actions on the same field overwrite
+earlier ones (the "last action wins" semantics from Actual).
+Rules can be priority-reordered freely within a stage via
+drag-and-drop; moving to a different stage is an explicit
+editor action.
 
 ### New `rule_runs` table (apply-to-existing audit)
 
@@ -205,14 +215,24 @@ Server functions in `src/modules/rules/api/`:
 ### Rules list page (`/_app/rules`)
 
 - Tabs: Merchant rules | Payee aliases.
-- Merchant rules table: columns for match preview, action preview
-  (chips), priority handle, isActive toggle, row actions (edit,
-  apply to existing, delete). Empty state with CTA.
-- Drag handle on the left reorders via `reorderMerchantRules`.
-- Filter bar: search by match string, filter by action kind.
+- Merchant rules table grouped by `stage` (sections labeled Pre /
+  Default / Post, collapsible). Within a stage: columns for match
+  preview, action preview (chips), priority handle, isActive
+  toggle, row actions (edit, apply to existing, delete). Empty
+  state with CTA.
+- Drag handle on the left reorders via `reorderMerchantRules`
+  within a stage. Moving across stages happens in the editor.
+- Filter bar: search by match string, filter by action kind,
+  filter by stage.
 
 ### Rule editor dialog
 
+- Header: stage selector (`pre` / `default` / `post`), default
+  `default`. Tooltip explains stage order. Moving a rule between
+  stages keeps its `priority` value; if that priority already
+  exists in the destination stage, the moved rule lands at the
+  end of the stage (priority = max + 1) to avoid silent
+  collisions.
 - Left pane: match builder. Dropdown for `kind` + text input for
   `value`. Collapsible "Advanced" reveals amount conditions,
   account scope, direction.
@@ -234,9 +254,11 @@ Server functions in `src/modules/rules/api/`:
 - **Regex match on import-heavy load**: cap regex execution via
   `ArkType` validators (length limit + precompile + timeout on the
   apply-to-existing path); log and skip rules that time out.
-- **Conflicting rules**: first matching rule by priority wins. UI
-  surfaces "earlier rule already matches this transaction" hint in
-  the preview.
+- **Conflicting rules**: all matching active rules run in
+  `(stage, priority)` order; for any given field, the last action
+  to write wins. The editor's live-preview panel flags the
+  situation with "another rule later in the order will overwrite
+  this field" so the user understands the composition.
 - **Undo window expiry**: disabled button with tooltip "Undo
   expired at X" after `undoableUntil`.
 - **Apply to existing on a huge history**: server-side stream in

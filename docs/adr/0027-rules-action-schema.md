@@ -51,6 +51,12 @@ ArkType schema. A typed JSONB column fits better.
   a single `match` JSONB that holds the match predicate plus
   optional filters (`amountMin`, `amountMax`, `amountOp`,
   `accountId`, `direction`). Keeps the shape flexible.
+- Add a `stage` enum column to `merchant_rules`: `pre`,
+  `default`, `post`. Rules run in stage order and, within a
+  stage, by `priority` ascending. Default stage for new rules is
+  `default`. Borrowed from Actual Budget's three-stage model,
+  which their users rely on to express "this rule has to fire
+  before / after that one" without juggling priorities by hand.
 - Provide a DB-side CHECK constraint that `jsonb_typeof(actions) =
 'array'` to catch malformed inserts.
 - Application-side: never read `actions` as raw JSON. The rules

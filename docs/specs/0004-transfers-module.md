@@ -146,6 +146,27 @@ One row per user-dismissed candidate pair.
 
 Unique index: `(userId, txnAId, txnBId)`.
 
+### Off-budget account interaction
+
+Borrowed from Actual Budget: accounts have an `isOnBudget`
+boolean (default true, added to `ledgerAccounts` via a separate
+Trekker task). Transfers between two on-budget accounts are
+excluded from spending totals (the pair cancels). Transfers
+between an on-budget and an off-budget account are treated as
+ordinary income/expense on the on-budget side, since the user is
+moving money in or out of their tracked budget.
+
+The budget aggregation predicate reflects this: the paired-transfer
+exclusion only applies when _both_ legs are on-budget. One-leg
+cases (savings deposit from checking, loan payment from checking
+to an off-budget loan account) leave the on-budget leg visible in
+budget totals, categorized however the user (or a rule) labels
+the transaction — it contributes to the category's actual just
+like any other expense or income. A reserved "Transfers out" /
+"Transfers in" pair of categories is **not** introduced; users
+who want to bucket these explicitly can create their own
+categories and apply them via a merchant rule.
+
 ### Budget aggregation impact
 
 `src/modules/budgets/services/get-budget-vs-actual.ts` already

@@ -48,3 +48,5 @@ Use `docs/specs/0000-template.md` for new specs.
   tracking
 - `0006-statements-module.md` — statement upload + parse +
   reconciliation
+- `0007-recurring-detection.md` — recurring transaction detection,
+  scheduling, and auto-link
