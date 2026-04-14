@@ -41,3 +41,5 @@ Use `docs/adr/0000-template.md` for new ADRs.
 - `docs/adr/0019-cookie-management.md`
 - `docs/adr/0020-logging-evlog-signoz.md`
 - `docs/adr/0021-release-and-deployment-strategy.md`
+- `docs/adr/0022-csv-parser-adapter.md`
+- `docs/adr/0023-sync-plugin-architecture.md`

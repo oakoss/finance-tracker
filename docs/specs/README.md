@@ -38,4 +38,4 @@ Use `docs/specs/0000-template.md` for new specs.
 
 ## Index
 
-(none yet)
+- `0001-sync-module.md` — pluggable sync adapters (BYO credentials)

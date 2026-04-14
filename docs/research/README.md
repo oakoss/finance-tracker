@@ -39,3 +39,5 @@ Use `docs/research/0000-template.md` for new research docs.
 - `0003-data-export.md` — data export patterns in finance apps
 - `0004-account-deletion.md` — account deletion patterns in finance
   apps
+- `0005-copilot-comparison.md` — Copilot Money feature comparison and
+  prioritized ideas
