@@ -29,4 +29,13 @@ Use `docs/ideas/0000-template.md` for new ideas.
 
 ## Index
 
-(none yet)
+- `0001-net-worth-history.md` — historical net worth chart +
+  balance snapshots table
+- `0002-envelope-budgeting.md` — envelope/zero-based semantics
+  for the budgets module (ADR candidate)
+- `0003-goal-templates.md` — first-class `budget_goals` table
+  (depends on envelope)
+- `0004-wishlist.md` — small standalone "planned spending"
+  module
+- `0005-household-access.md` — multi-user shared ledger
+  (EPIC-27; epic-level design)
