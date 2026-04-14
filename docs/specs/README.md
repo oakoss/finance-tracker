@@ -39,3 +39,12 @@ Use `docs/specs/0000-template.md` for new specs.
 ## Index
 
 - `0001-sync-module.md` — pluggable sync adapters (BYO credentials)
+- `0002-rules-module.md` — merchant rules + payee aliases with
+  rich match/action schema
+- `0003-debt-module.md` — payoff planner (snowball / avalanche /
+  custom)
+- `0004-transfers-module.md` — transfer pairing + auto-detection
+- `0005-promotions-module.md` — 0% APR / deferred-interest bucket
+  tracking
+- `0006-statements-module.md` — statement upload + parse +
+  reconciliation

@@ -44,3 +44,6 @@ Use `docs/adr/0000-template.md` for new ADRs.
 - `docs/adr/0022-csv-parser-adapter.md`
 - `docs/adr/0023-sync-plugin-architecture.md`
 - `docs/adr/0024-extract-payees-module.md`
+- `docs/adr/0025-transfer-model.md`
+- `docs/adr/0026-debt-strategy-rank.md`
+- `docs/adr/0027-rules-action-schema.md`
