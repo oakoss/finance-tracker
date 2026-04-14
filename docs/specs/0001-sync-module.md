@@ -15,10 +15,9 @@ details.
 **Prerequisite work (sequenced before this module):**
 
 - Payees module extracted out of `transactions/` into its own
-  `src/modules/payees/` module (the `payees`, `tags`,
-  `transaction_tags`, and `split_lines` tables exist today in
-  `src/modules/transactions/db/schema.ts`; extraction is a move,
-  not a new build). Tracked alongside TREK-57 (Payees CRUD).
+  `src/modules/payees/` module per ADR 0024. Extraction is a
+  pure-import refactor, not a new build — the `payees` table
+  stays the same shape. Tracked alongside TREK-57 (Payees CRUD).
 - Rules module UI shipped (merchant rules, recurring rules, payee
   aliases) so imported transactions get auto-categorized.
 - Transfers module UI shipped so cross-account pairs are matched
