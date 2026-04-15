@@ -2,6 +2,7 @@
 
 Status: draft
 Epic: EPIC-29 (Sync)
+Prereq epics: EPIC-18 (Payees extraction via TREK-242), EPIC-30 (Rules), EPIC-31 (Transfers)
 Date: 2026-04-13
 
 ## Context

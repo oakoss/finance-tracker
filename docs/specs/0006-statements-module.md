@@ -1,7 +1,7 @@
 # Spec: Statements Module
 
 Status: draft
-Epic: EPIC-TBD (Statements + reconciliation)
+Epic: EPIC-33 (Statements)
 Date: 2026-04-13
 
 ## Context

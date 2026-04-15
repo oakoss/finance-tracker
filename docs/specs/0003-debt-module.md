@@ -1,7 +1,7 @@
 # Spec: Debt Module
 
 Status: draft
-Epic: EPIC-TBD (Debt)
+Epic: EPIC-3 (Debt Strategy)
 Date: 2026-04-13
 
 ## Context

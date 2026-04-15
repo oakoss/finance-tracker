@@ -2,6 +2,7 @@
 
 Status: exploring
 Date: 2026-04-14
+Related: EPIC-20 (Budget basics shipped TREK-59/60/61); new epic when envelope work is next
 
 ## What
 

@@ -2,6 +2,7 @@
 
 Status: exploring
 Date: 2026-04-14
+Related: EPIC-20 (Budget); downstream of idea 0002
 
 ## What
 

@@ -1,7 +1,7 @@
 # Spec: Transfers Module
 
 Status: draft
-Epic: EPIC-TBD (Transfers)
+Epic: EPIC-31 (Transfers)
 Date: 2026-04-13
 
 ## Context

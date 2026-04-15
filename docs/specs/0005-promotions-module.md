@@ -1,7 +1,7 @@
 # Spec: Promotions Module
 
 Status: draft
-Epic: EPIC-TBD (Promotions)
+Epic: EPIC-32 (Promotions); replaces archived TREK-10 (Promo model UI)
 Date: 2026-04-13
 
 ## Context

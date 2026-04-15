@@ -1,7 +1,7 @@
 # Spec: Recurring Transaction Detection and Scheduling
 
 Status: draft
-Epic: EPIC-TBD (Recurring)
+Epic: EPIC-34 (Recurring detection)
 Date: 2026-04-14
 
 ## Context

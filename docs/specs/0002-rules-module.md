@@ -1,7 +1,7 @@
 # Spec: Rules Module
 
 Status: draft
-Epic: EPIC-TBD (Rules)
+Epic: EPIC-30 (Rules)
 Date: 2026-04-13
 
 ## Context

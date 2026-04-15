@@ -2,6 +2,7 @@
 
 Status: exploring
 Date: 2026-04-14
+Related: EPIC-6 (Dashboard) widget surface
 
 ## What
 
