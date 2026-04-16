@@ -5,7 +5,7 @@ import type { ProcessedNormalizedRow } from '@/modules/imports/lib/apply-column-
 import type { CommitImportInput } from '@/modules/imports/validators';
 
 import { insertAuditLog } from '@/lib/audit/insert-audit-log';
-import { parsePgError } from '@/lib/db/pg-error';
+import { parsePgError, PG_ERROR_CODES } from '@/lib/db/pg-error';
 import { createError, log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
 import { importRows, imports } from '@/modules/imports/db/schema';
@@ -219,7 +219,7 @@ export async function commitImportService(
         await tx.execute(sql.raw(`ROLLBACK TO SAVEPOINT ${savepointName}`));
 
         const pgError = parsePgError(error);
-        if (pgError?.code === '23505') {
+        if (pgError?.code === PG_ERROR_CODES.UNIQUE_VIOLATION) {
           await tx
             .update(importRows)
             .set({ status: 'duplicate' })

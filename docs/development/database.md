@@ -35,6 +35,99 @@ Conventions for money, timestamps, and audit columns are defined in
 - For audit fields (`createdById`, `updatedById`, `deletedById`), prefer `onDelete: 'set null'` to preserve history.
 - For core domain data, prefer soft deletes over cascades.
 
+## Unique Index Constants and Constraint Messages
+
+Every `uniqueIndex(...)` call uses a typed constant, and every
+user-facing duplicate-violation message is co-located with the schema
+that produces it. This keeps schema, race-condition checks, and UI
+copy drift-free: rename the index in one place and TypeScript flags
+every consumer.
+
+### In each `db/schema.ts`
+
+```ts
+// Index names used by uniqueIndex() and referenced in error handling.
+export const payeesIndexNames = {
+  userNameIdx: 'payees_user_name_idx',
+} as const;
+
+// User-facing copy for unique violations on this module's tables.
+// Computed keys ensure the message key is always a real index name.
+export const payeesConstraintMessages = {
+  [payeesIndexNames.userNameIdx]: 'A payee with this name already exists.',
+} as const;
+
+export const payees = pgTable(
+  'payees',
+  {
+    /* ... */
+  },
+  (table) => [
+    uniqueIndex(payeesIndexNames.userNameIdx)
+      .on(table.userId, table.name)
+      .where(sql`${table.deletedAt} is null`),
+  ],
+);
+```
+
+### In `src/lib/db/pg-error.ts`
+
+The shared helper composes every module's messages via spread:
+
+```ts
+const CONSTRAINT_MESSAGES: Record<string, string> = {
+  ...accountsConstraintMessages,
+  ...budgetsConstraintMessages,
+  ...categoriesConstraintMessages,
+  ...payeesConstraintMessages,
+  ...transactionsConstraintMessages,
+};
+```
+
+When adding a module with user-facing unique violations, add the
+import and spread here.
+
+### Race-condition checks
+
+Catch blocks that re-read on `23505` must narrow both the error code
+AND the specific constraint name. Anything else re-throws:
+
+```ts
+import { PG_ERROR_CODES, parsePgError } from '@/lib/db/pg-error';
+import { payeesIndexNames } from '@/modules/payees/db/schema';
+
+// ...
+const pgInfo = parsePgError(error);
+if (
+  pgInfo?.code === PG_ERROR_CODES.UNIQUE_VIOLATION &&
+  pgInfo.constraint === payeesIndexNames.userNameIdx
+) {
+  const raced = await database.query.payees.findFirst({
+    /* ... */
+  });
+  if (raced) {
+    log.warn({
+      action: 'payee.create.raceResolved',
+      outcome: { idHash: hashId(raced.id) },
+      user: { idHash: hashId(userId) },
+    });
+    return raced;
+  }
+}
+throw error;
+```
+
+The tight check means an unexpected unique violation (e.g., a future
+second unique index) surfaces as a real error instead of silently
+returning a stale row.
+
+Services guarding against a single known race on a table with only
+one unique constraint (e.g., `preferences/services/bootstrap.ts` on
+the `userPreferences` primary key, or `imports/services/commit-import.ts`
+where any dedup-constraint violation is a duplicate) may narrow by
+code alone. Tables with multiple unique indexes should always include
+the constraint-name check.
+
 ## Upsert / Dedup Pattern
 
 Use `onConflictDoUpdate` with a no-op `set` when you need

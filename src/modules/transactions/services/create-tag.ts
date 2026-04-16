@@ -2,9 +2,10 @@ import type { Db } from '@/db';
 import type { CreateTagInput } from '@/modules/transactions/validators';
 
 import { notDeleted } from '@/lib/audit/soft-delete';
-import { parsePgError } from '@/lib/db/pg-error';
-import { createError } from '@/lib/logging/evlog';
-import { tags } from '@/modules/transactions/db/schema';
+import { parsePgError, PG_ERROR_CODES } from '@/lib/db/pg-error';
+import { createError, log } from '@/lib/logging/evlog';
+import { hashId } from '@/lib/logging/hash';
+import { tags, tagsIndexNames } from '@/modules/transactions/db/schema';
 
 export async function createTagService(
   database: Db,
@@ -29,12 +30,22 @@ export async function createTagService(
   } catch (error) {
     // Race condition: another request created the same tag
     const pgInfo = parsePgError(error);
-    if (pgInfo?.code === '23505') {
+    if (
+      pgInfo?.code === PG_ERROR_CODES.UNIQUE_VIOLATION &&
+      pgInfo.constraint === tagsIndexNames.userNameIdx
+    ) {
       const raced = await database.query.tags.findFirst({
         where: (t, { and: a, eq: e }) =>
           a(e(t.name, name), e(t.userId, userId), notDeleted(t.deletedAt)),
       });
-      if (raced) return raced;
+      if (raced) {
+        log.warn({
+          action: 'tag.create.raceResolved',
+          outcome: { idHash: hashId(raced.id) },
+          user: { idHash: hashId(userId) },
+        });
+        return raced;
+      }
     }
 
     throw error;

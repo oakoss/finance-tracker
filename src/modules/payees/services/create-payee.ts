@@ -2,9 +2,10 @@ import type { Db } from '@/db';
 import type { CreatePayeeInput } from '@/modules/payees/validators';
 
 import { notDeleted } from '@/lib/audit/soft-delete';
-import { parsePgError } from '@/lib/db/pg-error';
-import { createError } from '@/lib/logging/evlog';
-import { payees } from '@/modules/payees/db/schema';
+import { parsePgError, PG_ERROR_CODES } from '@/lib/db/pg-error';
+import { createError, log } from '@/lib/logging/evlog';
+import { hashId } from '@/lib/logging/hash';
+import { payees, payeesIndexNames } from '@/modules/payees/db/schema';
 
 export async function createPayeeService(
   database: Db,
@@ -38,7 +39,10 @@ export async function createPayeeService(
   } catch (error) {
     // Race condition: another request created the same payee
     const pgInfo = parsePgError(error);
-    if (pgInfo?.code === '23505') {
+    if (
+      pgInfo?.code === PG_ERROR_CODES.UNIQUE_VIOLATION &&
+      pgInfo.constraint === payeesIndexNames.userNameIdx
+    ) {
       const raced = await database.query.payees.findFirst({
         where: (t, { and: a, eq: e }) =>
           a(
@@ -47,7 +51,14 @@ export async function createPayeeService(
             notDeleted(t.deletedAt),
           ),
       });
-      if (raced) return raced;
+      if (raced) {
+        log.warn({
+          action: 'payee.create.raceResolved',
+          outcome: { idHash: hashId(raced.id) },
+          user: { idHash: hashId(userId) },
+        });
+        return raced;
+      }
     }
 
     throw error;

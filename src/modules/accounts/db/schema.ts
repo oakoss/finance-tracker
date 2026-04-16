@@ -93,6 +93,15 @@ export const ledgerAccounts = pgTable(
   ],
 );
 
+export const accountTermsIndexNames = {
+  accountIdIdx: 'account_terms_account_id_idx',
+} as const;
+
+export const accountsConstraintMessages = {
+  [accountTermsIndexNames.accountIdIdx]:
+    'This account already has terms. Edit existing terms.',
+} as const;
+
 export const accountTerms = pgTable(
   'account_terms',
   {
@@ -109,7 +118,9 @@ export const accountTerms = pgTable(
     statementDay: integer(),
     ...auditFields,
   },
-  (table) => [uniqueIndex('account_terms_account_id_idx').on(table.accountId)],
+  (table) => [
+    uniqueIndex(accountTermsIndexNames.accountIdIdx).on(table.accountId),
+  ],
 );
 
 export const accountBalanceSnapshots = pgTable(

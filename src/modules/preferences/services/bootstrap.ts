@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 import type { Db } from '@/db';
 import type { UserPreferences } from '@/modules/preferences/models';
 
-import { parsePgError } from '@/lib/db/pg-error';
+import { parsePgError, PG_ERROR_CODES } from '@/lib/db/pg-error';
 import { createError, log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
 import { userPreferences } from '@/modules/preferences/db/schema';
@@ -39,7 +39,7 @@ export async function bootstrapUserPreferences(
     // Race: a concurrent request (e.g., auth hook + first loader) may
     // have inserted the row between our read and write. Re-read it.
     const pgInfo = parsePgError(error);
-    if (pgInfo?.code === '23505') {
+    if (pgInfo?.code === PG_ERROR_CODES.UNIQUE_VIOLATION) {
       const raced = await database.query.userPreferences.findFirst({
         where: eq(userPreferences.userId, userId),
       });

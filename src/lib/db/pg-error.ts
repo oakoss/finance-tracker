@@ -1,10 +1,24 @@
 import { createError, log } from '@/lib/logging/evlog';
+import { accountsConstraintMessages } from '@/modules/accounts/db/schema';
+import { budgetsConstraintMessages } from '@/modules/budgets/db/schema';
+import { categoriesConstraintMessages } from '@/modules/categories/db/schema';
+import { payeesConstraintMessages } from '@/modules/payees/db/schema';
+import { transactionsConstraintMessages } from '@/modules/transactions/db/schema';
+
+// ---------------------------------------------------------------------------
+// PG error codes
+// ---------------------------------------------------------------------------
+
+export const PG_ERROR_CODES = {
+  FOREIGN_KEY_VIOLATION: '23503',
+  UNIQUE_VIOLATION: '23505',
+} as const;
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-type PgErrorCode = '23503' | '23505';
+type PgErrorCode = (typeof PG_ERROR_CODES)[keyof typeof PG_ERROR_CODES];
 
 type PgErrorInfo = {
   code: PgErrorCode;
@@ -22,25 +36,21 @@ type PgLogFields = {
 
 // ---------------------------------------------------------------------------
 // Constraint → user-facing message map
+//
+// Each module owns the copy for its own violations and uses computed
+// keys derived from its `*IndexNames` constants, so typos fail at
+// compile time in the module. This aggregator composes them.
 // ---------------------------------------------------------------------------
 
 const CONSTRAINT_MESSAGES: Record<string, string> = {
-  account_terms_account_id_idx:
-    'This account already has terms. Edit existing terms.',
-  budget_lines_period_category_idx:
-    'This category already has a budget line in this period.',
-  budget_periods_user_year_month_idx:
-    'A budget period for this month already exists.',
-  categories_user_name_idx: 'A category with this name already exists.',
-  payees_user_name_idx: 'A payee with this name already exists.',
-  tags_user_name_idx: 'A tag with this name already exists.',
-  transactions_account_external_id_idx:
-    'This transaction has already been imported.',
-  transactions_account_fingerprint_idx:
-    'This transaction has already been imported.',
+  ...accountsConstraintMessages,
+  ...budgetsConstraintMessages,
+  ...categoriesConstraintMessages,
+  ...payeesConstraintMessages,
+  ...transactionsConstraintMessages,
 };
 
-const CONSTRAINT_CODES = new Set<string>(['23503', '23505']);
+const CONSTRAINT_CODES = new Set<string>(Object.values(PG_ERROR_CODES));
 
 // ---------------------------------------------------------------------------
 // Shared helpers
@@ -102,7 +112,7 @@ export function throwIfConstraintViolation(
   const userOpt = userIdHash ? { user: { idHash: userIdHash } } : {};
 
   // Unique violation (23505)
-  if (pg.code === '23505') {
+  if (pg.code === PG_ERROR_CODES.UNIQUE_VIOLATION) {
     const fix =
       (pg.constraint && CONSTRAINT_MESSAGES[pg.constraint]) ??
       'A record with these values already exists.';
@@ -122,7 +132,7 @@ export function throwIfConstraintViolation(
   }
 
   // Foreign-key violation (23503)
-  if (pg.code === '23503') {
+  if (pg.code === PG_ERROR_CODES.FOREIGN_KEY_VIOLATION) {
     log.warn({
       action,
       outcome: { success: false },

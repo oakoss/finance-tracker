@@ -18,6 +18,15 @@ export const categoryTypeEnum = pgEnum('category_type', [
   'transfer',
 ]);
 
+export const categoriesIndexNames = {
+  userNameIdx: 'categories_user_name_idx',
+} as const;
+
+export const categoriesConstraintMessages = {
+  [categoriesIndexNames.userNameIdx]:
+    'A category with this name already exists.',
+} as const;
+
 export const categories = pgTable(
   'categories',
   {
@@ -34,7 +43,7 @@ export const categories = pgTable(
   },
   (table) => [
     index('categories_user_id_idx').on(table.userId),
-    uniqueIndex('categories_user_name_idx')
+    uniqueIndex(categoriesIndexNames.userNameIdx)
       .on(table.userId, table.name)
       .where(sql`${table.deletedAt} is null`),
     index('categories_user_active_idx')

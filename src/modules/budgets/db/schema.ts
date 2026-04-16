@@ -13,6 +13,21 @@ import { auditFields } from '@/db/shared';
 import { users } from '@/modules/auth/db/schema';
 import { categories } from '@/modules/categories/db/schema';
 
+export const budgetPeriodsIndexNames = {
+  userYearMonthIdx: 'budget_periods_user_year_month_idx',
+} as const;
+
+export const budgetLinesIndexNames = {
+  periodCategoryIdx: 'budget_lines_period_category_idx',
+} as const;
+
+export const budgetsConstraintMessages = {
+  [budgetLinesIndexNames.periodCategoryIdx]:
+    'This category already has a budget line in this period.',
+  [budgetPeriodsIndexNames.userYearMonthIdx]:
+    'A budget period for this month already exists.',
+} as const;
+
 export const budgetPeriods = pgTable(
   'budget_periods',
   {
@@ -29,7 +44,7 @@ export const budgetPeriods = pgTable(
   },
   (table) => [
     index('budget_periods_user_id_idx').on(table.userId),
-    uniqueIndex('budget_periods_user_year_month_idx')
+    uniqueIndex(budgetPeriodsIndexNames.userYearMonthIdx)
       .on(table.userId, table.year, table.month)
       .where(sql`${table.deletedAt} is null`),
   ],
@@ -51,7 +66,7 @@ export const budgetLines = pgTable(
   },
   (table) => [
     index('budget_lines_period_id_idx').on(table.budgetPeriodId),
-    uniqueIndex('budget_lines_period_category_idx')
+    uniqueIndex(budgetLinesIndexNames.periodCategoryIdx)
       .on(table.budgetPeriodId, table.categoryId)
       .where(sql`${table.deletedAt} is null`),
     foreignKey({

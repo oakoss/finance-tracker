@@ -23,6 +23,27 @@ export const transactionDirectionEnum = pgEnum('transaction_direction', [
   'credit',
 ]);
 
+export const tagsIndexNames = { userNameIdx: 'tags_user_name_idx' } as const;
+
+export const transactionsIndexNames = {
+  externalIdIdx: 'transactions_account_external_id_idx',
+  fingerprintIdx: 'transactions_account_fingerprint_idx',
+} as const;
+
+export const transactionTagsIndexNames = {
+  uniqueIdx: 'transaction_tags_unique_idx',
+} as const;
+
+export const transactionsConstraintMessages = {
+  [tagsIndexNames.userNameIdx]: 'A tag with this name already exists.',
+  [transactionsIndexNames.externalIdIdx]:
+    'This transaction has already been imported.',
+  [transactionsIndexNames.fingerprintIdx]:
+    'This transaction has already been imported.',
+  [transactionTagsIndexNames.uniqueIdx]:
+    'This tag is already attached to the transaction.',
+} as const;
+
 export const tags = pgTable(
   'tags',
   {
@@ -37,7 +58,7 @@ export const tags = pgTable(
   },
   (table) => [
     index('tags_user_id_idx').on(table.userId),
-    uniqueIndex('tags_user_name_idx')
+    uniqueIndex(tagsIndexNames.userNameIdx)
       .on(table.userId, table.name)
       .where(sql`${table.deletedAt} is null`),
     index('tags_user_active_idx')
@@ -95,11 +116,11 @@ export const transactions = pgTable(
     index('transactions_category_id_idx').on(table.categoryId),
     index('transactions_payee_id_idx').on(table.payeeId),
     index('transactions_transfer_id_idx').on(table.transferId),
-    uniqueIndex('transactions_account_external_id_idx').on(
+    uniqueIndex(transactionsIndexNames.externalIdIdx).on(
       table.accountId,
       table.externalId,
     ),
-    uniqueIndex('transactions_account_fingerprint_idx').on(
+    uniqueIndex(transactionsIndexNames.fingerprintIdx).on(
       table.accountId,
       table.fingerprint,
     ),
@@ -146,7 +167,7 @@ export const transactionTags = pgTable(
   (table) => [
     index('transaction_tags_transaction_id_idx').on(table.transactionId),
     index('transaction_tags_tag_id_idx').on(table.tagId),
-    uniqueIndex('transaction_tags_unique_idx').on(
+    uniqueIndex(transactionTagsIndexNames.uniqueIdx).on(
       table.transactionId,
       table.tagId,
     ),

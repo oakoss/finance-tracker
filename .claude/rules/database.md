@@ -46,6 +46,16 @@ paths:
 - Add composite indexes for hot query paths (e.g., `transactions.account_id + posted_at`).
 - Use partial indexes for soft-delete filtering (e.g., `deleted_at IS NULL`).
 
+## Unique-index constants and user-facing messages
+
+Unique index names and their user-facing violation copy live alongside the table in `db/schema.ts`:
+
+- Export `*IndexNames` (e.g., `payeesIndexNames`) as `{ [camelCaseKey]: 'snake_case_index_name' } as const`. Pass the constant to `uniqueIndex(...)` instead of a bare string.
+- Export `*ConstraintMessages` (one per module, e.g., `payeesConstraintMessages`, `transactionsConstraintMessages`) keyed by computed values from the index-name constants.
+- `src/lib/db/pg-error.ts` spreads all `*ConstraintMessages` into the `CONSTRAINT_MESSAGES` lookup; register modules that expose user-facing unique-violation copy there.
+
+Race-condition catch blocks that re-read on `23505` must narrow both the error code AND the specific index name, using `PG_ERROR_CODES.UNIQUE_VIOLATION` and the matching `*IndexNames` entry. Re-throw on any unexpected constraint.
+
 ## Schema derivation
 
 - Use `pick(...)` for narrow payloads (delete, lookup).
