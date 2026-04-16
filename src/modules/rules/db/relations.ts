@@ -34,13 +34,5 @@ export const recurringRulesRelations = relations(recurringRules, ({ one }) => ({
 }));
 
 export const merchantRulesRelations = relations(merchantRules, ({ one }) => ({
-  category: one(categories, {
-    fields: [merchantRules.categoryId],
-    references: [categories.id],
-  }),
-  payee: one(payees, {
-    fields: [merchantRules.payeeId],
-    references: [payees.id],
-  }),
   user: one(users, { fields: [merchantRules.userId], references: [users.id] }),
 }));

@@ -56,6 +56,16 @@ Unique index names and their user-facing violation copy live alongside the table
 
 Race-condition catch blocks that re-read on `23505` must narrow both the error code AND the specific index name, using `PG_ERROR_CODES.UNIQUE_VIOLATION` and the matching `*IndexNames` entry. Re-throw on any unexpected constraint.
 
+## Typed JSONB columns
+
+When a column stores a structured payload, use Drizzle's `jsonb().$type<T>()` and an ArkType schema co-located with the module's `models.ts`:
+
+- Define the ArkType schema (e.g., `ruleActionSchema` as a tagged union using `.or()`) and derive the TypeScript type with `typeof schema.infer`.
+- Import the type with `import type` in `db/schema.ts` to avoid runtime cycles.
+- Validate at trust boundaries (API inputs, imports from external sources) by composing the ArkType JSONB schema into the insert/update schemas via `.merge({ col: payloadSchema })`. drizzle-arktype does not honor `$type<T>()`, so the generated schemas leave JSONB columns typed as opaque object/array without the merge.
+- Services reading rows can treat a parse failure as a hard error (corrupted row) once a parse-on-read helper is in place.
+- Add a DB-level `check()` constraint to catch malformed inserts before they reach application code (e.g., `jsonb_typeof(col) = 'array' AND jsonb_array_length(col) > 0`).
+
 ## Schema derivation
 
 - Use `pick(...)` for narrow payloads (delete, lookup).

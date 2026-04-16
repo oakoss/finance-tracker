@@ -1,8 +1,10 @@
 import { sql } from 'drizzle-orm';
 import {
   boolean,
+  check,
   index,
   integer,
+  jsonb,
   pgEnum,
   pgTable,
   text,
@@ -11,19 +13,18 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 
+// Type-only import avoids a runtime cycle: models.ts imports the
+// tables from here, and this file borrows the derived TS types for
+// `$type<T>()` on the jsonb columns.
+import type { MatchPredicate, RuleAction } from '@/modules/rules/models';
+
 import { auditFields } from '@/db/shared';
 import { ledgerAccounts } from '@/modules/accounts/db/schema';
 import { users } from '@/modules/auth/db/schema';
 import { categories } from '@/modules/categories/db/schema';
 import { payees } from '@/modules/payees/db/schema';
 
-export const merchantMatchTypeEnum = pgEnum('merchant_match_type', [
-  'contains',
-  'starts_with',
-  'ends_with',
-  'exact',
-  'regex',
-]);
+export const ruleStageEnum = pgEnum('rule_stage', ['pre', 'default', 'post']);
 
 export const recurrenceIntervalEnum = pgEnum('recurrence_interval', [
   'weekly',
@@ -33,6 +34,11 @@ export const recurrenceIntervalEnum = pgEnum('recurrence_interval', [
   'yearly',
   'custom',
 ]);
+
+export const merchantRulesIndexNames = {
+  userActiveIdx: 'merchant_rules_user_active_idx',
+  userStagePriorityIdx: 'merchant_rules_user_stage_priority_idx',
+} as const;
 
 export const payeeAliases = pgTable(
   'payee_aliases',
@@ -81,25 +87,33 @@ export const recurringRules = pgTable(
 export const merchantRules = pgTable(
   'merchant_rules',
   {
-    categoryId: uuid().references(() => categories.id, {
-      onDelete: 'set null',
-    }),
+    actions: jsonb().$type<RuleAction[]>().notNull(),
     id: uuid()
       .primaryKey()
       .default(sql`uuidv7()`),
     isActive: boolean().notNull().default(true),
-    matchType: merchantMatchTypeEnum().notNull(),
-    matchValue: text().notNull(),
-    payeeId: uuid().references(() => payees.id, { onDelete: 'set null' }),
+    match: jsonb().$type<MatchPredicate>().notNull(),
     priority: integer().notNull().default(0),
+    stage: ruleStageEnum().notNull().default('default'),
     userId: uuid()
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     ...auditFields,
   },
   (table) => [
-    index('merchant_rules_user_id_idx').on(table.userId),
-    index('merchant_rules_payee_id_idx').on(table.payeeId),
-    index('merchant_rules_category_id_idx').on(table.categoryId),
+    index(merchantRulesIndexNames.userStagePriorityIdx).on(
+      table.userId,
+      table.stage,
+      table.priority,
+    ),
+    index(merchantRulesIndexNames.userActiveIdx)
+      .on(table.userId)
+      .where(sql`${table.isActive} = true`),
+    // Mirrors `ruleActionsSchema.atLeastLength(1)` in models.ts — keep
+    // the non-empty invariant in sync across both layers.
+    check(
+      'merchant_rules_actions_nonempty_check',
+      sql`jsonb_typeof(${table.actions}) = 'array' AND jsonb_array_length(${table.actions}) > 0`,
+    ),
   ],
 );

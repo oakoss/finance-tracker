@@ -113,6 +113,13 @@
       "when": 1775847710272,
       "tag": "0015_loose_sue_storm",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1776316162660,
+      "tag": "0016_striped_thunderbolt",
+      "breakpoints": true
     }
   ]
 }

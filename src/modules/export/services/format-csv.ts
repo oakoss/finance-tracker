@@ -332,25 +332,15 @@ export function formatCsv(data: UserExportData): Map<string, string> {
   files.set(
     'merchant-rules.csv',
     toCsv(
-      [
-        'id',
-        'matchType',
-        'matchValue',
-        'categoryId',
-        'payeeId',
-        'priority',
-        'isActive',
-        'createdAt',
-      ],
+      ['id', 'stage', 'match', 'actions', 'priority', 'isActive', 'createdAt'],
       data.merchantRules.map((mr) => ({
-        categoryId: str(mr.categoryId),
+        actions: JSON.stringify(mr.actions),
         createdAt: iso(mr.createdAt),
         id: mr.id,
         isActive: str(mr.isActive),
-        matchType: mr.matchType,
-        matchValue: mr.matchValue,
-        payeeId: str(mr.payeeId),
+        match: JSON.stringify(mr.match),
         priority: str(mr.priority),
+        stage: mr.stage,
       })),
     ),
   );
