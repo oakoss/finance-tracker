@@ -9,6 +9,7 @@ import {
   merchantRules,
   payeeAliases,
   recurringRules,
+  ruleRuns,
 } from '@/modules/rules/db/schema';
 
 // ---------------------------------------------------------------------------
@@ -113,6 +114,36 @@ export type RuleAction = typeof ruleActionSchema.infer;
 export type RuleActions = typeof ruleActionsSchema.infer;
 
 // ---------------------------------------------------------------------------
+// Rule-run undo payload (jsonb on rule_runs.undoData)
+//
+// Captures what changed per transaction so apply-to-existing can be
+// reversed field-by-field within the undoable window. The apply service
+// writes `transactions.memo` into `before.note` and omits
+// `before.excludedFromBudget` until that column lands; both fields are
+// forward-looking so the shape is stable when runtime support arrives.
+// A record may carry only `tagsAdded`/`tagsRemoved` (no field changes),
+// in which case `before` is omitted.
+// ---------------------------------------------------------------------------
+
+const ruleRunUndoTransactionSchema = type({
+  'before?': type({
+    'categoryId?': '(string > 0) | null',
+    'excludedFromBudget?': 'boolean',
+    'note?': 'string | null',
+    'payeeId?': '(string > 0) | null',
+  }),
+  'tagsAdded?': '(string > 0)[]',
+  'tagsRemoved?': '(string > 0)[]',
+  transactionId: 'string > 0',
+});
+
+export const ruleRunUndoSchema = type({
+  transactions: ruleRunUndoTransactionSchema.array(),
+});
+
+export type RuleRunUndo = typeof ruleRunUndoSchema.infer;
+
+// ---------------------------------------------------------------------------
 // Drizzle-ArkType CRUD schemas
 //
 // drizzle-arktype does not read `$type<T>()` when generating column
@@ -151,3 +182,17 @@ export const merchantRulesDeleteSchema = merchantRulesSelectSchema.pick('id');
 
 export type MerchantRule = typeof merchantRulesSelectSchema.infer;
 export type MerchantRuleInsert = typeof merchantRulesInsertSchema.infer;
+
+export const ruleRunsSelectSchema = createSelectSchema(ruleRuns).merge({
+  undoData: ruleRunUndoSchema,
+});
+export const ruleRunsInsertSchema = createInsertSchema(ruleRuns).merge({
+  undoData: ruleRunUndoSchema,
+});
+export const ruleRunsUpdateSchema = createUpdateSchema(ruleRuns).merge({
+  'undoData?': ruleRunUndoSchema,
+});
+export const ruleRunsDeleteSchema = ruleRunsSelectSchema.pick('id');
+
+export type RuleRun = typeof ruleRunsSelectSchema.infer;
+export type RuleRunInsert = typeof ruleRunsInsertSchema.infer;

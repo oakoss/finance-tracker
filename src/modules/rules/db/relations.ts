@@ -8,6 +8,7 @@ import {
   merchantRules,
   payeeAliases,
   recurringRules,
+  ruleRuns,
 } from '@/modules/rules/db/schema';
 
 export const payeeAliasesRelations = relations(payeeAliases, ({ one }) => ({
@@ -33,6 +34,20 @@ export const recurringRulesRelations = relations(recurringRules, ({ one }) => ({
   user: one(users, { fields: [recurringRules.userId], references: [users.id] }),
 }));
 
-export const merchantRulesRelations = relations(merchantRules, ({ one }) => ({
-  user: one(users, { fields: [merchantRules.userId], references: [users.id] }),
+export const merchantRulesRelations = relations(
+  merchantRules,
+  ({ many, one }) => ({
+    runs: many(ruleRuns),
+    user: one(users, {
+      fields: [merchantRules.userId],
+      references: [users.id],
+    }),
+  }),
+);
+
+export const ruleRunsRelations = relations(ruleRuns, ({ one }) => ({
+  rule: one(merchantRules, {
+    fields: [ruleRuns.ruleId],
+    references: [merchantRules.id],
+  }),
 }));

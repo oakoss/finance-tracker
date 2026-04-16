@@ -3,6 +3,7 @@ import { accountsConstraintMessages } from '@/modules/accounts/db/schema';
 import { budgetsConstraintMessages } from '@/modules/budgets/db/schema';
 import { categoriesConstraintMessages } from '@/modules/categories/db/schema';
 import { payeesConstraintMessages } from '@/modules/payees/db/schema';
+import { rulesConstraintMessages } from '@/modules/rules/db/schema';
 import { transactionsConstraintMessages } from '@/modules/transactions/db/schema';
 
 // ---------------------------------------------------------------------------
@@ -10,6 +11,7 @@ import { transactionsConstraintMessages } from '@/modules/transactions/db/schema
 // ---------------------------------------------------------------------------
 
 export const PG_ERROR_CODES = {
+  CHECK_VIOLATION: '23514',
   FOREIGN_KEY_VIOLATION: '23503',
   UNIQUE_VIOLATION: '23505',
 } as const;
@@ -47,6 +49,7 @@ const CONSTRAINT_MESSAGES: Record<string, string> = {
   ...budgetsConstraintMessages,
   ...categoriesConstraintMessages,
   ...payeesConstraintMessages,
+  ...rulesConstraintMessages,
   ...transactionsConstraintMessages,
 };
 
@@ -79,8 +82,8 @@ function unwrap(error: unknown): PgErrorLike | null {
 // ---------------------------------------------------------------------------
 
 /** Extract PG constraint error fields if `error` is a node-postgres
- *  DatabaseError with code 23505 or 23503. Also unwraps Drizzle's
- *  `DrizzleQueryError` wrapper (checks `error.cause`). */
+ *  DatabaseError with a known constraint code (unique, FK, or CHECK).
+ *  Also unwraps Drizzle's `DrizzleQueryError` wrapper (checks `error.cause`). */
 export function parsePgError(error: unknown): PgErrorInfo | null {
   const pg = unwrap(error);
   if (!pg || !CONSTRAINT_CODES.has(pg.code)) return null;
@@ -144,6 +147,28 @@ export function throwIfConstraintViolation(
       ...causeOpt,
       fix: 'A referenced record is missing or was deleted. Refresh and try again.',
       message: 'Referenced record not found.',
+      status: 422,
+    });
+  }
+
+  // CHECK violation (23514) — domain-invariant mismatch. Constraint
+  // names are DB-internal; surface a generic 422 with a per-constraint
+  // fix when available.
+  if (pg.code === PG_ERROR_CODES.CHECK_VIOLATION) {
+    const fix =
+      (pg.constraint && CONSTRAINT_MESSAGES[pg.constraint]) ??
+      'The submitted values violate a domain rule.';
+    log.warn({
+      action,
+      outcome: { success: false },
+      pgConstraint: pg.constraint,
+      pgTable: pg.table,
+      ...userOpt,
+    });
+    throw createError({
+      ...causeOpt,
+      fix,
+      message: 'Invalid values.',
       status: 422,
     });
   }

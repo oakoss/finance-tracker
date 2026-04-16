@@ -16,7 +16,11 @@ import {
 // Type-only import avoids a runtime cycle: models.ts imports the
 // tables from here, and this file borrows the derived TS types for
 // `$type<T>()` on the jsonb columns.
-import type { MatchPredicate, RuleAction } from '@/modules/rules/models';
+import type {
+  MatchPredicate,
+  RuleAction,
+  RuleRunUndo,
+} from '@/modules/rules/models';
 
 import { auditFields } from '@/db/shared';
 import { ledgerAccounts } from '@/modules/accounts/db/schema';
@@ -38,6 +42,17 @@ export const recurrenceIntervalEnum = pgEnum('recurrence_interval', [
 export const merchantRulesIndexNames = {
   userActiveIdx: 'merchant_rules_user_active_idx',
   userStagePriorityIdx: 'merchant_rules_user_stage_priority_idx',
+} as const;
+
+export const ruleRunsIndexNames = {
+  ruleRunAtIdx: 'rule_runs_rule_run_at_idx',
+} as const;
+
+export const rulesConstraintMessages = {
+  merchant_rules_actions_nonempty_check:
+    'A merchant rule must have at least one action.',
+  rule_runs_undo_data_shape_check:
+    'Rule-run undo data must be an object containing a transactions array.',
 } as const;
 
 export const payeeAliases = pgTable(
@@ -114,6 +129,44 @@ export const merchantRules = pgTable(
     check(
       'merchant_rules_actions_nonempty_check',
       sql`jsonb_typeof(${table.actions}) = 'array' AND jsonb_array_length(${table.actions}) > 0`,
+    ),
+  ],
+);
+
+export const ruleRuns = pgTable(
+  'rule_runs',
+  {
+    affectedTransactionIds: uuid()
+      .array()
+      .notNull()
+      .default(sql`ARRAY[]::uuid[]`),
+    id: uuid()
+      .primaryKey()
+      .default(sql`uuidv7()`),
+    ruleId: uuid()
+      .notNull()
+      .references(() => merchantRules.id, { onDelete: 'cascade' }),
+    runAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    undoableUntil: timestamp({ withTimezone: true })
+      .notNull()
+      .default(sql`now() + interval '5 minutes'`),
+    undoData: jsonb().$type<RuleRunUndo>().notNull(),
+    undoneAt: timestamp({ withTimezone: true }),
+    ...auditFields,
+  },
+  (table) => [
+    index(ruleRunsIndexNames.ruleRunAtIdx).on(
+      table.ruleId,
+      sql`${table.runAt} DESC`,
+    ),
+    // Mirrors `ruleRunUndoSchema` shape guard in models.ts — keep the
+    // "transactions is an array" invariant in sync across both layers.
+    // The explicit `? 'transactions'` guard short-circuits the type
+    // check when the key is missing (otherwise `jsonb_typeof(NULL)` is
+    // NULL, which CHECK treats as passing).
+    check(
+      'rule_runs_undo_data_shape_check',
+      sql`jsonb_typeof(${table.undoData}) = 'object' AND ${table.undoData} ? 'transactions' AND jsonb_typeof(${table.undoData}->'transactions') = 'array'`,
     ),
   ],
 );

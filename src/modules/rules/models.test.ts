@@ -5,6 +5,7 @@ import {
   matchPredicateSchema,
   ruleActionSchema,
   ruleActionsSchema,
+  ruleRunUndoSchema,
 } from '@/modules/rules/models';
 
 describe('matchPredicateSchema', () => {
@@ -250,6 +251,65 @@ describe('ruleActionsSchema', () => {
       { categoryId: 'c-1', kind: 'setCategory' },
       { kind: 'setBadAction' },
     ]);
+    expect(result instanceof type.errors).toBe(true);
+  });
+});
+
+describe('ruleRunUndoSchema', () => {
+  it('accepts empty transactions array', () => {
+    const result = ruleRunUndoSchema({ transactions: [] });
+    expect(result instanceof type.errors).toBe(false);
+  });
+
+  it('accepts record with before + tag deltas', () => {
+    const result = ruleRunUndoSchema({
+      transactions: [
+        {
+          before: { categoryId: 'cat-1', payeeId: null },
+          tagsAdded: ['t-1'],
+          tagsRemoved: ['t-2', 't-3'],
+          transactionId: 'tx-1',
+        },
+      ],
+    });
+    expect(result instanceof type.errors).toBe(false);
+  });
+
+  it('accepts record with only tag deltas (no before)', () => {
+    const result = ruleRunUndoSchema({
+      transactions: [{ tagsAdded: ['t-1'], transactionId: 'tx-1' }],
+    });
+    expect(result instanceof type.errors).toBe(false);
+  });
+
+  it('accepts record with only transactionId (no-op placeholder)', () => {
+    const result = ruleRunUndoSchema({
+      transactions: [{ transactionId: 'tx-1' }],
+    });
+    expect(result instanceof type.errors).toBe(false);
+  });
+
+  it('rejects missing transactions key', () => {
+    const result = ruleRunUndoSchema({});
+    expect(result instanceof type.errors).toBe(true);
+  });
+
+  it('rejects non-array transactions value', () => {
+    const result = ruleRunUndoSchema({ transactions: 'nope' });
+    expect(result instanceof type.errors).toBe(true);
+  });
+
+  it('rejects record without transactionId', () => {
+    const result = ruleRunUndoSchema({
+      transactions: [{ tagsAdded: ['t-1'] }],
+    });
+    expect(result instanceof type.errors).toBe(true);
+  });
+
+  it('rejects record with wrong before type', () => {
+    const result = ruleRunUndoSchema({
+      transactions: [{ before: { categoryId: 42 }, transactionId: 'tx-1' }],
+    });
     expect(result instanceof type.errors).toBe(true);
   });
 });

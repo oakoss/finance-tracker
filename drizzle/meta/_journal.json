@@ -120,6 +120,13 @@
       "when": 1776316162660,
       "tag": "0016_striped_thunderbolt",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1776358671918,
+      "tag": "0017_sleepy_tempest",
+      "breakpoints": true
     }
   ]
 }
