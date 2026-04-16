@@ -16,12 +16,12 @@ import {
 import { toISODateString } from '@/lib/i18n/date';
 import { accountQueries } from '@/modules/accounts/hooks/use-accounts';
 import { categoryQueries } from '@/modules/categories/hooks/use-categories';
+import { payeeQueries } from '@/modules/payees/hooks/use-payees';
 import {
   TransactionForm,
   type TransactionFormValues,
 } from '@/modules/transactions/components/transaction-form';
 import {
-  payeeQueries,
   tagQueries,
   useUpdateTransaction,
 } from '@/modules/transactions/hooks/use-transactions';

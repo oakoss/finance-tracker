@@ -8,13 +8,13 @@ import { type } from 'arktype';
 import { RootErrorBoundary } from '@/components/errors/root-error-boundary';
 import { accountQueries } from '@/modules/accounts/hooks/use-accounts';
 import { categoryQueries } from '@/modules/categories/hooks/use-categories';
+import { payeeQueries } from '@/modules/payees/hooks/use-payees';
 import { CreateTransactionDialog } from '@/modules/transactions/components/create-transaction-dialog';
 import { EditTransactionDialog } from '@/modules/transactions/components/edit-transaction-dialog';
 import { TransactionsDataGrid } from '@/modules/transactions/components/transactions-data-grid';
 import { TransactionsEmpty } from '@/modules/transactions/components/transactions-empty';
 import { TransactionsPageHeader } from '@/modules/transactions/components/transactions-page-header';
 import {
-  payeeQueries,
   tagQueries,
   transactionQueries,
 } from '@/modules/transactions/hooks/use-transactions';

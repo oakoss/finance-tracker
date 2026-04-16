@@ -42,8 +42,8 @@ const AUTH_ONLY_FILES = new Set<string>([
   'src/modules/categories/api/list-categories.ts',
   'src/modules/imports/api/list-import-rows.ts',
   'src/modules/imports/api/list-imports.ts',
+  'src/modules/payees/api/list-payees.ts',
   'src/modules/preferences/api/get-preferences.ts',
-  'src/modules/transactions/api/list-payees.ts',
   'src/modules/transactions/api/list-tags.ts',
   'src/modules/transactions/api/list-transactions.ts',
   // Exempt mutations (GDPR + unverified-recoverable config)

@@ -10,8 +10,8 @@ import { createError, log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
 import { importRows, imports } from '@/modules/imports/db/schema';
 import { resolveCategoryByName } from '@/modules/imports/lib/resolve-category';
+import { resolvePayeeId } from '@/modules/payees/lib/resolve-payee';
 import { transactions } from '@/modules/transactions/db/schema';
-import { resolvePayeeId } from '@/modules/transactions/lib/resolve-payee';
 
 export async function commitImportService(
   database: Db,

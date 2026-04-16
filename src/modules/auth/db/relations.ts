@@ -11,10 +11,11 @@ import {
 import { categories } from '@/modules/categories/db/schema';
 import { debtStrategies } from '@/modules/debt/db/schema';
 import { imports } from '@/modules/imports/db/schema';
+import { payees } from '@/modules/payees/db/schema';
 import { userPreferences } from '@/modules/preferences/db/schema';
 import { merchantRules, recurringRules } from '@/modules/rules/db/schema';
 import { attachments, statements } from '@/modules/statements/db/schema';
-import { payees, tags } from '@/modules/transactions/db/schema';
+import { tags } from '@/modules/transactions/db/schema';
 import { transfers } from '@/modules/transfers/db/schema';
 
 // usersRelations spans auth and finance modules.

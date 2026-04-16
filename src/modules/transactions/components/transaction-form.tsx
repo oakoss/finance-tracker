@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import type { AccountListItem } from '@/modules/accounts/api/list-accounts';
 import type { CategoryListItem } from '@/modules/categories/api/list-categories';
-import type { PayeeListItem } from '@/modules/transactions/api/list-payees';
+import type { PayeeListItem } from '@/modules/payees/api/list-payees';
 import type { TagListItem } from '@/modules/transactions/api/list-tags';
 
 import { Badge } from '@/components/ui/badge';

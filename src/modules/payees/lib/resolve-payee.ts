@@ -5,7 +5,7 @@ import type { DbOrTx } from '@/db';
 import { notDeleted } from '@/lib/audit/soft-delete';
 import { createError, log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
-import { payees } from '@/modules/transactions/db/schema';
+import { payees } from '@/modules/payees/db/schema';
 
 type ResolvePayeeOpts = {
   existingPayeeId?: string | null | undefined;

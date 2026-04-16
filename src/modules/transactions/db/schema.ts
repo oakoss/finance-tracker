@@ -15,36 +15,13 @@ import { auditFields } from '@/db/shared';
 import { ledgerAccounts } from '@/modules/accounts/db/schema';
 import { users } from '@/modules/auth/db/schema';
 import { categories } from '@/modules/categories/db/schema';
+import { payees } from '@/modules/payees/db/schema';
 import { transfers } from '@/modules/transfers/db/schema';
 
 export const transactionDirectionEnum = pgEnum('transaction_direction', [
   'debit',
   'credit',
 ]);
-
-export const payees = pgTable(
-  'payees',
-  {
-    id: uuid()
-      .primaryKey()
-      .default(sql`uuidv7()`),
-    name: text().notNull(),
-    normalizedName: text(),
-    userId: uuid()
-      .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
-    ...auditFields,
-  },
-  (table) => [
-    index('payees_user_id_idx').on(table.userId),
-    uniqueIndex('payees_user_name_idx')
-      .on(table.userId, table.name)
-      .where(sql`${table.deletedAt} is null`),
-    index('payees_user_active_idx')
-      .on(table.userId)
-      .where(sql`${table.deletedAt} is null`),
-  ],
-);
 
 export const tags = pgTable(
   'tags',

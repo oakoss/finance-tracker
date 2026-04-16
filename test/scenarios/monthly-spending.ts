@@ -3,7 +3,8 @@ import { faker } from '@faker-js/faker';
 import type { LedgerAccount } from '@/modules/accounts/models';
 import type { User } from '@/modules/auth/models';
 import type { Category } from '@/modules/categories/models';
-import type { Payee, Transaction } from '@/modules/transactions/models';
+import type { Payee } from '@/modules/payees/models';
+import type { Transaction } from '@/modules/transactions/models';
 
 import { categories, payees, transactions } from '@/db/schema';
 import { type Db, fakeCents } from '~test/factories/base';

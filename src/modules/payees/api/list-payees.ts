@@ -5,7 +5,7 @@ import { log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
 import { handleServerFnError } from '@/lib/server-fn/handle-error';
 import { authMiddleware, requireUserId } from '@/modules/auth/middleware';
-import { listPayeesService } from '@/modules/transactions/services/list-payees';
+import { listPayeesService } from '@/modules/payees/services/list-payees';
 
 export const listPayees = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])

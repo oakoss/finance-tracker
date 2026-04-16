@@ -5,11 +5,11 @@ import { insertAuditLog } from '@/lib/audit/insert-audit-log';
 import { notDeleted } from '@/lib/audit/soft-delete';
 import { createError, log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
+import { resolvePayeeId } from '@/modules/payees/lib/resolve-payee';
 import {
   transactions,
   transactionTags,
 } from '@/modules/transactions/db/schema';
-import { resolvePayeeId } from '@/modules/transactions/lib/resolve-payee';
 import { resolveTagIds } from '@/modules/transactions/lib/resolve-tags';
 
 export async function createTransactionService(

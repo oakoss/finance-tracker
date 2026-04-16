@@ -4,9 +4,8 @@ import type {
 } from '@/modules/accounts/models';
 import type { User, UserInsert } from '@/modules/auth/models';
 import type { Category, CategoryInsert } from '@/modules/categories/models';
+import type { Payee, PayeeInsert } from '@/modules/payees/models';
 import type {
-  Payee,
-  PayeeInsert,
   Transaction,
   TransactionInsert,
 } from '@/modules/transactions/models';

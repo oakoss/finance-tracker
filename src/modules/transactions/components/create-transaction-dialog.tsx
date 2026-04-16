@@ -12,12 +12,12 @@ import {
 } from '@/components/ui/dialog';
 import { accountQueries } from '@/modules/accounts/hooks/use-accounts';
 import { categoryQueries } from '@/modules/categories/hooks/use-categories';
+import { payeeQueries } from '@/modules/payees/hooks/use-payees';
 import {
   TransactionForm,
   type TransactionFormValues,
 } from '@/modules/transactions/components/transaction-form';
 import {
-  payeeQueries,
   tagQueries,
   useCreateTransaction,
 } from '@/modules/transactions/hooks/use-transactions';

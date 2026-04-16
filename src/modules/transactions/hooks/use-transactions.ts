@@ -18,9 +18,9 @@ import type {
 import { useAnalytics } from '@/hooks/use-analytics';
 import { clientLog } from '@/lib/logging/client-logger';
 import { parseError } from '@/lib/logging/evlog';
+import { payeeQueries } from '@/modules/payees/hooks/use-payees';
 import { createTransaction } from '@/modules/transactions/api/create-transaction';
 import { deleteTransaction } from '@/modules/transactions/api/delete-transaction';
-import { listPayees } from '@/modules/transactions/api/list-payees';
 import { listTags } from '@/modules/transactions/api/list-tags';
 import { listTransactions } from '@/modules/transactions/api/list-transactions';
 import { splitTransaction } from '@/modules/transactions/api/split-transaction';
@@ -35,15 +35,6 @@ export const transactionQueries = {
     queryOptions({
       queryFn: () => listTransactions(),
       queryKey: [...transactionQueries.all(), 'list'],
-    }),
-};
-
-export const payeeQueries = {
-  all: () => ['payees'] as const,
-  list: () =>
-    queryOptions({
-      queryFn: () => listPayees(),
-      queryKey: [...payeeQueries.all(), 'list'],
     }),
 };
 

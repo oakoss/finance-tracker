@@ -9,11 +9,11 @@ import { ensureFound } from '@/lib/form/validation';
 import { createError, log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
 import { ledgerAccounts } from '@/modules/accounts/db/schema';
+import { resolvePayeeId } from '@/modules/payees/lib/resolve-payee';
 import {
   transactions,
   transactionTags,
 } from '@/modules/transactions/db/schema';
-import { resolvePayeeId } from '@/modules/transactions/lib/resolve-payee';
 import { resolveTagIds } from '@/modules/transactions/lib/resolve-tags';
 
 export async function updateTransactionService(

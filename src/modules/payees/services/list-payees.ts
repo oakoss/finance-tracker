@@ -3,7 +3,7 @@ import { and, asc, eq } from 'drizzle-orm';
 import type { Db } from '@/db';
 
 import { notDeleted } from '@/lib/audit/soft-delete';
-import { payees } from '@/modules/transactions/db/schema';
+import { payees } from '@/modules/payees/db/schema';
 
 export async function listPayeesService(database: Db, userId: string) {
   return database

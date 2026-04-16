@@ -3,7 +3,8 @@ import { expect } from 'vitest';
 
 import type { Db } from '@/db';
 
-import { payees, transactions } from '@/modules/transactions/db/schema';
+import { payees } from '@/modules/payees/db/schema';
+import { transactions } from '@/modules/transactions/db/schema';
 import { createTransactionService } from '@/modules/transactions/services/create-transaction';
 import { listTransactionsService } from '@/modules/transactions/services/list-transactions';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';

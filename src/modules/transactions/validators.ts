@@ -64,10 +64,6 @@ export const updateSplitLinesSchema = splitTransactionSchema;
 
 export type UpdateSplitLinesInput = typeof updateSplitLinesSchema.infer;
 
-export const createPayeeSchema = type({ name: '0 < string <= 200' });
-
-export type CreatePayeeInput = typeof createPayeeSchema.infer;
-
 export const createTagSchema = type({ name: '0 < string <= 100' });
 
 export type CreateTagInput = typeof createTagSchema.infer;

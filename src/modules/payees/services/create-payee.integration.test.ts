@@ -4,8 +4,8 @@ import { expect } from 'vitest';
 import type { Db } from '@/db';
 
 import { notDeleted } from '@/lib/audit/soft-delete';
-import { payees } from '@/modules/transactions/db/schema';
-import { createPayeeService } from '@/modules/transactions/services/create-payee';
+import { payees } from '@/modules/payees/db/schema';
+import { createPayeeService } from '@/modules/payees/services/create-payee';
 import type { Db as TestDb } from '~test/factories/base';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';

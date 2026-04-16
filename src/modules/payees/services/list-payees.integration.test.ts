@@ -2,7 +2,7 @@ import { expect } from 'vitest';
 
 import type { Db } from '@/db';
 
-import { listPayeesService } from '@/modules/transactions/services/list-payees';
+import { listPayeesService } from '@/modules/payees/services/list-payees';
 import type { Db as TestDb } from '~test/factories/base';
 import { insertPayee } from '~test/factories/payee.factory';
 import { insertUser } from '~test/factories/user.factory';

@@ -4,15 +4,10 @@ import { ledgerAccounts } from '@/modules/accounts/db/schema';
 import { users } from '@/modules/auth/db/schema';
 import { categories } from '@/modules/categories/db/schema';
 import { importRows } from '@/modules/imports/db/schema';
+import { payees } from '@/modules/payees/db/schema';
 import { promoBucketTransactions } from '@/modules/promotions/db/schema';
-import {
-  merchantRules,
-  payeeAliases,
-  recurringRules,
-} from '@/modules/rules/db/schema';
 import { attachments } from '@/modules/statements/db/schema';
 import {
-  payees,
   splitLines,
   tags,
   transactions,
@@ -68,14 +63,6 @@ export const transactionTagsRelations = relations(
     }),
   }),
 );
-
-export const payeesRelations = relations(payees, ({ many, one }) => ({
-  aliases: many(payeeAliases),
-  merchantRules: many(merchantRules),
-  recurringRules: many(recurringRules),
-  transactions: many(transactions),
-  user: one(users, { fields: [payees.userId], references: [users.id] }),
-}));
 
 export const tagsRelations = relations(tags, ({ many, one }) => ({
   transactionTags: many(transactionTags),

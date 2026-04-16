@@ -8,6 +8,7 @@ import { budgetLines, budgetPeriods } from '@/modules/budgets/db/schema';
 import { categories } from '@/modules/categories/db/schema';
 import { debtStrategies, debtStrategyOrder } from '@/modules/debt/db/schema';
 import { imports } from '@/modules/imports/db/schema';
+import { payees } from '@/modules/payees/db/schema';
 import { userPreferences } from '@/modules/preferences/db/schema';
 import {
   merchantRules,
@@ -15,7 +16,6 @@ import {
   recurringRules,
 } from '@/modules/rules/db/schema';
 import {
-  payees,
   splitLines,
   tags,
   transactions,

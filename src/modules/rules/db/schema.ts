@@ -15,7 +15,7 @@ import { auditFields } from '@/db/shared';
 import { ledgerAccounts } from '@/modules/accounts/db/schema';
 import { users } from '@/modules/auth/db/schema';
 import { categories } from '@/modules/categories/db/schema';
-import { payees } from '@/modules/transactions/db/schema';
+import { payees } from '@/modules/payees/db/schema';
 
 export const merchantMatchTypeEnum = pgEnum('merchant_match_type', [
   'contains',

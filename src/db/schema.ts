@@ -13,6 +13,8 @@ export * from '@/modules/debt/db/relations';
 export * from '@/modules/debt/db/schema';
 export * from '@/modules/imports/db/relations';
 export * from '@/modules/imports/db/schema';
+export * from '@/modules/payees/db/relations';
+export * from '@/modules/payees/db/schema';
 export * from '@/modules/preferences/db/relations';
 export * from '@/modules/preferences/db/schema';
 export * from '@/modules/promotions/db/relations';

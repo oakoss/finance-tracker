@@ -1,10 +1,10 @@
 import type { Db } from '@/db';
-import type { CreatePayeeInput } from '@/modules/transactions/validators';
+import type { CreatePayeeInput } from '@/modules/payees/validators';
 
 import { notDeleted } from '@/lib/audit/soft-delete';
 import { parsePgError } from '@/lib/db/pg-error';
 import { createError } from '@/lib/logging/evlog';
-import { payees } from '@/modules/transactions/db/schema';
+import { payees } from '@/modules/payees/db/schema';
 
 export async function createPayeeService(
   database: Db,

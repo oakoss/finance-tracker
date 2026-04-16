@@ -9,8 +9,8 @@ import {
   requireUserId,
   verifiedMutationMiddleware,
 } from '@/modules/auth/middleware';
-import { createPayeeService } from '@/modules/transactions/services/create-payee';
-import { createPayeeSchema } from '@/modules/transactions/validators';
+import { createPayeeService } from '@/modules/payees/services/create-payee';
+import { createPayeeSchema } from '@/modules/payees/validators';
 
 export const createPayee = createServerFn({ method: 'POST' })
   .inputValidator(arkValidator(createPayeeSchema))

@@ -3,7 +3,7 @@ import { expect } from 'vitest';
 
 import { payees, tags } from '@/db/schema';
 import { notDeleted } from '@/lib/audit/soft-delete';
-import { resolvePayeeId } from '@/modules/transactions/lib/resolve-payee';
+import { resolvePayeeId } from '@/modules/payees/lib/resolve-payee';
 import { resolveTagIds } from '@/modules/transactions/lib/resolve-tags';
 import { fakeId } from '~test/factories/base';
 import { insertPayee } from '~test/factories/payee.factory';

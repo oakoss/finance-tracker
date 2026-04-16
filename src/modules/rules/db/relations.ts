@@ -3,12 +3,12 @@ import { relations } from 'drizzle-orm';
 import { ledgerAccounts } from '@/modules/accounts/db/schema';
 import { users } from '@/modules/auth/db/schema';
 import { categories } from '@/modules/categories/db/schema';
+import { payees } from '@/modules/payees/db/schema';
 import {
   merchantRules,
   payeeAliases,
   recurringRules,
 } from '@/modules/rules/db/schema';
-import { payees } from '@/modules/transactions/db/schema';
 
 export const payeeAliasesRelations = relations(payeeAliases, ({ one }) => ({
   payee: one(payees, {
