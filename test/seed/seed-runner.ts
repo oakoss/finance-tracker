@@ -1,4 +1,3 @@
-/* oxlint-disable unicorn/no-process-exit */
 import { faker } from '@faker-js/faker';
 import { drizzle } from 'drizzle-orm/node-postgres';
 

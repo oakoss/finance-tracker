@@ -641,12 +641,14 @@
         "**/*.test.*",
         "**/*.spec.*",
         "e2e/**/*",
+        "scripts/**/*",
         "test/**/*"
       ],
       "rules": {
         "no-console": "off",
         "no-empty-function": "off",
         "no-empty-pattern": "off",
+        "unicorn/no-process-exit": "off",
         "unicorn/prefer-top-level-await": "off"
       }
     },
