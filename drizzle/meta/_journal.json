@@ -127,6 +127,13 @@
       "when": 1776358671918,
       "tag": "0017_sleepy_tempest",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1776379209805,
+      "tag": "0018_sharp_leo",
+      "breakpoints": true
     }
   ]
 }

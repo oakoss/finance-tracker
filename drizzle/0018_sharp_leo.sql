@@ -1,0 +1,1 @@
+CREATE INDEX "rule_runs_affected_transaction_ids_gin_idx" ON "rule_runs" USING gin ("affected_transaction_ids");

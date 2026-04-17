@@ -45,6 +45,7 @@ export const merchantRulesIndexNames = {
 } as const;
 
 export const ruleRunsIndexNames = {
+  affectedTxGinIdx: 'rule_runs_affected_transaction_ids_gin_idx',
   ruleRunAtIdx: 'rule_runs_rule_run_at_idx',
 } as const;
 
@@ -158,6 +159,11 @@ export const ruleRuns = pgTable(
     index(ruleRunsIndexNames.ruleRunAtIdx).on(
       table.ruleId,
       sql`${table.runAt} DESC`,
+    ),
+    // Backs the `&&` overlap check in undo-collision detection.
+    index(ruleRunsIndexNames.affectedTxGinIdx).using(
+      'gin',
+      table.affectedTransactionIds,
     ),
     // Mirrors `ruleRunUndoSchema` shape guard in models.ts — keep the
     // "transactions is an array" invariant in sync across both layers.
