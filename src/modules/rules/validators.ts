@@ -54,3 +54,16 @@ export type ToggleMerchantRuleInput = typeof toggleMerchantRuleSchema.infer;
 export const deleteMerchantRuleSchema = merchantRulesDeleteSchema;
 
 export type DeleteMerchantRuleInput = typeof deleteMerchantRuleSchema.infer;
+
+export const previewApplyMerchantRuleSchema = type({ id: 'string > 0' });
+
+export type PreviewApplyMerchantRuleInput =
+  typeof previewApplyMerchantRuleSchema.infer;
+
+export const applyMerchantRuleSchema = type({ id: 'string > 0' });
+
+export type ApplyMerchantRuleInput = typeof applyMerchantRuleSchema.infer;
+
+export const undoRuleRunSchema = type({ runId: 'string > 0' });
+
+export type UndoRuleRunInput = typeof undoRuleRunSchema.infer;

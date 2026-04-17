@@ -26,11 +26,19 @@ const matchPredicateBaseSchema = type({
   value: 'string',
 });
 
+// Paired with per-tx statement_timeout to cap pathological patterns.
+export const MATCH_REGEX_MAX_LENGTH = 500;
+
 export const matchPredicateSchema = matchPredicateBaseSchema.narrow(
   (data, ctx) => {
     const hasMin = data.amountMinCents !== undefined;
     const hasMax = data.amountMaxCents !== undefined;
     const hasOp = data.amountOp !== undefined;
+
+    if (data.kind === 'regex' && data.value.length > MATCH_REGEX_MAX_LENGTH) {
+      ctx.mustBe(`a regex of at most ${MATCH_REGEX_MAX_LENGTH} characters`);
+      return false;
+    }
 
     if ((hasMin || hasMax) && !hasOp) {
       ctx.mustBe('amountOp when amountMinCents or amountMaxCents is set');
@@ -91,6 +99,12 @@ const setTagsActionSchema = type({
   kind: "'setTags'",
   mode: "'replace' | 'append'",
   tagIds: '(string > 0)[]',
+}).narrow((data, ctx) => {
+  if (new Set(data.tagIds).size !== data.tagIds.length) {
+    ctx.mustBe('tagIds without duplicates');
+    return false;
+  }
+  return true;
 });
 
 const setExcludedFromBudgetActionSchema = type({

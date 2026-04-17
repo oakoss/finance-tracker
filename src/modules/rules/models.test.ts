@@ -222,6 +222,15 @@ describe('ruleActionSchema', () => {
     });
     expect(result instanceof type.errors).toBe(true);
   });
+
+  it('rejects setTags with duplicate tagIds', () => {
+    const result = ruleActionSchema({
+      kind: 'setTags',
+      mode: 'replace',
+      tagIds: ['t-1', 't-1'],
+    });
+    expect(result instanceof type.errors).toBe(true);
+  });
 });
 
 describe('ruleActionsSchema', () => {
