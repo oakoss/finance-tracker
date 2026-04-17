@@ -541,3 +541,231 @@ test('apply — regex predicate mutates matching rows (~* operator)', async ({
 
   expect(result.count).toBe(1);
 });
+
+test('apply — excludeTransactionIds skips those rows, count reflects selection', async ({
+  serviceDb,
+}) => {
+  const { account, user } = await setup(serviceDb);
+  const category = await insertCategory(serviceDb, { userId: user.id });
+  const txA = await insertTransaction(serviceDb, {
+    accountId: account.id,
+    description: 'coffee',
+  });
+  const txB = await insertTransaction(serviceDb, {
+    accountId: account.id,
+    description: 'coffee',
+  });
+  const txC = await insertTransaction(serviceDb, {
+    accountId: account.id,
+    description: 'coffee',
+  });
+
+  const rule = await insertMerchantRule(serviceDb, {
+    actions: [{ categoryId: category.id, kind: 'setCategory' }],
+    match: { kind: 'contains', value: 'coffee' },
+    userId: user.id,
+  });
+
+  const result = await applyMerchantRuleService(asDb(serviceDb), user.id, {
+    excludeTransactionIds: [txB.id],
+    id: rule.id,
+  });
+
+  expect(result.count).toBe(2);
+
+  const rows = await serviceDb
+    .select()
+    .from(transactions)
+    .where(inArray(transactions.id, [txA.id, txB.id, txC.id]));
+  const byId = new Map(rows.map((row) => [row.id, row]));
+  expect(byId.get(txA.id)?.categoryId).toBe(category.id);
+  expect(byId.get(txB.id)?.categoryId).toBeNull();
+  expect(byId.get(txC.id)?.categoryId).toBe(category.id);
+});
+
+test('apply — excludeTransactionIds that are outside the match set are no-ops', async ({
+  serviceDb,
+}) => {
+  const { account, user } = await setup(serviceDb);
+  const category = await insertCategory(serviceDb, { userId: user.id });
+  const tx = await insertTransaction(serviceDb, {
+    accountId: account.id,
+    description: 'coffee',
+  });
+
+  const rule = await insertMerchantRule(serviceDb, {
+    actions: [{ categoryId: category.id, kind: 'setCategory' }],
+    match: { kind: 'contains', value: 'coffee' },
+    userId: user.id,
+  });
+
+  const result = await applyMerchantRuleService(asDb(serviceDb), user.id, {
+    excludeTransactionIds: [fakeId(), fakeId()],
+    id: rule.id,
+  });
+
+  expect(result.count).toBe(1);
+
+  const [after] = await serviceDb
+    .select()
+    .from(transactions)
+    .where(eq(transactions.id, tx.id));
+  expect(after.categoryId).toBe(category.id);
+});
+
+test('apply — empty excludeTransactionIds behaves like omitted field', async ({
+  serviceDb,
+}) => {
+  const { account, user } = await setup(serviceDb);
+  const category = await insertCategory(serviceDb, { userId: user.id });
+  await insertTransaction(serviceDb, {
+    accountId: account.id,
+    description: 'coffee',
+  });
+
+  const rule = await insertMerchantRule(serviceDb, {
+    actions: [{ categoryId: category.id, kind: 'setCategory' }],
+    match: { kind: 'contains', value: 'coffee' },
+    userId: user.id,
+  });
+
+  const result = await applyMerchantRuleService(asDb(serviceDb), user.id, {
+    excludeTransactionIds: [],
+    id: rule.id,
+  });
+
+  expect(result.count).toBe(1);
+});
+
+test('apply — undo restores only the non-excluded rows', async ({
+  serviceDb,
+}) => {
+  const { account, user } = await setup(serviceDb);
+  const oldCategory = await insertCategory(serviceDb, { userId: user.id });
+  const newCategory = await insertCategory(serviceDb, { userId: user.id });
+  const txA = await insertTransaction(serviceDb, {
+    accountId: account.id,
+    categoryId: oldCategory.id,
+    description: 'coffee',
+  });
+  const txB = await insertTransaction(serviceDb, {
+    accountId: account.id,
+    categoryId: oldCategory.id,
+    description: 'coffee',
+  });
+
+  const rule = await insertMerchantRule(serviceDb, {
+    actions: [{ categoryId: newCategory.id, kind: 'setCategory' }],
+    match: { kind: 'contains', value: 'coffee' },
+    userId: user.id,
+  });
+
+  const applyResult = await applyMerchantRuleService(asDb(serviceDb), user.id, {
+    excludeTransactionIds: [txB.id],
+    id: rule.id,
+  });
+
+  expect(applyResult.count).toBe(1);
+
+  const [run] = await serviceDb
+    .select()
+    .from(ruleRuns)
+    .where(eq(ruleRuns.id, applyResult.runId));
+  expect(run.affectedTransactionIds).toStrictEqual([txA.id]);
+  // undoData must mirror affected set — excluded rows must not bleed in.
+  expect(run.undoData.transactions.map((e) => e.transactionId)).toStrictEqual([
+    txA.id,
+  ]);
+
+  // txA is affected (now new), txB is untouched (still old).
+  const rows = await serviceDb
+    .select()
+    .from(transactions)
+    .where(inArray(transactions.id, [txA.id, txB.id]));
+  const byId = new Map(rows.map((row) => [row.id, row]));
+  expect(byId.get(txA.id)?.categoryId).toBe(newCategory.id);
+  expect(byId.get(txB.id)?.categoryId).toBe(oldCategory.id);
+});
+
+test('apply — excludeTransactionIds containing a foreign-user id is vacuous', async ({
+  serviceDb,
+}) => {
+  // IDOR pin-down: exclude IDs aren't re-scoped; `buildMatchWhere` bounds the
+  // base set to caller's accounts, so foreign IDs can't match. Test locks
+  // that contract in case someone later refactors the scoping.
+  const { account: accountA, user: userA } = await setup(serviceDb);
+  const { account: accountB, user: userB } = await setup(serviceDb);
+  const categoryA = await insertCategory(serviceDb, { userId: userA.id });
+
+  const txA = await insertTransaction(serviceDb, {
+    accountId: accountA.id,
+    description: 'coffee',
+  });
+  const txB = await insertTransaction(serviceDb, {
+    accountId: accountB.id,
+    description: 'coffee',
+  });
+
+  const rule = await insertMerchantRule(serviceDb, {
+    actions: [{ categoryId: categoryA.id, kind: 'setCategory' }],
+    match: { kind: 'contains', value: 'coffee' },
+    userId: userA.id,
+  });
+
+  const result = await applyMerchantRuleService(asDb(serviceDb), userA.id, {
+    excludeTransactionIds: [txB.id],
+    id: rule.id,
+  });
+
+  expect(result.count).toBe(1);
+
+  const rows = await serviceDb
+    .select()
+    .from(transactions)
+    .where(inArray(transactions.id, [txA.id, txB.id]));
+  const byId = new Map(rows.map((row) => [row.id, row]));
+  expect(byId.get(txA.id)?.categoryId).toBe(categoryA.id);
+  // Foreign user's transaction stayed untouched.
+  expect(byId.get(txB.id)?.categoryId).toBeNull();
+  // Touch the foreign user so the binding isn't flagged as unused.
+  expect(userB.id).not.toBe(userA.id);
+});
+
+test('apply — excludeTransactionIds with a soft-deleted id is a harmless no-op', async ({
+  serviceDb,
+}) => {
+  const { account, user } = await setup(serviceDb);
+  const category = await insertCategory(serviceDb, { userId: user.id });
+
+  const txActive = await insertTransaction(serviceDb, {
+    accountId: account.id,
+    description: 'coffee',
+  });
+  const txDeleted = await insertTransaction(serviceDb, {
+    accountId: account.id,
+    description: 'coffee',
+  });
+  await serviceDb
+    .update(transactions)
+    .set({ deletedAt: new Date() })
+    .where(eq(transactions.id, txDeleted.id));
+
+  const rule = await insertMerchantRule(serviceDb, {
+    actions: [{ categoryId: category.id, kind: 'setCategory' }],
+    match: { kind: 'contains', value: 'coffee' },
+    userId: user.id,
+  });
+
+  const result = await applyMerchantRuleService(asDb(serviceDb), user.id, {
+    excludeTransactionIds: [txDeleted.id],
+    id: rule.id,
+  });
+
+  expect(result.count).toBe(1);
+
+  const [after] = await serviceDb
+    .select()
+    .from(transactions)
+    .where(eq(transactions.id, txActive.id));
+  expect(after.categoryId).toBe(category.id);
+});

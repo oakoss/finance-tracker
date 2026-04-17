@@ -3,6 +3,7 @@ import { and, between, eq, gte, ilike, lte, type SQL, sql } from 'drizzle-orm';
 import type { MatchPredicate } from '@/modules/rules/models';
 
 import { notDeleted } from '@/lib/audit/soft-delete';
+import { createError } from '@/lib/logging/evlog';
 import { ledgerAccounts } from '@/modules/accounts/db/schema';
 import { transactions } from '@/modules/transactions/db/schema';
 
@@ -30,7 +31,11 @@ export function buildMatchWhere(
 
   const combined = and(...clauses);
   if (!combined) {
-    throw new Error('buildMatchWhere produced an empty predicate');
+    throw createError({
+      fix: 'Edit the rule and provide at least a description match.',
+      message: 'Rule predicate resolved to an empty clause.',
+      status: 422,
+    });
   }
   return combined;
 }
