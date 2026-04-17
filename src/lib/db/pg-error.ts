@@ -16,6 +16,10 @@ export const PG_ERROR_CODES = {
   UNIQUE_VIOLATION: '23505',
 } as const;
 
+// Runtime errors (Class 57) aren't constraint violations — statement_timeout
+// cancellation lands here and deserves a separate user-facing translation.
+export const PG_RUNTIME_CODES = { QUERY_CANCELED: '57014' } as const;
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -174,6 +178,36 @@ export function throwIfConstraintViolation(
   }
 
   pg.code satisfies never;
+}
+
+/**
+ * If `error` is a Postgres statement-timeout cancellation (57014), log and
+ * throw a 422 with actionable copy. Most commonly fires on pathological
+ * user-supplied regex in merchant rules. No-op otherwise.
+ */
+export function throwIfQueryCanceled(
+  error: unknown,
+  action: string,
+  userIdHash?: string,
+): void {
+  const pg = unwrap(error);
+  if (!pg || pg.code !== PG_RUNTIME_CODES.QUERY_CANCELED) return;
+
+  const causeOpt = error instanceof Error ? { cause: error } : {};
+  const userOpt = userIdHash ? { user: { idHash: userIdHash } } : {};
+
+  log.warn({
+    action,
+    outcome: { reason: 'query_canceled', success: false },
+    pgCode: pg.code,
+    ...userOpt,
+  });
+  throw createError({
+    ...causeOpt,
+    fix: 'Simplify your rule — avoid nested quantifiers or very long alternations in regex patterns, and narrow amount or account filters.',
+    message: 'The rule took too long to evaluate and was canceled.',
+    status: 422,
+  });
 }
 
 // ---------------------------------------------------------------------------

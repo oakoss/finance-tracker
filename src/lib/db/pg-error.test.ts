@@ -7,6 +7,7 @@ import {
   parsePgError,
   pgErrorFields,
   throwIfConstraintViolation,
+  throwIfQueryCanceled,
 } from './pg-error';
 
 /** Helper: call throwIfConstraintViolation and return the thrown EvlogError. */
@@ -257,6 +258,65 @@ describe('throwIfConstraintViolation', () => {
     });
     const callArg = warnSpy.mock.calls[0]?.[0];
     expect(callArg).not.toHaveProperty('user');
+    warnSpy.mockRestore();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// throwIfQueryCanceled
+// ---------------------------------------------------------------------------
+
+function catchQueryCanceledError(error: unknown): EvlogError {
+  try {
+    throwIfQueryCanceled(error, 'test.action');
+  } catch (error_) {
+    if (error_ instanceof EvlogError) return error_;
+    throw error_;
+  }
+  throw new Error('Expected throwIfQueryCanceled to throw');
+}
+
+describe('throwIfQueryCanceled', () => {
+  it('no-ops for non-PG errors', () => {
+    expect(() =>
+      throwIfQueryCanceled(new Error('boom'), 'test.action'),
+    ).not.toThrow();
+    expect(() => throwIfQueryCanceled(null, 'test.action')).not.toThrow();
+  });
+
+  it('no-ops for PG errors that are not 57014', () => {
+    expect(() =>
+      throwIfQueryCanceled({ code: '23505' }, 'test.action'),
+    ).not.toThrow();
+    expect(() =>
+      throwIfQueryCanceled({ code: '42P01' }, 'test.action'),
+    ).not.toThrow();
+  });
+
+  it('throws 422 for statement_timeout (57014)', () => {
+    const err = catchQueryCanceledError({ code: '57014' });
+    expect(err.status).toBe(422);
+    expect(err.fix).toMatch(/regex|narrow/i);
+  });
+
+  it('unwraps Drizzle wrapper via error.cause', () => {
+    const wrapper = new Error('Drizzle error');
+    wrapper.cause = { code: '57014' };
+
+    const err = catchQueryCanceledError(wrapper);
+    expect(err.status).toBe(422);
+  });
+
+  it('includes user.idHash in log.warn when provided', () => {
+    const warnSpy = vi.spyOn(log, 'warn').mockImplementation(() => {});
+    try {
+      throwIfQueryCanceled({ code: '57014' }, 'test.action', 'hashed-user-id');
+    } catch {
+      // expected
+    }
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ user: { idHash: 'hashed-user-id' } }),
+    );
     warnSpy.mockRestore();
   });
 });

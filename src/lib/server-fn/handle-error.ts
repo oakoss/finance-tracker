@@ -1,4 +1,8 @@
-import { pgErrorFields, throwIfConstraintViolation } from '@/lib/db/pg-error';
+import {
+  pgErrorFields,
+  throwIfConstraintViolation,
+  throwIfQueryCanceled,
+} from '@/lib/db/pg-error';
 import { isExpectedError, toError } from '@/lib/form/validation';
 import { createError, log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
@@ -22,6 +26,7 @@ export function handleServerFnError(
   opts: HandleErrorOpts,
 ): never {
   if (isExpectedError(error)) throw error;
+  throwIfQueryCanceled(error, opts.action, hashId(opts.userId));
   throwIfConstraintViolation(error, opts.action, hashId(opts.userId));
   log.error({
     action: opts.action,
