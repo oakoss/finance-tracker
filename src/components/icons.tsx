@@ -78,6 +78,7 @@ import {
   UserIcon,
   UsersIcon,
   WalletIcon,
+  Wand2Icon,
   XIcon,
 } from 'lucide-react';
 
@@ -197,6 +198,7 @@ const Icons = {
   User: UserIcon,
   Users: UsersIcon,
   Wallet: WalletIcon,
+  Wand2: Wand2Icon,
   X: XIcon,
 } as const;
 
