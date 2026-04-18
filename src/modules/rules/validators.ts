@@ -60,7 +60,35 @@ export const previewApplyMerchantRuleSchema = type({ id: 'string > 0' });
 export type PreviewApplyMerchantRuleInput =
   typeof previewApplyMerchantRuleSchema.infer;
 
-export const applyMerchantRuleSchema = type({ id: 'string > 0' });
+// Live preview bypasses the save-draft round-trip for unsaved rules.
+// matchPredicateSchema itself rejects empty values so create/update/preview
+// all share the same guarantee.
+export const previewMatchMerchantRuleSchema = matchPredicateSchema;
+
+export type PreviewMatchMerchantRuleInput =
+  typeof previewMatchMerchantRuleSchema.infer;
+
+// Cap NOT IN list so huge payloads can't blow the 10s apply timeout.
+export const APPLY_MERCHANT_RULE_EXCLUDE_MAX = 5000;
+
+export const applyMerchantRuleSchema = type({
+  'excludeTransactionIds?': '(string > 0)[]',
+  id: 'string > 0',
+}).narrow((data, ctx) => {
+  const excludes = data.excludeTransactionIds;
+  if (excludes === undefined) return true;
+  if (excludes.length > APPLY_MERCHANT_RULE_EXCLUDE_MAX) {
+    ctx.mustBe(
+      `excludeTransactionIds with at most ${APPLY_MERCHANT_RULE_EXCLUDE_MAX} entries`,
+    );
+    return false;
+  }
+  if (new Set(excludes).size !== excludes.length) {
+    ctx.mustBe('excludeTransactionIds without duplicates');
+    return false;
+  }
+  return true;
+});
 
 export type ApplyMerchantRuleInput = typeof applyMerchantRuleSchema.infer;
 

@@ -59,6 +59,7 @@ import {
   PanelLeftIcon,
   PencilIcon,
   PinOffIcon,
+  PlayIcon,
   PlusIcon,
   RefreshCwIcon,
   ScissorsIcon,
@@ -78,6 +79,7 @@ import {
   UserIcon,
   UsersIcon,
   WalletIcon,
+  Wand2Icon,
   XIcon,
 } from 'lucide-react';
 
@@ -178,6 +180,7 @@ const Icons = {
   PanelLeft: PanelLeftIcon,
   Pencil: PencilIcon,
   PinOff: PinOffIcon,
+  Play: PlayIcon,
   Plus: PlusIcon,
   RefreshCw: RefreshCwIcon,
   Scissors: ScissorsIcon,
@@ -197,6 +200,7 @@ const Icons = {
   User: UserIcon,
   Users: UsersIcon,
   Wallet: WalletIcon,
+  Wand2: Wand2Icon,
   X: XIcon,
 } as const;
 

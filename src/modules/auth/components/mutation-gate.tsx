@@ -7,7 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
+import { cn, omit } from '@/lib/utils';
 import { useIsEmailVerified } from '@/modules/auth/hooks/use-is-email-verified';
 import { m } from '@/paraglide/messages';
 
@@ -39,9 +39,8 @@ export function MutationGate(props: MutationGateProps) {
   const verified = useIsEmailVerified();
   if (verified || props.disabled) return <Button {...props} />;
 
-  // Strip the caller's onClick so the interceptor is the only
-  // click handler; the underscore marks the drop as intentional.
-  const { onClick: _callerOnClick, ...rest } = props;
+  // Strip the caller's onClick so the interceptor is the only click handler.
+  const rest = omit(props, 'onClick');
 
   return (
     <TooltipProvider>

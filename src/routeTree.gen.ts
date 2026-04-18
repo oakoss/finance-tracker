@@ -17,6 +17,7 @@ import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as AppTransactionsRouteImport } from './routes/_app/transactions'
+import { Route as AppRulesRouteImport } from './routes/_app/rules'
 import { Route as AppProfileRouteImport } from './routes/_app/profile'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppCategoriesRouteImport } from './routes/_app/categories'
@@ -70,6 +71,11 @@ const AuthSignInRoute = AuthSignInRouteImport.update({
 const AppTransactionsRoute = AppTransactionsRouteImport.update({
   id: '/transactions',
   path: '/transactions',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppRulesRoute = AppRulesRouteImport.update({
+  id: '/rules',
+  path: '/rules',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppProfileRoute = AppProfileRouteImport.update({
@@ -174,6 +180,7 @@ export interface FileRoutesByFullPath {
   '/categories': typeof AppCategoriesRoute
   '/dashboard': typeof AppDashboardRoute
   '/profile': typeof AppProfileRoute
+  '/rules': typeof AppRulesRoute
   '/transactions': typeof AppTransactionsRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
@@ -197,6 +204,7 @@ export interface FileRoutesByTo {
   '/categories': typeof AppCategoriesRoute
   '/dashboard': typeof AppDashboardRoute
   '/profile': typeof AppProfileRoute
+  '/rules': typeof AppRulesRoute
   '/transactions': typeof AppTransactionsRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
@@ -225,6 +233,7 @@ export interface FileRoutesById {
   '/_app/categories': typeof AppCategoriesRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/profile': typeof AppProfileRoute
+  '/_app/rules': typeof AppRulesRoute
   '/_app/transactions': typeof AppTransactionsRoute
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
@@ -252,6 +261,7 @@ export interface FileRouteTypes {
     | '/categories'
     | '/dashboard'
     | '/profile'
+    | '/rules'
     | '/transactions'
     | '/sign-in'
     | '/sign-up'
@@ -275,6 +285,7 @@ export interface FileRouteTypes {
     | '/categories'
     | '/dashboard'
     | '/profile'
+    | '/rules'
     | '/transactions'
     | '/sign-in'
     | '/sign-up'
@@ -302,6 +313,7 @@ export interface FileRouteTypes {
     | '/_app/categories'
     | '/_app/dashboard'
     | '/_app/profile'
+    | '/_app/rules'
     | '/_app/transactions'
     | '/_auth/sign-in'
     | '/_auth/sign-up'
@@ -384,6 +396,13 @@ declare module '@tanstack/react-router' {
       path: '/transactions'
       fullPath: '/transactions'
       preLoaderRoute: typeof AppTransactionsRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/rules': {
+      id: '/_app/rules'
+      path: '/rules'
+      fullPath: '/rules'
+      preLoaderRoute: typeof AppRulesRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/_app/profile': {
@@ -536,6 +555,7 @@ interface AppRouteRouteChildren {
   AppCategoriesRoute: typeof AppCategoriesRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppProfileRoute: typeof AppProfileRoute
+  AppRulesRoute: typeof AppRulesRoute
   AppTransactionsRoute: typeof AppTransactionsRoute
 }
 
@@ -546,6 +566,7 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppCategoriesRoute: AppCategoriesRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppProfileRoute: AppProfileRoute,
+  AppRulesRoute: AppRulesRoute,
   AppTransactionsRoute: AppTransactionsRoute,
 }
 

@@ -12,6 +12,7 @@ const BASE_URL = `http://localhost:${process.env.PORT}`;
 // Chromium; destructured for consistency.
 const { defaultBrowserType: _iphone, ...iPhone } = devices['iPhone 15 Pro Max'];
 const { defaultBrowserType: _pixel, ...pixel } = devices['Pixel 7'];
+const { defaultBrowserType: _ipad, ...ipad } = devices['iPad Mini'];
 
 export default defineConfig({
   captureGitInfo: { commit: true, diff: true },
@@ -62,6 +63,15 @@ export default defineConfig({
       grepInvert: /@stress/,
       name: 'pixel',
       use: { ...pixel },
+    },
+
+    // Tablet viewport — only tests tagged @tablet run here
+    {
+      dependencies: ['db-setup'],
+      grep: /@tablet/,
+      grepInvert: /@stress/,
+      name: 'ipad',
+      use: { ...ipad },
     },
 
     // Stress tests — local only, run with: pnpm test:e2e --project stress

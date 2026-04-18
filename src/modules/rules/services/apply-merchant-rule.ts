@@ -1,4 +1,4 @@
-import { and, asc, eq, inArray, sql } from 'drizzle-orm';
+import { and, asc, eq, inArray, notInArray, sql } from 'drizzle-orm';
 
 import type { Db, DbTx } from '@/db';
 import type { RuleAction, RuleRunUndo } from '@/modules/rules/models';
@@ -85,7 +85,14 @@ export async function applyMerchantRuleService(
 
     await validateActionReferences(tx, userId, rule.actions);
 
-    const where = buildMatchWhere(rule.match, userId);
+    // Exclude IDs aren't re-scoped: buildMatchWhere already bounds to
+    // caller's accounts, so foreign/deleted IDs can't leak through NOT IN.
+    const excludeIds = data.excludeTransactionIds ?? [];
+    const baseWhere = buildMatchWhere(rule.match, userId);
+    const where =
+      excludeIds.length > 0
+        ? and(baseWhere, notInArray(transactions.id, excludeIds))!
+        : baseWhere;
 
     const undoEntries: RuleRunUndo['transactions'] = [];
     const affectedIds: string[] = [];
