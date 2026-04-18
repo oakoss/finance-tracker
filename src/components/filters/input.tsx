@@ -16,7 +16,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
+import { cn, omit } from '@/lib/utils';
 import { m } from '@/paraglide/messages';
 
 function FilterInput<T = unknown>({
@@ -34,7 +34,7 @@ function FilterInput<T = unknown>({
   const [isValid, setIsValid] = useState(true);
   const [validationMessage, setValidationMessage] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
-  const { autoFocus: _autoFocus, ...inputProps } = props;
+  const inputProps = omit(props, 'autoFocus');
 
   useEffect(() => {
     if (shouldFocus) {
