@@ -14,14 +14,11 @@ export function emptySubscribe(): () => void {
 }
 
 /**
- * Returns a shallow copy of `obj` without the listed keys. Preferred over
- * `{ ...obj, key: undefined }` which `exactOptionalPropertyTypes` rejects,
- * and over `const { key: _key, ...rest }` destructures when clearing
- * multiple keys. Rebuilds via `Object.fromEntries` rather than `delete`
- * to avoid the V8 hidden-class deopt and survive stricter TS passes.
- * Intended for plain record-like objects; passing arrays or class
- * instances is technically allowed by `T extends object` but undefined
- * behavior — TS can't express "plain object" structurally.
+ * Preferred over `{ ...obj, key: undefined }` which `exactOptionalPropertyTypes`
+ * rejects, and over `{ key: _key, ...rest }` destructures when clearing
+ * multiple keys. Rebuilds via `Object.fromEntries` rather than `delete` to
+ * avoid V8 hidden-class deopts. `T extends object` admits arrays and class
+ * instances at the type level — undefined behavior at runtime.
  */
 export function omit<T extends object, K extends keyof T>(
   obj: T,

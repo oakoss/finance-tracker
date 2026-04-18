@@ -16,6 +16,7 @@ import { omit } from '@/lib/utils';
 import { accountQueries } from '@/modules/accounts/hooks/use-accounts';
 import { categoryQueries } from '@/modules/categories/hooks/use-categories';
 import { payeeQueries } from '@/modules/payees/hooks/use-payees';
+import { ApplyRuleDialog } from '@/modules/rules/components/apply-rule-dialog';
 import { MerchantRulesList } from '@/modules/rules/components/merchant-rules-list';
 import { PayeeAliasesTab } from '@/modules/rules/components/payee-aliases-tab';
 import { RuleEditorDialog } from '@/modules/rules/components/rule-editor-dialog';
@@ -84,16 +85,27 @@ function RulesPage() {
   const editingRule = search.edit
     ? (rules.find((r) => r.id === search.edit) ?? null)
     : null;
-  // Don't open an edit dialog for a stale / deleted id — would silently become
-  // a create dialog. useEffect strips the invalid search param.
+  const applyRule = search.applyFor
+    ? (rules.find((r) => r.id === search.applyFor) ?? null)
+    : null;
+  // A stale edit id would otherwise silently render as a create dialog.
   const editorOpen =
     search.modal === 'create' ||
     (search.edit !== undefined && editingRule !== null);
+  const applyOpen = search.modal === 'apply' && applyRule !== null;
 
   const closeEditor = useCallback(
     () =>
       void navigate({
         search: (prev) => omit(prev, 'edit', 'modal'),
+        to: '/rules',
+      }),
+    [navigate],
+  );
+  const closeApply = useCallback(
+    () =>
+      void navigate({
+        search: (prev) => omit(prev, 'applyFor', 'modal'),
         to: '/rules',
       }),
     [navigate],
@@ -109,6 +121,17 @@ function RulesPage() {
       closeEditor();
     }
   }, [search.edit, editingRule, closeEditor]);
+
+  useEffect(() => {
+    if (search.applyFor && !applyRule) {
+      clientLog.warn({
+        action: 'rules.apply.notFound',
+        outcome: { ruleIdHash: hashId(search.applyFor), success: false },
+      });
+      toast.info(m['rules.apply.notFound']());
+      closeApply();
+    }
+  }, [search.applyFor, applyRule, closeApply]);
 
   return (
     <div className="flex flex-1 flex-col gap-6 px-4 py-6 lg:px-6">
@@ -144,6 +167,11 @@ function RulesPage() {
         existing={editingRule}
         open={editorOpen}
         onClose={closeEditor}
+      />
+      <ApplyRuleDialog
+        open={applyOpen}
+        ruleId={applyRule?.id ?? null}
+        onClose={closeApply}
       />
     </div>
   );

@@ -70,9 +70,6 @@ export function ActionsBuilder({
   const [ids, setIds] = useState<string[]>(() =>
     actions.map(() => crypto.randomUUID()),
   );
-  // Resync if a parent ever replaces `actions` outside our add/remove path
-  // (cache refetch, optimistic rollback, etc.). Length mismatch would leave
-  // trailing rows with `undefined` keys; this keeps React's reconciler sane.
   if (ids.length !== actions.length) {
     setIds(actions.map((_, i) => ids[i] ?? crypto.randomUUID()));
   }
