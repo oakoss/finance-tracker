@@ -279,7 +279,7 @@ function TagsFields({ action, disabled, onChange, tags }: TagsFieldsProps) {
           </div>
         )}
         <Select
-          disabled={disabled ?? available.length === 0}
+          disabled={Boolean(disabled) || available.length === 0}
           value=""
           onValueChange={(v) => {
             if (v === null || v.length === 0) return;

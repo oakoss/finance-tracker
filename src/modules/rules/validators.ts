@@ -61,7 +61,17 @@ export type PreviewApplyMerchantRuleInput =
   typeof previewApplyMerchantRuleSchema.infer;
 
 // Live preview bypasses the save-draft round-trip for unsaved rules.
-export const previewMatchMerchantRuleSchema = matchPredicateSchema;
+// Requires a non-empty value so `contains: ''` can't trigger a match-all
+// scan bounded only by statement_timeout.
+export const previewMatchMerchantRuleSchema = matchPredicateSchema.narrow(
+  (data, ctx) => {
+    if (data.value.trim().length === 0) {
+      ctx.mustBe('a non-empty match value');
+      return false;
+    }
+    return true;
+  },
+);
 
 export type PreviewMatchMerchantRuleInput =
   typeof previewMatchMerchantRuleSchema.infer;

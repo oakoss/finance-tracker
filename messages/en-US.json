@@ -510,7 +510,7 @@
   "rules.create.cta": "New rule",
   "rules.create.description": "Create a rule to categorize matching transactions automatically.",
   "rules.create.title": "New rule",
-  "rules.delete.description": "Type the rule's match value to confirm deletion. This cannot be undone.",
+  "rules.delete.description": "Type the exact phrase shown below to confirm deletion. This cannot be undone.",
   "rules.delete.title": "Delete rule",
   "rules.edit.description": "Change the match predicate or actions for this rule.",
   "rules.edit.title": "Edit rule",

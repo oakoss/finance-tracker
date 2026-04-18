@@ -70,9 +70,6 @@ export function ActionsBuilder({
   const [ids, setIds] = useState<string[]>(() =>
     actions.map(() => crypto.randomUUID()),
   );
-  if (ids.length !== actions.length) {
-    setIds(actions.map((_, i) => ids[i] ?? crypto.randomUUID()));
-  }
   const has = (kind: AddableKind) => actions.some((a) => a.kind === kind);
 
   const addAction = (kind: AddableKind) => {
