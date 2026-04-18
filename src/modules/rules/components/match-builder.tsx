@@ -86,7 +86,8 @@ export function MatchBuilder({
       onChange(cleared);
       return;
     }
-    // Strip the bound that's now hidden: gte keeps only min, lte keeps only max.
+    // Preserve bounds the new op still uses: gte keeps min, lte keeps max,
+    // between keeps both. eq drops both — which bound to preserve is ambiguous.
     if (op === 'gte' && value.amountMinCents !== undefined) {
       onChange({
         ...cleared,
@@ -101,6 +102,10 @@ export function MatchBuilder({
         amountMaxCents: value.amountMaxCents,
         amountOp: 'lte',
       });
+      return;
+    }
+    if (op === 'between') {
+      onChange({ ...value, amountOp: 'between' });
       return;
     }
     onChange({ ...cleared, amountOp: op });
