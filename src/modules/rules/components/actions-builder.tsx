@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 import type { RuleAction } from '@/modules/rules/models';
 
@@ -65,10 +65,13 @@ export function ActionsBuilder({
   onChange,
 }: ActionsBuilderProps) {
   const [popoverOpen, setPopoverOpen] = useState(false);
-  // Content-hash keys would remount each card on every keystroke and drop
-  // input focus; stable per-row IDs survive in-place edits.
+  const baseId = useId();
+  // Stable row IDs survive in-place edits (content-hash keys would remount
+  // on every keystroke and drop input focus). baseId + index keeps initial
+  // state deterministic across SSR/CSR; new rows added client-side use
+  // crypto.randomUUID() since they don't exist on the initial server render.
   const [ids, setIds] = useState<string[]>(() =>
-    actions.map(() => crypto.randomUUID()),
+    actions.map((_, i) => `${baseId}-${i}`),
   );
   const has = (kind: AddableKind) => actions.some((a) => a.kind === kind);
 

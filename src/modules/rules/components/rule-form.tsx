@@ -63,6 +63,7 @@ export function RuleForm({
   value,
 }: RuleFormProps) {
   const stageId = useId();
+  const activeId = useId();
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -95,10 +96,13 @@ export function RuleForm({
           </Select>
         </Field>
         <Field orientation="horizontal">
-          <FieldLabel>{m['rules.form.isActive']()}</FieldLabel>
+          <FieldLabel htmlFor={activeId}>
+            {m['rules.form.isActive']()}
+          </FieldLabel>
           <Switch
             checked={value.isActive}
             disabled={disabled}
+            id={activeId}
             onCheckedChange={(isActive) => onChange({ ...value, isActive })}
           />
         </Field>

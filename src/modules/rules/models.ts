@@ -35,6 +35,11 @@ export const matchPredicateSchema = matchPredicateBaseSchema.narrow(
     const hasMax = data.amountMaxCents !== undefined;
     const hasOp = data.amountOp !== undefined;
 
+    if (data.value.trim().length === 0) {
+      ctx.mustBe('a non-empty match value');
+      return false;
+    }
+
     if (data.kind === 'regex' && data.value.length > MATCH_REGEX_MAX_LENGTH) {
       ctx.mustBe(`a regex of at most ${MATCH_REGEX_MAX_LENGTH} characters`);
       return false;

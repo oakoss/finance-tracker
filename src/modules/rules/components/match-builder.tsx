@@ -103,7 +103,7 @@ export function MatchBuilder({
       });
       return;
     }
-    onChange({ ...value, amountOp: op });
+    onChange({ ...cleared, amountOp: op });
   };
 
   const setDirection = (d: Direction) => {
