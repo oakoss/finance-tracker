@@ -7,7 +7,10 @@ import { SortableItem, SortableItemHandle } from '@/components/ui/sortable';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { ActionChip } from '@/modules/rules/components/action-chip';
-import { MatchPreview } from '@/modules/rules/components/match-preview';
+import {
+  formatMatchPreview,
+  MatchPreview,
+} from '@/modules/rules/components/match-preview';
 import { RuleRowActions } from '@/modules/rules/components/rule-row-actions';
 import { useToggleMerchantRule } from '@/modules/rules/hooks/use-merchant-rules';
 import { m } from '@/paraglide/messages';
@@ -32,10 +35,12 @@ export function RuleRow({ row }: RuleRowProps) {
 
   return (
     <SortableItem
+      aria-label={formatMatchPreview(row.match)}
       className={cn(
         'flex items-center gap-3 rounded-md border bg-background px-3 py-2',
         !row.isActive && 'opacity-60',
       )}
+      role="listitem"
       value={row.id}
     >
       <SortableItemHandle
