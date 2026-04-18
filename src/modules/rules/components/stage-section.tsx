@@ -49,9 +49,11 @@ export function StageSection({ rows, stage }: StageSectionProps) {
           </div>
         ) : (
           <Sortable
+            aria-label={STAGE_LABEL[stage]()}
             className="space-y-1"
             getItemValue={(row) => row.id}
             modifiers={[restrictToVerticalAxis]}
+            role="list"
             value={rows}
             onMove={({ activeIndex, overIndex }) => {
               if (reorder.isPending) return;
