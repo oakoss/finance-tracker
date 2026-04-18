@@ -1,3 +1,5 @@
+import { useId } from 'react';
+
 import type { AccountListItem } from '@/modules/accounts/api/list-accounts';
 import type { CategoryListItem } from '@/modules/categories/api/list-categories';
 import type { PayeeListItem } from '@/modules/payees/api/list-payees';
@@ -104,11 +106,14 @@ function ActionFields({
   lookup,
   onChange,
 }: ActionFieldsProps) {
+  const fieldId = useId();
   switch (action.kind) {
     case 'setCategory': {
       return (
         <Field>
-          <FieldLabel>{m['rules.action.setCategory']()}</FieldLabel>
+          <FieldLabel htmlFor={fieldId}>
+            {m['rules.action.setCategory']()}
+          </FieldLabel>
           <Select
             disabled={disabled}
             value={action.categoryId}
@@ -117,7 +122,7 @@ function ActionFields({
               onChange({ categoryId: v, kind: 'setCategory' });
             }}
           >
-            <SelectTrigger>
+            <SelectTrigger id={fieldId}>
               <SelectValue
                 placeholder={m['rules.form.actions.placeholderCategory']()}
               />
@@ -136,7 +141,9 @@ function ActionFields({
     case 'setPayee': {
       return (
         <Field>
-          <FieldLabel>{m['rules.action.setPayee']()}</FieldLabel>
+          <FieldLabel htmlFor={fieldId}>
+            {m['rules.action.setPayee']()}
+          </FieldLabel>
           <Select
             disabled={disabled}
             value={action.payeeId}
@@ -145,7 +152,7 @@ function ActionFields({
               onChange({ kind: 'setPayee', payeeId: v });
             }}
           >
-            <SelectTrigger>
+            <SelectTrigger id={fieldId}>
               <SelectValue
                 placeholder={m['rules.form.actions.placeholderPayee']()}
               />
@@ -164,9 +171,12 @@ function ActionFields({
     case 'setNote': {
       return (
         <Field>
-          <FieldLabel>{m['rules.form.actions.noteLabel']()}</FieldLabel>
+          <FieldLabel htmlFor={fieldId}>
+            {m['rules.form.actions.noteLabel']()}
+          </FieldLabel>
           <Input
             disabled={disabled}
+            id={fieldId}
             placeholder={m['rules.form.actions.placeholderNote']()}
             value={action.value}
             onChange={(e) =>
@@ -200,13 +210,17 @@ type TagsFieldsProps = {
 };
 
 function TagsFields({ action, disabled, onChange, tags }: TagsFieldsProps) {
+  const modeId = useId();
+  const pickerId = useId();
   const selected = new Set(action.tagIds);
   const available = tags.filter((t) => !selected.has(t.id));
 
   return (
     <div className="flex flex-col gap-3">
       <Field>
-        <FieldLabel>{m['rules.form.actions.tagsModeLabel']()}</FieldLabel>
+        <FieldLabel htmlFor={modeId}>
+          {m['rules.form.actions.tagsModeLabel']()}
+        </FieldLabel>
         <Select
           disabled={disabled}
           value={action.mode}
@@ -215,7 +229,7 @@ function TagsFields({ action, disabled, onChange, tags }: TagsFieldsProps) {
             onChange({ ...action, mode: v });
           }}
         >
-          <SelectTrigger>
+          <SelectTrigger id={modeId}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -229,7 +243,9 @@ function TagsFields({ action, disabled, onChange, tags }: TagsFieldsProps) {
         </Select>
       </Field>
       <Field>
-        <FieldLabel>{m['rules.form.actions.tagsLabel']()}</FieldLabel>
+        <FieldLabel htmlFor={pickerId}>
+          {m['rules.form.actions.tagsLabel']()}
+        </FieldLabel>
         {action.tagIds.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             {m['rules.form.actions.tagsEmpty']()}
@@ -270,7 +286,7 @@ function TagsFields({ action, disabled, onChange, tags }: TagsFieldsProps) {
             onChange({ ...action, tagIds: [...action.tagIds, v] });
           }}
         >
-          <SelectTrigger>
+          <SelectTrigger id={pickerId}>
             <SelectValue
               placeholder={m['rules.form.actions.placeholderTag']()}
             />

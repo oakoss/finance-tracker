@@ -1,3 +1,5 @@
+import { useId } from 'react';
+
 import type { AccountListItem } from '@/modules/accounts/api/list-accounts';
 
 import {
@@ -65,6 +67,13 @@ export function MatchBuilder({
   onChange,
   value,
 }: MatchBuilderProps) {
+  const kindId = useId();
+  const valueId = useId();
+  const directionId = useId();
+  const accountId = useId();
+  const amountOpId = useId();
+  const amountMinId = useId();
+  const amountMaxId = useId();
   const overLimit =
     value.kind === 'regex' && value.value.length > MATCH_REGEX_MAX_LENGTH;
 
@@ -117,7 +126,9 @@ export function MatchBuilder({
     <div className="flex flex-col gap-4">
       <div className="grid gap-3 sm:grid-cols-[200px_1fr]">
         <Field>
-          <FieldLabel>{m['rules.form.kindLabel']()}</FieldLabel>
+          <FieldLabel htmlFor={kindId}>
+            {m['rules.form.kindLabel']()}
+          </FieldLabel>
           <Select
             disabled={disabled}
             value={value.kind}
@@ -126,7 +137,7 @@ export function MatchBuilder({
               setKind(v);
             }}
           >
-            <SelectTrigger>
+            <SelectTrigger id={kindId}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -139,10 +150,13 @@ export function MatchBuilder({
           </Select>
         </Field>
         <Field data-invalid={!!errors?.value || overLimit}>
-          <FieldLabel>{m['rules.form.valueLabel']()}</FieldLabel>
+          <FieldLabel htmlFor={valueId}>
+            {m['rules.form.valueLabel']()}
+          </FieldLabel>
           <Input
             className={cn('font-mono', overLimit && 'border-destructive')}
             disabled={disabled}
+            id={valueId}
             placeholder={m['rules.form.valuePlaceholder']()}
             value={value.value}
             onChange={(e) => setValue(e.target.value)}
@@ -169,7 +183,9 @@ export function MatchBuilder({
         </CollapsibleTrigger>
         <CollapsibleContent className="grid gap-3 pt-3 sm:grid-cols-2">
           <Field>
-            <FieldLabel>{m['rules.form.directionLabel']()}</FieldLabel>
+            <FieldLabel htmlFor={directionId}>
+              {m['rules.form.directionLabel']()}
+            </FieldLabel>
             <Select
               disabled={disabled}
               value={value.direction ?? 'both'}
@@ -178,7 +194,7 @@ export function MatchBuilder({
                 setDirection(v as Direction);
               }}
             >
-              <SelectTrigger>
+              <SelectTrigger id={directionId}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -192,7 +208,9 @@ export function MatchBuilder({
           </Field>
 
           <Field>
-            <FieldLabel>{m['rules.form.accountLabel']()}</FieldLabel>
+            <FieldLabel htmlFor={accountId}>
+              {m['rules.form.accountLabel']()}
+            </FieldLabel>
             <Select
               disabled={disabled}
               value={value.accountId ?? '__any__'}
@@ -201,7 +219,7 @@ export function MatchBuilder({
                 setAccountId(v);
               }}
             >
-              <SelectTrigger>
+              <SelectTrigger id={accountId}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -218,7 +236,9 @@ export function MatchBuilder({
           </Field>
 
           <Field>
-            <FieldLabel>{m['rules.form.amountOpLabel']()}</FieldLabel>
+            <FieldLabel htmlFor={amountOpId}>
+              {m['rules.form.amountOpLabel']()}
+            </FieldLabel>
             <Select
               disabled={disabled}
               value={value.amountOp ?? 'none'}
@@ -227,7 +247,7 @@ export function MatchBuilder({
                 setAmountOp(v as 'none' | AmountOp);
               }}
             >
-              <SelectTrigger>
+              <SelectTrigger id={amountOpId}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -244,9 +264,12 @@ export function MatchBuilder({
             <div className="grid gap-3 sm:col-span-2 sm:grid-cols-2">
               {value.amountOp !== 'lte' && (
                 <Field>
-                  <FieldLabel>{m['rules.form.amountMinLabel']()}</FieldLabel>
+                  <FieldLabel htmlFor={amountMinId}>
+                    {m['rules.form.amountMinLabel']()}
+                  </FieldLabel>
                   <Input
                     disabled={disabled}
+                    id={amountMinId}
                     inputMode="numeric"
                     type="number"
                     value={value.amountMinCents ?? ''}
@@ -265,9 +288,12 @@ export function MatchBuilder({
               )}
               {value.amountOp !== 'gte' && (
                 <Field>
-                  <FieldLabel>{m['rules.form.amountMaxLabel']()}</FieldLabel>
+                  <FieldLabel htmlFor={amountMaxId}>
+                    {m['rules.form.amountMaxLabel']()}
+                  </FieldLabel>
                   <Input
                     disabled={disabled}
+                    id={amountMaxId}
                     inputMode="numeric"
                     type="number"
                     value={value.amountMaxCents ?? ''}

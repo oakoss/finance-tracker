@@ -1,3 +1,5 @@
+import { useId } from 'react';
+
 import type { AccountListItem } from '@/modules/accounts/api/list-accounts';
 import type { CategoryListItem } from '@/modules/categories/api/list-categories';
 import type { PayeeListItem } from '@/modules/payees/api/list-payees';
@@ -60,11 +62,14 @@ export function RuleForm({
   tags,
   value,
 }: RuleFormProps) {
+  const stageId = useId();
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <Field className="min-w-48">
-          <FieldLabel>{m['rules.form.stageLabel']()}</FieldLabel>
+          <FieldLabel htmlFor={stageId}>
+            {m['rules.form.stageLabel']()}
+          </FieldLabel>
           <Select
             disabled={disabled}
             value={value.stage}
@@ -77,7 +82,7 @@ export function RuleForm({
               onChange({ ...value, stage: v });
             }}
           >
-            <SelectTrigger>
+            <SelectTrigger id={stageId}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
