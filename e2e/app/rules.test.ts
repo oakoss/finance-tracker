@@ -1,5 +1,6 @@
 import { expect, test } from '~e2e/fixtures/auth';
 import { createCategory } from '~e2e/fixtures/entity';
+import { selectAccount } from '~e2e/fixtures/form-actions';
 
 test.describe(
   'merchant rules CRUD',
@@ -114,6 +115,92 @@ test.describe(
         await expect(
           page.getByRole('listitem', { name: new RegExp(renamedMatch) }),
         ).toHaveCount(0);
+      });
+    });
+
+    test('apply rule to existing transactions, then undo', async ({
+      page,
+      testAccountName,
+    }) => {
+      test.slow();
+      // The auth fixture auto-dismisses toasts to prevent overlays from
+      // blocking interactions. For this test we need to click the undo
+      // action button inside the success toast before it's dismissed.
+      await page.removeLocatorHandler(page.locator('[data-sonner-toast]'));
+
+      const runId = Date.now();
+      const categoryName = `E2E Apply Cat ${runId}`;
+      const matchValue = `apply-target-${runId}`;
+      const txnDescription = `E2E ${matchValue}`;
+
+      await createCategory(page, categoryName);
+
+      await test.step('create a matching transaction', async () => {
+        await page.goto('/transactions');
+        await page
+          .getByRole('button', { name: /add transaction/i })
+          .first()
+          .click();
+        const dialog = page.getByRole('dialog');
+        await dialog.getByLabel(/description/i).fill(txnDescription);
+        await dialog.getByLabel(/amount/i).fill('42.00');
+        await selectAccount(page, testAccountName);
+        await dialog.getByRole('button', { name: /^create$/i }).click();
+        await expect(dialog).toBeHidden();
+      });
+
+      await test.step('create a rule that matches the transaction', async () => {
+        await page.goto('/rules');
+        await page
+          .getByRole('button', { name: /new rule/i })
+          .first()
+          .click();
+        const dialog = page.getByRole('dialog');
+        await dialog.getByLabel(/match value/i).fill(matchValue);
+        await dialog.getByRole('button', { name: /add action/i }).click();
+        await page
+          .getByRole('menuitem', { name: /set category/i })
+          .or(page.getByRole('button', { name: /^set category$/i }))
+          .click();
+        await dialog.getByLabel(/^set category$/i).click();
+        await page.getByRole('option', { name: categoryName }).click();
+        await dialog.getByRole('button', { name: /^create$/i }).click();
+        await expect(dialog).toBeHidden();
+      });
+
+      await test.step('open apply-to-existing dialog', async () => {
+        const row = page.getByRole('listitem', {
+          name: new RegExp(matchValue),
+        });
+        await row.getByRole('button', { name: /rule actions/i }).click();
+        await page
+          .getByRole('menuitem', { name: /apply to existing/i })
+          .click();
+
+        const dialog = page.getByRole('dialog');
+        await expect(
+          dialog.getByRole('heading', { name: /apply rule/i }),
+        ).toBeVisible();
+        await expect(dialog.getByText(txnDescription)).toBeVisible();
+      });
+
+      await test.step('apply and see the undo toast', async () => {
+        const dialog = page.getByRole('dialog');
+        await dialog
+          .getByRole('button', { name: /apply to 1 transaction/i })
+          .click();
+        await expect(dialog).toBeHidden();
+
+        const toast = page
+          .locator('[data-sonner-toast]')
+          .filter({ hasText: /applied rule/i });
+        await expect(toast).toBeVisible();
+        await toast.getByRole('button', { name: /undo/i }).click();
+        await expect(
+          page
+            .locator('[data-sonner-toast]')
+            .filter({ hasText: /rule run undone/i }),
+        ).toBeVisible();
       });
     });
   },
