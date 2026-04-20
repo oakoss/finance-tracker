@@ -2,14 +2,14 @@
 
 import type { ReactElement } from 'react';
 
-import { render } from '@react-email/render';
+import { render } from 'react-email';
 import { vi } from 'vitest';
 
 import { getLocale, setLocale } from '@/paraglide/runtime';
 
 import { renderEmail } from './email-render';
 
-vi.mock('@react-email/render', () => ({
+vi.mock('react-email', () => ({
   render: vi.fn((_el: ReactElement, opts?: { plainText?: boolean }) =>
     Promise.resolve(opts?.plainText ? 'plain text' : '<html>rendered</html>'),
   ),

@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 
-import { render } from '@react-email/render';
+import { render } from 'react-email';
 
 import { createError } from '@/lib/logging/evlog';
 import { baseLocale, getLocale, setLocale } from '@/paraglide/runtime';

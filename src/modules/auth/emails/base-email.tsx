@@ -1,3 +1,4 @@
+import * as React from 'react';
 import {
   Head,
   Html,
@@ -6,8 +7,7 @@ import {
   Section,
   Tailwind,
   Text,
-} from '@react-email/components';
-import * as React from 'react';
+} from 'react-email';
 
 import { m } from '@/paraglide/messages';
 

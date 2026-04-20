@@ -1,4 +1,4 @@
-import { Button, Text } from '@react-email/components';
+import { Button, Text } from 'react-email';
 
 import { appConfig } from '@/configs/app';
 import { m } from '@/paraglide/messages';

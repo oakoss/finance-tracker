@@ -42,11 +42,11 @@
   },
   "js/ts.preferences.autoImportFileExcludePatterns": [
     "@base-ui/react",
-    "@react-email/components",
     "^lucide-react/dist/lucide-react.suffixed$",
     "posthog-js/react",
     "radix-ui",
     "react-day-picker",
+    "react-email",
     "recharts",
     "sonner"
   ],

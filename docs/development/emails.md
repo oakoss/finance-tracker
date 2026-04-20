@@ -4,7 +4,7 @@ How we build and style transactional emails in this repo.
 
 ## Stack
 
-- Templates: React Email (`@react-email/components`)
+- Templates: React Email (`react-email`)
 - Delivery: Brevo Transactional Email API (production) or SMTP via
   nodemailer (local dev / CI)
 - Styling: Tailwind v4 via the React Email `Tailwind` wrapper
@@ -154,7 +154,7 @@ If you need to send a custom email outside of Better Auth, prefer using the
 render helper so you get HTML + plain text and consistent locale handling:
 
 ```ts
-import { Text } from '@react-email/components';
+import { Text } from 'react-email';
 
 import { sendEmail } from '@/lib/email';
 import type { EmailLocale } from '@/modules/auth/emails/email-render';

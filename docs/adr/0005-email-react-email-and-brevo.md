@@ -17,7 +17,7 @@ Use React Email for templates and render to HTML server-side, then send via Brev
 
 Email styling defaults:
 
-- Tailwind v4 via `@react-email/components`.
+- Tailwind v4 via `react-email`.
 - `pixelBasedPreset` enabled for email-client sizing compatibility.
 - Palette in `src/modules/auth/emails/base-email.tsx` uses the light-theme OKLCH
   tokens from `:root` in `src/styles/globals.css`.
