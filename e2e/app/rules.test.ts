@@ -26,7 +26,7 @@ test.describe(
           .getByRole('button', { name: /new rule/i })
           .first()
           .click();
-        const dialog = page.getByRole('dialog');
+        const dialog = page.getByRole('dialog', { name: /new rule/i });
         await expect(
           dialog.getByRole('heading', { name: /new rule/i }),
         ).toBeVisible();
@@ -75,7 +75,7 @@ test.describe(
         await row.getByRole('button', { name: /rule actions/i }).click();
         await page.getByRole('menuitem', { name: /edit/i }).click();
 
-        const dialog = page.getByRole('dialog');
+        const dialog = page.getByRole('dialog', { name: /edit rule/i });
         await expect(
           dialog.getByRole('heading', { name: /edit rule/i }),
         ).toBeVisible();
@@ -155,7 +155,7 @@ test.describe(
           .getByRole('button', { name: /new rule/i })
           .first()
           .click();
-        const dialog = page.getByRole('dialog');
+        const dialog = page.getByRole('dialog', { name: /new rule/i });
         await dialog.getByLabel(/match value/i).fill(matchValue);
         await dialog.getByRole('button', { name: /add action/i }).click();
         await page
@@ -177,7 +177,7 @@ test.describe(
           .getByRole('menuitem', { name: /apply to existing/i })
           .click();
 
-        const dialog = page.getByRole('dialog');
+        const dialog = page.getByRole('dialog', { name: /apply rule/i });
         await expect(
           dialog.getByRole('heading', { name: /apply rule/i }),
         ).toBeVisible();
@@ -185,7 +185,7 @@ test.describe(
       });
 
       await test.step('apply and see the undo toast', async () => {
-        const dialog = page.getByRole('dialog');
+        const dialog = page.getByRole('dialog', { name: /apply rule/i });
         await dialog
           .getByRole('button', { name: /apply to 1 transaction/i })
           .click();
