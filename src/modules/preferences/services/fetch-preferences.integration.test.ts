@@ -1,3 +1,5 @@
+import assert from 'node:assert';
+
 import type { Db } from '@/db';
 
 import { DEFAULT_USER_PREFERENCES } from '@/modules/preferences/services/bootstrap';
@@ -15,13 +17,11 @@ test('fetchUserPreferences — happy path returns persisted row with isDefault: 
 
   const result = await fetchUserPreferences(asDb(serviceDb), user.id);
 
-  expect(result.isDefault).toBe(false);
-  if (!result.isDefault) {
-    expect(result.preferences.userId).toBe(user.id);
-    expect(result.preferences.defaultCurrency).toBe(
-      DEFAULT_USER_PREFERENCES.defaultCurrency,
-    );
-  }
+  assert.ok(!result.isDefault);
+  expect(result.preferences.userId).toBe(user.id);
+  expect(result.preferences.defaultCurrency).toBe(
+    DEFAULT_USER_PREFERENCES.defaultCurrency,
+  );
 });
 
 test('fetchUserPreferences — returns in-memory defaults with isDefault: true when bootstrap fails', async () => {
