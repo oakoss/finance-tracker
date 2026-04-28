@@ -1,11 +1,11 @@
-onlyBuiltDependencies:
-  - '@posthog/cli'
-  - core-js
-  - esbuild
-  - lefthook
-  - msw
-  - protobufjs
-  - unrs-resolver
+allowBuilds:
+  '@posthog/cli': true
+  core-js: true
+  esbuild: true
+  lefthook: true
+  msw: false
+  protobufjs: true
+  unrs-resolver: true
 overrides:
   esbuild@<=0.24.2: '>=0.25.0'
   smol-toml@<1.6.1: '>=1.6.1'
