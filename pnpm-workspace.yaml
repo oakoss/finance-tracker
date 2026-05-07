@@ -6,6 +6,9 @@ allowBuilds:
   msw: false
   protobufjs: true
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - ip-address@10.1.1
 overrides:
   esbuild@<=0.24.2: '>=0.25.0'
+  ip-address@<=10.1.0: ^10.1.1
   smol-toml@<1.6.1: '>=1.6.1'
