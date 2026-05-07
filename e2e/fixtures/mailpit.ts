@@ -8,7 +8,6 @@ export const test = base.extend<Fixtures>({
     const client = new MailpitClient('http://localhost:8025');
     await client.deleteMessages();
     await use(client);
-    client.disconnect();
   },
 });
 
