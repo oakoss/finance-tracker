@@ -664,12 +664,17 @@
         "vitest/hoisted-apis-on-top": "error",
         "vitest/no-conditional-tests": "error",
         "vitest/no-import-node-test": "error",
+        "vitest/no-standalone-expect": [
+          "error",
+          { "additionalTestBlockFunctions": ["test"] }
+        ],
         "vitest/prefer-called-once": "error",
         "vitest/prefer-expect-type-of": "off",
         "vitest/prefer-to-be-falsy": "off",
         "vitest/prefer-to-be-object": "error",
         "vitest/prefer-to-be-truthy": "off",
         "vitest/require-mock-type-parameters": "off",
+        "vitest/require-to-throw-message": "off",
         "vitest-js/expect-expect": [
           "error",
           { "assertFunctionNames": ["expect", "expectTypeOf"] }

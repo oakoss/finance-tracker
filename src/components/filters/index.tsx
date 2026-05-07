@@ -399,6 +399,7 @@ function Filters<T = unknown>({
                                 }
                                 id={itemId}
                                 role="option"
+                                tabIndex={-1}
                                 onMouseEnter={() => {
                                   setHighlightedIndex(index);
                                   setActiveMenu('root');
@@ -491,6 +492,7 @@ function Filters<T = unknown>({
                             data-highlighted={isHighlighted ? true : undefined}
                             id={itemId}
                             role="option"
+                            tabIndex={-1}
                             onClick={() => field.key && addFilter(field.key)}
                             onMouseEnter={() => setHighlightedIndex(index)}
                           >

@@ -252,6 +252,7 @@ function SubmenuContent<T = unknown>({
                       data-highlighted={isHighlighted ? true : undefined}
                       id={itemId}
                       role="option"
+                      tabIndex={-1}
                       onCheckedChange={() => onToggle(option.value, isSelected)}
                       onMouseEnter={() => setHighlightedIndex(index)}
                       onSelect={(e) => {

@@ -219,6 +219,7 @@ function SelectOptionsPopover<T = unknown>({
                       data-highlighted={isHighlighted ? true : undefined}
                       id={itemId}
                       role="option"
+                      tabIndex={-1}
                       onCheckedChange={() => {
                         const next = effectiveValues.filter(
                           (v) => v !== option.value,
@@ -267,6 +268,7 @@ function SelectOptionsPopover<T = unknown>({
                       data-highlighted={isHighlighted ? true : undefined}
                       id={itemId}
                       role="option"
+                      tabIndex={-1}
                       onCheckedChange={() => {
                         const next = isMultiSelect
                           ? ([...effectiveValues, option.value] as T[])
