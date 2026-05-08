@@ -1,5 +1,5 @@
 import type { DbOrTx } from '@/db';
-import type { AuditAction } from '@/lib/audit/types';
+import type { AuditAction, AuditTableName } from '@/lib/audit/types';
 
 import { auditLogs } from '@/db/audit';
 import { logAuditEvent } from '@/lib/audit/log-audit-event';
@@ -10,7 +10,7 @@ type InsertAuditLogParams = {
   afterData?: Record<string, unknown>;
   beforeData?: Record<string, unknown>;
   entityId: string;
-  tableName: string;
+  tableName: AuditTableName;
 };
 
 export async function insertAuditLog(

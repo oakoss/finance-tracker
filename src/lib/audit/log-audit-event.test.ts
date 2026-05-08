@@ -24,7 +24,7 @@ const importModule = async () => {
 };
 
 describe('logAuditEvent', () => {
-  it('calls log.info with correct audit fields', async () => {
+  it('calls log.info with evlog audit contract fields', async () => {
     const { logAuditEvent, logInfo } = await importModule();
 
     logAuditEvent({
@@ -37,9 +37,10 @@ describe('logAuditEvent', () => {
     expect(logInfo).toHaveBeenCalledWith({
       action: 'ledger_accounts.create',
       audit: {
-        entity: 'ledger_accounts',
-        entityIdHash: 'hashed_account-1',
-        operation: 'create',
+        action: 'ledger_accounts.create',
+        actor: { id: 'hashed_user-1', type: 'user' },
+        outcome: 'success',
+        target: { id: 'hashed_account-1', type: 'ledger_accounts' },
       },
       user: { idHash: 'hashed_user-1' },
     });
@@ -59,22 +60,34 @@ describe('logAuditEvent', () => {
     expect(hashId).toHaveBeenCalledWith('user-42');
   });
 
-  it('passes the action through to audit.operation', async () => {
-    const { logAuditEvent, logInfo } = await importModule();
+  it.each([
+    ['update', 'categories'],
+    ['delete', 'transactions'],
+  ] as const)(
+    'emits the full evlog contract for %s on %s',
+    async (action, tableName) => {
+      const { logAuditEvent, logInfo } = await importModule();
 
-    logAuditEvent({
-      action: 'update',
-      actorId: 'user-1',
-      entityId: 'cat-1',
-      tableName: 'categories',
-    });
+      logAuditEvent({
+        action,
+        actorId: 'user-1',
+        entityId: 'entity-1',
+        tableName,
+      });
 
-    expect(logInfo).toHaveBeenCalledWith(
-      expect.objectContaining({
-        audit: expect.objectContaining({ operation: 'update' }),
-      }),
-    );
-  });
+      const expected = `${tableName}.${action}`;
+      expect(logInfo).toHaveBeenCalledWith({
+        action: expected,
+        audit: {
+          action: expected,
+          actor: { id: 'hashed_user-1', type: 'user' },
+          outcome: 'success',
+          target: { id: 'hashed_entity-1', type: tableName },
+        },
+        user: { idHash: 'hashed_user-1' },
+      });
+    },
+  );
 
   it('does not throw when hashId fails and emits a warning', async () => {
     const { hashId, logAuditEvent, logWarn } = await importModule();
@@ -91,12 +104,12 @@ describe('logAuditEvent', () => {
       }),
     ).not.toThrow();
 
-    expect(logWarn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        action: 'audit.log.failed',
-        error: 'LOG_HASH_SECRET missing',
-      }),
-    );
+    expect(logWarn).toHaveBeenCalledWith({
+      action: 'audit.log.failed',
+      auditAction: 'create',
+      error: 'LOG_HASH_SECRET missing',
+      tableName: 'ledger_accounts',
+    });
   });
 
   it('does not throw when log.info itself fails and emits a warning', async () => {
@@ -116,11 +129,11 @@ describe('logAuditEvent', () => {
       }),
     ).not.toThrow();
 
-    expect(logWarn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        action: 'audit.log.failed',
-        error: 'evlog serialization error',
-      }),
-    );
+    expect(logWarn).toHaveBeenCalledWith({
+      action: 'audit.log.failed',
+      auditAction: 'create',
+      error: 'evlog serialization error',
+      tableName: 'ledger_accounts',
+    });
   });
 });

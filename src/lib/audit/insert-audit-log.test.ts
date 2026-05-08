@@ -140,9 +140,10 @@ describe('insertAuditLog', () => {
     expect(logInfo).toHaveBeenCalledWith({
       action: 'ledger_accounts.create',
       audit: {
-        entity: 'ledger_accounts',
-        entityIdHash: 'hashed_record-5',
-        operation: 'create',
+        action: 'ledger_accounts.create',
+        actor: { id: 'hashed_actor-5', type: 'user' },
+        outcome: 'success',
+        target: { id: 'hashed_record-5', type: 'ledger_accounts' },
       },
       user: { idHash: 'hashed_actor-5' },
     });

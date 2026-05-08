@@ -87,7 +87,7 @@ export async function updateUserPreferencesService(
       actorId: userId,
       afterData: row as unknown as Record<string, unknown>,
       entityId: userId,
-      tableName: 'user_preferences',
+      tableName: 'user_preferences' as const,
     };
     await insertAuditLog(
       tx,
