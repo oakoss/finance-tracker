@@ -25,6 +25,39 @@ Tests that don't need an account (empty state, validation) should
 omit `testAccountName` from their destructuring to avoid triggering
 the lazy creation.
 
+### `clockTime` (frozen page clock)
+
+Imports from `~e2e/fixtures/clock` install
+[`page.clock`](https://playwright.dev/docs/clock) once per test,
+anchored to `FROZEN_E2E_TIME` (`e2e/fixtures/constants.ts`). The
+patched clock persists across `page.goto()` calls within the
+test. Use it for tests that read `Date.now()`, `new Date()`,
+`setTimeout`, or render a "today" indicator (calendars, relative
+timestamps).
+
+```ts
+import { expect, test } from '~e2e/fixtures/clock';
+import { isoUtcInstant } from '~e2e/fixtures/constants';
+
+test('renders calendar against frozen now', async ({ page }) => {
+  await page.goto('/components/date');
+  await expect(page).toHaveScreenshot('date.png');
+});
+
+// Override per-describe or per-test:
+test.use({ clockTime: isoUtcInstant('2026-12-25T09:00:00Z') });
+```
+
+The fixture does not extend `~e2e/fixtures/auth` — tests get
+`page` without storage state. If you need both, use
+`mergeTests()` (see [Composing fixtures](#composing-fixtures-with-mergetests))
+or extend the clock fixture from a new auth-aware base. Frozen
+time can fight session cookie expiry checks, so verify the
+combined flow.
+
+`playwright.config.ts` also pins `timezoneId: 'UTC'` globally so
+local-time formatting matches across machines.
+
 ## Fixture basics
 
 Fixtures provide reusable setup/teardown logic injected into tests

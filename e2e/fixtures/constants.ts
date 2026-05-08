@@ -18,3 +18,16 @@ export const HYDRATION_ERROR_RE = /Minified React error #(418|423)/;
 export function e2eDisplayName(index: number): string {
   return `E2E Worker ${index}`;
 }
+
+export type IsoUtcInstant = string & { readonly __brand: 'IsoUtcInstant' };
+
+const ISO_UTC_INSTANT_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
+
+export function isoUtcInstant(value: string): IsoUtcInstant {
+  if (!ISO_UTC_INSTANT_RE.test(value)) {
+    throw new Error(`Invalid ISO UTC instant: ${value}`);
+  }
+  return value as IsoUtcInstant;
+}
+
+export const FROZEN_E2E_TIME = isoUtcInstant('2026-03-10T21:05:00.000Z');

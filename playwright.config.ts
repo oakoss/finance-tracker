@@ -91,6 +91,7 @@ export default defineConfig({
     baseURL: BASE_URL,
     navigationTimeout: 15_000,
     screenshot: 'only-on-failure',
+    timezoneId: 'UTC',
     trace: 'on-first-retry',
     video: 'retain-on-failure',
   },
