@@ -2,8 +2,15 @@ import { defineConfig, devices } from '@playwright/test';
 
 import { E2E_USER_COUNT } from '~e2e/fixtures/constants';
 
+// Strict allowlist so E2E_DEV=0 / E2E_DEV=false read as off, not on.
+const E2E_DEV = ['1', 'on', 'true', 'yes'].includes(
+  (process.env.E2E_DEV ?? '').toLowerCase(),
+);
+
 process.env.APP_ENV ??= 'test';
-process.env.PORT ??= '3001';
+// Split ports by mode so prod (3001) and dev (3002) never reuse each
+// other's server when `reuseExistingServer` is on.
+process.env.PORT ??= E2E_DEV ? '3002' : '3001';
 
 const BASE_URL = `http://localhost:${process.env.PORT}`;
 
@@ -96,9 +103,16 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
   webServer: {
-    command: 'pnpm build && pnpm start',
+    // Set E2E_DEV=1 locally to boot `pnpm dev` instead of building first
+    // (faster inner loop). Leave unset in CI so runs match the prod build.
+    command: E2E_DEV ? 'pnpm dev' : 'pnpm build && pnpm start',
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    // Surface dev/prod startup errors instead of letting Playwright report
+    // a generic "URL never became reachable" timeout.
+    stderr: 'pipe',
+    // Vite cold start (deps prebundle + paraglide + TanStack codegen) can
+    // approach 120s on a fresh checkout.
+    timeout: E2E_DEV ? 240_000 : 120_000,
     url: BASE_URL,
   },
   workers: process.env.CI ? 2 : E2E_USER_COUNT,

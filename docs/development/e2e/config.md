@@ -285,6 +285,28 @@ The `webServer` config starts the app server automatically before
 tests run. Our config uses `pnpm build && pnpm start` on port 3001
 (set via `process.env.PORT` in `playwright.config.ts`).
 
+**Faster local inner loop**: set `E2E_DEV=1` to boot `pnpm dev`
+instead of the prod build. Recognised values: `1`, `true`, `yes`,
+`on`. CI runs leave it unset.
+
+```bash
+E2E_DEV=1 pnpm test:e2e e2e/app/transactions-crud.test.ts
+```
+
+Each mode binds a different default port (prod 3001, dev 3002) so
+`reuseExistingServer` doesn't accidentally reuse the wrong-mode
+server. Both can coexist.
+
+Caveats:
+
+- Visual snapshots (`chromium:demo`) bake against the prod bundle —
+  hashed asset URLs, `<link rel="stylesheet">` tags, and the absent
+  HMR runtime all differ in dev mode. **Never run
+  `--update-snapshots` with `E2E_DEV=1`** or you'll poison the
+  baselines.
+- Cold-start budget bumps to 240s when `E2E_DEV=1` (Vite deps
+  prebundle + paraglide + TanStack codegen).
+
 **Key options:**
 
 ```ts
