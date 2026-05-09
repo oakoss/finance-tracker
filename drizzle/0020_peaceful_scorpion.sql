@@ -1,0 +1,1 @@
+ALTER TABLE "payee_aliases" ADD CONSTRAINT "payee_aliases_alias_lowercase_check" CHECK ("payee_aliases"."alias" = lower("payee_aliases"."alias"));

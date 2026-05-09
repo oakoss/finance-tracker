@@ -1,0 +1,1 @@
+ALTER TABLE "payee_aliases" ADD CONSTRAINT "payee_aliases_alias_length_check" CHECK (char_length("payee_aliases"."alias") BETWEEN 1 AND 200);

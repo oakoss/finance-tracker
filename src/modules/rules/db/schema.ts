@@ -49,9 +49,20 @@ export const ruleRunsIndexNames = {
   ruleRunAtIdx: 'rule_runs_rule_run_at_idx',
 } as const;
 
+export const payeeAliasesIndexNames = {
+  payeeAliasIdx: 'payee_aliases_payee_alias_idx',
+  payeeIdIdx: 'payee_aliases_payee_id_idx',
+} as const;
+
 export const rulesConstraintMessages = {
   merchant_rules_actions_nonempty_check:
     'A merchant rule must have at least one action.',
+  payee_aliases_alias_length_check:
+    'Alias must be between 1 and 200 characters.',
+  payee_aliases_alias_lowercase_check: 'Alias must be lowercase.',
+  payee_aliases_alias_trimmed_check:
+    'Alias must not start or end with whitespace.',
+  [payeeAliasesIndexNames.payeeAliasIdx]: 'This payee already has this alias.',
   rule_runs_undo_data_shape_check:
     'Rule-run undo data must be an object containing a transactions array.',
 } as const;
@@ -69,8 +80,30 @@ export const payeeAliases = pgTable(
     ...auditFields,
   },
   (table) => [
-    index('payee_aliases_payee_id_idx').on(table.payeeId),
-    uniqueIndex('payee_aliases_payee_alias_idx').on(table.payeeId, table.alias),
+    index(payeeAliasesIndexNames.payeeIdIdx).on(table.payeeId),
+    // Partial so a soft-deleted alias can be re-created with the same
+    // value (matches the `payees`/`categories` unique-index pattern).
+    uniqueIndex(payeeAliasesIndexNames.payeeAliasIdx)
+      .on(table.payeeId, table.alias)
+      .where(sql`${table.deletedAt} is null`),
+    // Mirrors the service's `data.alias.trim().toLowerCase()` so direct
+    // inserts (backfill, future import job) can't bypass normalization
+    // and silently break the unique index above.
+    check(
+      'payee_aliases_alias_trimmed_check',
+      sql`${table.alias} = btrim(${table.alias})`,
+    ),
+    check(
+      'payee_aliases_alias_lowercase_check',
+      sql`${table.alias} = lower(${table.alias})`,
+    ),
+    // Mirrors `createPayeeAliasSchema` ("a non-blank alias up to 200
+    // chars" after trim). The trimmed check above guarantees the stored
+    // value is already trimmed.
+    check(
+      'payee_aliases_alias_length_check',
+      sql`char_length(${table.alias}) BETWEEN 1 AND 200`,
+    ),
   ],
 );
 

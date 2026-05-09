@@ -134,6 +134,27 @@
       "when": 1776379209805,
       "tag": "0018_sharp_leo",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1778299261149,
+      "tag": "0019_solid_skullbuster",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1778300593811,
+      "tag": "0020_peaceful_scorpion",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1778345608674,
+      "tag": "0021_big_wiccan",
+      "breakpoints": true
     }
   ]
 }

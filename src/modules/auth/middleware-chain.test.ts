@@ -42,6 +42,7 @@ const AUTH_ONLY_FILES = new Set<string>([
   'src/modules/categories/api/list-categories.ts',
   'src/modules/imports/api/list-import-rows.ts',
   'src/modules/imports/api/list-imports.ts',
+  'src/modules/payees/api/list-payee-aliases.ts',
   'src/modules/payees/api/list-payees.ts',
   'src/modules/preferences/api/get-preferences.ts',
   'src/modules/rules/api/list-merchant-rules.ts',
