@@ -61,6 +61,7 @@ test('undo — restores categoryId from before.categoryId', async ({
     .from(transactions)
     .where(eq(transactions.id, tx.id));
   expect(after.categoryId).toBe(oldCategory.id);
+  expect(after.matchedRuleIds).toStrictEqual([]);
 
   const [run] = await serviceDb
     .select()
@@ -346,6 +347,52 @@ test('undo — allows undoing later run even when earlier run exists on same tra
     runId: secondRun.runId,
   });
   expect(result.runId).toBe(secondRun.runId);
+});
+
+test('undo — leaves earlier rule id behind when undoing the later run', async ({
+  serviceDb,
+}) => {
+  const { account, user } = await setup(serviceDb);
+  const category1 = await insertCategory(serviceDb, { userId: user.id });
+  const category2 = await insertCategory(serviceDb, { userId: user.id });
+  const tx = await insertTransaction(serviceDb, {
+    accountId: account.id,
+    description: 'x',
+  });
+
+  const ruleA = await insertMerchantRule(serviceDb, {
+    actions: [{ categoryId: category1.id, kind: 'setCategory' }],
+    match: { kind: 'contains', value: 'x' },
+    userId: user.id,
+  });
+  await applyMerchantRuleService(asDb(serviceDb), user.id, { id: ruleA.id });
+
+  const ruleB = await insertMerchantRule(serviceDb, {
+    actions: [{ categoryId: category2.id, kind: 'setCategory' }],
+    match: { kind: 'contains', value: 'x' },
+    userId: user.id,
+  });
+  const runB = await applyMerchantRuleService(asDb(serviceDb), user.id, {
+    id: ruleB.id,
+  });
+
+  // Sanity: row carries both ids after both applies.
+  const [beforeUndo] = await serviceDb
+    .select()
+    .from(transactions)
+    .where(eq(transactions.id, tx.id));
+  expect(beforeUndo.matchedRuleIds.toSorted()).toStrictEqual(
+    [ruleA.id, ruleB.id].toSorted(),
+  );
+
+  await undoRuleRunService(asDb(serviceDb), user.id, { runId: runB.runId });
+
+  // Undoing B should remove only B's id, leaving A behind.
+  const [afterUndo] = await serviceDb
+    .select()
+    .from(transactions)
+    .where(eq(transactions.id, tx.id));
+  expect(afterUndo.matchedRuleIds).toStrictEqual([ruleA.id]);
 });
 
 test('undo — is idempotent on empty runs (no affected ids)', async ({

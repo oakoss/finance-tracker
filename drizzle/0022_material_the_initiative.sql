@@ -1,0 +1,1 @@
+ALTER TABLE "transactions" ADD COLUMN "matched_rule_ids" uuid[] DEFAULT ARRAY[]::uuid[] NOT NULL;

@@ -444,6 +444,57 @@ test('apply — batches through more than BATCH_SIZE rows and records all affect
   expect(run.undoData.transactions).toHaveLength(ROW_COUNT);
 });
 
+test('apply — appends rule.id to matchedRuleIds on each affected transaction', async ({
+  serviceDb,
+}) => {
+  const { account, user } = await setup(serviceDb);
+  const category = await insertCategory(serviceDb, { userId: user.id });
+  const tx = await insertTransaction(serviceDb, {
+    accountId: account.id,
+    description: 'amazon',
+  });
+  const rule = await insertMerchantRule(serviceDb, {
+    actions: [{ categoryId: category.id, kind: 'setCategory' }],
+    match: { kind: 'contains', value: 'amazon' },
+    userId: user.id,
+  });
+
+  // First apply: matched.
+  await applyMerchantRuleService(asDb(serviceDb), user.id, { id: rule.id });
+  // Second apply on the same transaction must not duplicate the entry.
+  await applyMerchantRuleService(asDb(serviceDb), user.id, { id: rule.id });
+
+  const [after] = await serviceDb
+    .select()
+    .from(transactions)
+    .where(eq(transactions.id, tx.id));
+  expect(after.matchedRuleIds).toStrictEqual([rule.id]);
+});
+
+test('apply — does not write matchedRuleIds when no rows match', async ({
+  serviceDb,
+}) => {
+  const { account, user } = await setup(serviceDb);
+  const category = await insertCategory(serviceDb, { userId: user.id });
+  const tx = await insertTransaction(serviceDb, {
+    accountId: account.id,
+    description: 'unrelated',
+  });
+  const rule = await insertMerchantRule(serviceDb, {
+    actions: [{ categoryId: category.id, kind: 'setCategory' }],
+    match: { kind: 'contains', value: 'amazon' },
+    userId: user.id,
+  });
+
+  await applyMerchantRuleService(asDb(serviceDb), user.id, { id: rule.id });
+
+  const [after] = await serviceDb
+    .select()
+    .from(transactions)
+    .where(eq(transactions.id, tx.id));
+  expect(after.matchedRuleIds).toStrictEqual([]);
+});
+
 test('apply — writes audit log for the new rule_runs record', async ({
   serviceDb,
 }) => {

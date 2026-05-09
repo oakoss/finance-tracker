@@ -23,12 +23,17 @@ import { RuleEditorDialog } from '@/modules/rules/components/rule-editor-dialog'
 import { RulesEmpty } from '@/modules/rules/components/rules-empty';
 import { RulesPageHeader } from '@/modules/rules/components/rules-page-header';
 import { merchantRuleQueries } from '@/modules/rules/hooks/use-merchant-rules';
-import { tagQueries } from '@/modules/transactions/hooks/use-transactions';
+import { transactionToRuleSeed } from '@/modules/rules/lib/transaction-to-rule-seed';
+import {
+  tagQueries,
+  transactionQueries,
+} from '@/modules/transactions/hooks/use-transactions';
 import { m } from '@/paraglide/messages';
 
 const searchSchema = type({
   'applyFor?': 'string',
   'edit?': 'string',
+  'fromTransaction?': 'string',
   'modal?': type.enumerated('create', 'apply'),
   'tab?': type.enumerated('rules', 'aliases'),
 }).narrow((data, ctx) => {
@@ -48,6 +53,10 @@ const searchSchema = type({
     ctx.mustBe("no edit when modal is 'create'");
     return false;
   }
+  if (data.fromTransaction !== undefined && data.modal !== 'create') {
+    ctx.mustBe("modal='create' when fromTransaction is set");
+    return false;
+  }
   return true;
 });
 
@@ -65,14 +74,25 @@ export const Route = createFileRoute('/_app/rules')({
     }
     return result;
   },
-  loader: async ({ context }) => {
-    await Promise.all([
+  loaderDeps: ({ search }) => ({ fromTransaction: search.fromTransaction }),
+  loader: async ({ context, deps }) => {
+    const tasks: Promise<unknown>[] = [
       context.queryClient.ensureQueryData(merchantRuleQueries.list()),
       context.queryClient.ensureQueryData(categoryQueries.list()),
       context.queryClient.ensureQueryData(accountQueries.list()),
       context.queryClient.ensureQueryData(payeeQueries.list()),
       context.queryClient.ensureQueryData(tagQueries.list()),
-    ]);
+    ];
+    // Only the deep-link "create rule from transaction" flow needs a
+    // transaction; fetch a single row by id rather than the full list.
+    if (deps.fromTransaction !== undefined) {
+      tasks.push(
+        context.queryClient.ensureQueryData(
+          transactionQueries.byId(deps.fromTransaction),
+        ),
+      );
+    }
+    await Promise.all(tasks);
   },
 });
 
@@ -97,7 +117,7 @@ function RulesPage() {
   const closeEditor = useCallback(
     () =>
       void navigate({
-        search: (prev) => omit(prev, 'edit', 'modal'),
+        search: (prev) => omit(prev, 'edit', 'fromTransaction', 'modal'),
         to: '/rules',
       }),
     [navigate],
@@ -163,17 +183,63 @@ function RulesPage() {
           <PayeeAliasesTab />
         </TabsContent>
       </Tabs>
-      <RuleEditorDialog
-        existing={editingRule}
-        open={editorOpen}
-        onClose={closeEditor}
-      />
+      {search.fromTransaction === undefined ? (
+        <RuleEditorDialog
+          existing={editingRule}
+          open={editorOpen}
+          seed={null}
+          onClose={closeEditor}
+        />
+      ) : (
+        <SeededRuleEditorDialog
+          open={editorOpen}
+          transactionId={search.fromTransaction}
+          onClose={closeEditor}
+        />
+      )}
       <ApplyRuleDialog
         open={applyOpen}
         ruleId={applyRule?.id ?? null}
         onClose={closeApply}
       />
     </div>
+  );
+}
+
+type SeededRuleEditorDialogProps = {
+  onClose: () => void;
+  open: boolean;
+  transactionId: string;
+};
+
+function SeededRuleEditorDialog({
+  onClose,
+  open,
+  transactionId,
+}: SeededRuleEditorDialogProps) {
+  const { data: transaction } = useSuspenseQuery(
+    transactionQueries.byId(transactionId),
+  );
+  const seed = transaction ? transactionToRuleSeed(transaction) : null;
+
+  useEffect(() => {
+    if (transaction !== null) return;
+    clientLog.warn({
+      action: 'rules.fromTransaction.notFound',
+      outcome: { success: false, transactionIdHash: hashId(transactionId) },
+    });
+    toast.info(m['rules.fromTransaction.notFound']());
+    onClose();
+  }, [transaction, transactionId, onClose]);
+
+  return (
+    <RuleEditorDialog
+      existing={null}
+      open={open}
+      seed={seed}
+      seedKey={`from-${transactionId}`}
+      onClose={onClose}
+    />
   );
 }
 

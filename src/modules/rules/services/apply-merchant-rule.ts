@@ -165,6 +165,18 @@ export async function applyMerchantRuleService(
       offset += batch.length;
     }
 
+    if (affectedIds.length > 0) {
+      // Denormalized rule-match history: append rule.id to each affected
+      // transaction's matchedRuleIds (idempotent — re-applying the same
+      // rule is a no-op for the array). Drives the badge in the UI.
+      await tx
+        .update(transactions)
+        .set({
+          matchedRuleIds: sql`(SELECT array_agg(DISTINCT id) FROM unnest(${transactions.matchedRuleIds} || ARRAY[${rule.id}]::uuid[]) AS id)`,
+        })
+        .where(inArray(transactions.id, affectedIds));
+    }
+
     const [run] = await tx
       .insert(ruleRuns)
       .values({

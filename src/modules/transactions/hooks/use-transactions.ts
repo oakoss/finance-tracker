@@ -21,6 +21,7 @@ import { parseError } from '@/lib/logging/evlog';
 import { payeeQueries } from '@/modules/payees/hooks/use-payees';
 import { createTransaction } from '@/modules/transactions/api/create-transaction';
 import { deleteTransaction } from '@/modules/transactions/api/delete-transaction';
+import { getTransactionById } from '@/modules/transactions/api/get-transaction-by-id';
 import { listTags } from '@/modules/transactions/api/list-tags';
 import { listTransactions } from '@/modules/transactions/api/list-transactions';
 import { splitTransaction } from '@/modules/transactions/api/split-transaction';
@@ -31,6 +32,11 @@ import { m } from '@/paraglide/messages';
 
 export const transactionQueries = {
   all: () => ['transactions'] as const,
+  byId: (id: string) =>
+    queryOptions({
+      queryFn: () => getTransactionById({ data: { id } }),
+      queryKey: [...transactionQueries.all(), 'byId', id],
+    }),
   list: () =>
     queryOptions({
       queryFn: () => listTransactions(),

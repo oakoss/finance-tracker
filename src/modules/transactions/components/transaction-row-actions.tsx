@@ -52,6 +52,19 @@ export function TransactionRowActions({ row }: TransactionRowActionsProps) {
             {m['actions.edit']()}
           </DropdownMenuItem>
           {!isTransfer && (
+            <DropdownMenuItem
+              onClick={() =>
+                void navigate({
+                  search: { fromTransaction: row.id, modal: 'create' },
+                  to: '/rules',
+                })
+              }
+            >
+              <Icons.Wand2 className="size-4" />
+              {m['transactions.actions.createRule']()}
+            </DropdownMenuItem>
+          )}
+          {!isTransfer && (
             <>
               <DropdownMenuSeparator />
               {row.isSplit ? (

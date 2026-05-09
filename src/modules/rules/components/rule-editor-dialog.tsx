@@ -36,6 +36,9 @@ type RuleEditorDialogProps = {
   existing: MerchantRuleListItem | null;
   onClose: () => void;
   open: boolean;
+  seed: RuleFormValues | null;
+  /** Identity for seed-based opens so switching seeds remounts the form. */
+  seedKey?: string | undefined;
 };
 
 export function RuleEditorDialog(props: RuleEditorDialogProps) {
@@ -44,8 +47,9 @@ export function RuleEditorDialog(props: RuleEditorDialogProps) {
       <DialogContent size="xl">
         {props.open && (
           <EditorBody
-            key={props.existing?.id ?? 'create'}
+            key={props.existing?.id ?? props.seedKey ?? 'create'}
             existing={props.existing}
+            seed={props.seed}
             onClose={props.onClose}
           />
         )}
@@ -57,9 +61,10 @@ export function RuleEditorDialog(props: RuleEditorDialogProps) {
 type EditorBodyProps = {
   existing: MerchantRuleListItem | null;
   onClose: () => void;
+  seed: RuleFormValues | null;
 };
 
-function EditorBody({ existing, onClose }: EditorBodyProps) {
+function EditorBody({ existing, onClose, seed }: EditorBodyProps) {
   const { data: categories } = useSuspenseQuery(categoryQueries.list());
   const { data: accounts } = useSuspenseQuery(accountQueries.list());
   const { data: payees } = useSuspenseQuery(payeeQueries.list());
@@ -69,9 +74,10 @@ function EditorBody({ existing, onClose }: EditorBodyProps) {
   const update = useUpdateMerchantRule();
   const pending = create.isPending || update.isPending;
 
-  const [values, setValues] = useState<RuleFormValues>(() =>
-    existing ? toFormValues(existing) : DEFAULT_RULE_FORM_VALUES,
-  );
+  const [values, setValues] = useState<RuleFormValues>(() => {
+    if (existing) return toFormValues(existing);
+    return seed ?? DEFAULT_RULE_FORM_VALUES;
+  });
   const submittable = useMemo(() => isSubmittable(values), [values]);
 
   const handleSubmit = () => {

@@ -49,6 +49,7 @@ const AUTH_ONLY_FILES = new Set<string>([
   'src/modules/rules/api/preview-apply-merchant-rule.ts',
   'src/modules/rules/api/preview-match-merchant-rule.ts',
   // Note: apply-merchant-rule intentionally omitted — it's a mutation.
+  'src/modules/transactions/api/get-transaction-by-id.ts',
   'src/modules/transactions/api/list-tags.ts',
   'src/modules/transactions/api/list-transactions.ts',
   // Exempt mutations (GDPR + unverified-recoverable config)

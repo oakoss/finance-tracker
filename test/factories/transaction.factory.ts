@@ -41,6 +41,7 @@ export function createTransaction(
     fingerprint: null,
     id: fakeId(),
     isSplit: false,
+    matchedRuleIds: [],
     memo: null,
     payeeId: null,
     payeeNameRaw: null,

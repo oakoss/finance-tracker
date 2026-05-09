@@ -93,6 +93,7 @@ describe('formatCsv', () => {
             fingerprint: null,
             id: 'tx-1',
             isSplit: false,
+            matchedRuleIds: [],
             memo: null,
             payeeId: null,
             payeeNameRaw: null,

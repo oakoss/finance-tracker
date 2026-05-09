@@ -114,6 +114,19 @@ export async function undoRuleRunService(
       tagConflictsSkipped += outcome.tagConflictsSkipped;
     }
 
+    if (run.affectedTransactionIds.length > 0) {
+      // Drop this rule from the denormalized matchedRuleIds on every row
+      // the run touched, including soft-deleted ones — that mirrors how
+      // the badge stops rendering. Restorations are gated on liveness;
+      // this maintenance step isn't.
+      await tx
+        .update(transactions)
+        .set({
+          matchedRuleIds: sql`array_remove(${transactions.matchedRuleIds}, ${run.ruleId}::uuid)`,
+        })
+        .where(inArray(transactions.id, run.affectedTransactionIds));
+    }
+
     if (skippedSoftDeleted > 0 || tagConflictsSkipped > 0) {
       log.warn({
         action: 'ruleRun.undo',

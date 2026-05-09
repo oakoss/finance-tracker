@@ -1,4 +1,5 @@
 import { expect, test } from '~e2e/fixtures/auth';
+import { createViaCombobox } from '~e2e/fixtures/combobox';
 import { createCategory } from '~e2e/fixtures/entity';
 import { selectAccount } from '~e2e/fixtures/form-actions';
 
@@ -118,6 +119,51 @@ test.describe(
       });
     });
 
+    test('create rule from a transaction prefills match + actions', async ({
+      page,
+      testAccountName,
+    }) => {
+      const runId = Date.now();
+      const categoryName = `E2E SeedCat ${runId}`;
+      const txnDescription = `E2E SEED ${runId}`;
+
+      await createCategory(page, categoryName);
+
+      await page.goto('/transactions');
+      await page
+        .getByRole('button', { name: /add transaction/i })
+        .first()
+        .click();
+      const txnDialog = page.getByRole('dialog');
+      await txnDialog.getByLabel(/description/i).fill(txnDescription);
+      await txnDialog.getByLabel(/amount/i).fill('25.00');
+      await selectAccount(page, testAccountName);
+      await txnDialog.getByLabel(/^category$/i).click();
+      await page.getByRole('option', { name: categoryName }).click();
+      await txnDialog.getByRole('button', { name: /^create$/i }).click();
+      await expect(txnDialog).toBeHidden();
+
+      const row = page.getByRole('row', {
+        name: new RegExp(txnDescription, 'i'),
+      });
+      await row.getByRole('button', { name: /actions/i }).click();
+      await page
+        .getByRole('menuitem', { name: /create rule from this transaction/i })
+        .click();
+
+      await expect(page).toHaveURL(/\/rules\?.*fromTransaction=/);
+      const ruleDialog = page.getByRole('dialog', { name: /new rule/i });
+      await expect(ruleDialog.getByLabel(/match value/i)).toHaveValue(
+        txnDescription,
+      );
+      // Action cards for setCategory + setPayee are rendered when the
+      // seed maps categoryId/payeeId to actions. Exact id-to-name mapping
+      // is unit-tested in `transaction-to-rule-seed.test.ts`.
+      await expect(
+        ruleDialog.getByLabel(/^set category$/i, { exact: true }),
+      ).toBeVisible();
+    });
+
     test('apply rule to existing transactions, then undo', async ({
       page,
       testAccountName,
@@ -202,6 +248,103 @@ test.describe(
             .filter({ hasText: /rule run undone/i }),
         ).toBeVisible();
       });
+    });
+
+    test('rule match surfaces a badge on the transaction row', async ({
+      page,
+      testAccountName,
+    }) => {
+      const runId = Date.now();
+      const categoryName = `E2E Badge Cat ${runId}`;
+      const matchValue = `badge-${runId}`;
+      const txnDescription = `E2E ${matchValue}`;
+
+      await createCategory(page, categoryName);
+
+      await page.goto('/transactions');
+      await page
+        .getByRole('button', { name: /add transaction/i })
+        .first()
+        .click();
+      const txnDialog = page.getByRole('dialog');
+      await txnDialog.getByLabel(/description/i).fill(txnDescription);
+      await txnDialog.getByLabel(/amount/i).fill('15.00');
+      await selectAccount(page, testAccountName);
+      await txnDialog.getByRole('button', { name: /^create$/i }).click();
+      await expect(txnDialog).toBeHidden();
+
+      await page.goto('/rules');
+      await page
+        .getByRole('button', { name: /new rule/i })
+        .first()
+        .click();
+      const ruleDialog = page.getByRole('dialog', { name: /new rule/i });
+      await ruleDialog.getByLabel(/match value/i).fill(matchValue);
+      await ruleDialog.getByRole('button', { name: /add action/i }).click();
+      await page
+        .getByRole('menuitem', { name: /set category/i })
+        .or(page.getByRole('button', { name: /^set category$/i }))
+        .click();
+      await ruleDialog.getByLabel(/^set category$/i).click();
+      await page.getByRole('option', { name: categoryName }).click();
+      await ruleDialog.getByRole('button', { name: /^create$/i }).click();
+      await expect(ruleDialog).toBeHidden();
+
+      const ruleRow = page.getByRole('listitem', {
+        name: new RegExp(matchValue),
+      });
+      await ruleRow.getByRole('button', { name: /rule actions/i }).click();
+      await page.getByRole('menuitem', { name: /apply to existing/i }).click();
+      const applyDialog = page.getByRole('dialog', { name: /apply rule/i });
+      await applyDialog
+        .getByRole('button', { name: /apply to 1 transaction/i })
+        .click();
+      await expect(applyDialog).toBeHidden();
+
+      await page.goto('/transactions');
+      const txnRow = page.getByRole('row', {
+        name: new RegExp(txnDescription, 'i'),
+      });
+      await expect(
+        txnRow.getByRole('button', { name: /matched rule/i }),
+      ).toBeVisible();
+    });
+
+    test('create + delete a payee alias from the rules tab', async ({
+      page,
+      testAccountName,
+    }) => {
+      const runId = Date.now();
+      const payeeName = `E2E Alias Payee ${runId}`;
+      const aliasValue = `e2e alias ${runId}`;
+      const txnDescription = `E2E AliasTxn ${runId}`;
+
+      await page.goto('/transactions');
+      await page
+        .getByRole('button', { name: /add transaction/i })
+        .first()
+        .click();
+      const txnDialog = page.getByRole('dialog');
+      await txnDialog.getByLabel(/description/i).fill(txnDescription);
+      await txnDialog.getByLabel(/amount/i).fill('10.00');
+      await selectAccount(page, testAccountName);
+      await createViaCombobox(page, 'Payee', payeeName);
+      await txnDialog.getByRole('button', { name: /^create$/i }).click();
+      await expect(txnDialog).toBeHidden();
+
+      await page.goto('/rules?tab=aliases');
+      await page.getByLabel(/^payee$/i).click();
+      await page.getByRole('option', { name: payeeName }).click();
+
+      const aliasInput = page.getByLabel(/^add alias$/i);
+      await aliasInput.fill(aliasValue);
+      await page.getByRole('button', { name: /^add alias$/i }).click();
+
+      const aliasItem = page.getByRole('listitem', { name: aliasValue });
+      await expect(aliasItem).toBeVisible();
+
+      await aliasItem.getByRole('button', { name: /delete alias/i }).click();
+      await expect(aliasItem).toBeHidden();
     });
   },
 );

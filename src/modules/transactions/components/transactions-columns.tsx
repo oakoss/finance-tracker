@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Timestamp } from '@/components/ui/timestamp';
 import { formatCurrency } from '@/lib/i18n/number';
+import { RuleMatchBadge } from '@/modules/rules/components/rule-match-badge';
 import { TransactionRowActions } from '@/modules/transactions/components/transaction-row-actions';
 import { m } from '@/paraglide/messages';
 
@@ -26,7 +27,14 @@ export function createTransactionColumns() {
       size: 120,
     }),
     columnHelper.accessor('description', {
-      cell: ({ getValue }) => <span className="font-medium">{getValue()}</span>,
+      cell: ({ getValue, row }) => (
+        <span className="inline-flex items-center gap-1.5 font-medium">
+          {getValue()}
+          {row.original.matchedRuleIds.length > 0 && (
+            <RuleMatchBadge matchedRuleIds={row.original.matchedRuleIds} />
+          )}
+        </span>
+      ),
       header: () => m['transactions.columns.description'](),
       meta: {
         headerTitle: m['transactions.columns.description'](),

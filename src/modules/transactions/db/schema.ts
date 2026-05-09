@@ -87,6 +87,13 @@ export const transactions = pgTable(
       .primaryKey()
       .default(sql`uuidv7()`),
     isSplit: boolean().notNull().default(false),
+    // Denormalized history of merchantRules that have applied to this row.
+    // Maintained by `applyMerchantRuleService` (append) and
+    // `undoRuleRunService` (remove). Drives the rule-match badge in the UI.
+    matchedRuleIds: uuid()
+      .array()
+      .notNull()
+      .default(sql`ARRAY[]::uuid[]`),
     memo: text(),
     payeeId: uuid().references(() => payees.id, { onDelete: 'set null' }),
     payeeNameRaw: text(),
