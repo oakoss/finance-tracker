@@ -173,6 +173,47 @@ setup('authenticate', async ({ request }) => {
 });
 ```
 
+## Asserting server-side mutations
+
+UI assertions alone (toast appears, row updates) can't distinguish
+a successful mutation from an optimistic update that the server
+later rejected with 5xx. `expectMutation` from
+`~e2e/fixtures/expect-mutation` wraps the UI action in a
+`page.waitForResponse` and asserts the matched server-fn returned
+2xx:
+
+```ts
+import { expectMutation } from '~e2e/fixtures/expect-mutation';
+
+await page.getByLabel(/description/i).fill('New row');
+await expectMutation(page, async () => {
+  await page.getByRole('button', { name: /create/i }).click();
+});
+await expect(page.getByText('New row')).toBeVisible();
+```
+
+The default matcher is any non-GET `/_serverFn/` request, so
+route-loader GETs fired by `router.invalidate()` after a successful
+mutation don't win the race. Pin to a specific function when a
+click triggers several POSTs:
+
+```ts
+await expectMutation(page, action, { matcher: '/_serverFn/createTransaction' });
+```
+
+Pass `body` to assert the parsed response shape (the helper expects
+JSON; non-JSON server fns will throw at parse time):
+
+```ts
+await expectMutation<{ id: string }>(page, action, {
+  body: (b) => expect(b.id).toMatch(/^[0-9a-f-]{36}$/),
+});
+```
+
+`matcher` also accepts `RegExp` or a `(response) => boolean`
+predicate. The helper returns `{ body, response }` if the caller
+needs to chain further assertions.
+
 ## Network interception
 
 Beyond the basic `route.fulfill()` shown in "Avoid third-party

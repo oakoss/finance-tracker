@@ -1,5 +1,6 @@
 import { expect, test } from '~e2e/fixtures/auth';
 import { createViaCombobox } from '~e2e/fixtures/combobox';
+import { expectMutation } from '~e2e/fixtures/expect-mutation';
 import { selectAccount } from '~e2e/fixtures/form-actions';
 import {
   clickRowAction,
@@ -51,7 +52,9 @@ test.describe(
       await page.getByLabel(/description/i).fill(name);
       await page.getByLabel(/amount/i).fill('42.50');
       await selectAccount(page, accountName);
-      await page.getByRole('button', { name: /create/i }).click();
+      await expectMutation(page, async () => {
+        await page.getByRole('button', { name: /create/i }).click();
+      });
       await expect(page.getByText(name)).toBeVisible();
 
       // Edit
@@ -62,7 +65,9 @@ test.describe(
       ).toBeVisible();
       await page.getByLabel(/description/i).clear();
       await page.getByLabel(/description/i).fill(renamed);
-      await page.getByRole('button', { name: /save/i }).click();
+      await expectMutation(page, async () => {
+        await page.getByRole('button', { name: /save/i }).click();
+      });
       await expect(page.getByText(renamed)).toBeVisible();
 
       // Delete
@@ -73,7 +78,9 @@ test.describe(
       await expect(
         page.getByRole('heading', { name: /delete transaction/i }),
       ).toBeVisible();
-      await confirmDelete(page, renamed);
+      await expectMutation(page, async () => {
+        await confirmDelete(page, renamed);
+      });
       await expect(page.getByRole('table').getByText(renamed)).toBeHidden();
     });
 
