@@ -18,7 +18,18 @@ paths:
 - Prefer auto-retrying assertions (`toBeVisible`, `toHaveURL`,
   `toHaveText`) over manual waits. Never use `waitForTimeout`.
 - Use `test.step()` to break tests into 3-5 named phases.
-- Tag test groups: `@smoke`, `@auth`, `@a11y`, `@crud`.
+- Tag test groups using the canonical set; `pnpm lint:e2e-tags`
+  fails the run on unknown tags. Project filters in
+  `playwright.config.ts` match these exact strings:
+  - `@smoke` — meta tag for `pnpm test:e2e:smoke`.
+  - `@a11y` — meta tag for `pnpm test:e2e:a11y`.
+  - `@authenticated` — runs in `chromium:authenticated`
+    (worker-scoped sign-in via `~e2e/fixtures/auth`).
+  - `@demo` — runs in `chromium:demo` (no auth).
+  - `@mobile` — adds the test to the `iphone` and `pixel`
+    projects.
+  - `@tablet` — adds the test to the `ipad` project.
+  - `@stress` — runs in the `stress` project; otherwise excluded.
 - Sign-out tests must sign in via UI (not storageState) to create
   their own session. Sign-out invalidates server sessions.
 - A11y tests use `AxeBuilder` from `@axe-core/playwright` with

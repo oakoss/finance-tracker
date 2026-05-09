@@ -81,6 +81,10 @@ runs:
       if: steps.docs.outputs.docs_only != 'true'
       shell: bash
       run: pnpm exec eslint --max-warnings 0 --cache --cache-location node_modules/.cache/eslint/.eslintcache .
+    - name: E2E tag whitelist
+      if: steps.docs.outputs.docs_only != 'true'
+      shell: bash
+      run: pnpm lint:e2e-tags
     - name: Markdown lint
       shell: bash
       run: pnpm lint:md

@@ -23,6 +23,7 @@
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "lint": "oxlint -c .oxlintrc.json && eslint --max-warnings 0 --cache --cache-location node_modules/.cache/eslint/.eslintcache .",
+    "lint:e2e-tags": "node scripts/check-e2e-tags.mjs",
     "lint:fix": "oxlint -c .oxlintrc.json --fix --fix-suggestions && eslint --max-warnings 0 --fix --cache --cache-location node_modules/.cache/eslint/.eslintcache .",
     "lint:md": "markdownlint-cli2 '**/*.md'",
     "lint:md:fix": "markdownlint-cli2 --fix '**/*.md'",

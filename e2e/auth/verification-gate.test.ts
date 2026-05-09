@@ -14,7 +14,7 @@ import { expect as authExpect, test as authTest } from '~e2e/fixtures/auth';
 
 test.describe(
   'verification gate — unverified sign-up',
-  { tag: ['@smoke', '@auth'] },
+  { tag: ['@smoke'] },
   () => {
     test.use({ storageState: { cookies: [], origins: [] } });
 
@@ -76,7 +76,7 @@ test.describe(
 
 authTest.describe(
   'verification gate — verified user',
-  { tag: ['@smoke', '@auth'] },
+  { tag: ['@smoke', '@authenticated'] },
   () => {
     authTest('no banner, primary CTA enabled', async ({ page }) => {
       await page.goto('/accounts');
