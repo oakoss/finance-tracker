@@ -1,12 +1,8 @@
-import { expect, test } from '~e2e/fixtures/auth';
+import { expect, test } from '~e2e/fixtures/clean-data';
 import { createViaCombobox } from '~e2e/fixtures/combobox';
 import { expectMutation } from '~e2e/fixtures/expect-mutation';
 import { selectAccount } from '~e2e/fixtures/form-actions';
-import {
-  clickRowAction,
-  confirmDelete,
-  isEmptyState,
-} from '~e2e/fixtures/table-actions';
+import { clickRowAction, confirmDelete } from '~e2e/fixtures/table-actions';
 
 const CREATE_TXN_HEADING = /create transaction/i;
 
@@ -14,12 +10,14 @@ test.describe(
   'transactions CRUD',
   { tag: ['@smoke', '@authenticated'] },
   () => {
-    test('empty state CTA opens create dialog', async ({ page }) => {
+    test('empty state CTA opens create dialog', async ({
+      cleanWorkerUserData,
+      page,
+    }) => {
+      await cleanWorkerUserData();
       await page.goto('/transactions');
 
-      // oxlint-disable-next-line playwright/no-conditional-in-test
-      if (!(await isEmptyState(page, /no transactions yet/i))) return;
-
+      await expect(page.getByText(/no transactions yet/i)).toBeVisible();
       await page
         .getByRole('button', { name: /add transaction/i })
         .first()

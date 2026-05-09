@@ -40,7 +40,10 @@ e2e/
     auth.ts       test/expect exports, worker auth, testAccountName, hydration auto-wait, toast auto-dismiss, pageerror detection
     entity.ts     createAccount(), createCategory()
     combobox.ts   createViaCombobox(), selectExistingCombobox()
-    table-actions.ts  clickRowAction(), openEditDialog(), confirmDelete(), isEmptyState()
+    table-actions.ts  clickRowAction(), openEditDialog(), confirmDelete()
+    clean-data.ts     cleanWorkerUserData() worker fixture for empty-state tests
+    expect-mutation.ts expectMutation() — wait for /_serverFn/ POST + assert 2xx
+    clock.ts          page.clock fixture pinned to FROZEN_E2E_TIME
     import-actions.ts uploadCsv(), uniqueCsv()
     form-actions.ts selectAccount()
     field.ts      getField() — locate form field by label
@@ -90,9 +93,11 @@ categories, imports, budgets; FK cascades handle transactions and
 other child rows) before the suite runs. Tests create
 fresh data on top of a clean slate. Next run cleans again.
 
-**`isEmptyState()`** checks whether an empty-state message is visible
-(3s timeout). Tests use it to conditionally skip when data already
-exists from other tests on the same worker. This is intentional.
+**Empty-state assertions:** import from `~e2e/fixtures/clean-data`
+and call `cleanWorkerUserData()` before the assertion. That wipes
+the worker user's transactional rows (inside a transaction, with
+account-cache invalidation) so the next test using `testAccountName`
+re-creates cleanly.
 
 ## Assertions
 

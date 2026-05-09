@@ -1,11 +1,13 @@
-import { expect, test } from '~e2e/fixtures/auth';
+import { expect, test } from '~e2e/fixtures/clean-data';
 import { createCategory } from '~e2e/fixtures/entity';
 
 test.describe('budget edit dialog', { tag: ['@authenticated'] }, () => {
   test('create budget via edit dialog and verify persistence', async ({
+    cleanWorkerUserData,
     page,
   }) => {
     test.slow();
+    await cleanWorkerUserData();
 
     // Ensure at least 2 expense categories exist for this worker's user
     const cat1 = `E2E Budget Cat A ${Date.now()}`;
@@ -15,7 +17,6 @@ test.describe('budget edit dialog', { tag: ['@authenticated'] }, () => {
 
     await page.goto('/budgets');
 
-    // Should see empty state initially (no budgets for this month)
     await expect(page.getByText(/no budget|no budgets yet/i)).toBeVisible();
 
     // Open edit budget dialog

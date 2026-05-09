@@ -1,21 +1,18 @@
-import { expect, test } from '~e2e/fixtures/auth';
-import {
-  clickRowAction,
-  confirmDelete,
-  isEmptyState,
-} from '~e2e/fixtures/table-actions';
+import { expect, test } from '~e2e/fixtures/clean-data';
+import { clickRowAction, confirmDelete } from '~e2e/fixtures/table-actions';
 
 test.describe(
   'accounts CRUD',
   { tag: ['@smoke', '@authenticated', '@mobile'] },
   () => {
-    test('empty state CTA opens create dialog', async ({ page }) => {
+    test('empty state CTA opens create dialog', async ({
+      cleanWorkerUserData,
+      page,
+    }) => {
+      await cleanWorkerUserData();
       await page.goto('/accounts');
 
-      // Skip if accounts exist from other tests on this worker
-      // oxlint-disable-next-line playwright/no-conditional-in-test
-      if (!(await isEmptyState(page, /no accounts yet/i))) return;
-
+      await expect(page.getByText(/no accounts yet/i)).toBeVisible();
       await page
         .getByRole('button', { name: /add account/i })
         .first()

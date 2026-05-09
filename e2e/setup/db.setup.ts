@@ -1,46 +1,14 @@
 import 'varlock/auto-load';
 
 import { test as setup } from '@playwright/test';
-import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 
 import * as schema from '@/db/schema';
 import { E2E_USER_COUNT, e2eEmail } from '~e2e/fixtures/constants';
 import { seedCreditCardCatalog } from '~test/seed/credit-card-catalog';
+import { cleanE2eUserData } from '~test/seed/e2e-cleanup';
 import { seedE2eUser, seedE2eWorkerUsers } from '~test/seed/e2e-user';
-
-/**
- * Wipe ledger accounts and categories owned by an E2E user so every
- * suite run starts from a clean slate. FK cascades handle child rows
- * (transactions, transaction_tags, account_terms, balance_snapshots).
- */
-async function cleanE2eUserData(
-  db: ReturnType<typeof drizzle>,
-  email: string,
-): Promise<void> {
-  const [user] = await db
-    .select({ id: schema.users.id })
-    .from(schema.users)
-    .where(eq(schema.users.email, email))
-    .limit(1);
-
-  if (!user) {
-    console.warn(`[db.setup] E2E user not found (${email}), skipping cleanup`);
-    return;
-  }
-
-  await db.delete(schema.imports).where(eq(schema.imports.userId, user.id));
-  await db
-    .delete(schema.ledgerAccounts)
-    .where(eq(schema.ledgerAccounts.userId, user.id));
-  await db
-    .delete(schema.budgetPeriods)
-    .where(eq(schema.budgetPeriods.userId, user.id));
-  await db
-    .delete(schema.categories)
-    .where(eq(schema.categories.userId, user.id));
-}
 
 // oxlint-disable-next-line playwright/expect-expect -- pure DB seed, no browser assertions
 setup('ensure e2e seed data', async () => {

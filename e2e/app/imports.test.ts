@@ -1,14 +1,10 @@
-import { expect, test } from '~e2e/fixtures/auth';
+import { expect, test } from '~e2e/fixtures/clean-data';
 import {
   navigateToImportDetail,
   uniqueCsvWithErrors,
   uploadCsv,
 } from '~e2e/fixtures/import-actions';
-import {
-  clickRowAction,
-  confirmDelete,
-  isEmptyState,
-} from '~e2e/fixtures/table-actions';
+import { clickRowAction, confirmDelete } from '~e2e/fixtures/table-actions';
 
 test.describe(
   'imports CSV upload',
@@ -66,12 +62,14 @@ test.describe(
       await expect(page.getByText(fileName)).toBeVisible();
     });
 
-    test('empty state shows upload CTA', async ({ page }) => {
+    test('empty state shows upload CTA', async ({
+      cleanWorkerUserData,
+      page,
+    }) => {
+      await cleanWorkerUserData();
       await page.goto('/imports');
 
-      // oxlint-disable-next-line playwright/no-conditional-in-test
-      if (!(await isEmptyState(page, /no imports yet/i))) return;
-
+      await expect(page.getByText(/no imports yet/i)).toBeVisible();
       await page
         .getByRole('button', { name: /upload csv/i })
         .first()

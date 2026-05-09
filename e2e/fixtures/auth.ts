@@ -18,6 +18,15 @@ import { createAccount } from '~e2e/fixtures/entity';
 const workerAccountNames = new Map<number, string | null>();
 
 /**
+ * Used by `~e2e/fixtures/clean-data` after a DB-level account wipe
+ * so the next `testAccountName` request re-creates the account through
+ * the UI.
+ */
+export function clearWorkerAccountCache(parallelIndex: number): void {
+  workerAccountNames.delete(parallelIndex);
+}
+
+/**
  * Auth fixture bundle. Provides `workerStorageState` (worker-scoped:
  * per-worker login and session persistence) and `testAccountName`
  * (test-scoped with module-level cache: lazily-created account for

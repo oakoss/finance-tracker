@@ -25,6 +25,33 @@ Tests that don't need an account (empty state, validation) should
 omit `testAccountName` from their destructuring to avoid triggering
 the lazy creation.
 
+### `cleanWorkerUserData`
+
+Worker-scoped fixture from `~e2e/fixtures/clean-data` that wipes
+the worker user's transactional rows (imports, ledger accounts,
+budget periods, categories — child rows cascade) and clears the
+cached `testAccountName` so the next test using it re-creates the
+account through the UI.
+
+```ts
+import { expect, test } from '~e2e/fixtures/clean-data';
+
+test('empty state shows the upload CTA', async ({
+  cleanWorkerUserData,
+  page,
+}) => {
+  await cleanWorkerUserData();
+  await page.goto('/imports');
+  await expect(page.getByText(/no imports yet/i)).toBeVisible();
+});
+```
+
+Use only for tests that assert empty-state UI or otherwise need
+guaranteed-clean data — `db.setup.ts` already wipes everything at
+suite start, so most tests don't need it. The fixture extends
+`~e2e/fixtures/auth`, so re-import `test`/`expect` from the
+clean-data module instead of `auth`.
+
 ### `clockTime` (frozen page clock)
 
 Imports from `~e2e/fixtures/clock` install

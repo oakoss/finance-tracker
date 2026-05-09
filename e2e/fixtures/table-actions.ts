@@ -55,15 +55,3 @@ export async function confirmDelete(
     { box: true },
   );
 }
-
-/**
- * Check whether an empty-state message is visible.
- * Returns false if the element does not appear within 3 seconds.
- */
-export async function isEmptyState(page: Page, text: RegExp): Promise<boolean> {
-  return page
-    .getByText(text)
-    .waitFor({ state: 'visible', timeout: 3000 })
-    .then(() => true)
-    .catch(() => false);
-}
