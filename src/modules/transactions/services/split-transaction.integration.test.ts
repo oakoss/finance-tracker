@@ -130,24 +130,37 @@ test('split — rejects cross-user transaction', async ({ serviceDb }) => {
   ).rejects.toMatchObject({ status: 404 });
 });
 
-test('split — rejects transfer transactions', async ({ serviceDb }) => {
+test('split — rejects transfer transactions on either leg', async ({
+  serviceDb,
+}) => {
   const { account, user } = await insertAccountWithUser(serviceDb);
   const account2 = await insertLedgerAccount(serviceDb, { userId: user.id });
-  const transfer = await insertTransfer(serviceDb, {
-    fromAccountId: account.id,
-    toAccountId: account2.id,
-    userId: user.id,
-  });
-  const txn = await insertTransaction(serviceDb, {
+  const fromTxn = await insertTransaction(serviceDb, {
     accountId: account.id,
     amountCents: 10_000,
     createdById: user.id,
-    transferId: transfer.id,
+  });
+  const toTxn = await insertTransaction(serviceDb, {
+    accountId: account2.id,
+    amountCents: 10_000,
+    createdById: user.id,
+  });
+  await insertTransfer(serviceDb, {
+    fromTransactionId: fromTxn.id,
+    toTransactionId: toTxn.id,
+    userId: user.id,
   });
 
   await expect(
     splitTransactionService(asDb(serviceDb), user.id, {
-      id: txn.id,
+      id: fromTxn.id,
+      lines: [{ amountCents: 5000 }, { amountCents: 5000 }],
+    }),
+  ).rejects.toMatchObject({ status: 422 });
+
+  await expect(
+    splitTransactionService(asDb(serviceDb), user.id, {
+      id: toTxn.id,
       lines: [{ amountCents: 5000 }, { amountCents: 5000 }],
     }),
   ).rejects.toMatchObject({ status: 422 });

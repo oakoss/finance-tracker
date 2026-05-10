@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, or } from 'drizzle-orm';
 
 import type { Db } from '@/db';
 import type { DeleteTransactionInput } from '@/modules/transactions/validators';
@@ -9,6 +9,7 @@ import { ensureFound } from '@/lib/form/validation';
 import { createError } from '@/lib/logging/evlog';
 import { ledgerAccounts } from '@/modules/accounts/db/schema';
 import { transactions } from '@/modules/transactions/db/schema';
+import { transfers } from '@/modules/transfers/db/schema';
 
 export async function deleteTransactionService(
   database: Db,
@@ -34,6 +35,29 @@ export async function deleteTransactionService(
         .then((rows) => rows[0]?.transaction),
       'Transaction',
     );
+
+    // Soft-deleting a paired transaction would leave an active transfer
+    // row pointing at a deleted leg.
+    const [pairedTransfer] = await tx
+      .select({ id: transfers.id })
+      .from(transfers)
+      .where(
+        and(
+          or(
+            eq(transfers.fromTransactionId, data.id),
+            eq(transfers.toTransactionId, data.id),
+          ),
+          notDeleted(transfers.deletedAt),
+        ),
+      )
+      .limit(1);
+    if (pairedTransfer) {
+      throw createError({
+        fix: 'Transfers cannot be deleted. Manual unpair is coming soon.',
+        message: 'Cannot delete a paired transfer transaction.',
+        status: 422,
+      });
+    }
 
     const now = new Date();
 

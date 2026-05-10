@@ -16,7 +16,7 @@ import { userPreferences } from '@/modules/preferences/db/schema';
 import { merchantRules, recurringRules } from '@/modules/rules/db/schema';
 import { attachments, statements } from '@/modules/statements/db/schema';
 import { tags } from '@/modules/transactions/db/schema';
-import { transfers } from '@/modules/transfers/db/schema';
+import { transferDismissals, transfers } from '@/modules/transfers/db/schema';
 
 // usersRelations spans auth and finance modules.
 // Drizzle requires exactly one relations() call per table,
@@ -36,6 +36,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   sessions: many(sessions),
   statements: many(statements),
   tags: many(tags),
+  transferDismissals: many(transferDismissals),
   transfers: many(transfers),
 }));
 

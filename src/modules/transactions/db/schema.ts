@@ -16,7 +16,6 @@ import { ledgerAccounts } from '@/modules/accounts/db/schema';
 import { users } from '@/modules/auth/db/schema';
 import { categories } from '@/modules/categories/db/schema';
 import { payees } from '@/modules/payees/db/schema';
-import { transfers } from '@/modules/transfers/db/schema';
 
 export const transactionDirectionEnum = pgEnum('transaction_direction', [
   'debit',
@@ -100,7 +99,6 @@ export const transactions = pgTable(
     pending: boolean().notNull().default(false),
     postedAt: timestamp({ withTimezone: true }).notNull(),
     transactionAt: timestamp({ withTimezone: true }).notNull(),
-    transferId: uuid().references(() => transfers.id, { onDelete: 'set null' }),
     ...auditFields,
   },
   (table) => [
@@ -122,7 +120,6 @@ export const transactions = pgTable(
     ),
     index('transactions_category_id_idx').on(table.categoryId),
     index('transactions_payee_id_idx').on(table.payeeId),
-    index('transactions_transfer_id_idx').on(table.transferId),
     uniqueIndex(transactionsIndexNames.externalIdIdx).on(
       table.accountId,
       table.externalId,

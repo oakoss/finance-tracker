@@ -101,19 +101,28 @@ test('insertTransactionTag — applies createdById override', async ({ db }) => 
   expect(tt.createdById).toBe(user.id);
 });
 
-test('insertTransfer — inserts between two accounts', async ({ db }) => {
+test('insertTransfer — links two transactions', async ({ db }) => {
   const user = await insertUser(db);
-  const from = await insertLedgerAccount(db, { userId: user.id });
-  const to = await insertLedgerAccount(db, { userId: user.id });
+  const fromAccount = await insertLedgerAccount(db, { userId: user.id });
+  const toAccount = await insertLedgerAccount(db, { userId: user.id });
+  const fromTxn = await insertTransaction(db, {
+    accountId: fromAccount.id,
+    createdById: user.id,
+  });
+  const toTxn = await insertTransaction(db, {
+    accountId: toAccount.id,
+    createdById: user.id,
+  });
   const transfer = await insertTransfer(db, {
-    fromAccountId: from.id,
-    toAccountId: to.id,
+    fromTransactionId: fromTxn.id,
+    toTransactionId: toTxn.id,
     userId: user.id,
   });
   expect(transfer.id).toBeDefined();
-  expect(transfer.fromAccountId).toBe(from.id);
-  expect(transfer.toAccountId).toBe(to.id);
+  expect(transfer.fromTransactionId).toBe(fromTxn.id);
+  expect(transfer.toTransactionId).toBe(toTxn.id);
   expect(transfer.userId).toBe(user.id);
+  expect(transfer.confidence).toBe('manual');
 });
 
 // --- Composite factories ---

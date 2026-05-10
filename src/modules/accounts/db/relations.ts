@@ -12,7 +12,6 @@ import { imports } from '@/modules/imports/db/schema';
 import { promotions } from '@/modules/promotions/db/schema';
 import { statements } from '@/modules/statements/db/schema';
 import { transactions } from '@/modules/transactions/db/schema';
-import { transfers } from '@/modules/transfers/db/schema';
 
 export const creditCardCatalogRelations = relations(
   creditCardCatalog,
@@ -33,8 +32,6 @@ export const ledgerAccountsRelations = relations(
     statements: many(statements),
     terms: many(accountTerms),
     transactions: many(transactions),
-    transfersFrom: many(transfers, { relationName: 'transferFrom' }),
-    transfersTo: many(transfers, { relationName: 'transferTo' }),
     user: one(users, {
       fields: [ledgerAccounts.userId],
       references: [users.id],

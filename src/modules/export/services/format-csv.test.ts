@@ -22,6 +22,7 @@ function emptyExportData(overrides?: Partial<UserExportData>): UserExportData {
     tags: [],
     transactions: [],
     transactionTags: [],
+    transferDismissals: [],
     transfers: [],
     ...overrides,
   };
@@ -37,6 +38,69 @@ describe('formatCsv', () => {
     expect(files.has('categories.csv')).toBe(true);
     expect(files.has('tags.csv')).toBe(true);
     expect(files.has('transaction-tags.csv')).toBe(true);
+    expect(files.has('transfers.csv')).toBe(true);
+    expect(files.has('transfer-dismissals.csv')).toBe(true);
+  });
+
+  it('serializes transfer rows with the new pair shape', () => {
+    const files = formatCsv(
+      emptyExportData({
+        transfers: [
+          {
+            confidence: 'manual',
+            createdAt: new Date('2024-06-15'),
+            createdById: null,
+            deletedAt: null,
+            deletedById: null,
+            detectedByRuleId: null,
+            fromTransactionId: 'tx-from-1',
+            id: 'transfer-1',
+            toTransactionId: 'tx-to-1',
+            updatedAt: new Date('2024-06-15'),
+            updatedById: null,
+            userId: 'user-1',
+          },
+        ],
+      }),
+    );
+
+    const csv = files.get('transfers.csv')!;
+    expect(csv.split('\r\n')[0]).toBe(
+      'id,fromTransactionId,toTransactionId,confidence,detectedByRuleId,createdAt',
+    );
+    expect(csv).toContain('tx-from-1');
+    expect(csv).toContain('tx-to-1');
+    expect(csv).toContain('manual');
+  });
+
+  it('serializes transfer dismissals', () => {
+    const files = formatCsv(
+      emptyExportData({
+        transferDismissals: [
+          {
+            createdAt: new Date('2024-06-15'),
+            createdById: null,
+            deletedAt: null,
+            deletedById: null,
+            dismissedAt: new Date('2024-06-15'),
+            expiresAt: new Date('2024-07-15'),
+            id: 'dismissal-1',
+            txnAId: 'tx-a',
+            txnBId: 'tx-b',
+            updatedAt: new Date('2024-06-15'),
+            updatedById: null,
+            userId: 'user-1',
+          },
+        ],
+      }),
+    );
+
+    const csv = files.get('transfer-dismissals.csv')!;
+    expect(csv.split('\r\n')[0]).toBe(
+      'id,txnAId,txnBId,dismissedAt,expiresAt,createdAt',
+    );
+    expect(csv).toContain('tx-a');
+    expect(csv).toContain('tx-b');
   });
 
   it('omits preferences.csv when preferences is null', () => {
@@ -100,7 +164,6 @@ describe('formatCsv', () => {
             pending: false,
             postedAt: new Date('2024-06-15'),
             transactionAt: new Date('2024-06-15'),
-            transferId: null,
             updatedAt: new Date('2024-06-15'),
             updatedById: null,
           },

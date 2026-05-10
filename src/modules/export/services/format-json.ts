@@ -44,6 +44,7 @@ export function formatJson(data: UserExportData): string {
     tags: stripMany(data.tags),
     transactions: stripMany(data.transactions),
     transactionTags: stripMany(data.transactionTags),
+    transferDismissals: stripMany(data.transferDismissals),
     transfers: stripMany(data.transfers),
   };
 

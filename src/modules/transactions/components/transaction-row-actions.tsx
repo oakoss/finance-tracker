@@ -29,7 +29,7 @@ export function TransactionRowActions({ row }: TransactionRowActionsProps) {
   const deleteMutation = useDeleteTransaction();
   const unsplitMutation = useUnsplitTransaction();
 
-  const isTransfer = !!row.transferId;
+  const isTransfer = row.isTransfer;
 
   return (
     <>

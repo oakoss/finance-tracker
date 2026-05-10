@@ -184,6 +184,46 @@ describe('throwIfConstraintViolation', () => {
     expect(err.fix).toBe('This transaction has already been imported.');
   });
 
+  it('throws 409 for transfers_pair_unique_idx', () => {
+    const err = catchConstraintError({
+      code: '23505',
+      constraint: 'transfers_pair_unique_idx',
+    });
+    expect(err.status).toBe(409);
+    expect(err.fix).toBe(
+      'These transactions are already paired as a transfer.',
+    );
+  });
+
+  it('throws 409 for transfer_dismissals_user_pair_unique_idx', () => {
+    const err = catchConstraintError({
+      code: '23505',
+      constraint: 'transfer_dismissals_user_pair_unique_idx',
+    });
+    expect(err.status).toBe(409);
+    expect(err.fix).toBe('This transaction pair has already been dismissed.');
+  });
+
+  it('throws 422 for transfers_pair_distinct_check', () => {
+    const err = catchConstraintError({
+      code: '23514',
+      constraint: 'transfers_pair_distinct_check',
+    });
+    expect(err.status).toBe(422);
+    expect(err.fix).toBe('A transfer cannot pair a transaction with itself.');
+  });
+
+  it('throws 422 for transfer_dismissals_ordered_pair_check', () => {
+    const err = catchConstraintError({
+      code: '23514',
+      constraint: 'transfer_dismissals_ordered_pair_check',
+    });
+    expect(err.status).toBe(422);
+    expect(err.fix).toBe(
+      'Dismissed transaction pair must be stored in canonical order.',
+    );
+  });
+
   it('throws 422 for FK violations', () => {
     const err = catchConstraintError({
       code: '23503',

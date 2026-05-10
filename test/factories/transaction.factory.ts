@@ -48,7 +48,6 @@ export function createTransaction(
     pending: false,
     postedAt: now,
     transactionAt: now,
-    transferId: null,
     updatedAt: now,
     updatedById: null,
     ...overrides,

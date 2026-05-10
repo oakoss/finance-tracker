@@ -177,16 +177,14 @@ describe('createTransfer', () => {
     const transfer = createTransfer();
     expect(transfer).toHaveProperty('id');
     expect(transfer).toHaveProperty('userId');
-    expect(transfer).toHaveProperty('fromAccountId');
-    expect(transfer).toHaveProperty('toAccountId');
-    expect(transfer).toHaveProperty('amountCents');
-    expect(transfer).toHaveProperty('transferAt');
-    expect(transfer.memo).toBeNull();
+    expect(transfer).toHaveProperty('fromTransactionId');
+    expect(transfer).toHaveProperty('toTransactionId');
+    expect(transfer.confidence).toBe('manual');
+    expect(transfer.detectedByRuleId).toBeNull();
   });
 
   it('applies overrides', () => {
-    const transfer = createTransfer({ amountCents: 10_000, memo: 'Savings' });
-    expect(transfer.amountCents).toBe(10_000);
-    expect(transfer.memo).toBe('Savings');
+    const transfer = createTransfer({ confidence: 'high' });
+    expect(transfer.confidence).toBe('high');
   });
 });

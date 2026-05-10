@@ -13,7 +13,6 @@ import {
   transactions,
   transactionTags,
 } from '@/modules/transactions/db/schema';
-import { transfers } from '@/modules/transfers/db/schema';
 
 export const transactionsRelations = relations(
   transactions,
@@ -35,10 +34,6 @@ export const transactionsRelations = relations(
     promoBucketTransactions: many(promoBucketTransactions),
     splitLines: many(splitLines),
     transactionTags: many(transactionTags),
-    transfer: one(transfers, {
-      fields: [transactions.transferId],
-      references: [transfers.id],
-    }),
   }),
 );
 

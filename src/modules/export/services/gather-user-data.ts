@@ -21,7 +21,7 @@ import {
   transactions,
   transactionTags,
 } from '@/modules/transactions/db/schema';
-import { transfers } from '@/modules/transfers/db/schema';
+import { transferDismissals, transfers } from '@/modules/transfers/db/schema';
 
 export type UserExportData = Awaited<ReturnType<typeof gatherUserData>>;
 
@@ -39,6 +39,7 @@ export async function gatherUserData(database: Db, userId: string) {
     merchantRulesData,
     recurringRulesData,
     transfersData,
+    transferDismissalsData,
   ] = await Promise.all([
     database
       .select()
@@ -119,6 +120,15 @@ export async function gatherUserData(database: Db, userId: string) {
       .from(transfers)
       .where(
         and(eq(transfers.userId, userId), notDeleted(transfers.deletedAt)),
+      ),
+    database
+      .select()
+      .from(transferDismissals)
+      .where(
+        and(
+          eq(transferDismissals.userId, userId),
+          notDeleted(transferDismissals.deletedAt),
+        ),
       ),
   ]);
 
@@ -267,6 +277,7 @@ export async function gatherUserData(database: Db, userId: string) {
     tags: tagsData,
     transactions: transactionsData,
     transactionTags: transactionTagsData,
+    transferDismissals: transferDismissalsData,
     transfers: transfersData,
   };
 }

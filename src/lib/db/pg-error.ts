@@ -5,6 +5,7 @@ import { categoriesConstraintMessages } from '@/modules/categories/db/schema';
 import { payeesConstraintMessages } from '@/modules/payees/db/schema';
 import { rulesConstraintMessages } from '@/modules/rules/db/schema';
 import { transactionsConstraintMessages } from '@/modules/transactions/db/schema';
+import { transfersConstraintMessages } from '@/modules/transfers/db/schema';
 
 // ---------------------------------------------------------------------------
 // PG error codes
@@ -55,6 +56,7 @@ const CONSTRAINT_MESSAGES: Record<string, string> = {
   ...payeesConstraintMessages,
   ...rulesConstraintMessages,
   ...transactionsConstraintMessages,
+  ...transfersConstraintMessages,
 };
 
 const CONSTRAINT_CODES = new Set<string>(Object.values(PG_ERROR_CODES));

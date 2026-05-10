@@ -1,21 +1,26 @@
-import type { Transfer, TransferInsert } from '@/modules/transfers/models';
+import type {
+  Transfer,
+  TransferConfidence,
+  TransferInsert,
+} from '@/modules/transfers/models';
 
 import { transfers } from '@/db/schema';
-import { type Db, fakeCents, fakeDate, fakeId } from '~test/factories/base';
+import { type Db, fakeDate, fakeId } from '~test/factories/base';
+
+const DEFAULT_CONFIDENCE: TransferConfidence = 'manual';
 
 export function createTransfer(overrides?: Partial<Transfer>): Transfer {
   const now = fakeDate();
   return {
-    amountCents: fakeCents(1000, 50_000),
+    confidence: DEFAULT_CONFIDENCE,
     createdAt: now,
     createdById: null,
     deletedAt: null,
     deletedById: null,
-    fromAccountId: fakeId(),
+    detectedByRuleId: null,
+    fromTransactionId: fakeId(),
     id: fakeId(),
-    memo: null,
-    toAccountId: fakeId(),
-    transferAt: now,
+    toTransactionId: fakeId(),
     updatedAt: now,
     updatedById: null,
     userId: fakeId(),
@@ -25,14 +30,13 @@ export function createTransfer(overrides?: Partial<Transfer>): Transfer {
 
 export async function insertTransfer(
   db: Db,
-  overrides: Pick<TransferInsert, 'fromAccountId' | 'toAccountId' | 'userId'> &
+  overrides: Pick<
+    TransferInsert,
+    'fromTransactionId' | 'toTransactionId' | 'userId'
+  > &
     Partial<TransferInsert>,
 ): Promise<Transfer> {
-  const data: TransferInsert = {
-    amountCents: fakeCents(1000, 50_000),
-    transferAt: fakeDate(),
-    ...overrides,
-  };
+  const data: TransferInsert = { confidence: DEFAULT_CONFIDENCE, ...overrides };
   const [row] = await db.insert(transfers).values(data).returning();
   return row;
 }

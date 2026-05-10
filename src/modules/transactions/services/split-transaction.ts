@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, or } from 'drizzle-orm';
 
 import type { Db } from '@/db';
 import type { SplitTransactionInput } from '@/modules/transactions/validators';
@@ -9,6 +9,7 @@ import { ensureFound } from '@/lib/form/validation';
 import { createError } from '@/lib/logging/evlog';
 import { ledgerAccounts } from '@/modules/accounts/db/schema';
 import { splitLines, transactions } from '@/modules/transactions/db/schema';
+import { transfers } from '@/modules/transfers/db/schema';
 
 export async function splitTransactionService(
   database: Db,
@@ -51,10 +52,23 @@ export async function splitTransactionService(
       });
     }
 
-    if (existing.transferId) {
+    const [pairedTransfer] = await tx
+      .select({ id: transfers.id })
+      .from(transfers)
+      .where(
+        and(
+          or(
+            eq(transfers.fromTransactionId, data.id),
+            eq(transfers.toTransactionId, data.id),
+          ),
+          notDeleted(transfers.deletedAt),
+        ),
+      )
+      .limit(1);
+    if (pairedTransfer) {
       throw createError({
-        fix: 'Transfer transactions cannot be split.',
-        message: 'Cannot split a transfer.',
+        fix: 'Transfers cannot be split. Manual unpair is coming soon.',
+        message: 'Cannot split a paired transfer transaction.',
         status: 422,
       });
     }

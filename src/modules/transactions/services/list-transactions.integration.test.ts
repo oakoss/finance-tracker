@@ -7,10 +7,14 @@ import { payees } from '@/modules/payees/db/schema';
 import { transactions } from '@/modules/transactions/db/schema';
 import { createTransactionService } from '@/modules/transactions/services/create-transaction';
 import { listTransactionsService } from '@/modules/transactions/services/list-transactions';
+import { transfers } from '@/modules/transfers/db/schema';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
 import type { Db as TestDb } from '~test/factories/base';
+import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
 import { insertTag } from '~test/factories/tag.factory';
 import { insertTransactionWithRelations } from '~test/factories/transaction-with-relations.factory';
+import { insertTransaction } from '~test/factories/transaction.factory';
+import { insertTransfer } from '~test/factories/transfer.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
 
@@ -133,4 +137,71 @@ test('list — suppresses deleted payee names', async ({ db }) => {
 
   expect(rows).toHaveLength(1);
   expect(rows[0].payeeName).toBeNull();
+});
+
+test('list — derives isTransfer for both legs of a transfer pair', async ({
+  db,
+}) => {
+  const { account: fromAccount, user } = await insertAccountWithUser(db);
+  const toAccount = await insertLedgerAccount(db, { userId: user.id });
+  const fromTxn = await insertTransaction(db, { accountId: fromAccount.id });
+  const toTxn = await insertTransaction(db, { accountId: toAccount.id });
+  const unrelated = await insertTransaction(db, { accountId: fromAccount.id });
+
+  await insertTransfer(db, {
+    fromTransactionId: fromTxn.id,
+    toTransactionId: toTxn.id,
+    userId: user.id,
+  });
+
+  const rows = await listTransactionsService(asDb(db), user.id);
+  const byId = new Map(rows.map((r) => [r.id, r]));
+
+  expect(byId.get(fromTxn.id)?.isTransfer).toBe(true);
+  expect(byId.get(toTxn.id)?.isTransfer).toBe(true);
+  expect(byId.get(unrelated.id)?.isTransfer).toBe(false);
+});
+
+test('list — isTransfer is false when the transfer is soft-deleted', async ({
+  db,
+}) => {
+  const { account: fromAccount, user } = await insertAccountWithUser(db);
+  const toAccount = await insertLedgerAccount(db, { userId: user.id });
+  const fromTxn = await insertTransaction(db, { accountId: fromAccount.id });
+  const toTxn = await insertTransaction(db, { accountId: toAccount.id });
+  const transfer = await insertTransfer(db, {
+    fromTransactionId: fromTxn.id,
+    toTransactionId: toTxn.id,
+    userId: user.id,
+  });
+
+  await db
+    .update(transfers)
+    .set({ deletedAt: new Date(), deletedById: user.id })
+    .where(eq(transfers.id, transfer.id));
+
+  const rows = await listTransactionsService(asDb(db), user.id);
+
+  expect(rows.find((r) => r.id === fromTxn.id)?.isTransfer).toBe(false);
+  expect(rows.find((r) => r.id === toTxn.id)?.isTransfer).toBe(false);
+});
+
+test('list — isTransfer scoped to caller (not leaked from other user)', async ({
+  db,
+}) => {
+  const { account: fromAccount, user } = await insertAccountWithUser(db);
+  const toAccount = await insertLedgerAccount(db, { userId: user.id });
+  const fromTxn = await insertTransaction(db, { accountId: fromAccount.id });
+  const toTxn = await insertTransaction(db, { accountId: toAccount.id });
+  await insertTransfer(db, {
+    fromTransactionId: fromTxn.id,
+    toTransactionId: toTxn.id,
+    userId: user.id,
+  });
+
+  // Other user can see neither the transactions (different accounts) nor
+  // the transfer scan (different userId scope). Their list is empty.
+  const otherUser = await insertUser(db);
+  const otherRows = await listTransactionsService(asDb(db), otherUser.id);
+  expect(otherRows).toHaveLength(0);
 });

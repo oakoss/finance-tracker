@@ -146,7 +146,6 @@ export function formatCsv(data: UserExportData): Map<string, string> {
         'payeeNameRaw',
         'categoryId',
         'categoryName',
-        'transferId',
         'isSplit',
         'pending',
         'memo',
@@ -176,7 +175,6 @@ export function formatCsv(data: UserExportData): Map<string, string> {
           pending: str(tx.pending),
           postedAt: iso(tx.postedAt),
           transactionAt: iso(tx.transactionAt),
-          transferId: str(tx.transferId),
         };
       }),
     ),
@@ -426,23 +424,35 @@ export function formatCsv(data: UserExportData): Map<string, string> {
     toCsv(
       [
         'id',
-        'fromAccountId',
-        'toAccountId',
-        'amountCents',
-        'amount',
-        'memo',
-        'transferAt',
+        'fromTransactionId',
+        'toTransactionId',
+        'confidence',
+        'detectedByRuleId',
         'createdAt',
       ],
       data.transfers.map((t) => ({
-        amount: centsToDollars(t.amountCents),
-        amountCents: str(t.amountCents),
+        confidence: t.confidence,
         createdAt: iso(t.createdAt),
-        fromAccountId: t.fromAccountId,
+        detectedByRuleId: str(t.detectedByRuleId),
+        fromTransactionId: t.fromTransactionId,
         id: t.id,
-        memo: str(t.memo),
-        toAccountId: t.toAccountId,
-        transferAt: iso(t.transferAt),
+        toTransactionId: t.toTransactionId,
+      })),
+    ),
+  );
+
+  // transfer dismissals
+  files.set(
+    'transfer-dismissals.csv',
+    toCsv(
+      ['id', 'txnAId', 'txnBId', 'dismissedAt', 'expiresAt', 'createdAt'],
+      data.transferDismissals.map((d) => ({
+        createdAt: iso(d.createdAt),
+        dismissedAt: iso(d.dismissedAt),
+        expiresAt: iso(d.expiresAt),
+        id: d.id,
+        txnAId: d.txnAId,
+        txnBId: d.txnBId,
       })),
     ),
   );

@@ -22,6 +22,7 @@ function emptyExportData(overrides?: Partial<UserExportData>): UserExportData {
     tags: [],
     transactions: [],
     transactionTags: [],
+    transferDismissals: [],
     transfers: [],
     ...overrides,
   };
@@ -75,6 +76,38 @@ describe('formatJson', () => {
     const parsed = JSON.parse(formatJson(emptyExportData()));
 
     expect(parsed.preferences).toBeNull();
+  });
+
+  it('serializes transferDismissals with audit fields stripped', () => {
+    const json = formatJson(
+      emptyExportData({
+        transferDismissals: [
+          {
+            createdAt: new Date('2024-06-15'),
+            createdById: 'strip-me',
+            deletedAt: null,
+            deletedById: null,
+            dismissedAt: new Date('2024-06-15'),
+            expiresAt: null,
+            id: 'dismissal-1',
+            txnAId: 'tx-a',
+            txnBId: 'tx-b',
+            updatedAt: new Date('2024-06-15'),
+            updatedById: 'strip-me',
+            userId: 'strip-me',
+          },
+        ],
+      }),
+    );
+
+    const parsed = JSON.parse(json);
+    expect(parsed.transferDismissals).toHaveLength(1);
+    const d = parsed.transferDismissals[0];
+    expect(d.id).toBe('dismissal-1');
+    expect(d.txnAId).toBe('tx-a');
+    expect(d.txnBId).toBe('tx-b');
+    expect(d).not.toHaveProperty('userId');
+    expect(d).not.toHaveProperty('createdById');
   });
 
   it('strips audit fields from preferences', () => {
