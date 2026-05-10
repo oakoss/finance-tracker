@@ -91,7 +91,7 @@
     "posthog-js": "^1.372.10",
     "posthog-node": "^5.33.4",
     "react": "^19.2.6",
-    "react-day-picker": "^9.14.0",
+    "react-day-picker": "^10.0.0",
     "react-dom": "^19.2.6",
     "react-email": "^6.1.1",
     "react-phone-number-input": "^3.4.16",

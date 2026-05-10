@@ -5,6 +5,7 @@ import {
   type DayButton,
   DayPicker,
   getDefaultClassNames,
+  type WeekNumberProps,
 } from 'react-day-picker';
 
 import { Icons } from '@/components/icons';
@@ -44,14 +45,15 @@ function CalendarRoot({
 
 function CalendarWeekNumber({
   children,
+  week: _week,
   ...props
-}: React.TdHTMLAttributes<HTMLTableCellElement>) {
+}: WeekNumberProps) {
   return (
-    <td {...props}>
+    <th {...props}>
       <div className="flex size-(--cell-size) items-center justify-center text-center">
         {children}
       </div>
-    </td>
+    </th>
   );
 }
 
@@ -126,6 +128,7 @@ function Calendar({
           'flex h-(--cell-size) w-full items-center justify-center px-(--cell-size)',
           defaultClassNames.month_caption,
         ),
+        month_grid: 'w-full border-collapse',
         months: cn(
           'relative flex flex-col gap-4 md:flex-row',
           defaultClassNames.months,
@@ -148,7 +151,6 @@ function Calendar({
           defaultClassNames.range_start,
         ),
         root: cn('w-fit', defaultClassNames.root),
-        table: 'w-full border-collapse',
         today: cn(
           'rounded-(--cell-radius) bg-muted text-foreground data-[selected=true]:rounded-none',
           defaultClassNames.today,
