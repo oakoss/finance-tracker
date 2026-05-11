@@ -43,4 +43,6 @@ todos.json
 # AI tooling
 .claude/plans/
 .claude/settings.local.json
+.claude/.review-mark
+.claude/.no-review-gate
 .playwright-mcp/
