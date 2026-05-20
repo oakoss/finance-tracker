@@ -1,6 +1,8 @@
 //  @ts-check
 
 import pluginReact from '@eslint-react/eslint-plugin';
+// @ts-expect-error -- eslint-plugin-jsx-a11y ships no type declarations
+import jsxA11y from 'eslint-plugin-jsx-a11y';
 import oxlint from 'eslint-plugin-oxlint';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
@@ -70,4 +72,10 @@ export default defineConfig(
     },
   },
   ...oxlint.buildFromOxlintConfigFile('./.oxlintrc.json'),
+  {
+    files: ['**/*.{jsx,tsx}'],
+    languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },
+    plugins: { 'jsx-a11y': jsxA11y },
+    rules: { 'jsx-a11y/no-redundant-roles': 'error' },
+  },
 );

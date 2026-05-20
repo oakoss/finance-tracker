@@ -5,6 +5,11 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { useHydrated, useHydratedAttribute } from './use-hydrated';
 
+function Probe() {
+  const hydrated = useHydrated();
+  return createElement('span', null, String(hydrated));
+}
+
 describe('useHydrated', () => {
   it('returns true in a client environment', () => {
     const { result } = renderHook(() => useHydrated());
@@ -13,11 +18,6 @@ describe('useHydrated', () => {
   });
 
   it('returns false during SSR', () => {
-    function Probe() {
-      const hydrated = useHydrated();
-      return createElement('span', null, String(hydrated));
-    }
-
     const html = renderToString(createElement(Probe));
 
     expect(html).toContain('false');

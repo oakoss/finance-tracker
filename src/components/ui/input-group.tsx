@@ -16,7 +16,6 @@ function InputGroup({ className, ...props }: React.ComponentProps<'fieldset'>) {
         className,
       )}
       data-slot="input-group"
-      role="group"
       {...props}
     />
   );

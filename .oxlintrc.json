@@ -377,6 +377,7 @@
       "files": ["**/*.{jsx,tsx}"],
       "plugins": ["react", "jsx-a11y"],
       "rules": {
+        "jsx-a11y/no-redundant-roles": "off",
         "jsx-a11y/no-static-element-interactions": [
           "error",
           {

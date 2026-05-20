@@ -131,7 +131,6 @@ function AliasManager({ payeeId }: { payeeId: string }) {
               key={alias.id}
               aria-label={alias.alias}
               className="flex items-center justify-between gap-3 px-3 py-2"
-              role="listitem"
             >
               <span className="font-mono text-sm">{alias.alias}</span>
               <Button
