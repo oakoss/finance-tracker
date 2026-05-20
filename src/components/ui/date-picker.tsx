@@ -47,6 +47,11 @@ function DatePicker({
       <PopoverTrigger
         render={
           <Button
+            aria-label={
+              selected
+                ? formatDate({ value: selected })
+                : (placeholder ?? m['common.pickDate']())
+            }
             className={cn(
               'w-full justify-start text-left font-normal',
               !value && 'text-muted-foreground',

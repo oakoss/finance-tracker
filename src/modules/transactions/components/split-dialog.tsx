@@ -179,6 +179,7 @@ export function SplitDialog({
               <Field>
                 <FieldLabel>{m['transactions.split.amount']()}</FieldLabel>
                 <Input
+                  aria-label={m['transactions.split.amount']()}
                   min="0.01"
                   placeholder="0.00"
                   step="0.01"

@@ -135,6 +135,7 @@ function SignUpForm() {
                   {m['auth.signup.nameLabel']()}
                 </FieldLabel>
                 <Input
+                  aria-label={m['auth.signup.nameLabel']()}
                   autoComplete="name"
                   id="name"
                   name={field.name}
@@ -155,6 +156,7 @@ function SignUpForm() {
                   {m['auth.signup.emailLabel']()}
                 </FieldLabel>
                 <Input
+                  aria-label={m['auth.signup.emailLabel']()}
                   autoComplete="email"
                   id="email"
                   name={field.name}

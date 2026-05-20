@@ -143,6 +143,7 @@ export function LinkedAccountsSection() {
                         render={
                           <Button
                             aria-disabled={isDisabled}
+                            aria-label={m['profile.unlink.action']()}
                             className="aria-disabled:pointer-events-auto aria-disabled:opacity-50"
                             loading={isUnlinking}
                             size="sm"

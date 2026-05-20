@@ -95,6 +95,9 @@ function SubmenuContent<T = unknown>({
             aria-controls={`${baseId}-listbox`}
             aria-expanded={true}
             aria-haspopup="listbox"
+            aria-label={m['filters.searchField']({
+              fieldName: (field.label ?? '').toLowerCase(),
+            })}
             className={cn(
               'h-8 rounded-none border-0 bg-transparent! px-2 text-sm shadow-none',
               'focus-visible:border-border focus-visible:ring-0 focus-visible:ring-offset-0',

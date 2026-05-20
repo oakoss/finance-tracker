@@ -256,6 +256,7 @@ function Filters<T = unknown>({
                       }
                       aria-controls={`${rootId}-listbox`}
                       aria-expanded={addFilterOpen}
+                      aria-label={m['filters.search']()}
                       className={cn(
                         'h-8 rounded-none border-0 bg-transparent! px-2 text-sm shadow-none',
                         'focus-visible:border-border focus-visible:ring-0 focus-visible:ring-offset-0',

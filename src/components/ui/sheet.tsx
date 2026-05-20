@@ -6,6 +6,7 @@ import * as React from 'react';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { m } from '@/paraglide/messages';
 
 function Sheet({ ...props }: SheetPrimitive.Root.Props) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
@@ -64,6 +65,7 @@ function SheetContent({
             data-slot="sheet-close"
             render={
               <Button
+                aria-label={m['actions.close']()}
                 className="absolute top-3 right-3"
                 size="icon-sm"
                 variant="ghost"
@@ -71,7 +73,6 @@ function SheetContent({
             }
           >
             <Icons.X />
-            <span className="sr-only">Close</span>
           </SheetPrimitive.Close>
         )}
       </SheetPrimitive.Popup>

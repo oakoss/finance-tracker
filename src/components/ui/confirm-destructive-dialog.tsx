@@ -99,6 +99,7 @@ function ConfirmDestructiveDialog({
             </TooltipProvider>
           </Label>
           <Input
+            aria-label={m['confirm.typePhraseLabel']()}
             autoComplete="off"
             id={inputId}
             placeholder={confirmPhrase}

@@ -106,6 +106,7 @@ export function ProfileEmailSection() {
                     {m['profile.changeEmail.title']()}
                   </FieldLabel>
                   <Input
+                    aria-label={m['profile.changeEmail.title']()}
                     autoComplete="email"
                     disabled={isPending}
                     id="profile-new-email"

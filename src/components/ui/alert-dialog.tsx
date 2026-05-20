@@ -3,6 +3,7 @@ import * as React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { m } from '@/paraglide/messages';
 
 function AlertDialog({ ...props }: AlertDialogPrimitive.Root.Props) {
   return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />;
@@ -151,6 +152,8 @@ function AlertDialogAction({
 }
 
 function AlertDialogCancel({
+  'aria-label': ariaLabel,
+  children,
   className,
   size = 'default',
   variant = 'outline',
@@ -161,9 +164,20 @@ function AlertDialogCancel({
     <AlertDialogPrimitive.Close
       className={cn(className)}
       data-slot="alert-dialog-cancel"
-      render={<Button size={size} variant={variant} />}
+      render={
+        <Button
+          aria-label={
+            ariaLabel ??
+            (typeof children === 'string' ? children : m['actions.cancel']())
+          }
+          size={size}
+          variant={variant}
+        />
+      }
       {...props}
-    />
+    >
+      {children}
+    </AlertDialogPrimitive.Close>
   );
 }
 

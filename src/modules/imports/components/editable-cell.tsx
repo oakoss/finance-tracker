@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { m } from '@/paraglide/messages';
 
 type EditableCellProps = {
   className?: string;
@@ -52,6 +53,7 @@ export function EditableCell({
     return (
       <Input
         ref={inputRef}
+        aria-label={m['imports.detail.editValue']()}
         className="h-7 text-sm"
         value={draft}
         onBlur={handleSave}

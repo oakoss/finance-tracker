@@ -245,6 +245,7 @@ export function TransactionForm({
               {m['transactions.form.description']()}
             </FieldLabel>
             <Input
+              aria-label={m['transactions.form.description']()}
               disabled={isSubmitting}
               id="transaction-description"
               name={field.name}
@@ -266,6 +267,7 @@ export function TransactionForm({
                 {m['transactions.form.amount']()}
               </FieldLabel>
               <Input
+                aria-label={m['transactions.form.amount']()}
                 disabled={isSubmitting}
                 id="transaction-amount"
                 min="0.01"

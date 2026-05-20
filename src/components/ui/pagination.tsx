@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { m } from '@/paraglide/messages';
 
 function Pagination({ className, ...props }: React.ComponentProps<'nav'>) {
   return (
@@ -39,6 +40,7 @@ type PaginationLinkProps = { isActive?: boolean } & Pick<
   React.ComponentProps<'a'>;
 
 function PaginationLink({
+  'aria-label': ariaLabel,
   children,
   className,
   isActive,
@@ -47,6 +49,12 @@ function PaginationLink({
 }: PaginationLinkProps) {
   return (
     <Button
+      aria-label={
+        ariaLabel ??
+        (typeof children === 'string' || typeof children === 'number'
+          ? m['pagination.goToPage']({ page: String(children) })
+          : m['pagination.link']())
+      }
       className={cn(className)}
       nativeButton={false}
       render={

@@ -141,7 +141,9 @@ function OverlaysPage() {
       <Section title="Dialog">
         <Subsection label="Default">
           <Dialog>
-            <DialogTrigger render={<Button variant="outline" />}>
+            <DialogTrigger
+              render={<Button aria-label="Open dialog" variant="outline" />}
+            >
               Open dialog
             </DialogTrigger>
             <DialogContent>
@@ -155,11 +157,16 @@ function OverlaysPage() {
               <div className="grid gap-3">
                 <div className="grid gap-1.5">
                   <Label htmlFor="demo-name">Name</Label>
-                  <Input defaultValue="Jane Doe" id="demo-name" />
+                  <Input
+                    aria-label="Name"
+                    defaultValue="Jane Doe"
+                    id="demo-name"
+                  />
                 </div>
                 <div className="grid gap-1.5">
                   <Label htmlFor="demo-email">Email</Label>
                   <Input
+                    aria-label="Email"
                     defaultValue="jane@example.com"
                     id="demo-email"
                     type="email"
@@ -167,7 +174,9 @@ function OverlaysPage() {
                 </div>
               </div>
               <DialogFooter>
-                <DialogClose render={<Button variant="outline" />}>
+                <DialogClose
+                  render={<Button aria-label="Cancel" variant="outline" />}
+                >
                   Cancel
                 </DialogClose>
                 <Button>Save changes</Button>
@@ -178,7 +187,9 @@ function OverlaysPage() {
 
         <Subsection label="Without close button">
           <Dialog>
-            <DialogTrigger render={<Button variant="outline" />}>
+            <DialogTrigger
+              render={<Button aria-label="No close button" variant="outline" />}
+            >
               No close button
             </DialogTrigger>
             <DialogContent showCloseButton={false}>
@@ -199,7 +210,11 @@ function OverlaysPage() {
       <Section title="AlertDialog">
         <Subsection label="Default">
           <AlertDialog>
-            <AlertDialogTrigger render={<Button variant="destructive" />}>
+            <AlertDialogTrigger
+              render={
+                <Button aria-label="Delete account" variant="destructive" />
+              }
+            >
               Delete account
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -222,7 +237,9 @@ function OverlaysPage() {
 
         <Subsection label="Size sm">
           <AlertDialog>
-            <AlertDialogTrigger render={<Button variant="outline" />}>
+            <AlertDialogTrigger
+              render={<Button aria-label="Confirm action" variant="outline" />}
+            >
               Confirm action
             </AlertDialogTrigger>
             <AlertDialogContent size="sm">
@@ -242,7 +259,9 @@ function OverlaysPage() {
 
         <Subsection label="With media">
           <AlertDialog>
-            <AlertDialogTrigger render={<Button variant="outline" />}>
+            <AlertDialogTrigger
+              render={<Button aria-label="With icon" variant="outline" />}
+            >
               With icon
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -271,7 +290,11 @@ function OverlaysPage() {
         <Subsection label="Sides">
           {(['right', 'left', 'top', 'bottom'] as const).map((side) => (
             <Sheet key={side}>
-              <SheetTrigger render={<Button variant="outline" />}>
+              <SheetTrigger
+                render={
+                  <Button aria-label={`Open ${side} sheet`} variant="outline" />
+                }
+              >
                 {side}
               </SheetTrigger>
               <SheetContent side={side}>
@@ -299,7 +322,9 @@ function OverlaysPage() {
       <Section title="Drawer">
         <Subsection label="Bottom (swipeable)">
           <Drawer direction="bottom">
-            <DrawerTrigger render={<Button variant="outline" />}>
+            <DrawerTrigger
+              render={<Button aria-label="Open drawer" variant="outline" />}
+            >
               Open drawer
             </DrawerTrigger>
             <DrawerContent>
@@ -316,7 +341,9 @@ function OverlaysPage() {
               </div>
               <DrawerFooter>
                 <Button>Submit</Button>
-                <DrawerClose render={<Button variant="outline" />}>
+                <DrawerClose
+                  render={<Button aria-label="Cancel" variant="outline" />}
+                >
                   Cancel
                 </DrawerClose>
               </DrawerFooter>
@@ -326,7 +353,11 @@ function OverlaysPage() {
 
         <Subsection label="Right">
           <Drawer direction="right">
-            <DrawerTrigger render={<Button variant="outline" />}>
+            <DrawerTrigger
+              render={
+                <Button aria-label="Open right drawer" variant="outline" />
+              }
+            >
               Right drawer
             </DrawerTrigger>
             <DrawerContent>
@@ -340,7 +371,9 @@ function OverlaysPage() {
                 </p>
               </div>
               <DrawerFooter>
-                <DrawerClose render={<Button variant="outline" />}>
+                <DrawerClose
+                  render={<Button aria-label="Close" variant="outline" />}
+                >
                   Close
                 </DrawerClose>
               </DrawerFooter>
@@ -352,7 +385,9 @@ function OverlaysPage() {
       <Section title="Popover">
         <Subsection label="Default">
           <Popover>
-            <PopoverTrigger render={<Button variant="outline" />}>
+            <PopoverTrigger
+              render={<Button aria-label="Open popover" variant="outline" />}
+            >
               Open popover
             </PopoverTrigger>
             <PopoverContent>
@@ -366,6 +401,7 @@ function OverlaysPage() {
                 <div className="grid grid-cols-3 items-center gap-2">
                   <Label htmlFor="pop-width">Width</Label>
                   <Input
+                    aria-label="Width"
                     className="col-span-2"
                     defaultValue="100%"
                     id="pop-width"
@@ -374,6 +410,7 @@ function OverlaysPage() {
                 <div className="grid grid-cols-3 items-center gap-2">
                   <Label htmlFor="pop-height">Height</Label>
                   <Input
+                    aria-label="Height"
                     className="col-span-2"
                     defaultValue="25px"
                     id="pop-height"
@@ -390,7 +427,11 @@ function OverlaysPage() {
           <TooltipProvider>
             {(['top', 'right', 'bottom', 'left'] as const).map((side) => (
               <Tooltip key={side}>
-                <TooltipTrigger render={<Button variant="outline" />}>
+                <TooltipTrigger
+                  render={
+                    <Button aria-label={`Tooltip ${side}`} variant="outline" />
+                  }
+                >
                   {side}
                 </TooltipTrigger>
                 <TooltipContent side={side}>Tooltip on {side}</TooltipContent>
@@ -406,6 +447,7 @@ function OverlaysPage() {
             <HoverCardTrigger
               render={
                 <button
+                  aria-label="@jacebabin profile"
                   className="text-sm font-medium underline underline-offset-4"
                   type="button"
                 />
@@ -436,7 +478,9 @@ function OverlaysPage() {
       <Section title="DropdownMenu">
         <Subsection label="Default">
           <DropdownMenu>
-            <DropdownMenuTrigger render={<Button variant="outline" />}>
+            <DropdownMenuTrigger
+              render={<Button aria-label="Open menu" variant="outline" />}
+            >
               Open menu
               <Icons.ChevronDown data-icon="inline-end" />
             </DropdownMenuTrigger>
@@ -483,7 +527,9 @@ function OverlaysPage() {
 
         <Subsection label="With checkboxes and radios">
           <DropdownMenu>
-            <DropdownMenuTrigger render={<Button variant="outline" />}>
+            <DropdownMenuTrigger
+              render={<Button aria-label="Preferences" variant="outline" />}
+            >
               Preferences
             </DropdownMenuTrigger>
             <DropdownMenuContent>

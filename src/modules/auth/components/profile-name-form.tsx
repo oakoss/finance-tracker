@@ -86,6 +86,7 @@ export function ProfileNameForm() {
                   {m['profile.displayName.title']()}
                 </FieldLabel>
                 <Input
+                  aria-label={m['profile.displayName.title']()}
                   disabled={isPending}
                   id="profile-name"
                   name={field.name}

@@ -175,6 +175,7 @@ function ActionFields({
             {m['rules.form.actions.noteLabel']()}
           </FieldLabel>
           <Input
+            aria-label={m['rules.form.actions.noteLabel']()}
             disabled={disabled}
             id={fieldId}
             placeholder={m['rules.form.actions.placeholderNote']()}

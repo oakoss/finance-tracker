@@ -74,7 +74,11 @@ function FormsPage() {
           <FieldGroup className="max-w-sm">
             <Field>
               <FieldLabel>Email</FieldLabel>
-              <Input placeholder="name@example.com" type="email" />
+              <Input
+                aria-label="Email"
+                placeholder="name@example.com"
+                type="email"
+              />
               <FieldDescription>
                 We will never share your email.
               </FieldDescription>
@@ -86,7 +90,7 @@ function FormsPage() {
           <FieldGroup className="max-w-md">
             <Field orientation="horizontal">
               <FieldLabel>Username</FieldLabel>
-              <Input placeholder="johndoe" />
+              <Input aria-label="Username" placeholder="johndoe" />
             </Field>
           </FieldGroup>
         </Subsection>
@@ -97,6 +101,7 @@ function FormsPage() {
               <FieldLabel>Email</FieldLabel>
               <Input
                 aria-invalid="true"
+                aria-label="Email"
                 placeholder="name@example.com"
                 type="email"
               />
@@ -109,7 +114,12 @@ function FormsPage() {
           <FieldGroup className="max-w-sm">
             <Field data-disabled="true">
               <FieldLabel>Email</FieldLabel>
-              <Input disabled placeholder="name@example.com" type="email" />
+              <Input
+                disabled
+                aria-label="Email"
+                placeholder="name@example.com"
+                type="email"
+              />
             </Field>
           </FieldGroup>
         </Subsection>
@@ -121,11 +131,15 @@ function FormsPage() {
             <FieldGroup>
               <Field>
                 <FieldLabel>Name</FieldLabel>
-                <Input placeholder="John Doe" />
+                <Input aria-label="Name" placeholder="John Doe" />
               </Field>
               <Field>
                 <FieldLabel>Email</FieldLabel>
-                <Input placeholder="name@example.com" type="email" />
+                <Input
+                  aria-label="Email"
+                  placeholder="name@example.com"
+                  type="email"
+                />
               </Field>
             </FieldGroup>
           </FieldSet>
@@ -135,12 +149,12 @@ function FormsPage() {
           <FieldGroup className="max-w-sm">
             <Field>
               <FieldLabel>First name</FieldLabel>
-              <Input placeholder="John" />
+              <Input aria-label="First name" placeholder="John" />
             </Field>
             <FieldSeparator>or</FieldSeparator>
             <Field>
               <FieldLabel>Last name</FieldLabel>
-              <Input placeholder="Doe" />
+              <Input aria-label="Last name" placeholder="Doe" />
             </Field>
           </FieldGroup>
         </Subsection>
@@ -149,18 +163,42 @@ function FormsPage() {
       <Section title="Input">
         <Subsection label="Types">
           <div className="max-w-sm space-y-3">
-            <Input placeholder="Text input" type="text" />
-            <Input placeholder="name@example.com" type="email" />
-            <Input placeholder="https://example.com" type="url" />
-            <Input placeholder="Search..." type="search" />
+            <Input
+              aria-label="Text input"
+              placeholder="Text input"
+              type="text"
+            />
+            <Input
+              aria-label="Email input"
+              placeholder="name@example.com"
+              type="email"
+            />
+            <Input
+              aria-label="URL input"
+              placeholder="https://example.com"
+              type="url"
+            />
+            <Input
+              aria-label="Search input"
+              placeholder="Search..."
+              type="search"
+            />
           </div>
         </Subsection>
 
         <Subsection label="States">
           <div className="max-w-sm space-y-3">
-            <Input placeholder="Default" />
-            <Input disabled placeholder="Disabled" />
-            <Input aria-invalid="true" placeholder="Invalid" />
+            <Input aria-label="Default input" placeholder="Default" />
+            <Input
+              disabled
+              aria-label="Disabled input"
+              placeholder="Disabled"
+            />
+            <Input
+              aria-invalid="true"
+              aria-label="Invalid input"
+              placeholder="Invalid"
+            />
           </div>
         </Subsection>
       </Section>

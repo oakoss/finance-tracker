@@ -131,7 +131,7 @@ function DataGridTableHeadRowCell<TData>({
       key={header.id}
       ref={dndRef}
       className={cn(
-        'relative h-10 text-left align-middle font-normal text-secondary-foreground/80 rtl:text-right [&:has([role=checkbox])]:pe-0',
+        'relative h-10 text-left align-middle font-normal text-secondary-foreground/80 has-[[role=checkbox]]:pe-0 rtl:text-right',
         headerCellSpacing,
         props.tableLayout?.cellBorder && 'border-e',
         props.tableLayout?.columnsResizable &&
@@ -515,10 +515,17 @@ function DataGridTable() {
     ));
   } else if (isLoading && props.loadingMode === 'spinner') {
     bodyContent = (
-      <tr>
+      <tr
+        aria-busy="true"
+        aria-label={
+          typeof props.loadingMessage === 'string'
+            ? props.loadingMessage
+            : m['dataGrid.table.loading']()
+        }
+      >
         <td className="p-8" colSpan={table.getVisibleFlatColumns().length}>
-          <div className="flex items-center justify-center gap-3">
-            <Spinner className="-ml-1 size-5" />
+          <div className="flex items-center justify-center gap-3" role="status">
+            <Spinner decorative className="-ml-1 size-5" />
             {props.loadingMessage ?? m['dataGrid.table.loading']()}
           </div>
         </td>

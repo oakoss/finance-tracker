@@ -159,6 +159,7 @@ export function MatchBuilder({
             {m['rules.form.valueLabel']()}
           </FieldLabel>
           <Input
+            aria-label={m['rules.form.valueLabel']()}
             className={cn('font-mono', overLimit && 'border-destructive')}
             disabled={disabled}
             id={valueId}
@@ -273,6 +274,7 @@ export function MatchBuilder({
                     {m['rules.form.amountMinLabel']()}
                   </FieldLabel>
                   <Input
+                    aria-label={m['rules.form.amountMinLabel']()}
                     disabled={disabled}
                     id={amountMinId}
                     inputMode="numeric"
@@ -297,6 +299,7 @@ export function MatchBuilder({
                     {m['rules.form.amountMaxLabel']()}
                   </FieldLabel>
                   <Input
+                    aria-label={m['rules.form.amountMaxLabel']()}
                     disabled={disabled}
                     id={amountMaxId}
                     inputMode="numeric"

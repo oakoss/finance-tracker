@@ -122,6 +122,7 @@ export function AccountForm({
               {m['accounts.form.name']()}
             </FieldLabel>
             <Input
+              aria-label={m['accounts.form.name']()}
               disabled={isSubmitting}
               id="account-name"
               name={field.name}
@@ -248,6 +249,7 @@ export function AccountForm({
                 {m['accounts.form.institution']()}
               </FieldLabel>
               <Input
+                aria-label={m['accounts.form.institution']()}
                 disabled={isSubmitting}
                 id="institution"
                 name={field.name}
@@ -269,6 +271,7 @@ export function AccountForm({
                 {m['accounts.form.accountNumberMask']()}
               </FieldLabel>
               <Input
+                aria-label={m['accounts.form.accountNumberMask']()}
                 disabled={isSubmitting}
                 id="account-number-mask"
                 maxLength={4}
@@ -307,6 +310,7 @@ export function AccountForm({
               {m['accounts.form.initialBalance']()}
             </FieldLabel>
             <Input
+              aria-label={m['accounts.form.initialBalance']()}
               disabled={isSubmitting}
               id="initial-balance"
               name={field.name}
@@ -337,6 +341,7 @@ export function AccountForm({
                         {m['accounts.form.aprBps']()}
                       </FieldLabel>
                       <Input
+                        aria-label={m['accounts.form.aprBps']()}
                         disabled={isSubmitting}
                         id="apr-bps"
                         name={field.name}
@@ -357,6 +362,7 @@ export function AccountForm({
                         {m['accounts.form.dueDay']()}
                       </FieldLabel>
                       <Input
+                        aria-label={m['accounts.form.dueDay']()}
                         disabled={isSubmitting}
                         id="due-day"
                         max={28}
@@ -380,6 +386,7 @@ export function AccountForm({
                       {m['accounts.form.statementDay']()}
                     </FieldLabel>
                     <Input
+                      aria-label={m['accounts.form.statementDay']()}
                       disabled={isSubmitting}
                       id="statement-day"
                       max={28}

@@ -89,6 +89,9 @@ function DataGridColumnFilter<TData, TValue extends string>({
       <PopoverContent align="start" className="w-50 p-0">
         <div className="p-2">
           <Input
+            aria-label={m['filters.searchField']({
+              fieldName: (title ?? '').toLowerCase(),
+            })}
             className="h-8"
             placeholder={title}
             value={searchQuery}

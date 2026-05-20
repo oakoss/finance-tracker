@@ -80,6 +80,7 @@ export function CategoryForm({
               {m['categories.form.name']()}
             </FieldLabel>
             <Input
+              aria-label={m['categories.form.name']()}
               disabled={isSubmitting}
               id="category-name"
               name={field.name}

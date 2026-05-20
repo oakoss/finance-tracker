@@ -93,6 +93,7 @@ function SignInForm({ redirect }: SignInFormProps) {
                   {m['auth.login.emailLabel']()}
                 </FieldLabel>
                 <Input
+                  aria-label={m['auth.login.emailLabel']()}
                   autoComplete="email"
                   id="email"
                   name={field.name}
