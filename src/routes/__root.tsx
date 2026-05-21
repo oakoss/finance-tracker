@@ -2,7 +2,6 @@ import '@/configs/arktype';
 
 import type { QueryClient } from '@tanstack/react-query';
 
-import { TanStackDevtools } from '@tanstack/react-devtools';
 import {
   createRootRouteWithContext,
   type ErrorComponentProps,
@@ -17,10 +16,9 @@ import { RootErrorBoundary } from '@/components/errors/root-error-boundary';
 import { DefaultShell } from '@/components/layouts/shells/default-shell';
 import { Toaster } from '@/components/ui/sonner';
 import { appConfig } from '@/configs/app';
-import { useAutomatedBrowser } from '@/hooks/use-automated-browser';
 import { useHydratedAttribute } from '@/hooks/use-hydrated';
 import { PostHogProvider } from '@/lib/analytics';
-import { devtoolsPlugins } from '@/lib/devtools';
+import { DevtoolsProvider } from '@/lib/devtools';
 import { getLocale } from '@/paraglide/runtime';
 import globalsCss from '@/styles/globals.css?url';
 
@@ -89,7 +87,6 @@ function RootError(props: ErrorComponentProps) {
 
 function RootComponent() {
   useHydratedAttribute();
-  const isAutomated = useAutomatedBrowser();
 
   return (
     <PostHogProvider>
@@ -103,12 +100,7 @@ function RootComponent() {
           <Outlet />
         </div>
         <Toaster />
-        {!isAutomated && (
-          <TanStackDevtools
-            config={{ position: 'bottom-right' }}
-            plugins={devtoolsPlugins}
-          />
-        )}
+        <DevtoolsProvider />
       </ThemeProvider>
     </PostHogProvider>
   );
