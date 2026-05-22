@@ -48,6 +48,10 @@ async function proxy({ request }: { request: Request }) {
   }
 }
 
+// Router-tier handler — bypasses csrfMiddleware (which targets serverFns).
+// Safe because POSTHOG_KEY is `@public` and already shipped in the client
+// bundle; cross-origin ingest forwarding doesn't widen the attack surface.
+// The proxy above strips the authorization and cookie headers before forwarding.
 export const Route = createFileRoute('/api/ingest/$')({
   server: { handlers: { GET: proxy, POST: proxy } },
 });

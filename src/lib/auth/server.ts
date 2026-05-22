@@ -7,11 +7,37 @@ import { appConfig } from '@/configs/app';
 import { db } from '@/db';
 import { log } from '@/lib/logging/evlog';
 import { hashId } from '@/lib/logging/hash';
+import { parseTrustedOrigins } from '@/lib/start/csrf';
 import {
   sendResetPasswordEmail,
   sendVerificationEmail,
 } from '@/modules/auth/emails/email-service';
 import { bootstrapUserPreferences } from '@/modules/preferences/services/bootstrap';
+
+// Emits `auth.misconfigured` before crashing module load, mirroring the
+// lazy `csrf.misconfigured` path so both failure modes are observable.
+function getTrustedOriginsForAuth(): string[] {
+  try {
+    return parseTrustedOrigins(ENV.TRUSTED_ORIGINS);
+  } catch (error) {
+    try {
+      log.error({
+        action: 'auth.misconfigured',
+        error,
+        outcome: { success: false },
+      });
+    } catch (logError) {
+      try {
+        process.stderr.write(
+          `[auth] failed to emit auth.misconfigured log: ${String(logError)}; original: ${String(error)}\n`,
+        );
+      } catch {
+        // stderr unavailable.
+      }
+    }
+    throw error;
+  }
+}
 
 export const auth = betterAuth({
   account: {
@@ -108,9 +134,7 @@ export const auth = betterAuth({
       }),
     },
   },
-  trustedOrigins: ENV.TRUSTED_ORIGINS.split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean),
+  trustedOrigins: getTrustedOriginsForAuth(),
   user: {
     changeEmail: {
       enabled: true,
