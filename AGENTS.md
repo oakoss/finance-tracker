@@ -142,6 +142,10 @@ work. Set tasks to `in_progress` then `completed`. Add summary
 comment before completing. Search before creating:
 `trekker search "keyword"`.
 
+Trekker is the source of truth for tasks/epics across sessions.
+Within a session, `TaskCreate` is fine as a step-by-step mirror —
+Trekker wins on conflicts.
+
 ## Code Standards
 
 @docs/development/code-standards.md
@@ -155,6 +159,15 @@ comment before completing. Search before creating:
 @docs/development/architecture.md
 
 See [docs/README.md](docs/README.md) for the full index.
+
+## Surgical Changes
+
+Keep changes scoped to the task. Unrelated issues go in the summary,
+not the diff.
+
+- Remove imports/variables your changes made unused.
+- Don't delete pre-existing dead code unless asked.
+- Don't reformat adjacent code you didn't touch; `pnpm format` / lefthook handle that.
 
 ## Comment Policy
 
