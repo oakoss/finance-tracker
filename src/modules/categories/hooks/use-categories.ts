@@ -1,10 +1,5 @@
-import {
-  queryOptions,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query';
-import { useNavigate, useRouter } from '@tanstack/react-router';
-import { toast } from 'sonner';
+import { queryOptions } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 
 import type {
   CreateCategoryInput,
@@ -13,8 +8,7 @@ import type {
 } from '@/modules/categories/validators';
 
 import { useAnalytics } from '@/hooks/use-analytics';
-import { clientLog } from '@/lib/logging/client-logger';
-import { parseError } from '@/lib/logging/evlog';
+import { useResourceMutation } from '@/hooks/use-resource-mutation';
 import { createCategory } from '@/modules/categories/api/create-category';
 import { deleteCategory } from '@/modules/categories/api/delete-category';
 import { listCategories } from '@/modules/categories/api/list-categories';
@@ -31,77 +25,53 @@ export const categoryQueries = {
 };
 
 export function useCreateCategory() {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['categories.toast.createError'],
+    invalidate: [categoryQueries.all()],
     mutationFn: (data: CreateCategoryInput) => createCategory({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'category.create.failed', error });
-      toast.error(m['categories.toast.createError'](), {
-        description: parsed.fix ?? parsed.why ?? m['auth.error.unexpected'](),
-      });
-    },
+    mutationKey: ['category', 'create'],
     onSuccess: (_data, variables) => {
-      toast.success(m['categories.toast.createSuccess']());
       void navigate({ search: {}, to: '/categories' });
-      void queryClient.invalidateQueries({ queryKey: categoryQueries.all() });
-      void router.invalidate();
       capture('category_created', {
         has_parent: !!variables.parentId,
         type: variables.type,
       });
     },
+    successMessage: m['categories.toast.createSuccess'],
   });
 }
 
 export function useUpdateCategory() {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['categories.toast.updateError'],
+    invalidate: [categoryQueries.all()],
     mutationFn: (data: UpdateCategoryInput) => updateCategory({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'category.update.failed', error });
-      toast.error(m['categories.toast.updateError'](), {
-        description: parsed.fix ?? parsed.why ?? m['auth.error.unexpected'](),
-      });
-    },
+    mutationKey: ['category', 'update'],
     onSuccess: () => {
-      toast.success(m['categories.toast.updateSuccess']());
       void navigate({ search: {}, to: '/categories' });
-      void queryClient.invalidateQueries({ queryKey: categoryQueries.all() });
-      void router.invalidate();
       capture('category_updated');
     },
+    successMessage: m['categories.toast.updateSuccess'],
   });
 }
 
 export function useDeleteCategory() {
-  const queryClient = useQueryClient();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['categories.toast.deleteError'],
+    invalidate: [categoryQueries.all()],
     mutationFn: (data: DeleteCategoryInput) => deleteCategory({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'category.delete.failed', error });
-      toast.error(m['categories.toast.deleteError'](), {
-        description: parsed.fix ?? parsed.why ?? m['auth.error.unexpected'](),
-      });
-    },
+    mutationKey: ['category', 'delete'],
     onSuccess: () => {
-      toast.success(m['categories.toast.deleteSuccess']());
-      void queryClient.invalidateQueries({ queryKey: categoryQueries.all() });
-      void router.invalidate();
       capture('category_deleted');
     },
+    successMessage: m['categories.toast.deleteSuccess'],
   });
 }

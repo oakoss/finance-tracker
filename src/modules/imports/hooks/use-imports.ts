@@ -1,10 +1,5 @@
-import {
-  queryOptions,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query';
-import { useNavigate, useRouter } from '@tanstack/react-router';
-import { toast } from 'sonner';
+import { queryOptions } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 
 import type {
   CommitImportInput,
@@ -15,8 +10,7 @@ import type {
 } from '@/modules/imports/validators';
 
 import { useAnalytics } from '@/hooks/use-analytics';
-import { clientLog } from '@/lib/logging/client-logger';
-import { parseError } from '@/lib/logging/evlog';
+import { useResourceMutation } from '@/hooks/use-resource-mutation';
 import { commitImport } from '@/modules/imports/api/commit-import';
 import { createImport } from '@/modules/imports/api/create-import';
 import { deleteImport } from '@/modules/imports/api/delete-import';
@@ -41,133 +35,95 @@ export const importQueries = {
 };
 
 export function useCreateImport() {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['imports.toast.createError'],
+    invalidate: [importQueries.all()],
     mutationFn: (data: CreateImportInput) => createImport({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'import.create.failed', error });
-      toast.error(m['imports.toast.createError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
-    onSuccess: (result) => {
-      toast.success(m['imports.toast.createSuccess'](), {
-        action: {
-          label: m['imports.detail.review'](),
-          onClick: () =>
-            void navigate({
-              params: { importId: result.id },
-              to: '/imports/$importId',
-            }),
-        },
-      });
+    mutationKey: ['import', 'create'],
+    onSuccess: () => {
       void navigate({ search: {}, to: '/imports' });
-      void queryClient.invalidateQueries({ queryKey: importQueries.all() });
-      void router.invalidate();
       capture('import_created');
     },
+    successMessage: m['imports.toast.createSuccess'],
+    successToastOptions: (result) => ({
+      action: {
+        label: m['imports.detail.review'](),
+        onClick: () =>
+          void navigate({
+            params: { importId: result.id },
+            to: '/imports/$importId',
+          }),
+      },
+    }),
   });
 }
 
 export function useCommitImport() {
-  const queryClient = useQueryClient();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['imports.toast.commitError'],
+    invalidate: [importQueries.all()],
     mutationFn: (data: CommitImportInput) => commitImport({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'import.commit.failed', error });
-      toast.error(m['imports.toast.commitError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
-    onSuccess: (result) => {
-      toast.success(m['imports.toast.commitSuccess'](), {
-        description: m['imports.toast.commitSuccessDescription']({
-          count: result.committedCount,
-        }),
-      });
-      void queryClient.invalidateQueries({ queryKey: importQueries.all() });
-      void router.invalidate();
+    mutationKey: ['import', 'commit'],
+    onSuccess: () => {
       capture('import_committed');
     },
+    successMessage: m['imports.toast.commitSuccess'],
+    successToastOptions: (result) => ({
+      description: m['imports.toast.commitSuccessDescription']({
+        count: result.committedCount,
+      }),
+    }),
   });
 }
 
 export function useDeleteImport() {
-  const queryClient = useQueryClient();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['imports.toast.deleteError'],
+    invalidate: [importQueries.all()],
     mutationFn: (data: DeleteImportInput) => deleteImport({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'import.delete.failed', error });
-      toast.error(m['imports.toast.deleteError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
+    mutationKey: ['import', 'delete'],
     onSuccess: () => {
-      toast.success(m['imports.toast.deleteSuccess']());
-      void queryClient.invalidateQueries({ queryKey: importQueries.all() });
-      void router.invalidate();
       capture('import_deleted');
     },
+    successMessage: m['imports.toast.deleteSuccess'],
   });
 }
 
 export function useUpdateImportRowStatus() {
-  const queryClient = useQueryClient();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['imports.detail.toast.statusError'],
+    invalidate: [importQueries.all()],
     mutationFn: (data: UpdateImportRowStatusInput) =>
       updateImportRowStatus({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'importRow.updateStatus.failed', error });
-      toast.error(m['imports.detail.toast.statusError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
+    mutationKey: ['importRow', 'updateStatus'],
     onSuccess: () => {
-      toast.success(m['imports.detail.toast.statusUpdated']());
-      void queryClient.invalidateQueries({ queryKey: importQueries.all() });
-      void router.invalidate();
       capture('import_row_status_updated');
     },
+    successMessage: m['imports.detail.toast.statusUpdated'],
   });
 }
 
 export function useUpdateImportRowData() {
-  const queryClient = useQueryClient();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['imports.detail.toast.dataError'],
+    invalidate: [importQueries.all()],
     mutationFn: (data: UpdateImportRowDataInput) =>
       updateImportRowData({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'importRow.updateData.failed', error });
-      toast.error(m['imports.detail.toast.dataError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
+    mutationKey: ['importRow', 'updateData'],
     onSuccess: () => {
-      toast.success(m['imports.detail.toast.dataUpdated']());
-      void queryClient.invalidateQueries({ queryKey: importQueries.all() });
-      void router.invalidate();
       capture('import_row_data_updated');
     },
+    successMessage: m['imports.detail.toast.dataUpdated'],
   });
 }

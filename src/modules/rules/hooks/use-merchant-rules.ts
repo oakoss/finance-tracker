@@ -17,6 +17,7 @@ import type {
 } from '@/modules/rules/validators';
 
 import { useAnalytics } from '@/hooks/use-analytics';
+import { useResourceMutation } from '@/hooks/use-resource-mutation';
 import { clientLog } from '@/lib/logging/client-logger';
 import { parseError } from '@/lib/logging/evlog';
 import { applyMerchantRule } from '@/modules/rules/api/apply-merchant-rule';
@@ -38,80 +39,53 @@ export const merchantRuleQueries = {
     }),
 };
 
-function useInvalidateList() {
-  const queryClient = useQueryClient();
-  const router = useRouter();
-  return () => {
-    void queryClient.invalidateQueries({ queryKey: merchantRuleQueries.all() });
-    void router.invalidate();
-  };
-}
-
 export function useCreateMerchantRule() {
   const navigate = useNavigate();
-  const invalidate = useInvalidateList();
   const { capture } = useAnalytics();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['rules.toast.createError'],
+    invalidate: [merchantRuleQueries.all()],
     mutationFn: (data: CreateMerchantRuleInput) => createMerchantRule({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'merchantRule.create.failed', error });
-      toast.error(m['rules.toast.createError'](), {
-        description: parsed.fix ?? parsed.why ?? m['auth.error.unexpected'](),
-      });
-    },
+    mutationKey: ['merchantRule', 'create'],
     onSuccess: (_data, variables) => {
-      toast.success(m['rules.toast.createSuccess']());
       void navigate({ search: {}, to: '/rules' });
-      invalidate();
       capture('merchant_rule_created', {
         action_count: variables.actions.length,
         kind: variables.match.kind,
       });
     },
+    successMessage: m['rules.toast.createSuccess'],
   });
 }
 
 export function useUpdateMerchantRule() {
   const navigate = useNavigate();
-  const invalidate = useInvalidateList();
   const { capture } = useAnalytics();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['rules.toast.updateError'],
+    invalidate: [merchantRuleQueries.all()],
     mutationFn: (data: UpdateMerchantRuleInput) => updateMerchantRule({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'merchantRule.update.failed', error });
-      toast.error(m['rules.toast.updateError'](), {
-        description: parsed.fix ?? parsed.why ?? m['auth.error.unexpected'](),
-      });
-    },
+    mutationKey: ['merchantRule', 'update'],
     onSuccess: () => {
-      toast.success(m['rules.toast.updateSuccess']());
       void navigate({ search: {}, to: '/rules' });
-      invalidate();
       capture('merchant_rule_updated');
     },
+    successMessage: m['rules.toast.updateSuccess'],
   });
 }
 
 export function useReorderMerchantRules() {
-  const invalidate = useInvalidateList();
   const { capture } = useAnalytics();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['rules.toast.reorderError'],
+    invalidate: [merchantRuleQueries.all()],
     mutationFn: (data: ReorderMerchantRulesInput) =>
       reorderMerchantRules({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'merchantRule.reorder.failed', error });
-      toast.error(m['rules.toast.reorderError'](), {
-        description: parsed.fix ?? parsed.why ?? m['auth.error.unexpected'](),
-      });
-    },
+    mutationKey: ['merchantRule', 'reorder'],
     onSuccess: (_data, variables) => {
-      invalidate();
       capture('merchant_rule_reordered', {
         count: variables.orderedIds.length,
         stage: variables.stage,
@@ -121,43 +95,31 @@ export function useReorderMerchantRules() {
 }
 
 export function useToggleMerchantRule() {
-  const invalidate = useInvalidateList();
   const { capture } = useAnalytics();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['rules.toast.toggleError'],
+    invalidate: [merchantRuleQueries.all()],
     mutationFn: (data: ToggleMerchantRuleInput) => toggleMerchantRule({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'merchantRule.toggle.failed', error });
-      toast.error(m['rules.toast.toggleError'](), {
-        description: parsed.fix ?? parsed.why ?? m['auth.error.unexpected'](),
-      });
-    },
+    mutationKey: ['merchantRule', 'toggle'],
     onSuccess: (result) => {
-      invalidate();
       capture('merchant_rule_toggled', { is_active: result.isActive });
     },
   });
 }
 
 export function useDeleteMerchantRule() {
-  const invalidate = useInvalidateList();
   const { capture } = useAnalytics();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['rules.toast.deleteError'],
+    invalidate: [merchantRuleQueries.all()],
     mutationFn: (data: DeleteMerchantRuleInput) => deleteMerchantRule({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'merchantRule.delete.failed', error });
-      toast.error(m['rules.toast.deleteError'](), {
-        description: parsed.fix ?? parsed.why ?? m['auth.error.unexpected'](),
-      });
-    },
+    mutationKey: ['merchantRule', 'delete'],
     onSuccess: () => {
-      toast.success(m['rules.toast.deleteSuccess']());
-      invalidate();
       capture('merchant_rule_deleted');
     },
+    successMessage: m['rules.toast.deleteSuccess'],
   });
 }
 
@@ -165,28 +127,26 @@ export function useDeleteMerchantRule() {
 const UNDO_TOAST_DURATION_MS = 5 * 60 * 1000;
 
 export function useUndoRuleRun() {
-  const invalidate = useInvalidateList();
   const { capture } = useAnalytics();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['rules.toast.undoError'],
+    invalidate: [merchantRuleQueries.all()],
     mutationFn: (data: UndoRuleRunInput) => undoRuleRun({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'merchantRule.undo.failed', error });
-      toast.error(m['rules.toast.undoError'](), {
-        description: parsed.fix ?? parsed.why ?? m['auth.error.unexpected'](),
-      });
-    },
+    mutationKey: ['merchantRule', 'undo'],
     onSuccess: (result) => {
-      toast.success(m['rules.toast.undoSuccess']());
-      invalidate();
       capture('merchant_rule_undone', { restored: result.restoredCount });
     },
+    successMessage: m['rules.toast.undoSuccess'],
   });
 }
 
+// Stays on raw useMutation: the undo action's onClick needs the toastId
+// returned by `toast.success` to call `toast.dismiss(toastId)`, and the
+// wrapper discards that return value.
 export function useApplyMerchantRule() {
-  const invalidate = useInvalidateList();
+  const queryClient = useQueryClient();
+  const router = useRouter();
   const { capture } = useAnalytics();
   const undo = useUndoRuleRun();
 
@@ -194,16 +154,42 @@ export function useApplyMerchantRule() {
     mutationFn: (data: ApplyMerchantRuleInput) => applyMerchantRule({ data }),
     onError: (error) => {
       const parsed = parseError(error);
-      clientLog.error({ action: 'merchantRule.apply.failed', error });
-      toast.error(m['rules.toast.applyError'](), {
-        description: parsed.fix ?? parsed.why ?? m['auth.error.unexpected'](),
+      clientLog.error({
+        action: 'merchantRule.apply.failed',
+        code: parsed.code,
+        errorMessage: parsed.message,
+        errorStack: error instanceof Error ? error.stack : undefined,
+        status: parsed.status,
       });
+      if (parsed.status === 422) {
+        toast.error(m['common.toast.validationError'](), {
+          description:
+            parsed.fix ?? m['common.toast.validationErrorDescription'](),
+        });
+      } else {
+        toast.error(m['rules.toast.applyError'](), {
+          description: parsed.fix ?? m['common.toast.tryAgainDescription'](),
+        });
+      }
     },
     onSuccess: (result) => {
-      invalidate();
+      queryClient
+        .invalidateQueries({ queryKey: merchantRuleQueries.all() })
+        .catch((error: unknown) => {
+          clientLog.warn({
+            action: 'merchantRule.apply.invalidate.failed',
+            errorMessage:
+              error instanceof Error ? error.message : String(error),
+          });
+        });
+      router.invalidate().catch((error: unknown) => {
+        clientLog.warn({
+          action: 'merchantRule.apply.routerInvalidate.failed',
+          errorMessage: error instanceof Error ? error.message : String(error),
+        });
+      });
       capture('merchant_rule_applied', { count: result.count });
 
-      // Dismiss the source toast when undo fires so the two don't coexist.
       const toastId = toast.success(
         m['rules.toast.applySuccess']({ count: String(result.count) }),
         {

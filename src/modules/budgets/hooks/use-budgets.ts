@@ -1,10 +1,4 @@
-import {
-  queryOptions,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query';
-import { useRouter } from '@tanstack/react-router';
-import { toast } from 'sonner';
+import { queryOptions } from '@tanstack/react-query';
 
 import type {
   CopyBudgetPeriodInput,
@@ -17,8 +11,7 @@ import type {
 } from '@/modules/budgets/validators';
 
 import { useAnalytics } from '@/hooks/use-analytics';
-import { clientLog } from '@/lib/logging/client-logger';
-import { parseError } from '@/lib/logging/evlog';
+import { useResourceMutation } from '@/hooks/use-resource-mutation';
 import { copyBudgetPeriod } from '@/modules/budgets/api/copy-budget-period';
 import { createBudgetLine } from '@/modules/budgets/api/create-budget-line';
 import { createBudgetPeriod } from '@/modules/budgets/api/create-budget-period';
@@ -30,10 +23,6 @@ import { listBudgetPeriods } from '@/modules/budgets/api/list-budget-periods';
 import { updateBudgetLine } from '@/modules/budgets/api/update-budget-line';
 import { updateBudgetPeriod } from '@/modules/budgets/api/update-budget-period';
 import { m } from '@/paraglide/messages';
-
-// ---------------------------------------------------------------------------
-// Query options
-// ---------------------------------------------------------------------------
 
 export const budgetPeriodQueries = {
   all: () => ['budgetPeriods'] as const,
@@ -62,195 +51,105 @@ export const budgetVsActualQueries = {
     }),
 };
 
-// ---------------------------------------------------------------------------
-// Period mutations
-// ---------------------------------------------------------------------------
-
 export function useCreateBudgetPeriod() {
-  const queryClient = useQueryClient();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['budgets.toast.periodCreateError'],
+    invalidate: [budgetPeriodQueries.all()],
     mutationFn: (data: CreateBudgetPeriodInput) => createBudgetPeriod({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'budgetPeriod.create.failed', error });
-      toast.error(m['budgets.toast.periodCreateError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
+    mutationKey: ['budgetPeriod', 'create'],
     onSuccess: () => {
-      toast.success(m['budgets.toast.periodCreateSuccess']());
-      void queryClient.invalidateQueries({
-        queryKey: budgetPeriodQueries.all(),
-      });
-      void router.invalidate();
       capture('budget_period_created');
     },
+    successMessage: m['budgets.toast.periodCreateSuccess'],
   });
 }
 
 export function useUpdateBudgetPeriod() {
-  const queryClient = useQueryClient();
-  const router = useRouter();
-
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['budgets.toast.periodUpdateError'],
+    invalidate: [budgetPeriodQueries.all(), budgetVsActualQueries.all()],
     mutationFn: (data: UpdateBudgetPeriodInput) => updateBudgetPeriod({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'budgetPeriod.update.failed', error });
-      toast.error(m['budgets.toast.periodUpdateError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
-    onSuccess: () => {
-      toast.success(m['budgets.toast.periodUpdateSuccess']());
-      void queryClient.invalidateQueries({
-        queryKey: budgetPeriodQueries.all(),
-      });
-      void queryClient.invalidateQueries({
-        queryKey: budgetVsActualQueries.all(),
-      });
-      void router.invalidate();
-    },
+    mutationKey: ['budgetPeriod', 'update'],
+    successMessage: m['budgets.toast.periodUpdateSuccess'],
   });
 }
 
 export function useDeleteBudgetPeriod() {
-  const queryClient = useQueryClient();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['budgets.toast.periodDeleteError'],
+    invalidate: [
+      budgetPeriodQueries.all(),
+      budgetLineQueries.all(),
+      budgetVsActualQueries.all(),
+    ],
     mutationFn: (data: DeleteBudgetPeriodInput) => deleteBudgetPeriod({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'budgetPeriod.delete.failed', error });
-      toast.error(m['budgets.toast.periodDeleteError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
+    mutationKey: ['budgetPeriod', 'delete'],
     onSuccess: () => {
-      toast.success(m['budgets.toast.periodDeleteSuccess']());
-      void queryClient.invalidateQueries({
-        queryKey: budgetPeriodQueries.all(),
-      });
-      void queryClient.invalidateQueries({ queryKey: budgetLineQueries.all() });
-      void queryClient.invalidateQueries({
-        queryKey: budgetVsActualQueries.all(),
-      });
-      void router.invalidate();
       capture('budget_period_deleted');
     },
+    successMessage: m['budgets.toast.periodDeleteSuccess'],
   });
 }
 
 export function useCopyBudgetPeriod() {
-  const queryClient = useQueryClient();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['budgets.toast.periodCopyError'],
+    invalidate: [
+      budgetPeriodQueries.all(),
+      budgetLineQueries.all(),
+      budgetVsActualQueries.all(),
+    ],
     mutationFn: (data: CopyBudgetPeriodInput) => copyBudgetPeriod({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'budgetPeriod.copy.failed', error });
-      toast.error(m['budgets.toast.periodCopyError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
+    mutationKey: ['budgetPeriod', 'copy'],
     onSuccess: () => {
-      toast.success(m['budgets.toast.periodCopySuccess']());
-      void queryClient.invalidateQueries({
-        queryKey: budgetPeriodQueries.all(),
-      });
-      void queryClient.invalidateQueries({ queryKey: budgetLineQueries.all() });
-      void queryClient.invalidateQueries({
-        queryKey: budgetVsActualQueries.all(),
-      });
-      void router.invalidate();
       capture('budget_period_copied');
     },
+    successMessage: m['budgets.toast.periodCopySuccess'],
   });
 }
 
-// ---------------------------------------------------------------------------
-// Line mutations
-// ---------------------------------------------------------------------------
-
 export function useCreateBudgetLine() {
-  const queryClient = useQueryClient();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['budgets.toast.lineCreateError'],
+    invalidate: [budgetLineQueries.all(), budgetVsActualQueries.all()],
     mutationFn: (data: CreateBudgetLineInput) => createBudgetLine({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'budgetLine.create.failed', error });
-      toast.error(m['budgets.toast.lineCreateError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
+    mutationKey: ['budgetLine', 'create'],
     onSuccess: () => {
-      toast.success(m['budgets.toast.lineCreateSuccess']());
-      void queryClient.invalidateQueries({ queryKey: budgetLineQueries.all() });
-      void queryClient.invalidateQueries({
-        queryKey: budgetVsActualQueries.all(),
-      });
-      void router.invalidate();
       capture('budget_line_created');
     },
+    successMessage: m['budgets.toast.lineCreateSuccess'],
   });
 }
 
 export function useUpdateBudgetLine() {
-  const queryClient = useQueryClient();
-  const router = useRouter();
-
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['budgets.toast.lineUpdateError'],
+    invalidate: [budgetLineQueries.all(), budgetVsActualQueries.all()],
     mutationFn: (data: UpdateBudgetLineInput) => updateBudgetLine({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'budgetLine.update.failed', error });
-      toast.error(m['budgets.toast.lineUpdateError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
-    onSuccess: () => {
-      toast.success(m['budgets.toast.lineUpdateSuccess']());
-      void queryClient.invalidateQueries({ queryKey: budgetLineQueries.all() });
-      void queryClient.invalidateQueries({
-        queryKey: budgetVsActualQueries.all(),
-      });
-      void router.invalidate();
-    },
+    mutationKey: ['budgetLine', 'update'],
+    successMessage: m['budgets.toast.lineUpdateSuccess'],
   });
 }
 
 export function useDeleteBudgetLine() {
-  const queryClient = useQueryClient();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['budgets.toast.lineDeleteError'],
+    invalidate: [budgetLineQueries.all(), budgetVsActualQueries.all()],
     mutationFn: (data: DeleteBudgetLineInput) => deleteBudgetLine({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'budgetLine.delete.failed', error });
-      toast.error(m['budgets.toast.lineDeleteError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
+    mutationKey: ['budgetLine', 'delete'],
     onSuccess: () => {
-      toast.success(m['budgets.toast.lineDeleteSuccess']());
-      void queryClient.invalidateQueries({ queryKey: budgetLineQueries.all() });
-      void queryClient.invalidateQueries({
-        queryKey: budgetVsActualQueries.all(),
-      });
-      void router.invalidate();
       capture('budget_line_deleted');
     },
+    successMessage: m['budgets.toast.lineDeleteSuccess'],
   });
 }

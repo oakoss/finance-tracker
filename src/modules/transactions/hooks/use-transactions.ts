@@ -1,10 +1,5 @@
-import {
-  queryOptions,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query';
-import { useNavigate, useRouter } from '@tanstack/react-router';
-import { toast } from 'sonner';
+import { queryOptions } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 
 import type {
   CreateTransactionInput,
@@ -16,8 +11,7 @@ import type {
 } from '@/modules/transactions/validators';
 
 import { useAnalytics } from '@/hooks/use-analytics';
-import { clientLog } from '@/lib/logging/client-logger';
-import { parseError } from '@/lib/logging/evlog';
+import { useResourceMutation } from '@/hooks/use-resource-mutation';
 import { payeeQueries } from '@/modules/payees/hooks/use-payees';
 import { createTransaction } from '@/modules/transactions/api/create-transaction';
 import { deleteTransaction } from '@/modules/transactions/api/delete-transaction';
@@ -54,29 +48,20 @@ export const tagQueries = {
 };
 
 export function useCreateTransaction() {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['transactions.toast.createError'],
+    invalidate: [
+      transactionQueries.all(),
+      payeeQueries.all(),
+      tagQueries.all(),
+    ],
     mutationFn: (data: CreateTransactionInput) => createTransaction({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'transaction.create.failed', error });
-      toast.error(m['transactions.toast.createError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
+    mutationKey: ['transaction', 'create'],
     onSuccess: (_data, variables) => {
-      toast.success(m['transactions.toast.createSuccess']());
       void navigate({ search: {}, to: '/transactions' });
-      void queryClient.invalidateQueries({
-        queryKey: transactionQueries.all(),
-      });
-      void queryClient.invalidateQueries({ queryKey: payeeQueries.all() });
-      void queryClient.invalidateQueries({ queryKey: tagQueries.all() });
-      void router.invalidate();
       capture('transaction_created', {
         direction: variables.direction,
         has_category: !!variables.categoryId,
@@ -84,136 +69,89 @@ export function useCreateTransaction() {
         has_tags: !!(variables.tagIds?.length ?? variables.newTagNames?.length),
       });
     },
+    successMessage: m['transactions.toast.createSuccess'],
   });
 }
 
 export function useUpdateTransaction() {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['transactions.toast.updateError'],
+    invalidate: [
+      transactionQueries.all(),
+      payeeQueries.all(),
+      tagQueries.all(),
+    ],
     mutationFn: (data: UpdateTransactionInput) => updateTransaction({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'transaction.update.failed', error });
-      toast.error(m['transactions.toast.updateError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
+    mutationKey: ['transaction', 'update'],
     onSuccess: (_data, variables) => {
-      toast.success(m['transactions.toast.updateSuccess']());
       void navigate({ search: {}, to: '/transactions' });
-      void queryClient.invalidateQueries({
-        queryKey: transactionQueries.all(),
-      });
-      void queryClient.invalidateQueries({ queryKey: payeeQueries.all() });
-      void queryClient.invalidateQueries({ queryKey: tagQueries.all() });
-      void router.invalidate();
       capture('transaction_updated', { direction: variables.direction });
     },
+    successMessage: m['transactions.toast.updateSuccess'],
   });
 }
 
 export function useDeleteTransaction() {
-  const queryClient = useQueryClient();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['transactions.toast.deleteError'],
+    invalidate: [transactionQueries.all()],
     mutationFn: (data: DeleteTransactionInput) => deleteTransaction({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'transaction.delete.failed', error });
-      toast.error(m['transactions.toast.deleteError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
+    mutationKey: ['transaction', 'delete'],
     onSuccess: () => {
-      toast.success(m['transactions.toast.deleteSuccess']());
-      void queryClient.invalidateQueries({
-        queryKey: transactionQueries.all(),
-      });
-      void router.invalidate();
       capture('transaction_deleted');
     },
+    successMessage: m['transactions.toast.deleteSuccess'],
   });
 }
 
 export function useSplitTransaction() {
-  const queryClient = useQueryClient();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['transactions.toast.splitError'],
+    invalidate: [transactionQueries.all()],
     mutationFn: (data: SplitTransactionInput) => splitTransaction({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'transaction.split.failed', error });
-      toast.error(m['transactions.toast.splitError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
+    mutationKey: ['transaction', 'split'],
     onSuccess: (_data, variables) => {
-      toast.success(m['transactions.toast.splitSuccess']());
-      void queryClient.invalidateQueries({
-        queryKey: transactionQueries.all(),
-      });
-      void router.invalidate();
       capture('transaction_split', { line_count: variables.lines.length });
     },
+    successMessage: m['transactions.toast.splitSuccess'],
   });
 }
 
 export function useUnsplitTransaction() {
-  const queryClient = useQueryClient();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['transactions.toast.unsplitError'],
+    invalidate: [transactionQueries.all()],
     mutationFn: (data: UnsplitTransactionInput) => unsplitTransaction({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'transaction.unsplit.failed', error });
-      toast.error(m['transactions.toast.unsplitError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
+    mutationKey: ['transaction', 'unsplit'],
     onSuccess: () => {
-      toast.success(m['transactions.toast.unsplitSuccess']());
-      void queryClient.invalidateQueries({
-        queryKey: transactionQueries.all(),
-      });
-      void router.invalidate();
       capture('transaction_unsplit');
     },
+    successMessage: m['transactions.toast.unsplitSuccess'],
   });
 }
 
 export function useUpdateSplitLines() {
-  const queryClient = useQueryClient();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['transactions.toast.updateSplitLinesError'],
+    invalidate: [transactionQueries.all()],
     mutationFn: (data: UpdateSplitLinesInput) => updateSplitLines({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'transaction.updateSplitLines.failed', error });
-      toast.error(m['transactions.toast.updateSplitLinesError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
+    mutationKey: ['transaction', 'updateSplitLines'],
     onSuccess: (_data, variables) => {
-      toast.success(m['transactions.toast.updateSplitLinesSuccess']());
-      void queryClient.invalidateQueries({
-        queryKey: transactionQueries.all(),
-      });
-      void router.invalidate();
       capture('transaction_split_lines_updated', {
         line_count: variables.lines.length,
       });
     },
+    successMessage: m['transactions.toast.updateSplitLinesSuccess'],
   });
 }

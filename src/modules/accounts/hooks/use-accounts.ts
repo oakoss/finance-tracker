@@ -1,10 +1,5 @@
-import {
-  queryOptions,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query';
-import { useNavigate, useRouter } from '@tanstack/react-router';
-import { toast } from 'sonner';
+import { queryOptions } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 
 import type {
   CreateAccountInput,
@@ -13,8 +8,7 @@ import type {
 } from '@/modules/accounts/validators';
 
 import { useAnalytics } from '@/hooks/use-analytics';
-import { clientLog } from '@/lib/logging/client-logger';
-import { parseError } from '@/lib/logging/evlog';
+import { useResourceMutation } from '@/hooks/use-resource-mutation';
 import { createAccount } from '@/modules/accounts/api/create-account';
 import { deleteAccount } from '@/modules/accounts/api/delete-account';
 import { listAccounts } from '@/modules/accounts/api/list-accounts';
@@ -31,78 +25,54 @@ export const accountQueries = {
 };
 
 export function useCreateAccount() {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['accounts.toast.createError'],
+    invalidate: [accountQueries.all()],
     mutationFn: (data: CreateAccountInput) => createAccount({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'account.create.failed', error });
-      toast.error(m['accounts.toast.createError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
+    mutationKey: ['account', 'create'],
     onSuccess: (_data, variables) => {
-      toast.success(m['accounts.toast.createSuccess']());
       void navigate({ search: {}, to: '/accounts' });
-      void queryClient.invalidateQueries({ queryKey: accountQueries.all() });
-      void router.invalidate();
       capture('account_created', {
         currency: variables.currency,
         owner_type: variables.ownerType,
         type: variables.type,
       });
     },
+    successMessage: m['accounts.toast.createSuccess'],
   });
 }
 
 export function useUpdateAccount() {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['accounts.toast.updateError'],
+    invalidate: [accountQueries.all()],
     mutationFn: (data: UpdateAccountInput) => updateAccount({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'account.update.failed', error });
-      toast.error(m['accounts.toast.updateError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
+    mutationKey: ['account', 'update'],
     onSuccess: (_data, variables) => {
-      toast.success(m['accounts.toast.updateSuccess']());
       void navigate({ search: {}, to: '/accounts' });
-      void queryClient.invalidateQueries({ queryKey: accountQueries.all() });
-      void router.invalidate();
       capture('account_updated', { type: variables.type });
     },
+    successMessage: m['accounts.toast.updateSuccess'],
   });
 }
 
 export function useDeleteAccount() {
-  const queryClient = useQueryClient();
   const { capture } = useAnalytics();
-  const router = useRouter();
 
-  return useMutation({
+  return useResourceMutation({
+    errorMessage: m['accounts.toast.deleteError'],
+    invalidate: [accountQueries.all()],
     mutationFn: (data: DeleteAccountInput) => deleteAccount({ data }),
-    onError: (error) => {
-      const parsed = parseError(error);
-      clientLog.error({ action: 'account.delete.failed', error });
-      toast.error(m['accounts.toast.deleteError'](), {
-        description: parsed.fix ?? parsed.why,
-      });
-    },
+    mutationKey: ['account', 'delete'],
     onSuccess: () => {
-      toast.success(m['accounts.toast.deleteSuccess']());
-      void queryClient.invalidateQueries({ queryKey: accountQueries.all() });
-      void router.invalidate();
       capture('account_deleted');
     },
+    successMessage: m['accounts.toast.deleteSuccess'],
   });
 }

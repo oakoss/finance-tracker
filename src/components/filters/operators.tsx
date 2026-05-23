@@ -3,6 +3,7 @@ import type {
   FilterOperator,
   FilterOperatorValue,
 } from '@/components/filters/types';
+import type { MessageFn } from '@/lib/i18n/messages';
 
 import { useFilterContext } from '@/components/filters/context';
 import { Icons } from '@/components/icons';
@@ -52,33 +53,33 @@ function createOperators(): Record<string, FilterOperator[]> {
   };
 }
 
-const OPERATOR_MESSAGES: Record<string, () => string> = {
-  after: () => m['filters.operators.after'](),
-  before: () => m['filters.operators.before'](),
-  between: () => m['filters.operators.between'](),
-  contains: () => m['filters.operators.contains'](),
-  empty: () => m['filters.operators.empty'](),
-  ends_with: () => m['filters.operators.endsWith'](),
-  equals: () => m['filters.operators.equals'](),
-  excludes: () => m['filters.operators.excludes'](),
-  excludes_all: () => m['filters.operators.excludesAll'](),
-  greater_than: () => m['filters.operators.greaterThan'](),
-  includes: () => m['filters.operators.includes'](),
-  includes_all: () => m['filters.operators.includesAll'](),
-  includes_all_of: () => m['filters.operators.includesAllOf'](),
-  includes_any_of: () => m['filters.operators.includesAnyOf'](),
-  is: () => m['filters.operators.is'](),
-  is_any_of: () => m['filters.operators.isAnyOf'](),
-  is_exactly: () => m['filters.operators.isExactly'](),
-  is_not: () => m['filters.operators.isNot'](),
-  is_not_any_of: () => m['filters.operators.isNotAnyOf'](),
-  less_than: () => m['filters.operators.lessThan'](),
-  not_between: () => m['filters.operators.notBetween'](),
-  not_contains: () => m['filters.operators.notContains'](),
-  not_empty: () => m['filters.operators.notEmpty'](),
-  not_equals: () => m['filters.operators.notEquals'](),
-  overlaps: () => m['filters.operators.overlaps'](),
-  starts_with: () => m['filters.operators.startsWith'](),
+const OPERATOR_MESSAGES: Record<string, MessageFn> = {
+  after: m['filters.operators.after'],
+  before: m['filters.operators.before'],
+  between: m['filters.operators.between'],
+  contains: m['filters.operators.contains'],
+  empty: m['filters.operators.empty'],
+  ends_with: m['filters.operators.endsWith'],
+  equals: m['filters.operators.equals'],
+  excludes: m['filters.operators.excludes'],
+  excludes_all: m['filters.operators.excludesAll'],
+  greater_than: m['filters.operators.greaterThan'],
+  includes: m['filters.operators.includes'],
+  includes_all: m['filters.operators.includesAll'],
+  includes_all_of: m['filters.operators.includesAllOf'],
+  includes_any_of: m['filters.operators.includesAnyOf'],
+  is: m['filters.operators.is'],
+  is_any_of: m['filters.operators.isAnyOf'],
+  is_exactly: m['filters.operators.isExactly'],
+  is_not: m['filters.operators.isNot'],
+  is_not_any_of: m['filters.operators.isNotAnyOf'],
+  less_than: m['filters.operators.lessThan'],
+  not_between: m['filters.operators.notBetween'],
+  not_contains: m['filters.operators.notContains'],
+  not_empty: m['filters.operators.notEmpty'],
+  not_equals: m['filters.operators.notEquals'],
+  overlaps: m['filters.operators.overlaps'],
+  starts_with: m['filters.operators.startsWith'],
 };
 
 function formatOperator(operator: string): string {
