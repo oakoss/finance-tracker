@@ -3,6 +3,7 @@ allowBuilds:
   core-js: true
   esbuild: true
   lefthook: true
+  msgpackr-extract: false
   msw: false
   protobufjs: true
   unrs-resolver: true
