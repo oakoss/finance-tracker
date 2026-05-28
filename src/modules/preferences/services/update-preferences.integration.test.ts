@@ -84,7 +84,8 @@ test('updateUserPreferencesService — writes create audit log on first upsert',
   const logs = await serviceDb
     .select()
     .from(auditLogs)
-    .where(eq(auditLogs.recordId, user.id));
+    .where(eq(auditLogs.recordId, user.id))
+    .orderBy(auditLogs.id);
   expect(logs).toHaveLength(1);
   expect(logs[0]?.action).toBe('create');
   expect(logs[0]?.tableName).toBe('user_preferences');
@@ -104,7 +105,8 @@ test('updateUserPreferencesService — writes update audit log with beforeData o
   const logs = await serviceDb
     .select()
     .from(auditLogs)
-    .where(eq(auditLogs.recordId, user.id));
+    .where(eq(auditLogs.recordId, user.id))
+    .orderBy(auditLogs.id);
   expect(logs).toHaveLength(2);
   expect(logs[1]?.action).toBe('update');
   expect(logs[1]?.beforeData).not.toBeNull();
