@@ -10,7 +10,7 @@ import { listImportRowsService } from '@/modules/imports/services/list-import-ro
 import { listImportRowsSchema } from '@/modules/imports/validators';
 
 export const listImportRows = createServerFn({ method: 'GET' })
-  .inputValidator(arkValidator(listImportRowsSchema))
+  .validator(arkValidator(listImportRowsSchema))
   .middleware([authMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

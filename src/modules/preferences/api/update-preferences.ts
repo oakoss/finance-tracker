@@ -10,7 +10,7 @@ import { updateUserPreferencesService } from '@/modules/preferences/services/upd
 import { updateUserPreferencesSchema } from '@/modules/preferences/validators';
 
 export const updateUserPreferences = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(updateUserPreferencesSchema))
+  .validator(arkValidator(updateUserPreferencesSchema))
   .middleware([authMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

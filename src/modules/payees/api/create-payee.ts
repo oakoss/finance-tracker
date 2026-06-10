@@ -13,7 +13,7 @@ import { createPayeeService } from '@/modules/payees/services/create-payee';
 import { createPayeeSchema } from '@/modules/payees/validators';
 
 export const createPayee = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(createPayeeSchema))
+  .validator(arkValidator(createPayeeSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

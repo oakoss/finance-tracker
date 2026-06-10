@@ -13,7 +13,7 @@ import { commitImportService } from '@/modules/imports/services/commit-import';
 import { commitImportSchema } from '@/modules/imports/validators';
 
 export const commitImport = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(commitImportSchema))
+  .validator(arkValidator(commitImportSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

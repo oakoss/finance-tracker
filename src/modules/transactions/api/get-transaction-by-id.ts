@@ -12,7 +12,7 @@ const inputSchema = type({ id: 'string.uuid' });
 
 export const getTransactionById = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator((raw) => {
+  .validator((raw) => {
     const result = inputSchema(raw);
     if (result instanceof type.errors) throw result;
     return result;

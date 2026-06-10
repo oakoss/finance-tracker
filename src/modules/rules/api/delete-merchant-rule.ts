@@ -13,7 +13,7 @@ import { deleteMerchantRuleService } from '@/modules/rules/services/delete-merch
 import { deleteMerchantRuleSchema } from '@/modules/rules/validators';
 
 export const deleteMerchantRule = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(deleteMerchantRuleSchema))
+  .validator(arkValidator(deleteMerchantRuleSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

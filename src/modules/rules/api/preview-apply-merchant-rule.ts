@@ -10,7 +10,7 @@ import { previewApplyMerchantRuleService } from '@/modules/rules/services/previe
 import { previewApplyMerchantRuleSchema } from '@/modules/rules/validators';
 
 export const previewApplyMerchantRule = createServerFn({ method: 'GET' })
-  .inputValidator(arkValidator(previewApplyMerchantRuleSchema))
+  .validator(arkValidator(previewApplyMerchantRuleSchema))
   .middleware([authMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

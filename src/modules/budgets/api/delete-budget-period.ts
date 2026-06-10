@@ -13,7 +13,7 @@ import { deleteBudgetPeriodService } from '@/modules/budgets/services/delete-bud
 import { deleteBudgetPeriodSchema } from '@/modules/budgets/validators';
 
 export const deleteBudgetPeriod = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(deleteBudgetPeriodSchema))
+  .validator(arkValidator(deleteBudgetPeriodSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

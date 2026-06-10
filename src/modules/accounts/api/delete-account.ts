@@ -13,7 +13,7 @@ import {
 } from '@/modules/auth/middleware';
 
 export const deleteAccount = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(deleteAccountSchema))
+  .validator(arkValidator(deleteAccountSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

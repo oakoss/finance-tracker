@@ -13,7 +13,7 @@ import { updateMerchantRuleService } from '@/modules/rules/services/update-merch
 import { updateMerchantRuleSchema } from '@/modules/rules/validators';
 
 export const updateMerchantRule = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(updateMerchantRuleSchema))
+  .validator(arkValidator(updateMerchantRuleSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

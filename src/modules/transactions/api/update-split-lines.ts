@@ -13,7 +13,7 @@ import { updateSplitLinesService } from '@/modules/transactions/services/update-
 import { updateSplitLinesSchema } from '@/modules/transactions/validators';
 
 export const updateSplitLines = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(updateSplitLinesSchema))
+  .validator(arkValidator(updateSplitLinesSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

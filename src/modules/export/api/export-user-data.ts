@@ -11,7 +11,7 @@ import { gatherUserData } from '@/modules/export/services/gather-user-data';
 import { exportUserDataSchema } from '@/modules/export/validators';
 
 export const exportUserData = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(exportUserDataSchema))
+  .validator(arkValidator(exportUserDataSchema))
   .middleware([authMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

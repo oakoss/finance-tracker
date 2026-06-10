@@ -13,7 +13,7 @@ import {
 } from '@/modules/auth/middleware';
 
 export const createAccount = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(createAccountSchema))
+  .validator(arkValidator(createAccountSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

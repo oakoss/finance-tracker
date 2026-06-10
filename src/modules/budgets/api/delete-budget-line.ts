@@ -13,7 +13,7 @@ import { deleteBudgetLineService } from '@/modules/budgets/services/delete-budge
 import { deleteBudgetLineSchema } from '@/modules/budgets/validators';
 
 export const deleteBudgetLine = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(deleteBudgetLineSchema))
+  .validator(arkValidator(deleteBudgetLineSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

@@ -10,7 +10,7 @@ import { getBudgetVsActualService } from '@/modules/budgets/services/get-budget-
 import { getBudgetVsActualSchema } from '@/modules/budgets/validators';
 
 export const getBudgetVsActual = createServerFn({ method: 'GET' })
-  .inputValidator(arkValidator(getBudgetVsActualSchema))
+  .validator(arkValidator(getBudgetVsActualSchema))
   .middleware([authMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

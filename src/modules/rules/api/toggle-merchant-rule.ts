@@ -13,7 +13,7 @@ import { toggleMerchantRuleService } from '@/modules/rules/services/toggle-merch
 import { toggleMerchantRuleSchema } from '@/modules/rules/validators';
 
 export const toggleMerchantRule = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(toggleMerchantRuleSchema))
+  .validator(arkValidator(toggleMerchantRuleSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

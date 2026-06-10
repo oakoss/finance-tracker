@@ -13,7 +13,7 @@ import { copyBudgetPeriodService } from '@/modules/budgets/services/copy-budget-
 import { copyBudgetPeriodSchema } from '@/modules/budgets/validators';
 
 export const copyBudgetPeriod = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(copyBudgetPeriodSchema))
+  .validator(arkValidator(copyBudgetPeriodSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

@@ -13,7 +13,7 @@ import { deleteTransactionService } from '@/modules/transactions/services/delete
 import { deleteTransactionSchema } from '@/modules/transactions/validators';
 
 export const deleteTransaction = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(deleteTransactionSchema))
+  .validator(arkValidator(deleteTransactionSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

@@ -13,7 +13,7 @@ import { deleteCategoryService } from '@/modules/categories/services/delete-cate
 import { deleteCategorySchema } from '@/modules/categories/validators';
 
 export const deleteCategory = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(deleteCategorySchema))
+  .validator(arkValidator(deleteCategorySchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

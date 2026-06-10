@@ -13,7 +13,7 @@ import { splitTransactionService } from '@/modules/transactions/services/split-t
 import { splitTransactionSchema } from '@/modules/transactions/validators';
 
 export const splitTransaction = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(splitTransactionSchema))
+  .validator(arkValidator(splitTransactionSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

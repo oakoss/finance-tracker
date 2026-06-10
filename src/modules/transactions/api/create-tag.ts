@@ -13,7 +13,7 @@ import { createTagService } from '@/modules/transactions/services/create-tag';
 import { createTagSchema } from '@/modules/transactions/validators';
 
 export const createTag = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(createTagSchema))
+  .validator(arkValidator(createTagSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

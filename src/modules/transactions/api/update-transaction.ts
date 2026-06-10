@@ -13,7 +13,7 @@ import { updateTransactionService } from '@/modules/transactions/services/update
 import { updateTransactionSchema } from '@/modules/transactions/validators';
 
 export const updateTransaction = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(updateTransactionSchema))
+  .validator(arkValidator(updateTransactionSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

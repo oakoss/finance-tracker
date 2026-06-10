@@ -13,7 +13,7 @@ import { updateBudgetLineService } from '@/modules/budgets/services/update-budge
 import { updateBudgetLineSchema } from '@/modules/budgets/validators';
 
 export const updateBudgetLine = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(updateBudgetLineSchema))
+  .validator(arkValidator(updateBudgetLineSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

@@ -17,7 +17,7 @@ const getData = createServerFn({ method: 'GET' }).handler(async () => {
 });
 
 const createData = createServerFn({ method: 'POST' })
-  .inputValidator((data: { name: string }) => data)
+  .validator((data: { name: string }) => data)
   .handler(async ({ data }) => {
     try {
       await db.insert(table).values(data);
@@ -42,7 +42,7 @@ export const Route = createFileRoute('/path')({
 
 Key patterns:
 
-- `.inputValidator()` for request validation, `.handler()` for logic.
+- `.validator()` for request validation, `.handler()` for logic.
 - `createError()` from `@/lib/logging/evlog` for structured errors
   (`message`, `status`, `why`, `fix`, `cause`).
 - Log with `log.info()` using `action`/`outcome` structure.

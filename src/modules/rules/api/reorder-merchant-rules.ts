@@ -13,7 +13,7 @@ import { reorderMerchantRulesService } from '@/modules/rules/services/reorder-me
 import { reorderMerchantRulesSchema } from '@/modules/rules/validators';
 
 export const reorderMerchantRules = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(reorderMerchantRulesSchema))
+  .validator(arkValidator(reorderMerchantRulesSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

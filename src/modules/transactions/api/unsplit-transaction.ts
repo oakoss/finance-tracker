@@ -13,7 +13,7 @@ import { unsplitTransactionService } from '@/modules/transactions/services/unspl
 import { unsplitTransactionSchema } from '@/modules/transactions/validators';
 
 export const unsplitTransaction = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(unsplitTransactionSchema))
+  .validator(arkValidator(unsplitTransactionSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

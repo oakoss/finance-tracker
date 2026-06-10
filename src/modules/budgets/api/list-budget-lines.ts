@@ -10,7 +10,7 @@ import { listBudgetLinesService } from '@/modules/budgets/services/list-budget-l
 import { listBudgetLinesSchema } from '@/modules/budgets/validators';
 
 export const listBudgetLines = createServerFn({ method: 'GET' })
-  .inputValidator(arkValidator(listBudgetLinesSchema))
+  .validator(arkValidator(listBudgetLinesSchema))
   .middleware([authMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

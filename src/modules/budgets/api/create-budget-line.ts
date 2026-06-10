@@ -13,7 +13,7 @@ import { createBudgetLineService } from '@/modules/budgets/services/create-budge
 import { createBudgetLineSchema } from '@/modules/budgets/validators';
 
 export const createBudgetLine = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(createBudgetLineSchema))
+  .validator(arkValidator(createBudgetLineSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

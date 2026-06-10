@@ -10,7 +10,7 @@ import { listPayeeAliasesService } from '@/modules/payees/services/list-payee-al
 import { listPayeeAliasesSchema } from '@/modules/payees/validators';
 
 export const listPayeeAliases = createServerFn({ method: 'GET' })
-  .inputValidator(arkValidator(listPayeeAliasesSchema))
+  .validator(arkValidator(listPayeeAliasesSchema))
   .middleware([authMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

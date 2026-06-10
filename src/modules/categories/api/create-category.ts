@@ -13,7 +13,7 @@ import { createCategoryService } from '@/modules/categories/services/create-cate
 import { createCategorySchema } from '@/modules/categories/validators';
 
 export const createCategory = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(createCategorySchema))
+  .validator(arkValidator(createCategorySchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

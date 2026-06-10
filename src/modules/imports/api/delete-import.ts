@@ -13,7 +13,7 @@ import { deleteImportService } from '@/modules/imports/services/delete-import';
 import { deleteImportSchema } from '@/modules/imports/validators';
 
 export const deleteImport = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(deleteImportSchema))
+  .validator(arkValidator(deleteImportSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

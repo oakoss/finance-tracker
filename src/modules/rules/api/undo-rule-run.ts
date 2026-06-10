@@ -13,7 +13,7 @@ import { undoRuleRunService } from '@/modules/rules/services/undo-rule-run';
 import { undoRuleRunSchema } from '@/modules/rules/validators';
 
 export const undoRuleRun = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(undoRuleRunSchema))
+  .validator(arkValidator(undoRuleRunSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

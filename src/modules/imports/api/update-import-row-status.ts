@@ -13,7 +13,7 @@ import { updateImportRowStatusService } from '@/modules/imports/services/update-
 import { updateImportRowStatusSchema } from '@/modules/imports/validators';
 
 export const updateImportRowStatus = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(updateImportRowStatusSchema))
+  .validator(arkValidator(updateImportRowStatusSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

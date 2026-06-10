@@ -13,7 +13,7 @@ import { deletePayeeAliasService } from '@/modules/payees/services/delete-payee-
 import { deletePayeeAliasSchema } from '@/modules/payees/validators';
 
 export const deletePayeeAlias = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(deletePayeeAliasSchema))
+  .validator(arkValidator(deletePayeeAliasSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);

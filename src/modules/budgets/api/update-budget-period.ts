@@ -13,7 +13,7 @@ import { updateBudgetPeriodService } from '@/modules/budgets/services/update-bud
 import { updateBudgetPeriodSchema } from '@/modules/budgets/validators';
 
 export const updateBudgetPeriod = createServerFn({ method: 'POST' })
-  .inputValidator(arkValidator(updateBudgetPeriodSchema))
+  .validator(arkValidator(updateBudgetPeriodSchema))
   .middleware([verifiedMutationMiddleware])
   .handler(async ({ context, data }) => {
     const userId = requireUserId(context);
