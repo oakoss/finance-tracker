@@ -46,4 +46,5 @@ todos.json
 .claude/settings.local.json
 .claude/.review-mark
 .claude/.no-review-gate
+.claude/scheduled_tasks.lock
 .playwright-mcp/
