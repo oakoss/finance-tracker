@@ -56,7 +56,7 @@ ENV APP_ENV=test
 #
 # Do NOT convert these to ARG/ENV either — that would leak the
 # values into image layer metadata.
-RUN pnpm exec varlock typegen \
+RUN pnpm exec varlock codegen \
  && pnpm paraglide:compile \
  && pnpm build
 
