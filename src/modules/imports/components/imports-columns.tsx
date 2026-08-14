@@ -1,15 +1,13 @@
-import { createColumnHelper } from '@tanstack/react-table';
-
-import type { DataGridFeatures } from '@/components/data-grid/features';
 import type { ImportListItem } from '@/modules/imports/api/list-imports';
 
+import { createDataGridColumnHelper } from '@/components/data-grid/features';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Timestamp } from '@/components/ui/timestamp';
 import { ImportRowActions } from '@/modules/imports/components/import-row-actions';
 import { m } from '@/paraglide/messages';
 
-const columnHelper = createColumnHelper<DataGridFeatures, ImportListItem>();
+const columnHelper = createDataGridColumnHelper<ImportListItem>();
 
 const statusVariant = {
   committed: 'success',

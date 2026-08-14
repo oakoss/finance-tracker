@@ -4,10 +4,12 @@ import { useMemo } from 'react';
 import type { CategoryListItem } from '@/modules/categories/api/list-categories';
 
 import { DataGrid, DataGridContainer } from '@/components/data-grid';
-import { dataGridFeatures } from '@/components/data-grid/features';
+import { createDataGridFeatures } from '@/components/data-grid/features';
 import { DataGridPagination } from '@/components/data-grid/pagination';
 import { DataGridTable } from '@/components/data-grid/table';
 import { createCategoryColumns } from '@/modules/categories/components/categories-columns';
+
+const features = createDataGridFeatures<CategoryListItem>();
 
 type CategoriesDataGridProps = {
   data: CategoryListItem[];
@@ -23,7 +25,7 @@ export function CategoriesDataGrid({
   const table = useTable({
     columns,
     data,
-    features: dataGridFeatures,
+    features,
     initialState: {
       columnPinning: { end: ['actions'], start: ['name'] },
       pagination: { pageIndex: 0, pageSize: 25 },

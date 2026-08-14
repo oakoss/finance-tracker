@@ -4,10 +4,12 @@ import { useMemo } from 'react';
 import type { TransactionListItem } from '@/modules/transactions/api/list-transactions';
 
 import { DataGrid, DataGridContainer } from '@/components/data-grid';
-import { dataGridFeatures } from '@/components/data-grid/features';
+import { createDataGridFeatures } from '@/components/data-grid/features';
 import { DataGridPagination } from '@/components/data-grid/pagination';
 import { DataGridTable } from '@/components/data-grid/table';
 import { createTransactionColumns } from '@/modules/transactions/components/transactions-columns';
+
+const features = createDataGridFeatures<TransactionListItem>();
 
 type TransactionsDataGridProps = {
   data: TransactionListItem[];
@@ -23,7 +25,7 @@ export function TransactionsDataGrid({
   const table = useTable({
     columns,
     data,
-    features: dataGridFeatures,
+    features,
     initialState: {
       columnPinning: { end: ['actions'], start: ['description'] },
       pagination: { pageIndex: 0, pageSize: 25 },

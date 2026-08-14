@@ -1,9 +1,7 @@
-import { createColumnHelper } from '@tanstack/react-table';
-
-import type { DataGridFeatures } from '@/components/data-grid/features';
 import type { ImportRowItem } from '@/modules/imports/api/list-import-rows';
 import type { ProcessedNormalizedRow } from '@/modules/imports/lib/apply-column-mapping';
 
+import { createDataGridColumnHelper } from '@/components/data-grid/features';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -15,7 +13,7 @@ export type ImportRowTableMeta = {
   onUpdateData: (rowId: string, data: Partial<ProcessedNormalizedRow>) => void;
 };
 
-const columnHelper = createColumnHelper<DataGridFeatures, ImportRowItem>();
+const columnHelper = createDataGridColumnHelper<ImportRowItem>();
 
 const rowStatusVariant = {
   committed: 'success',

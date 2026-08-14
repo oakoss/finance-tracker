@@ -28,8 +28,13 @@ const bodyCellSpacingVariants = cva('', {
   variants: { size: { default: 'px-4 py-2.5', dense: 'px-2.5 py-2' } },
 });
 
+// Everything in this file is pinned at the base feature set even though
+// `DataGrid` accepts a superset. Adding a `TFeatures` parameter does not work:
+// v9 derives the table surface by mapping over the concrete features object, so
+// an unresolved type parameter exposes none of the base APIs (`getIsPinned`,
+// `getStart`, `getSize` all fail). Tested — do not retry without a v9 change.
 function getPinningStyles<TData extends RowData>(
-  column: Column<DataGridFeatures, TData>,
+  column: Column<DataGridFeatures<TData>, TData>,
 ): CSSProperties {
   const isPinned = column.getIsPinned();
 
@@ -91,7 +96,7 @@ function DataGridTableHeadRow<TData extends RowData>({
   headerGroup,
 }: {
   children: ReactNode;
-  headerGroup: HeaderGroup<DataGridFeatures, TData>;
+  headerGroup: HeaderGroup<DataGridFeatures<TData>, TData>;
 }) {
   const { props } = useDataGrid();
 
@@ -121,7 +126,7 @@ function DataGridTableHeadRowCell<TData extends RowData>({
   children: ReactNode;
   dndRef?: React.Ref<HTMLTableCellElement>;
   dndStyle?: CSSProperties;
-  header: Header<DataGridFeatures, TData>;
+  header: Header<DataGridFeatures<TData>, TData>;
 }) {
   const { props, table } = useDataGrid();
 
@@ -178,7 +183,7 @@ function DataGridTableHeadRowCell<TData extends RowData>({
 function DataGridTableHeadRowCellResize<TData extends RowData>({
   header,
 }: {
-  header: Header<DataGridFeatures, TData>;
+  header: Header<DataGridFeatures<TData>, TData>;
 }) {
   const { column } = header;
 
@@ -244,7 +249,7 @@ function DataGridTableBodyRowSkeletonCell<TData extends RowData>({
   column,
 }: {
   children: ReactNode;
-  column: Column<DataGridFeatures, TData>;
+  column: Column<DataGridFeatures<TData>, TData>;
 }) {
   const { props, table } = useDataGrid();
 
@@ -299,7 +304,7 @@ function DataGridTableBodyRow<TData extends RowData>({
   children: ReactNode;
   dndRef?: React.Ref<HTMLTableRowElement>;
   dndStyle?: CSSProperties;
-  row: Row<DataGridFeatures, TData>;
+  row: Row<DataGridFeatures<TData>, TData>;
 }) {
   const { props, table } = useDataGrid();
 
@@ -356,7 +361,7 @@ function DataGridTableBodyRow<TData extends RowData>({
 function DataGridTableBodyRowExpanded<TData extends RowData>({
   row,
 }: {
-  row: Row<DataGridFeatures, TData>;
+  row: Row<DataGridFeatures<TData>, TData>;
 }) {
   const { props, table } = useDataGrid();
 
@@ -382,7 +387,7 @@ function DataGridTableBodyRowCell<TData extends RowData>({
   dndRef,
   dndStyle,
 }: {
-  cell: Cell<DataGridFeatures, TData>;
+  cell: Cell<DataGridFeatures<TData>, TData>;
   children: ReactNode;
   dndRef?: React.Ref<HTMLTableCellElement>;
   dndStyle?: CSSProperties;
@@ -468,7 +473,7 @@ function DataGridTableLoader() {
 function DataGridTableRowSelect<TData extends RowData>({
   row,
 }: {
-  row: Row<DataGridFeatures, TData>;
+  row: Row<DataGridFeatures<TData>, TData>;
 }) {
   return (
     <>

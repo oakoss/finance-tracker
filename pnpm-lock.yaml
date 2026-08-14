@@ -78,9 +78,6 @@ importers:
       '@tanstack/react-virtual':
         specifier: ^3.14.9
         version: 3.14.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@tanstack/table-core':
-        specifier: 9.1.2
-        version: 9.1.2
       '@varlock/vite-integration':
         specifier: ^1.4.0
         version: 1.4.0(varlock@1.16.1)(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))

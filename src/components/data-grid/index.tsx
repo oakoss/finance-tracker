@@ -4,39 +4,15 @@ import type {
   Column,
   ColumnFiltersState,
   ReactTable,
+  RowData,
   SortingState,
 } from '@tanstack/react-table';
-import type { CellData, RowData, TableFeatures } from '@tanstack/table-core';
 
 import { createContext, type ReactNode, use } from 'react';
 
 import type { DataGridFeatures } from '@/components/data-grid/features';
 
 import { cn } from '@/lib/utils';
-
-// v9 declares ColumnMeta in table-core and only re-exports it from
-// react-table, so the augmentation has to target the declaring module.
-declare module '@tanstack/table-core' {
-  interface ColumnMeta<
-    in out TFeatures extends TableFeatures,
-    in out TData extends RowData,
-    TValue extends CellData = CellData,
-  > {
-    headerTitle?: string;
-    headerClassName?: string;
-    cellClassName?: string;
-    skeleton?: ReactNode;
-    expandedContent?: (row: TData) => ReactNode;
-  }
-}
-
-export type DataGridColumnMeta<TData extends RowData> = {
-  cellClassName?: string;
-  expandedContent?: (row: TData) => ReactNode;
-  headerClassName?: string;
-  headerTitle?: string;
-  skeleton?: ReactNode;
-};
 
 export type DataGridApiFetchParams = {
   filters?: ColumnFiltersState;
@@ -54,9 +30,10 @@ export type DataGridApiResponse<T> = {
 
 export type DataGridContextProps<TData extends RowData> = {
   isLoading: boolean;
-  props: DataGridProps<TData>;
+  // `children` and `table` are destructured out before the rest lands here.
+  props: Omit<DataGridProps<TData>, 'children' | 'table'>;
   recordCount: number;
-  table: ReactTable<DataGridFeatures, TData>;
+  table: ReactTable<DataGridFeatures<TData>, TData>;
 };
 
 export type DataGridRequestParams = {
@@ -66,7 +43,10 @@ export type DataGridRequestParams = {
   sorting?: SortingState;
 };
 
-export type DataGridProps<TData extends RowData> = {
+export type DataGridProps<
+  TData extends RowData,
+  TFeatures extends DataGridFeatures<TData> = DataGridFeatures<TData>,
+> = {
   children?: ReactNode;
   className?: string;
   emptyMessage?: ReactNode | string;
@@ -75,7 +55,7 @@ export type DataGridProps<TData extends RowData> = {
   loadingMode?: 'skeleton' | 'spinner';
   onRowClick?: (row: TData) => void;
   recordCount: number;
-  table?: ReactTable<DataGridFeatures, TData>;
+  table: ReactTable<TFeatures, TData>;
   tableClassNames?: {
     base?: string;
     body?: string;
@@ -117,20 +97,21 @@ function useDataGrid() {
   return context;
 }
 
-function DataGridProvider<TData extends RowData>({
-  children,
-  table,
-  ...props
-}: DataGridProps<TData> & { table: ReactTable<DataGridFeatures, TData> }) {
+function DataGridProvider<
+  TData extends RowData,
+  TFeatures extends DataGridFeatures<TData> = DataGridFeatures<TData>,
+>({ children, table, ...props }: DataGridProps<TData, TFeatures>) {
   return (
     <DataGridContext
       value={{
         isLoading: props.isLoading ?? false,
         props,
         recordCount: props.recordCount,
-        // Table is invariant in TData, so widening to the context's erased
-        // `any` needs an explicit cast.
-        table: table as ReactTable<DataGridFeatures, any>,
+        // Two independent reasons this cast is required: ReactTable is
+        // invariant in TData, and inside the generic an unresolved TFeatures
+        // erases the table's feature APIs. Removing either half of the
+        // reasoning is not enough to drop it — re-test before touching.
+        table: table as unknown as ReactTable<DataGridFeatures<any>, any>,
       }}
     >
       {children}
@@ -138,12 +119,11 @@ function DataGridProvider<TData extends RowData>({
   );
 }
 
-function DataGrid<TData extends RowData>({
-  children,
-  table,
-  ...props
-}: DataGridProps<TData>) {
-  const defaultProps: Partial<DataGridProps<TData>> = {
+function DataGrid<
+  TData extends RowData,
+  TFeatures extends DataGridFeatures<TData> = DataGridFeatures<TData>,
+>({ children, table, ...props }: DataGridProps<TData, TFeatures>) {
+  const defaultProps: Partial<DataGridProps<TData, TFeatures>> = {
     loadingMode: 'skeleton',
     tableClassNames: {
       base: '',
@@ -174,7 +154,7 @@ function DataGrid<TData extends RowData>({
     },
   };
 
-  const mergedProps: DataGridProps<TData> = {
+  const mergedProps: Omit<DataGridProps<TData, TFeatures>, 'table'> = {
     ...defaultProps,
     ...props,
     tableClassNames: {
@@ -183,11 +163,6 @@ function DataGrid<TData extends RowData>({
     },
     tableLayout: { ...defaultProps.tableLayout, ...props.tableLayout },
   };
-
-  // Ensure table is provided
-  if (!table) {
-    throw new Error('DataGrid requires a "table" prop');
-  }
 
   return (
     <DataGridProvider table={table} {...mergedProps}>
@@ -220,7 +195,7 @@ function DataGridContainer({
 }
 
 function getColumnMeta<TData extends RowData, TValue>(
-  column: Column<DataGridFeatures, TData, TValue>,
+  column: Column<DataGridFeatures<TData>, TData, TValue>,
 ) {
   return column.columnDef.meta;
 }
