@@ -1,6 +1,6 @@
-// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
-import { legacyCreateColumnHelper } from '@tanstack/react-table/legacy';
+import { createColumnHelper } from '@tanstack/react-table';
 
+import type { DataGridFeatures } from '@/components/data-grid/features';
 import type { CategoryListItem } from '@/modules/categories/api/list-categories';
 
 import { Skeleton } from '@/components/ui/skeleton';
@@ -8,7 +8,7 @@ import { CategoryRowActions } from '@/modules/categories/components/category-row
 import { CategoryTypeBadge } from '@/modules/categories/components/category-type-badge';
 import { m } from '@/paraglide/messages';
 
-const columnHelper = legacyCreateColumnHelper<CategoryListItem>();
+const columnHelper = createColumnHelper<DataGridFeatures, CategoryListItem>();
 
 export function createCategoryColumns(categories: CategoryListItem[]) {
   return columnHelper.columns([

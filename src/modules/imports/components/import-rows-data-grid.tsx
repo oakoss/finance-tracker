@@ -1,13 +1,9 @@
-// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
-import {
-  getCoreRowModel,
-  getPaginationRowModel,
-  useLegacyTable,
-} from '@tanstack/react-table/legacy';
+import { useTable } from '@tanstack/react-table';
 
 import type { ImportRowItem } from '@/modules/imports/api/list-import-rows';
 
 import { DataGrid, DataGridContainer } from '@/components/data-grid';
+import { dataGridFeatures } from '@/components/data-grid/features';
 import { DataGridPagination } from '@/components/data-grid/pagination';
 import { DataGridTable } from '@/components/data-grid/table';
 import {
@@ -32,11 +28,10 @@ export function ImportRowsDataGrid({ data }: ImportRowsDataGridProps) {
       dataMutation.mutate({ id: rowId, normalizedData }),
   };
 
-  const table = useLegacyTable({
+  const table = useTable({
     columns: importRowColumns,
     data,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    features: dataGridFeatures,
     getRowId: (row) => row.id,
     initialState: { pagination: { pageIndex: 0, pageSize: 50 } },
     meta,

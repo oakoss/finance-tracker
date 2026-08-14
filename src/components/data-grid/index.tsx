@@ -1,14 +1,16 @@
 'use client';
 
-// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
-import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import type {
-  LegacyColumn,
-  LegacyReactTable,
-} from '@tanstack/react-table/legacy';
+  Column,
+  ColumnFiltersState,
+  ReactTable,
+  SortingState,
+} from '@tanstack/react-table';
 import type { CellData, RowData, TableFeatures } from '@tanstack/table-core';
 
 import { createContext, type ReactNode, use } from 'react';
+
+import type { DataGridFeatures } from '@/components/data-grid/features';
 
 import { cn } from '@/lib/utils';
 
@@ -54,7 +56,7 @@ export type DataGridContextProps<TData extends RowData> = {
   isLoading: boolean;
   props: DataGridProps<TData>;
   recordCount: number;
-  table: LegacyReactTable<TData>;
+  table: ReactTable<DataGridFeatures, TData>;
 };
 
 export type DataGridRequestParams = {
@@ -73,7 +75,7 @@ export type DataGridProps<TData extends RowData> = {
   loadingMode?: 'skeleton' | 'spinner';
   onRowClick?: (row: TData) => void;
   recordCount: number;
-  table?: LegacyReactTable<TData>;
+  table?: ReactTable<DataGridFeatures, TData>;
   tableClassNames?: {
     base?: string;
     body?: string;
@@ -119,16 +121,16 @@ function DataGridProvider<TData extends RowData>({
   children,
   table,
   ...props
-}: DataGridProps<TData> & { table: LegacyReactTable<TData> }) {
+}: DataGridProps<TData> & { table: ReactTable<DataGridFeatures, TData> }) {
   return (
     <DataGridContext
       value={{
         isLoading: props.isLoading ?? false,
         props,
         recordCount: props.recordCount,
-        // v9's table type is invariant in TData, so widening to the context's
-        // erased `any` needs an explicit cast.
-        table: table as LegacyReactTable<any>,
+        // Table is invariant in TData, so widening to the context's erased
+        // `any` needs an explicit cast.
+        table: table as ReactTable<DataGridFeatures, any>,
       }}
     >
       {children}
@@ -218,7 +220,7 @@ function DataGridContainer({
 }
 
 function getColumnMeta<TData extends RowData, TValue>(
-  column: LegacyColumn<TData, TValue>,
+  column: Column<DataGridFeatures, TData, TValue>,
 ) {
   return column.columnDef.meta;
 }

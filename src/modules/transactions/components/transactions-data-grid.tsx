@@ -1,14 +1,10 @@
-// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
-import {
-  getCoreRowModel,
-  getPaginationRowModel,
-  useLegacyTable,
-} from '@tanstack/react-table/legacy';
+import { useTable } from '@tanstack/react-table';
 import { useMemo } from 'react';
 
 import type { TransactionListItem } from '@/modules/transactions/api/list-transactions';
 
 import { DataGrid, DataGridContainer } from '@/components/data-grid';
+import { dataGridFeatures } from '@/components/data-grid/features';
 import { DataGridPagination } from '@/components/data-grid/pagination';
 import { DataGridTable } from '@/components/data-grid/table';
 import { createTransactionColumns } from '@/modules/transactions/components/transactions-columns';
@@ -24,11 +20,10 @@ export function TransactionsDataGrid({
 }: TransactionsDataGridProps) {
   const columns = useMemo(() => createTransactionColumns(), []);
 
-  const table = useLegacyTable({
+  const table = useTable({
     columns,
     data,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    features: dataGridFeatures,
     initialState: {
       columnPinning: { end: ['actions'], start: ['description'] },
       pagination: { pageIndex: 0, pageSize: 25 },

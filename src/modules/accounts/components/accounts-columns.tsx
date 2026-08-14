@@ -1,6 +1,6 @@
-// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
-import { legacyCreateColumnHelper } from '@tanstack/react-table/legacy';
+import { createColumnHelper } from '@tanstack/react-table';
 
+import type { DataGridFeatures } from '@/components/data-grid/features';
 import type { AccountListItem } from '@/modules/accounts/api/list-accounts';
 
 import { Badge } from '@/components/ui/badge';
@@ -10,7 +10,7 @@ import { AccountRowActions } from '@/modules/accounts/components/account-row-act
 import { AccountTypeBadge } from '@/modules/accounts/components/account-type-badge';
 import { m } from '@/paraglide/messages';
 
-const columnHelper = legacyCreateColumnHelper<AccountListItem>();
+const columnHelper = createColumnHelper<DataGridFeatures, AccountListItem>();
 
 export const accountColumns = columnHelper.columns([
   columnHelper.accessor('account.name', {

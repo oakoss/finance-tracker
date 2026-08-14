@@ -1,6 +1,6 @@
-// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
-import { legacyCreateColumnHelper } from '@tanstack/react-table/legacy';
+import { createColumnHelper } from '@tanstack/react-table';
 
+import type { DataGridFeatures } from '@/components/data-grid/features';
 import type { ImportRowItem } from '@/modules/imports/api/list-import-rows';
 import type { ProcessedNormalizedRow } from '@/modules/imports/lib/apply-column-mapping';
 
@@ -15,7 +15,7 @@ export type ImportRowTableMeta = {
   onUpdateData: (rowId: string, data: Partial<ProcessedNormalizedRow>) => void;
 };
 
-const columnHelper = legacyCreateColumnHelper<ImportRowItem>();
+const columnHelper = createColumnHelper<DataGridFeatures, ImportRowItem>();
 
 const rowStatusVariant = {
   committed: 'success',

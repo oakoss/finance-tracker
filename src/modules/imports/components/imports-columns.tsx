@@ -1,6 +1,6 @@
-// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
-import { legacyCreateColumnHelper } from '@tanstack/react-table/legacy';
+import { createColumnHelper } from '@tanstack/react-table';
 
+import type { DataGridFeatures } from '@/components/data-grid/features';
 import type { ImportListItem } from '@/modules/imports/api/list-imports';
 
 import { Badge } from '@/components/ui/badge';
@@ -9,7 +9,7 @@ import { Timestamp } from '@/components/ui/timestamp';
 import { ImportRowActions } from '@/modules/imports/components/import-row-actions';
 import { m } from '@/paraglide/messages';
 
-const columnHelper = legacyCreateColumnHelper<ImportListItem>();
+const columnHelper = createColumnHelper<DataGridFeatures, ImportListItem>();
 
 const statusVariant = {
   committed: 'success',

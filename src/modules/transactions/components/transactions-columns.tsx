@@ -1,6 +1,6 @@
-// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
-import { legacyCreateColumnHelper } from '@tanstack/react-table/legacy';
+import { createColumnHelper } from '@tanstack/react-table';
 
+import type { DataGridFeatures } from '@/components/data-grid/features';
 import type { TransactionListItem } from '@/modules/transactions/api/list-transactions';
 
 import { Badge } from '@/components/ui/badge';
@@ -11,7 +11,10 @@ import { RuleMatchBadge } from '@/modules/rules/components/rule-match-badge';
 import { TransactionRowActions } from '@/modules/transactions/components/transaction-row-actions';
 import { m } from '@/paraglide/messages';
 
-const columnHelper = legacyCreateColumnHelper<TransactionListItem>();
+const columnHelper = createColumnHelper<
+  DataGridFeatures,
+  TransactionListItem
+>();
 
 export function createTransactionColumns() {
   return columnHelper.columns([

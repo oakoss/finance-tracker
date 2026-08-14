@@ -1,15 +1,16 @@
-// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
-import type {
-  LegacyCell,
-  LegacyColumn,
-  LegacyHeader,
-  LegacyHeaderGroup,
-  LegacyRow,
-} from '@tanstack/react-table/legacy';
-
-import { flexRender, type RowData } from '@tanstack/react-table';
+import {
+  type Cell,
+  type Column,
+  flexRender,
+  type Header,
+  type HeaderGroup,
+  type Row,
+  type RowData,
+} from '@tanstack/react-table';
 import { cva } from 'class-variance-authority';
 import { type CSSProperties, Fragment, type ReactNode, useMemo } from 'react';
+
+import type { DataGridFeatures } from '@/components/data-grid/features';
 
 import { useDataGrid } from '@/components/data-grid';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -28,7 +29,7 @@ const bodyCellSpacingVariants = cva('', {
 });
 
 function getPinningStyles<TData extends RowData>(
-  column: LegacyColumn<TData>,
+  column: Column<DataGridFeatures, TData>,
 ): CSSProperties {
   const isPinned = column.getIsPinned();
 
@@ -90,7 +91,7 @@ function DataGridTableHeadRow<TData extends RowData>({
   headerGroup,
 }: {
   children: ReactNode;
-  headerGroup: LegacyHeaderGroup<TData>;
+  headerGroup: HeaderGroup<DataGridFeatures, TData>;
 }) {
   const { props } = useDataGrid();
 
@@ -120,7 +121,7 @@ function DataGridTableHeadRowCell<TData extends RowData>({
   children: ReactNode;
   dndRef?: React.Ref<HTMLTableCellElement>;
   dndStyle?: CSSProperties;
-  header: LegacyHeader<TData>;
+  header: Header<DataGridFeatures, TData>;
 }) {
   const { props, table } = useDataGrid();
 
@@ -177,7 +178,7 @@ function DataGridTableHeadRowCell<TData extends RowData>({
 function DataGridTableHeadRowCellResize<TData extends RowData>({
   header,
 }: {
-  header: LegacyHeader<TData>;
+  header: Header<DataGridFeatures, TData>;
 }) {
   const { column } = header;
 
@@ -243,7 +244,7 @@ function DataGridTableBodyRowSkeletonCell<TData extends RowData>({
   column,
 }: {
   children: ReactNode;
-  column: LegacyColumn<TData>;
+  column: Column<DataGridFeatures, TData>;
 }) {
   const { props, table } = useDataGrid();
 
@@ -298,7 +299,7 @@ function DataGridTableBodyRow<TData extends RowData>({
   children: ReactNode;
   dndRef?: React.Ref<HTMLTableRowElement>;
   dndStyle?: CSSProperties;
-  row: LegacyRow<TData>;
+  row: Row<DataGridFeatures, TData>;
 }) {
   const { props, table } = useDataGrid();
 
@@ -355,7 +356,7 @@ function DataGridTableBodyRow<TData extends RowData>({
 function DataGridTableBodyRowExpanded<TData extends RowData>({
   row,
 }: {
-  row: LegacyRow<TData>;
+  row: Row<DataGridFeatures, TData>;
 }) {
   const { props, table } = useDataGrid();
 
@@ -381,7 +382,7 @@ function DataGridTableBodyRowCell<TData extends RowData>({
   dndRef,
   dndStyle,
 }: {
-  cell: LegacyCell<TData>;
+  cell: Cell<DataGridFeatures, TData>;
   children: ReactNode;
   dndRef?: React.Ref<HTMLTableCellElement>;
   dndStyle?: CSSProperties;
@@ -467,7 +468,7 @@ function DataGridTableLoader() {
 function DataGridTableRowSelect<TData extends RowData>({
   row,
 }: {
-  row: LegacyRow<TData>;
+  row: Row<DataGridFeatures, TData>;
 }) {
   return (
     <>
@@ -507,17 +508,17 @@ function DataGridTableRowSelectAll() {
 
 function DataGridTable() {
   const { isLoading, props, table } = useDataGrid();
-  const pagination = table.getState().pagination;
+  const pagination = table.state.pagination;
   const skeletonRows = useMemo(() => {
-    const count = pagination?.pageSize ?? 0;
-    const pageKey = pagination?.pageIndex ?? 0;
+    const count = pagination.pageSize;
+    const pageKey = pagination.pageIndex;
     return Array.from({ length: count }, (_, index) => ({
       id: `skeleton-${pageKey}-${index}`,
     }));
-  }, [pagination?.pageSize, pagination?.pageIndex]);
+  }, [pagination.pageSize, pagination.pageIndex]);
 
   let bodyContent: ReactNode;
-  if (isLoading && props.loadingMode === 'skeleton' && pagination?.pageSize) {
+  if (isLoading && props.loadingMode === 'skeleton' && pagination.pageSize) {
     bodyContent = skeletonRows.map((row) => (
       <DataGridTableBodyRowSkeleton key={row.id}>
         {table.getVisibleFlatColumns().map((column) => {
