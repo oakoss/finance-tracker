@@ -1,4 +1,5 @@
-import { createColumnHelper } from '@tanstack/react-table';
+// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
+import { legacyCreateColumnHelper } from '@tanstack/react-table/legacy';
 
 import type { TransactionListItem } from '@/modules/transactions/api/list-transactions';
 
@@ -10,10 +11,10 @@ import { RuleMatchBadge } from '@/modules/rules/components/rule-match-badge';
 import { TransactionRowActions } from '@/modules/transactions/components/transaction-row-actions';
 import { m } from '@/paraglide/messages';
 
-const columnHelper = createColumnHelper<TransactionListItem>();
+const columnHelper = legacyCreateColumnHelper<TransactionListItem>();
 
 export function createTransactionColumns() {
-  return [
+  return columnHelper.columns([
     columnHelper.accessor('transactionAt', {
       cell: ({ getValue }) => {
         const value = getValue();
@@ -155,5 +156,5 @@ export function createTransactionColumns() {
       },
       size: 60,
     }),
-  ];
+  ]);
 }

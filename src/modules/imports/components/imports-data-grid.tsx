@@ -1,9 +1,10 @@
+// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
 import { useNavigate } from '@tanstack/react-router';
 import {
   getCoreRowModel,
   getPaginationRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+  useLegacyTable,
+} from '@tanstack/react-table/legacy';
 
 import type { ImportListItem } from '@/modules/imports/api/list-imports';
 
@@ -17,8 +18,7 @@ type ImportsDataGridProps = { data: ImportListItem[]; isLoading?: boolean };
 export function ImportsDataGrid({ data, isLoading }: ImportsDataGridProps) {
   const navigate = useNavigate();
 
-  // oxlint-disable-next-line react-compiler/incompatible-library -- TanStack Table API is Compiler-incompatible by design
-  const table = useReactTable({
+  const table = useLegacyTable({
     columns: importColumns,
     data,
     getCoreRowModel: getCoreRowModel(),

@@ -1,11 +1,13 @@
-import {
-  type Cell,
-  type Column,
-  flexRender,
-  type Header,
-  type HeaderGroup,
-  type Row,
-} from '@tanstack/react-table';
+// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
+import type {
+  LegacyCell,
+  LegacyColumn,
+  LegacyHeader,
+  LegacyHeaderGroup,
+  LegacyRow,
+} from '@tanstack/react-table/legacy';
+
+import { flexRender, type RowData } from '@tanstack/react-table';
 import { cva } from 'class-variance-authority';
 import { type CSSProperties, Fragment, type ReactNode, useMemo } from 'react';
 
@@ -25,13 +27,19 @@ const bodyCellSpacingVariants = cva('', {
   variants: { size: { default: 'px-4 py-2.5', dense: 'px-2.5 py-2' } },
 });
 
-function getPinningStyles<TData>(column: Column<TData>): CSSProperties {
+function getPinningStyles<TData extends RowData>(
+  column: LegacyColumn<TData>,
+): CSSProperties {
   const isPinned = column.getIsPinned();
 
+  // v9's start/end are logical, not physical — use logical inset properties so
+  // the offsets flip with direction the way the border utilities already do.
   return {
-    left: isPinned === 'left' ? `${column.getStart('left')}px` : undefined,
+    insetInlineEnd:
+      isPinned === 'end' ? `${column.getAfter('end')}px` : undefined,
+    insetInlineStart:
+      isPinned === 'start' ? `${column.getStart('start')}px` : undefined,
     position: isPinned ? 'sticky' : 'relative',
-    right: isPinned === 'right' ? `${column.getAfter('right')}px` : undefined,
     width: column.getSize(),
     zIndex: isPinned ? 1 : 0,
   };
@@ -77,12 +85,12 @@ function DataGridTableHead({ children }: { children: ReactNode }) {
   );
 }
 
-function DataGridTableHeadRow<TData>({
+function DataGridTableHeadRow<TData extends RowData>({
   children,
   headerGroup,
 }: {
   children: ReactNode;
-  headerGroup: HeaderGroup<TData>;
+  headerGroup: LegacyHeaderGroup<TData>;
 }) {
   const { props } = useDataGrid();
 
@@ -103,7 +111,7 @@ function DataGridTableHeadRow<TData>({
   );
 }
 
-function DataGridTableHeadRowCell<TData>({
+function DataGridTableHeadRowCell<TData extends RowData>({
   children,
   dndRef,
   dndStyle,
@@ -112,16 +120,15 @@ function DataGridTableHeadRowCell<TData>({
   children: ReactNode;
   dndRef?: React.Ref<HTMLTableCellElement>;
   dndStyle?: CSSProperties;
-  header: Header<TData, unknown>;
+  header: LegacyHeader<TData>;
 }) {
-  const { props } = useDataGrid();
+  const { props, table } = useDataGrid();
 
   const { column } = header;
   const isPinned = column.getIsPinned();
-  const isLastLeftPinned =
-    isPinned === 'left' && column.getIsLastColumn('left');
-  const isFirstRightPinned =
-    isPinned === 'right' && column.getIsFirstColumn('right');
+  const isLastStartPinned =
+    isPinned === 'start' && column.getIsLastColumn('start');
+  const isFirstEndPinned = isPinned === 'end' && column.getIsFirstColumn('end');
   const headerCellSpacing = headerCellSpacingVariants({
     size: props.tableLayout?.dense ? 'dense' : 'default',
   });
@@ -139,15 +146,18 @@ function DataGridTableHeadRowCell<TData>({
           'truncate',
         props.tableLayout?.columnsPinnable &&
           column.getCanPin() &&
-          'data-pinned:bg-muted/90 data-pinned:backdrop-blur-xs [&:not([data-pinned]):has(+[data-pinned])_div.cursor-col-resize:last-child]:opacity-0 [&[data-last-col=left]_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=left][data-last-col=left]]:border-e! [&[data-pinned=right]:last-child_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=right][data-last-col=right]]:border-s! [&[data-pinned][data-last-col]]:border-border',
+          'data-pinned:bg-muted/90 data-pinned:backdrop-blur-xs [&:not([data-pinned]):has(+[data-pinned])_div.cursor-col-resize:last-child]:opacity-0 [&[data-last-col=start]_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=end]:last-child_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=end][data-last-col=end]]:border-s! [&[data-pinned=start][data-last-col=start]]:border-e! [&[data-pinned][data-last-col]]:border-border',
         header.column.columnDef.meta?.headerClassName,
+        // v9 makes header.headerGroup nullable; counting the table's flat
+        // columns avoids the nullable hop and matches the body and skeleton
+        // cells, which already measure the edge this way.
         column.getIndex() === 0 ||
-          column.getIndex() === header.headerGroup.headers.length - 1
+          column.getIndex() === table.getVisibleFlatColumns().length - 1
           ? props.tableClassNames?.edgeCell
           : '',
       )}
       data-last-col={
-        isLastLeftPinned ? 'left' : isFirstRightPinned ? 'right' : undefined
+        isLastStartPinned ? 'start' : isFirstEndPinned ? 'end' : undefined
       }
       data-pinned={isPinned === false ? undefined : isPinned}
       style={{
@@ -164,10 +174,10 @@ function DataGridTableHeadRowCell<TData>({
   );
 }
 
-function DataGridTableHeadRowCellResize<TData>({
+function DataGridTableHeadRowCellResize<TData extends RowData>({
   header,
 }: {
-  header: Header<TData, unknown>;
+  header: LegacyHeader<TData>;
 }) {
   const { column } = header;
 
@@ -228,20 +238,19 @@ function DataGridTableBodyRowSkeleton({ children }: { children: ReactNode }) {
   );
 }
 
-function DataGridTableBodyRowSkeletonCell<TData>({
+function DataGridTableBodyRowSkeletonCell<TData extends RowData>({
   children,
   column,
 }: {
   children: ReactNode;
-  column: Column<TData>;
+  column: LegacyColumn<TData>;
 }) {
   const { props, table } = useDataGrid();
 
   const isPinned = column.getIsPinned();
-  const isLastLeftPinned =
-    isPinned === 'left' && column.getIsLastColumn('left');
-  const isFirstRightPinned =
-    isPinned === 'right' && column.getIsFirstColumn('right');
+  const isLastStartPinned =
+    isPinned === 'start' && column.getIsLastColumn('start');
+  const isFirstEndPinned = isPinned === 'end' && column.getIsFirstColumn('end');
   const bodyCellSpacing = bodyCellSpacingVariants({
     size: props.tableLayout?.dense ? 'dense' : 'default',
   });
@@ -258,14 +267,14 @@ function DataGridTableBodyRowSkeletonCell<TData>({
         column.columnDef.meta?.cellClassName,
         props.tableLayout?.columnsPinnable &&
           column.getCanPin() &&
-          'data-pinned:bg-background/90 data-pinned:backdrop-blur-xs [&[data-pinned=left][data-last-col=left]]:border-e! [&[data-pinned=right][data-last-col=right]]:border-s! [&[data-pinned][data-last-col]]:border-border',
+          'data-pinned:bg-background/90 data-pinned:backdrop-blur-xs [&[data-pinned=end][data-last-col=end]]:border-s! [&[data-pinned=start][data-last-col=start]]:border-e! [&[data-pinned][data-last-col]]:border-border',
         column.getIndex() === 0 ||
           column.getIndex() === table.getVisibleFlatColumns().length - 1
           ? props.tableClassNames?.edgeCell
           : '',
       )}
       data-last-col={
-        isLastLeftPinned ? 'left' : isFirstRightPinned ? 'right' : undefined
+        isLastStartPinned ? 'start' : isFirstEndPinned ? 'end' : undefined
       }
       data-pinned={isPinned === false ? undefined : isPinned}
       style={{
@@ -280,7 +289,7 @@ function DataGridTableBodyRowSkeletonCell<TData>({
   );
 }
 
-function DataGridTableBodyRow<TData>({
+function DataGridTableBodyRow<TData extends RowData>({
   children,
   dndRef,
   dndStyle,
@@ -289,7 +298,7 @@ function DataGridTableBodyRow<TData>({
   children: ReactNode;
   dndRef?: React.Ref<HTMLTableRowElement>;
   dndStyle?: CSSProperties;
-  row: Row<TData>;
+  row: LegacyRow<TData>;
 }) {
   const { props, table } = useDataGrid();
 
@@ -343,7 +352,11 @@ function DataGridTableBodyRow<TData>({
   );
 }
 
-function DataGridTableBodyRowExpanded<TData>({ row }: { row: Row<TData> }) {
+function DataGridTableBodyRowExpanded<TData extends RowData>({
+  row,
+}: {
+  row: LegacyRow<TData>;
+}) {
   const { props, table } = useDataGrid();
 
   return (
@@ -362,13 +375,13 @@ function DataGridTableBodyRowExpanded<TData>({ row }: { row: Row<TData> }) {
   );
 }
 
-function DataGridTableBodyRowCell<TData>({
+function DataGridTableBodyRowCell<TData extends RowData>({
   cell,
   children,
   dndRef,
   dndStyle,
 }: {
-  cell: Cell<TData, unknown>;
+  cell: LegacyCell<TData>;
   children: ReactNode;
   dndRef?: React.Ref<HTMLTableCellElement>;
   dndStyle?: CSSProperties;
@@ -377,10 +390,9 @@ function DataGridTableBodyRowCell<TData>({
 
   const { column, row } = cell;
   const isPinned = column.getIsPinned();
-  const isLastLeftPinned =
-    isPinned === 'left' && column.getIsLastColumn('left');
-  const isFirstRightPinned =
-    isPinned === 'right' && column.getIsFirstColumn('right');
+  const isLastStartPinned =
+    isPinned === 'start' && column.getIsLastColumn('start');
+  const isFirstEndPinned = isPinned === 'end' && column.getIsFirstColumn('end');
   const bodyCellSpacing = bodyCellSpacingVariants({
     size: props.tableLayout?.dense ? 'dense' : 'default',
   });
@@ -400,14 +412,14 @@ function DataGridTableBodyRowCell<TData>({
         cell.column.columnDef.meta?.cellClassName,
         props.tableLayout?.columnsPinnable &&
           column.getCanPin() &&
-          'data-pinned:bg-background/90 data-pinned:backdrop-blur-xs [&[data-pinned=left][data-last-col=left]]:border-e! [&[data-pinned=right][data-last-col=right]]:border-s! [&[data-pinned][data-last-col]]:border-border',
+          'data-pinned:bg-background/90 data-pinned:backdrop-blur-xs [&[data-pinned=end][data-last-col=end]]:border-s! [&[data-pinned=start][data-last-col=start]]:border-e! [&[data-pinned][data-last-col]]:border-border',
         column.getIndex() === 0 ||
           column.getIndex() === row.getVisibleCells().length - 1
           ? props.tableClassNames?.edgeCell
           : '',
       )}
       data-last-col={
-        isLastLeftPinned ? 'left' : isFirstRightPinned ? 'right' : undefined
+        isLastStartPinned ? 'start' : isFirstEndPinned ? 'end' : undefined
       }
       data-pinned={isPinned === false ? undefined : isPinned}
       style={{
@@ -452,7 +464,11 @@ function DataGridTableLoader() {
   );
 }
 
-function DataGridTableRowSelect<TData>({ row }: { row: Row<TData> }) {
+function DataGridTableRowSelect<TData extends RowData>({
+  row,
+}: {
+  row: LegacyRow<TData>;
+}) {
   return (
     <>
       <div

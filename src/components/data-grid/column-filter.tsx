@@ -1,4 +1,6 @@
-import type { Column } from '@tanstack/react-table';
+// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
+import type { RowData } from '@tanstack/react-table';
+import type { LegacyColumn } from '@tanstack/react-table/legacy';
 
 import { useMemo, useState } from 'react';
 
@@ -15,8 +17,8 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { m } from '@/paraglide/messages';
 
-type DataGridColumnFilterProps<TData, TValue extends string> = {
-  column?: Column<TData, TValue>;
+type DataGridColumnFilterProps<TData extends RowData, TValue extends string> = {
+  column?: LegacyColumn<TData, TValue>;
   options: {
     icon?: React.ComponentType<{ className?: string }>;
     label: string;
@@ -25,7 +27,7 @@ type DataGridColumnFilterProps<TData, TValue extends string> = {
   title?: string;
 };
 
-function DataGridColumnFilter<TData, TValue extends string>({
+function DataGridColumnFilter<TData extends RowData, TValue extends string>({
   column,
   options,
   title,

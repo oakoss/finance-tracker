@@ -1,4 +1,6 @@
-import type { Table } from '@tanstack/react-table';
+// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
+import type { RowData } from '@tanstack/react-table';
+import type { LegacyReactTable } from '@tanstack/react-table/legacy';
 import type { ReactElement } from 'react';
 
 import { getColumnMeta } from '@/components/data-grid';
@@ -12,11 +14,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { m } from '@/paraglide/messages';
 
-function DataGridColumnVisibility<TData>({
+function DataGridColumnVisibility<TData extends RowData>({
   table,
   trigger,
 }: {
-  table: Table<TData>;
+  table: LegacyReactTable<TData>;
   trigger: ReactElement<Record<string, unknown>>;
 }) {
   return (

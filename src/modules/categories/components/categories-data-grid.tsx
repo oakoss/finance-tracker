@@ -1,8 +1,9 @@
+// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
 import {
   getCoreRowModel,
   getPaginationRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+  useLegacyTable,
+} from '@tanstack/react-table/legacy';
 import { useMemo } from 'react';
 
 import type { CategoryListItem } from '@/modules/categories/api/list-categories';
@@ -23,14 +24,13 @@ export function CategoriesDataGrid({
 }: CategoriesDataGridProps) {
   const columns = useMemo(() => createCategoryColumns(data), [data]);
 
-  // oxlint-disable-next-line react-compiler/incompatible-library -- TanStack Table API is Compiler-incompatible by design
-  const table = useReactTable({
+  const table = useLegacyTable({
     columns,
     data,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
-      columnPinning: { left: ['name'], right: ['actions'] },
+      columnPinning: { end: ['actions'], start: ['name'] },
       pagination: { pageIndex: 0, pageSize: 25 },
     },
   });

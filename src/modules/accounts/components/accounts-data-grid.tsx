@@ -1,8 +1,9 @@
+// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
 import {
   getCoreRowModel,
   getPaginationRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+  useLegacyTable,
+} from '@tanstack/react-table/legacy';
 
 import type { AccountListItem } from '@/modules/accounts/api/list-accounts';
 
@@ -14,14 +15,13 @@ import { accountColumns } from '@/modules/accounts/components/accounts-columns';
 type AccountsDataGridProps = { data: AccountListItem[]; isLoading?: boolean };
 
 export function AccountsDataGrid({ data, isLoading }: AccountsDataGridProps) {
-  // oxlint-disable-next-line react-compiler/incompatible-library -- TanStack Table API is Compiler-incompatible by design
-  const table = useReactTable({
+  const table = useLegacyTable({
     columns: accountColumns,
     data,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
-      columnPinning: { left: ['account_name'], right: ['actions'] },
+      columnPinning: { end: ['actions'], start: ['account_name'] },
       pagination: { pageIndex: 0, pageSize: 25 },
     },
   });

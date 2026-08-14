@@ -1,4 +1,5 @@
-import { createColumnHelper } from '@tanstack/react-table';
+// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
+import { legacyCreateColumnHelper } from '@tanstack/react-table/legacy';
 
 import type { CategoryListItem } from '@/modules/categories/api/list-categories';
 
@@ -7,10 +8,10 @@ import { CategoryRowActions } from '@/modules/categories/components/category-row
 import { CategoryTypeBadge } from '@/modules/categories/components/category-type-badge';
 import { m } from '@/paraglide/messages';
 
-const columnHelper = createColumnHelper<CategoryListItem>();
+const columnHelper = legacyCreateColumnHelper<CategoryListItem>();
 
 export function createCategoryColumns(categories: CategoryListItem[]) {
-  return [
+  return columnHelper.columns([
     columnHelper.accessor('name', {
       cell: ({ getValue }) => <span className="font-medium">{getValue()}</span>,
       header: () => m['categories.columns.name'](),
@@ -70,5 +71,5 @@ export function createCategoryColumns(categories: CategoryListItem[]) {
       },
       size: 60,
     }),
-  ];
+  ]);
 }

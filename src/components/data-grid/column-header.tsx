@@ -1,6 +1,8 @@
 'use client';
 
-import type { Column } from '@tanstack/react-table';
+// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
+import type { RowData } from '@tanstack/react-table';
+import type { LegacyColumn } from '@tanstack/react-table/legacy';
 
 import { type HTMLAttributes, memo, type ReactNode, useMemo } from 'react';
 
@@ -31,8 +33,8 @@ function renderIcon(icon: React.ReactNode) {
   return <span className="inline-flex">{icon}</span>;
 }
 
-type DataGridColumnHeaderProps<TData, TValue> = {
-  column: Column<TData, TValue>;
+type DataGridColumnHeaderProps<TData extends RowData, TValue> = {
+  column: LegacyColumn<TData, TValue>;
   filter?: ReactNode;
   icon?: ReactNode;
   pinnable?: boolean;
@@ -40,7 +42,7 @@ type DataGridColumnHeaderProps<TData, TValue> = {
   visibility?: boolean;
 } & HTMLAttributes<HTMLDivElement>;
 
-function DataGridColumnHeaderInner<TData, TValue>({
+function DataGridColumnHeaderInner<TData extends RowData, TValue>({
   className,
   column,
   filter,
@@ -166,21 +168,21 @@ function DataGridColumnHeaderInner<TData, TValue>({
       items.push(
         <DropdownMenuItem
           key="pin-left"
-          onClick={() => column.pin(isPinned === 'left' ? false : 'left')}
+          onClick={() => column.pin(isPinned === 'start' ? false : 'start')}
         >
           <Icons.ArrowLeftToLine aria-hidden="true" className="size-3.5!" />
           <span className="grow">{m['dataGrid.column.pinToLeft']()}</span>
-          {isPinned === 'left' && (
+          {isPinned === 'start' && (
             <Icons.Check className="size-4 text-primary opacity-100!" />
           )}
         </DropdownMenuItem>,
         <DropdownMenuItem
           key="pin-right"
-          onClick={() => column.pin(isPinned === 'right' ? false : 'right')}
+          onClick={() => column.pin(isPinned === 'end' ? false : 'end')}
         >
           <Icons.ArrowRightToLine aria-hidden="true" className="size-3.5!" />
           <span className="grow">{m['dataGrid.column.pinToRight']()}</span>
-          {isPinned === 'right' && (
+          {isPinned === 'end' && (
             <Icons.Check className="size-4 text-primary opacity-100!" />
           )}
         </DropdownMenuItem>,

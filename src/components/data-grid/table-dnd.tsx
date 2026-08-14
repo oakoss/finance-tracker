@@ -1,5 +1,8 @@
 'use client';
 
+// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
+import type { LegacyCell, LegacyHeader } from '@tanstack/react-table/legacy';
+
 import {
   closestCenter,
   DndContext,
@@ -17,7 +20,7 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { type Cell, flexRender, type Header } from '@tanstack/react-table';
+import { flexRender, type RowData } from '@tanstack/react-table';
 import { type CSSProperties, Fragment, useId, useMemo, useRef } from 'react';
 
 import { useDataGrid } from '@/components/data-grid';
@@ -40,10 +43,10 @@ import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { m } from '@/paraglide/messages';
 
-function DataGridTableDndHeader<TData>({
+function DataGridTableDndHeader<TData extends RowData>({
   header,
 }: {
-  header: Header<TData, unknown>;
+  header: LegacyHeader<TData>;
 }) {
   const { props } = useDataGrid();
   const { column } = header;
@@ -107,7 +110,11 @@ function DataGridTableDndHeader<TData>({
   );
 }
 
-function DataGridTableDndCell<TData>({ cell }: { cell: Cell<TData, unknown> }) {
+function DataGridTableDndCell<TData extends RowData>({
+  cell,
+}: {
+  cell: LegacyCell<TData>;
+}) {
   const { isDragging, setNodeRef, transform, transition } = useSortable({
     id: cell.column.id,
   });

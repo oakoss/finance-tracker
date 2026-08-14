@@ -1,19 +1,25 @@
 'use client';
 
+// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
+import type { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import type {
-  Column,
-  ColumnFiltersState,
-  RowData,
-  SortingState,
-  Table,
-} from '@tanstack/react-table';
+  LegacyColumn,
+  LegacyReactTable,
+} from '@tanstack/react-table/legacy';
+import type { CellData, RowData, TableFeatures } from '@tanstack/table-core';
 
 import { createContext, type ReactNode, use } from 'react';
 
 import { cn } from '@/lib/utils';
 
-declare module '@tanstack/react-table' {
-  interface ColumnMeta<TData extends RowData, TValue> {
+// v9 declares ColumnMeta in table-core and only re-exports it from
+// react-table, so the augmentation has to target the declaring module.
+declare module '@tanstack/table-core' {
+  interface ColumnMeta<
+    in out TFeatures extends TableFeatures,
+    in out TData extends RowData,
+    TValue extends CellData = CellData,
+  > {
     headerTitle?: string;
     headerClassName?: string;
     cellClassName?: string;
@@ -44,11 +50,11 @@ export type DataGridApiResponse<T> = {
   pagination: { page: number; total: number };
 };
 
-export type DataGridContextProps<TData extends object> = {
+export type DataGridContextProps<TData extends RowData> = {
   isLoading: boolean;
   props: DataGridProps<TData>;
   recordCount: number;
-  table: Table<TData>;
+  table: LegacyReactTable<TData>;
 };
 
 export type DataGridRequestParams = {
@@ -58,7 +64,7 @@ export type DataGridRequestParams = {
   sorting?: SortingState;
 };
 
-export type DataGridProps<TData extends object> = {
+export type DataGridProps<TData extends RowData> = {
   children?: ReactNode;
   className?: string;
   emptyMessage?: ReactNode | string;
@@ -67,7 +73,7 @@ export type DataGridProps<TData extends object> = {
   loadingMode?: 'skeleton' | 'spinner';
   onRowClick?: (row: TData) => void;
   recordCount: number;
-  table?: Table<TData>;
+  table?: LegacyReactTable<TData>;
   tableClassNames?: {
     base?: string;
     body?: string;
@@ -109,18 +115,20 @@ function useDataGrid() {
   return context;
 }
 
-function DataGridProvider<TData extends object>({
+function DataGridProvider<TData extends RowData>({
   children,
   table,
   ...props
-}: DataGridProps<TData> & { table: Table<TData> }) {
+}: DataGridProps<TData> & { table: LegacyReactTable<TData> }) {
   return (
     <DataGridContext
       value={{
         isLoading: props.isLoading ?? false,
         props,
         recordCount: props.recordCount,
-        table,
+        // v9's table type is invariant in TData, so widening to the context's
+        // erased `any` needs an explicit cast.
+        table: table as LegacyReactTable<any>,
       }}
     >
       {children}
@@ -128,7 +136,7 @@ function DataGridProvider<TData extends object>({
   );
 }
 
-function DataGrid<TData extends object>({
+function DataGrid<TData extends RowData>({
   children,
   table,
   ...props
@@ -209,7 +217,9 @@ function DataGridContainer({
   );
 }
 
-function getColumnMeta<TData, TValue>(column: Column<TData, TValue>) {
+function getColumnMeta<TData extends RowData, TValue>(
+  column: LegacyColumn<TData, TValue>,
+) {
   return column.columnDef.meta;
 }
 

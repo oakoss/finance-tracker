@@ -198,6 +198,13 @@ the footer's `border-t`.
 - Provide `getRowId` when selection needs stable identifiers.
 - Extract reusable controls (column header, pagination, view options) only when
   reused across multiple tables.
+- The app is on react-table v9 through its compat layer, so tables import
+  `useLegacyTable`, `legacyCreateColumnHelper` and the `get*RowModel` helpers
+  from `@tanstack/react-table/legacy` — the v9 root exports none of them, and
+  `useReactTable` no longer exists at all. When the migration off the compat
+  layer lands these become `tableFeatures()` + `useTable`, row models move into
+  feature slots (`paginatedRowModel: createPaginatedRowModel()`; core is
+  automatic), and `table.getState()` becomes `table.state`.
 
 ### Example: controlled table state
 
@@ -210,7 +217,7 @@ const [pagination, setPagination] = React.useState({
   pageSize: 10,
 });
 
-const table = useReactTable({
+const table = useLegacyTable({
   columns,
   data,
   getCoreRowModel: getCoreRowModel(),
@@ -233,7 +240,7 @@ const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
   [],
 );
 
-const table = useReactTable({
+const table = useLegacyTable({
   columns,
   data: serverRows,
   getCoreRowModel: getCoreRowModel(),

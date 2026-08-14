@@ -1,4 +1,5 @@
-import { createColumnHelper } from '@tanstack/react-table';
+// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
+import { legacyCreateColumnHelper } from '@tanstack/react-table/legacy';
 
 import type { AccountListItem } from '@/modules/accounts/api/list-accounts';
 
@@ -9,9 +10,9 @@ import { AccountRowActions } from '@/modules/accounts/components/account-row-act
 import { AccountTypeBadge } from '@/modules/accounts/components/account-type-badge';
 import { m } from '@/paraglide/messages';
 
-const columnHelper = createColumnHelper<AccountListItem>();
+const columnHelper = legacyCreateColumnHelper<AccountListItem>();
 
-export const accountColumns = [
+export const accountColumns = columnHelper.columns([
   columnHelper.accessor('account.name', {
     cell: ({ getValue }) => <span className="font-medium">{getValue()}</span>,
     header: () => m['accounts.columns.name'](),
@@ -95,4 +96,4 @@ export const accountColumns = [
     },
     size: 60,
   }),
-];
+]);

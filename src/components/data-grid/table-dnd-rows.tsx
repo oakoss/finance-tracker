@@ -1,3 +1,6 @@
+// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
+import type { LegacyCell, LegacyRow } from '@tanstack/react-table/legacy';
+
 import {
   closestCenter,
   DndContext,
@@ -17,7 +20,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { type Cell, flexRender, type Row } from '@tanstack/react-table';
+import { flexRender, type RowData } from '@tanstack/react-table';
 import {
   createContext,
   type CSSProperties,
@@ -89,7 +92,11 @@ function DataGridTableDndRowHandle({ className }: { className?: string }) {
   );
 }
 
-function DataGridTableDndRow<TData>({ row }: { row: Row<TData> }) {
+function DataGridTableDndRow<TData extends RowData>({
+  row,
+}: {
+  row: LegacyRow<TData>;
+}) {
   const {
     attributes,
     isDragging,
@@ -115,7 +122,7 @@ function DataGridTableDndRow<TData>({ row }: { row: Row<TData> }) {
         dndStyle={style}
         row={row}
       >
-        {row.getVisibleCells().map((cell: Cell<TData, unknown>) => {
+        {row.getVisibleCells().map((cell: LegacyCell<TData>) => {
           return (
             <DataGridTableBodyRowCell key={cell.id} cell={cell}>
               {flexRender(cell.column.columnDef.cell, cell.getContext())}

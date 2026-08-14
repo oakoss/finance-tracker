@@ -1,5 +1,6 @@
 'use client';
 
+// oxlint-disable typescript/no-deprecated -- @tanstack/react-table v9 legacy compat layer
 import React, { type ReactNode } from 'react';
 
 import { useDataGrid } from '@/components/data-grid';
