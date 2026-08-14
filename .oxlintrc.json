@@ -284,6 +284,7 @@
     "unicorn/text-encoding-identifier-case": "error",
     "unicorn/throw-new-error": "error",
     "unicorn-js/no-accidental-bitwise-operator": "error",
+    "unicorn-js/no-barrel-files": "error",
     "unicorn-js/no-duplicate-logical-operands": "error",
     "unicorn-js/no-for-loop": "error",
     "unicorn-js/no-impossible-length-comparison": "error",
@@ -300,6 +301,14 @@
     "tailwind/no-duplicate-classes": "warn"
   },
   "overrides": [
+    {
+      "files": [
+        "src/db/schema.ts",
+        "src/lib/logging/evlog.ts",
+        "src/components/ui/direction.tsx"
+      ],
+      "rules": { "unicorn-js/no-barrel-files": "off" }
+    },
     {
       "files": ["**/routes/**/$*.tsx"],
       "rules": { "unicorn/filename-case": "off" }
