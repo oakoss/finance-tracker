@@ -174,7 +174,7 @@ operators. Custom validation and rendering per field. No equivalent in shadcn or
 
 ### Data Grid (`src/components/data-grid/`)
 
-3 files. Composable TanStack Table wrapper with column pinning and
+4 files. Composable TanStack Table wrapper with column pinning and
 pagination.
 
 **Verdict:** keep. No changes needed.

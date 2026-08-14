@@ -58,8 +58,15 @@ A full filter UI in `src/components/filters/` (split across 10 files). Do not re
 
 ## Data grid system
 
-A composable data grid in `src/components/data-grid/` (3 files). Do not rebuild — use it:
+A composable data grid in `src/components/data-grid/` (4 files). Do not rebuild — use it:
 
+- Feature registry: `createDataGridFeatures<TData>()` in `features.ts`. v9 only
+  exposes an API when its feature is registered, so a new call in `table.tsx` or
+  `pagination.tsx` needs its feature added there first. Call it at module level.
+- Column meta (`headerTitle`, `cellClassName`, `skeleton`, ...) is scoped to that
+  feature set, not declared globally.
+- Columns files use `createDataGridColumnHelper<TRow>()` from `features.ts`. Do
+  not call `createColumnHelper` directly — it drops the grid's feature binding.
 - Context-based: `DataGridContext` provides table instance, props, loading state.
 - Composed table: `DataGridTable` assembles head/body/rows, with skeleton and
   spinner loading. `table.tsx` also exports its head/body/row/cell parts so new
