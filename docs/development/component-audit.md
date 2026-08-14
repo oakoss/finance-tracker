@@ -174,8 +174,8 @@ operators. Custom validation and rendering per field. No equivalent in shadcn or
 
 ### Data Grid (`src/components/data-grid/`)
 
-8 files. Composable TanStack Table wrapper with DnD columns/rows,
-column header controls (sort/pin/move/visibility), and pagination.
+3 files. Composable TanStack Table wrapper with column pinning and
+pagination.
 
 **Verdict:** keep. No changes needed.
 

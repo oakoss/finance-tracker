@@ -58,11 +58,15 @@ A full filter UI in `src/components/filters/` (split across 10 files). Do not re
 
 ## Data grid system
 
-A composable data grid in `src/components/data-grid/` (8 files). Do not rebuild — use it:
+A composable data grid in `src/components/data-grid/` (3 files). Do not rebuild — use it:
 
 - Context-based: `DataGridContext` provides table instance, props, loading state.
-- Composed table: `DataGridTable` assembles head/body/rows; DnD variants for columns and rows.
-- Column header: sorting, pinning, moving, visibility controls via dropdown menu.
+- Composed table: `DataGridTable` assembles head/body/rows, with skeleton and
+  spinner loading. `table.tsx` also exports its head/body/row/cell parts so new
+  table variants can be composed from them rather than forked.
+- `tableLayout` flags control borders, density, stripes, column resizing, sticky
+  header, width mode and column pinning. Every flag is defaulted in `DataGrid`
+  and no consumer currently overrides them.
 - Pagination: page size selector, page buttons, ellipsis grouping.
 - Helpers: `getColumnMeta()`, `DataGridContainer`.
 - Import from `@/components/data-grid` (context/provider/types) or individual modules.
