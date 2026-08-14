@@ -106,6 +106,10 @@ export default defineConfig({
     // Set E2E_DEV=1 locally to boot `pnpm dev` instead of building first
     // (faster inner loop). Leave unset in CI so runs match the prod build.
     command: E2E_DEV ? 'pnpm dev' : 'pnpm build && pnpm start',
+    // Nitro's schedule runner skips itself when TEST is set. Without this the
+    // croner tick for scheduledTasks stays ref'd after shutdown, so the server
+    // process never exits and Playwright waits on it forever.
+    env: { TEST: 'true' },
     // `pnpm start` nests pnpm -> varlock -> node, and the leaf server outlives
     // a signal sent to the top of that chain. Without a deadline it keeps the
     // port, and reuseExistingServer then hands the orphan to the next run.
