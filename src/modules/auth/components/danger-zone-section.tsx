@@ -37,9 +37,8 @@ export function DangerZoneSection() {
     try {
       const result = await exportUserData({ data: { format: 'json' } });
       if (result) {
-        const bytes = Uint8Array.from(
-          atob(result.data),
-          (c) => c.codePointAt(0)!,
+        const bytes = Uint8Array.from(atob(result.data), (c) =>
+          c.codePointAt(0)!,
         );
         const blob = new Blob([bytes], { type: result.contentType });
         const url = URL.createObjectURL(blob);

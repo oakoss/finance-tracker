@@ -9,88 +9,53 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as PublicRouteRouteImport } from './routes/_public/route'
-import { Route as DemoRouteRouteImport } from './routes/_demo/route'
-import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as AppRouteRouteImport } from './routes/_app/route'
-import { Route as PublicIndexRouteImport } from './routes/_public/index'
-import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
-import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
-import { Route as AppTransactionsRouteImport } from './routes/_app/transactions'
-import { Route as AppRulesRouteImport } from './routes/_app/rules'
-import { Route as AppProfileRouteImport } from './routes/_app/profile'
-import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
-import { Route as AppCategoriesRouteImport } from './routes/_app/categories'
-import { Route as AppBudgetsRouteImport } from './routes/_app/budgets'
+import { Route as AuthRouteRouteImport } from './routes/_auth/route'
+import { Route as DemoRouteRouteImport } from './routes/_demo/route'
+import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as AppAccountsRouteImport } from './routes/_app/accounts'
-import { Route as DemoComponentsRouteRouteImport } from './routes/_demo/components/route'
+import { Route as AppBudgetsRouteImport } from './routes/_app/budgets'
+import { Route as AppCategoriesRouteImport } from './routes/_app/categories'
+import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppImportsRouteRouteImport } from './routes/_app/imports/route'
+import { Route as AppProfileRouteImport } from './routes/_app/profile'
+import { Route as AppRulesRouteImport } from './routes/_app/rules'
+import { Route as AppTransactionsRouteImport } from './routes/_app/transactions'
+import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
+import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
+import { Route as DemoComponentsRouteRouteImport } from './routes/_demo/components/route'
+import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as AppImportsIndexRouteImport } from './routes/_app/imports/index'
-import { Route as ApiIngestSplatRouteImport } from './routes/api/ingest/$'
-import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as DemoComponentsSelectionsRouteImport } from './routes/_demo/components/selections'
-import { Route as DemoComponentsOverlaysRouteImport } from './routes/_demo/components/overlays'
-import { Route as DemoComponentsNavigationRouteImport } from './routes/_demo/components/navigation'
-import { Route as DemoComponentsLayoutRouteImport } from './routes/_demo/components/layout'
-import { Route as DemoComponentsFormsRouteImport } from './routes/_demo/components/forms'
-import { Route as DemoComponentsDateRouteImport } from './routes/_demo/components/date'
-import { Route as DemoComponentsDataRouteImport } from './routes/_demo/components/data'
 import { Route as AppImportsImportIdRouteImport } from './routes/_app/imports/$importId'
+import { Route as DemoComponentsDataRouteImport } from './routes/_demo/components/data'
+import { Route as DemoComponentsDateRouteImport } from './routes/_demo/components/date'
+import { Route as DemoComponentsFormsRouteImport } from './routes/_demo/components/forms'
+import { Route as DemoComponentsLayoutRouteImport } from './routes/_demo/components/layout'
+import { Route as DemoComponentsNavigationRouteImport } from './routes/_demo/components/navigation'
+import { Route as DemoComponentsOverlaysRouteImport } from './routes/_demo/components/overlays'
+import { Route as DemoComponentsSelectionsRouteImport } from './routes/_demo/components/selections'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiIngestSplatRouteImport } from './routes/api/ingest/$'
 
-const PublicRouteRoute = PublicRouteRouteImport.update({
-  id: '/_public',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoRouteRoute = DemoRouteRouteImport.update({
-  id: '/_demo',
+const AppRouteRoute = AppRouteRouteImport.update({
+  id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppRouteRoute = AppRouteRouteImport.update({
-  id: '/_app',
+const DemoRouteRoute = DemoRouteRouteImport.update({
+  id: '/_demo',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PublicIndexRoute = PublicIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PublicRouteRoute,
+const PublicRouteRoute = PublicRouteRouteImport.update({
+  id: '/_public',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthSignUpRoute = AuthSignUpRouteImport.update({
-  id: '/sign-up',
-  path: '/sign-up',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
-const AuthSignInRoute = AuthSignInRouteImport.update({
-  id: '/sign-in',
-  path: '/sign-in',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
-const AppTransactionsRoute = AppTransactionsRouteImport.update({
-  id: '/transactions',
-  path: '/transactions',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-const AppRulesRoute = AppRulesRouteImport.update({
-  id: '/rules',
-  path: '/rules',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-const AppProfileRoute = AppProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-const AppDashboardRoute = AppDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-const AppCategoriesRoute = AppCategoriesRouteImport.update({
-  id: '/categories',
-  path: '/categories',
+const AppAccountsRoute = AppAccountsRouteImport.update({
+  id: '/accounts',
+  path: '/accounts',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppBudgetsRoute = AppBudgetsRouteImport.update({
@@ -98,45 +63,84 @@ const AppBudgetsRoute = AppBudgetsRouteImport.update({
   path: '/budgets',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppAccountsRoute = AppAccountsRouteImport.update({
-  id: '/accounts',
-  path: '/accounts',
+const AppCategoriesRoute = AppCategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const DemoComponentsRouteRoute = DemoComponentsRouteRouteImport.update({
-  id: '/components',
-  path: '/components',
-  getParentRoute: () => DemoRouteRoute,
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRouteRoute,
 } as any)
 const AppImportsRouteRoute = AppImportsRouteRouteImport.update({
   id: '/imports',
   path: '/imports',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppRulesRoute = AppRulesRouteImport.update({
+  id: '/rules',
+  path: '/rules',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppTransactionsRoute = AppTransactionsRouteImport.update({
+  id: '/transactions',
+  path: '/transactions',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AuthSignInRoute = AuthSignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthSignUpRoute = AuthSignUpRouteImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const DemoComponentsRouteRoute = DemoComponentsRouteRouteImport.update({
+  id: '/components',
+  path: '/components',
+  getParentRoute: () => DemoRouteRoute,
+} as any)
+const PublicIndexRoute = PublicIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
 const AppImportsIndexRoute = AppImportsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppImportsRouteRoute,
 } as any)
-const ApiIngestSplatRoute = ApiIngestSplatRouteImport.update({
-  id: '/api/ingest/$',
-  path: '/api/ingest/$',
-  getParentRoute: () => rootRouteImport,
+const AppImportsImportIdRoute = AppImportsImportIdRouteImport.update({
+  id: '/$importId',
+  path: '/$importId',
+  getParentRoute: () => AppImportsRouteRoute,
 } as any)
-const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootRouteImport,
+const DemoComponentsDataRoute = DemoComponentsDataRouteImport.update({
+  id: '/data',
+  path: '/data',
+  getParentRoute: () => DemoComponentsRouteRoute,
 } as any)
-const DemoComponentsSelectionsRoute =
-  DemoComponentsSelectionsRouteImport.update({
-    id: '/selections',
-    path: '/selections',
-    getParentRoute: () => DemoComponentsRouteRoute,
-  } as any)
-const DemoComponentsOverlaysRoute = DemoComponentsOverlaysRouteImport.update({
-  id: '/overlays',
-  path: '/overlays',
+const DemoComponentsDateRoute = DemoComponentsDateRouteImport.update({
+  id: '/date',
+  path: '/date',
+  getParentRoute: () => DemoComponentsRouteRoute,
+} as any)
+const DemoComponentsFormsRoute = DemoComponentsFormsRouteImport.update({
+  id: '/forms',
+  path: '/forms',
+  getParentRoute: () => DemoComponentsRouteRoute,
+} as any)
+const DemoComponentsLayoutRoute = DemoComponentsLayoutRouteImport.update({
+  id: '/layout',
+  path: '/layout',
   getParentRoute: () => DemoComponentsRouteRoute,
 } as any)
 const DemoComponentsNavigationRoute =
@@ -145,30 +149,26 @@ const DemoComponentsNavigationRoute =
     path: '/navigation',
     getParentRoute: () => DemoComponentsRouteRoute,
   } as any)
-const DemoComponentsLayoutRoute = DemoComponentsLayoutRouteImport.update({
-  id: '/layout',
-  path: '/layout',
+const DemoComponentsOverlaysRoute = DemoComponentsOverlaysRouteImport.update({
+  id: '/overlays',
+  path: '/overlays',
   getParentRoute: () => DemoComponentsRouteRoute,
 } as any)
-const DemoComponentsFormsRoute = DemoComponentsFormsRouteImport.update({
-  id: '/forms',
-  path: '/forms',
-  getParentRoute: () => DemoComponentsRouteRoute,
+const DemoComponentsSelectionsRoute =
+  DemoComponentsSelectionsRouteImport.update({
+    id: '/selections',
+    path: '/selections',
+    getParentRoute: () => DemoComponentsRouteRoute,
+  } as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const DemoComponentsDateRoute = DemoComponentsDateRouteImport.update({
-  id: '/date',
-  path: '/date',
-  getParentRoute: () => DemoComponentsRouteRoute,
-} as any)
-const DemoComponentsDataRoute = DemoComponentsDataRouteImport.update({
-  id: '/data',
-  path: '/data',
-  getParentRoute: () => DemoComponentsRouteRoute,
-} as any)
-const AppImportsImportIdRoute = AppImportsImportIdRouteImport.update({
-  id: '/$importId',
-  path: '/$importId',
-  getParentRoute: () => AppImportsRouteRoute,
+const ApiIngestSplatRoute = ApiIngestSplatRouteImport.update({
+  id: '/api/ingest/$',
+  path: '/api/ingest/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -342,18 +342,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_public': {
-      id: '/_public'
+    '/_app': {
+      id: '/_app'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof PublicRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_demo': {
-      id: '/_demo'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof DemoRouteRouteImport
+      preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
@@ -363,67 +356,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app': {
-      id: '/_app'
+    '/_demo': {
+      id: '/_demo'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof AppRouteRouteImport
+      preLoaderRoute: typeof DemoRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_public/': {
-      id: '/_public/'
-      path: '/'
+    '/_public': {
+      id: '/_public'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof PublicIndexRouteImport
-      parentRoute: typeof PublicRouteRoute
+      preLoaderRoute: typeof PublicRouteRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_auth/sign-up': {
-      id: '/_auth/sign-up'
-      path: '/sign-up'
-      fullPath: '/sign-up'
-      preLoaderRoute: typeof AuthSignUpRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
-    '/_auth/sign-in': {
-      id: '/_auth/sign-in'
-      path: '/sign-in'
-      fullPath: '/sign-in'
-      preLoaderRoute: typeof AuthSignInRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
-    '/_app/transactions': {
-      id: '/_app/transactions'
-      path: '/transactions'
-      fullPath: '/transactions'
-      preLoaderRoute: typeof AppTransactionsRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/rules': {
-      id: '/_app/rules'
-      path: '/rules'
-      fullPath: '/rules'
-      preLoaderRoute: typeof AppRulesRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/profile': {
-      id: '/_app/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof AppProfileRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/dashboard': {
-      id: '/_app/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AppDashboardRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/categories': {
-      id: '/_app/categories'
-      path: '/categories'
-      fullPath: '/categories'
-      preLoaderRoute: typeof AppCategoriesRouteImport
+    '/_app/accounts': {
+      id: '/_app/accounts'
+      path: '/accounts'
+      fullPath: '/accounts'
+      preLoaderRoute: typeof AppAccountsRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/_app/budgets': {
@@ -433,19 +384,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBudgetsRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/accounts': {
-      id: '/_app/accounts'
-      path: '/accounts'
-      fullPath: '/accounts'
-      preLoaderRoute: typeof AppAccountsRouteImport
+    '/_app/categories': {
+      id: '/_app/categories'
+      path: '/categories'
+      fullPath: '/categories'
+      preLoaderRoute: typeof AppCategoriesRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_demo/components': {
-      id: '/_demo/components'
-      path: '/components'
-      fullPath: '/components'
-      preLoaderRoute: typeof DemoComponentsRouteRouteImport
-      parentRoute: typeof DemoRouteRoute
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRouteRoute
     }
     '/_app/imports': {
       id: '/_app/imports'
@@ -454,6 +405,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppImportsRouteRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_app/profile': {
+      id: '/_app/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/rules': {
+      id: '/_app/rules'
+      path: '/rules'
+      fullPath: '/rules'
+      preLoaderRoute: typeof AppRulesRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/transactions': {
+      id: '/_app/transactions'
+      path: '/transactions'
+      fullPath: '/transactions'
+      preLoaderRoute: typeof AppTransactionsRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_auth/sign-in': {
+      id: '/_auth/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof AuthSignInRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/sign-up': {
+      id: '/_auth/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof AuthSignUpRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_demo/components': {
+      id: '/_demo/components'
+      path: '/components'
+      fullPath: '/components'
+      preLoaderRoute: typeof DemoComponentsRouteRouteImport
+      parentRoute: typeof DemoRouteRoute
+    }
+    '/_public/': {
+      id: '/_public/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof PublicIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
     '/_app/imports/': {
       id: '/_app/imports/'
       path: '/'
@@ -461,53 +461,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppImportsIndexRouteImport
       parentRoute: typeof AppImportsRouteRoute
     }
-    '/api/ingest/$': {
-      id: '/api/ingest/$'
-      path: '/api/ingest/$'
-      fullPath: '/api/ingest/$'
-      preLoaderRoute: typeof ApiIngestSplatRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_app/imports/$importId': {
+      id: '/_app/imports/$importId'
+      path: '/$importId'
+      fullPath: '/imports/$importId'
+      preLoaderRoute: typeof AppImportsImportIdRouteImport
+      parentRoute: typeof AppImportsRouteRoute
     }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_demo/components/selections': {
-      id: '/_demo/components/selections'
-      path: '/selections'
-      fullPath: '/components/selections'
-      preLoaderRoute: typeof DemoComponentsSelectionsRouteImport
-      parentRoute: typeof DemoComponentsRouteRoute
-    }
-    '/_demo/components/overlays': {
-      id: '/_demo/components/overlays'
-      path: '/overlays'
-      fullPath: '/components/overlays'
-      preLoaderRoute: typeof DemoComponentsOverlaysRouteImport
-      parentRoute: typeof DemoComponentsRouteRoute
-    }
-    '/_demo/components/navigation': {
-      id: '/_demo/components/navigation'
-      path: '/navigation'
-      fullPath: '/components/navigation'
-      preLoaderRoute: typeof DemoComponentsNavigationRouteImport
-      parentRoute: typeof DemoComponentsRouteRoute
-    }
-    '/_demo/components/layout': {
-      id: '/_demo/components/layout'
-      path: '/layout'
-      fullPath: '/components/layout'
-      preLoaderRoute: typeof DemoComponentsLayoutRouteImport
-      parentRoute: typeof DemoComponentsRouteRoute
-    }
-    '/_demo/components/forms': {
-      id: '/_demo/components/forms'
-      path: '/forms'
-      fullPath: '/components/forms'
-      preLoaderRoute: typeof DemoComponentsFormsRouteImport
+    '/_demo/components/data': {
+      id: '/_demo/components/data'
+      path: '/data'
+      fullPath: '/components/data'
+      preLoaderRoute: typeof DemoComponentsDataRouteImport
       parentRoute: typeof DemoComponentsRouteRoute
     }
     '/_demo/components/date': {
@@ -517,19 +482,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoComponentsDateRouteImport
       parentRoute: typeof DemoComponentsRouteRoute
     }
-    '/_demo/components/data': {
-      id: '/_demo/components/data'
-      path: '/data'
-      fullPath: '/components/data'
-      preLoaderRoute: typeof DemoComponentsDataRouteImport
+    '/_demo/components/forms': {
+      id: '/_demo/components/forms'
+      path: '/forms'
+      fullPath: '/components/forms'
+      preLoaderRoute: typeof DemoComponentsFormsRouteImport
       parentRoute: typeof DemoComponentsRouteRoute
     }
-    '/_app/imports/$importId': {
-      id: '/_app/imports/$importId'
-      path: '/$importId'
-      fullPath: '/imports/$importId'
-      preLoaderRoute: typeof AppImportsImportIdRouteImport
-      parentRoute: typeof AppImportsRouteRoute
+    '/_demo/components/layout': {
+      id: '/_demo/components/layout'
+      path: '/layout'
+      fullPath: '/components/layout'
+      preLoaderRoute: typeof DemoComponentsLayoutRouteImport
+      parentRoute: typeof DemoComponentsRouteRoute
+    }
+    '/_demo/components/navigation': {
+      id: '/_demo/components/navigation'
+      path: '/navigation'
+      fullPath: '/components/navigation'
+      preLoaderRoute: typeof DemoComponentsNavigationRouteImport
+      parentRoute: typeof DemoComponentsRouteRoute
+    }
+    '/_demo/components/overlays': {
+      id: '/_demo/components/overlays'
+      path: '/overlays'
+      fullPath: '/components/overlays'
+      preLoaderRoute: typeof DemoComponentsOverlaysRouteImport
+      parentRoute: typeof DemoComponentsRouteRoute
+    }
+    '/_demo/components/selections': {
+      id: '/_demo/components/selections'
+      path: '/selections'
+      fullPath: '/components/selections'
+      preLoaderRoute: typeof DemoComponentsSelectionsRouteImport
+      parentRoute: typeof DemoComponentsRouteRoute
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ingest/$': {
+      id: '/api/ingest/$'
+      path: '/api/ingest/$'
+      fullPath: '/api/ingest/$'
+      preLoaderRoute: typeof ApiIngestSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }

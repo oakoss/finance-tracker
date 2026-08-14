@@ -60,7 +60,7 @@ export async function deleteCategoryService(
     await insertAuditLog(tx, {
       action: 'delete',
       actorId: userId,
-      beforeData: existing as unknown as Record<string, unknown>,
+      beforeData: existing,
       entityId: data.id,
       tableName: 'categories',
     });

@@ -80,7 +80,7 @@ export async function deleteTransactionService(
     await insertAuditLog(tx, {
       action: 'delete',
       actorId: userId,
-      beforeData: existing as unknown as Record<string, unknown>,
+      beforeData: existing,
       entityId: data.id,
       tableName: 'transactions',
     });

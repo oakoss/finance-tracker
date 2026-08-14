@@ -70,7 +70,7 @@ function asPgError(value: unknown): PgErrorLike | null {
     typeof value !== 'object' ||
     value === null ||
     !('code' in value) ||
-    typeof (value as { code: unknown }).code !== 'string'
+    typeof value.code !== 'string'
   ) {
     return null;
   }

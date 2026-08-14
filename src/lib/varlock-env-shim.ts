@@ -49,13 +49,16 @@
 
 type EnvShape = Record<string, string | undefined>;
 
-export const ENV: EnvShape = new Proxy({} as EnvShape, {
-  get(_target, prop): string | undefined {
-    if (typeof prop === 'symbol') return undefined;
-    return process.env[prop];
+export const ENV: EnvShape = new Proxy(
+  {},
+  {
+    get(_target, prop): string | undefined {
+      if (typeof prop === 'symbol') return undefined;
+      return process.env[prop];
+    },
+    has(_target, prop): boolean {
+      if (typeof prop === 'symbol') return false;
+      return prop in process.env;
+    },
   },
-  has(_target, prop): boolean {
-    if (typeof prop === 'symbol') return false;
-    return prop in process.env;
-  },
-});
+);

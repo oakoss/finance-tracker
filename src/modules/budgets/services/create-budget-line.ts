@@ -59,7 +59,7 @@ export async function createBudgetLineService(
     await insertAuditLog(tx, {
       action: 'create',
       actorId: userId,
-      afterData: line as unknown as Record<string, unknown>,
+      afterData: line,
       entityId: line.id,
       tableName: 'budget_lines',
     });

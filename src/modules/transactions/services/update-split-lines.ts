@@ -84,11 +84,8 @@ export async function updateSplitLinesService(
     await insertAuditLog(tx, {
       action: 'update',
       actorId: userId,
-      afterData: { lines: inserted } as unknown as Record<string, unknown>,
-      beforeData: { lines: previousLines } as unknown as Record<
-        string,
-        unknown
-      >,
+      afterData: { lines: inserted },
+      beforeData: { lines: previousLines },
       entityId: data.id,
       tableName: 'transactions',
     });

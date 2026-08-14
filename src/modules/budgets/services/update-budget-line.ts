@@ -65,8 +65,8 @@ export async function updateBudgetLineService(
     await insertAuditLog(tx, {
       action: 'update',
       actorId: userId,
-      afterData: updated as unknown as Record<string, unknown>,
-      beforeData: existing as unknown as Record<string, unknown>,
+      afterData: updated,
+      beforeData: existing,
       entityId: id,
       tableName: 'budget_lines',
     });

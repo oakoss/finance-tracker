@@ -76,8 +76,8 @@ export async function unsplitTransactionService(
     await insertAuditLog(tx, {
       action: 'update',
       actorId: userId,
-      afterData: updated as unknown as Record<string, unknown>,
-      beforeData: existing as unknown as Record<string, unknown>,
+      afterData: updated,
+      beforeData: existing,
       entityId: data.id,
       tableName: 'transactions',
     });

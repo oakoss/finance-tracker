@@ -53,7 +53,7 @@ export async function createCategoryService(
     await insertAuditLog(tx, {
       action: 'create',
       actorId: userId,
-      afterData: category as unknown as Record<string, unknown>,
+      afterData: category,
       entityId: category.id,
       tableName: 'categories',
     });

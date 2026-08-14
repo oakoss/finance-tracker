@@ -65,7 +65,7 @@ export async function copyBudgetPeriodService(
     await insertAuditLog(tx, {
       action: 'create',
       actorId: userId,
-      afterData: newPeriod as unknown as Record<string, unknown>,
+      afterData: newPeriod,
       entityId: newPeriod.id,
       tableName: 'budget_periods',
     });
@@ -93,7 +93,7 @@ export async function copyBudgetPeriodService(
       await insertAuditLog(tx, {
         action: 'create',
         actorId: userId,
-        afterData: newLine as unknown as Record<string, unknown>,
+        afterData: newLine,
         entityId: newLine.id,
         tableName: 'budget_lines',
       });

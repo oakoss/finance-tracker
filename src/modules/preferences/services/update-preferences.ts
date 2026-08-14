@@ -92,11 +92,7 @@ export async function updateUserPreferencesService(
     await insertAuditLog(
       tx,
       before
-        ? {
-            ...baseAuditParams,
-            action: 'update',
-            beforeData: before as unknown as Record<string, unknown>,
-          }
+        ? { ...baseAuditParams, action: 'update', beforeData: before }
         : { ...baseAuditParams, action: 'create' },
     );
 

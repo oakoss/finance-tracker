@@ -1,4 +1,4 @@
-import { serialize } from 'cookie';
+import { stringifySetCookie } from 'cookie';
 import Cookies from 'universal-cookie';
 
 type CookieOptions = {
@@ -42,7 +42,7 @@ export const serializeServerCookie = (
   value: string,
   options: CookieOptions = defaultOptions,
 ) => {
-  return [serialize(name, value, options)];
+  return [stringifySetCookie({ name, value, ...options })];
 };
 
 export const appendSetCookieHeaders = (

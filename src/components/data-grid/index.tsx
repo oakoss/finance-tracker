@@ -210,7 +210,7 @@ function DataGridContainer({
 }
 
 function getColumnMeta<TData, TValue>(column: Column<TData, TValue>) {
-  return column.columnDef.meta as DataGridColumnMeta<TData> | undefined;
+  return column.columnDef.meta;
 }
 
 export {

@@ -33,7 +33,7 @@ export async function createBudgetPeriodService(
     await insertAuditLog(tx, {
       action: 'create',
       actorId: userId,
-      afterData: period as unknown as Record<string, unknown>,
+      afterData: period,
       entityId: period.id,
       tableName: 'budget_periods',
     });

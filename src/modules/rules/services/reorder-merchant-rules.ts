@@ -86,8 +86,8 @@ export async function reorderMerchantRulesService(
       await insertAuditLog(tx, {
         action: 'update',
         actorId: userId,
-        afterData: { priority: index } as Record<string, unknown>,
-        beforeData: { priority: before } as Record<string, unknown>,
+        afterData: { priority: index },
+        beforeData: { priority: before },
         entityId: id,
         tableName: 'merchant_rules',
       });
