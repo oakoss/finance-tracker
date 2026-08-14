@@ -97,7 +97,7 @@
     "react-email": "^6.9.2",
     "react-phone-number-input": "^3.4.17",
     "react-resizable-panels": "^4.12.2",
-    "recharts": "2.15.4",
+    "recharts": "3.8.0",
     "sonner": "^2.0.8",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.3",
