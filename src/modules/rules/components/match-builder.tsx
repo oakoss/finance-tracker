@@ -197,7 +197,7 @@ export function MatchBuilder({
               value={value.direction ?? 'both'}
               onValueChange={(v) => {
                 if (v === null || !DIRECTION_VALUES.has(v)) return;
-                setDirection(v as Direction);
+                setDirection(v);
               }}
             >
               <SelectTrigger id={directionId}>

@@ -56,7 +56,7 @@ export async function createAccountService(
     await insertAuditLog(tx, {
       action: 'create',
       actorId: userId,
-      afterData: account as unknown as Record<string, unknown>,
+      afterData: account,
       entityId: account.id,
       tableName: 'ledger_accounts',
     });

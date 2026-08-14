@@ -256,7 +256,7 @@ export async function createImportService(
     await insertAuditLog(tx, {
       action: 'create',
       actorId: userId,
-      afterData: updated as unknown as Record<string, unknown>,
+      afterData: updated,
       entityId: importRecord.id,
       tableName: 'imports',
     });

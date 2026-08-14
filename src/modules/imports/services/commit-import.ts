@@ -208,7 +208,7 @@ export async function commitImportService(
           await insertAuditLog(tx, {
             action: 'create',
             actorId: userId,
-            afterData: txn as unknown as Record<string, unknown>,
+            afterData: txn,
             entityId: txn.id,
             tableName: 'transactions',
           });
@@ -262,7 +262,7 @@ export async function commitImportService(
     await insertAuditLog(tx, {
       action: 'update',
       actorId: userId,
-      afterData: updated as unknown as Record<string, unknown>,
+      afterData: updated,
       entityId: updated.id,
       tableName: 'imports',
     });

@@ -119,7 +119,7 @@ export function foldActions(
   }
 
   return {
-    before: Object.keys(before).length > 0 ? (before as UndoBefore) : undefined,
+    before: Object.keys(before).length > 0 ? before : undefined,
     patch,
     tagPlan,
   };

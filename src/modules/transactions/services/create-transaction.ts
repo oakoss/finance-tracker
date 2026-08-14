@@ -114,7 +114,7 @@ export async function createTransactionService(
     await insertAuditLog(tx, {
       action: 'create',
       actorId: userId,
-      afterData: transaction as unknown as Record<string, unknown>,
+      afterData: transaction,
       entityId: transaction.id,
       tableName: 'transactions',
     });

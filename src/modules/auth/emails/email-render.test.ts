@@ -91,7 +91,7 @@ describe('renderEmail', () => {
 
     it('runs callback when locale matches current', async () => {
       const result = await renderEmail(element, {
-        locale: 'en-US' as ReturnType<typeof getLocale>,
+        locale: 'en-US',
         subject: () => 'Same locale subject',
       });
 
@@ -117,9 +117,7 @@ describe('renderEmail', () => {
 
   describe('locale management', () => {
     it('does not call setLocale when locale matches current', async () => {
-      await renderEmail(element, {
-        locale: 'en-US' as ReturnType<typeof getLocale>,
-      });
+      await renderEmail(element, { locale: 'en-US' });
 
       expect(mockedSetLocale).not.toHaveBeenCalled();
     });

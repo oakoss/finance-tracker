@@ -51,7 +51,7 @@ export async function deleteBudgetLineService(
     await insertAuditLog(tx, {
       action: 'delete',
       actorId: userId,
-      beforeData: existing as unknown as Record<string, unknown>,
+      beforeData: existing,
       entityId: data.id,
       tableName: 'budget_lines',
     });

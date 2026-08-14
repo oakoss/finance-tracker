@@ -89,9 +89,7 @@ function PhoneInput({
         inputComponent={InputComponent}
         smartCaret={false}
         value={value ?? undefined}
-        onChange={(nextValue) =>
-          onChange?.(nextValue ?? ('' as BasePhoneInput.Value))
-        }
+        onChange={(nextValue) => onChange?.(nextValue ?? '')}
       />
     </PhoneInputContext>
   );

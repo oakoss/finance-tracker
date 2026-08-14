@@ -85,9 +85,7 @@ export default function evlogDrainPlugin(nitroApp: NitroApp) {
     for (const ctx of batch) {
       const sanitized: DrainContext = {
         ...ctx,
-        event: sanitizeEvent(
-          ctx.event as unknown as Record<string, unknown>,
-        ) as typeof ctx.event,
+        event: sanitizeEvent(ctx.event) as typeof ctx.event,
       };
       await otlpDrain(sanitized);
     }

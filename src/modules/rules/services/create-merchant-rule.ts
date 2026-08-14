@@ -56,7 +56,7 @@ export async function createMerchantRuleService(
     await insertAuditLog(tx, {
       action: 'create',
       actorId: userId,
-      afterData: rule as unknown as Record<string, unknown>,
+      afterData: rule,
       entityId: rule.id,
       tableName: 'merchant_rules',
     });

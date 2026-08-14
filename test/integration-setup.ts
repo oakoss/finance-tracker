@@ -46,7 +46,7 @@ export const test = base.extend<IntegrationFixtures>({
       const rawDb = await createTestDb();
       try {
         await rawDb.transaction(async (tx) => {
-          await use(tx as unknown as Db);
+          await use(tx);
           throw new RollbackOnPurpose();
         });
       } catch (error: unknown) {
@@ -64,7 +64,7 @@ export const test = base.extend<IntegrationFixtures>({
   // real BEGIN/COMMIT that would break fixture isolation.
   serviceDb: async ({ db }, use) => {
     await db.transaction(async (tx) => {
-      await use(tx as unknown as Db);
+      await use(tx);
     });
   },
 });
