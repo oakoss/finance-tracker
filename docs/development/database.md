@@ -57,17 +57,11 @@ export const payeesConstraintMessages = {
   [payeesIndexNames.userNameIdx]: 'A payee with this name already exists.',
 } as const;
 
-export const payees = pgTable(
-  'payees',
-  {
-    /* ... */
-  },
-  (table) => [
-    uniqueIndex(payeesIndexNames.userNameIdx)
-      .on(table.userId, table.name)
-      .where(sql`${table.deletedAt} is null`),
-  ],
-);
+export const payees = pgTable('payees', {/* ... */}, (table) => [
+  uniqueIndex(payeesIndexNames.userNameIdx)
+    .on(table.userId, table.name)
+    .where(sql`${table.deletedAt} is null`),
+]);
 ```
 
 ### In `src/lib/db/pg-error.ts`
@@ -102,9 +96,7 @@ if (
   pgInfo?.code === PG_ERROR_CODES.UNIQUE_VIOLATION &&
   pgInfo.constraint === payeesIndexNames.userNameIdx
 ) {
-  const raced = await database.query.payees.findFirst({
-    /* ... */
-  });
+  const raced = await database.query.payees.findFirst({/* ... */});
   if (raced) {
     log.warn({
       action: 'payee.create.raceResolved',
