@@ -82,7 +82,8 @@
       { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
     ],
     "import/first": "error",
-    "import/no-duplicates": ["error", { "prefer-inline": true }],
+    "import/namespace": ["error", { "allowComputed": true }],
+    "import/no-duplicates": ["error", { "preferInline": true }],
     "import/no-cycle": ["error", { "maxDepth": 3 }],
     "import/no-relative-parent-imports": "error",
     "unicorn/filename-case": [

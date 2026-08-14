@@ -2,10 +2,10 @@
 
 # --- varlock binary ---
 # Keep version in sync with the `varlock` entry in package.json.
-FROM ghcr.io/dmno-dev/varlock:0.7.2 AS varlock
+FROM ghcr.io/dmno-dev/varlock:1.16.1 AS varlock
 
 # --- base ---
-FROM node:24.15.0-alpine@sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f AS base
+FROM node:24.19.0-alpine@sha256:d32cdf619f63fe0471182d08996dd516c6275bb5fd31ae06e55a570bd9e1ad43 AS base
 RUN corepack enable pnpm
 WORKDIR /app
 
@@ -63,7 +63,7 @@ RUN pnpm exec varlock typegen \
 # --- production ---
 # Nitro bundles the app into .output/. Only drizzle-orm + pg needed
 # for the programmatic migration script.
-FROM node:24.15.0-alpine@sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f AS production
+FROM node:24.19.0-alpine@sha256:d32cdf619f63fe0471182d08996dd516c6275bb5fd31ae06e55a570bd9e1ad43 AS production
 COPY --from=varlock /usr/local/bin/varlock /usr/local/bin/varlock
 RUN apk add --no-cache tini curl \
  && addgroup --system --gid 1001 nodejs \
@@ -77,7 +77,7 @@ ENV NITRO_PORT=3000
 # Migration deps (keep versions in sync with package.json)
 COPY --from=build --chown=nodejs:nodejs /app/drizzle/ ./drizzle/
 COPY --chown=nodejs:nodejs scripts/migrate.mjs ./scripts/
-RUN npm install --no-save drizzle-orm@0.45.2 pg@8.21.0
+RUN npm install --no-save drizzle-orm@0.45.2 pg@8.23.0
 
 COPY --from=build --chown=nodejs:nodejs /app/.env.schema ./.env.schema
 COPY --from=build --chown=nodejs:nodejs /app/.output ./.output
