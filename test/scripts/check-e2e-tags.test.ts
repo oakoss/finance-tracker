@@ -155,6 +155,23 @@ describe('findViolations', () => {
     ]);
   });
 
+  it('does not call an array of dynamic values empty', () => {
+    // `[TAGS.bad]` yields no literal tokens, but the array is not empty —
+    // saying so would send the author looking for the wrong problem.
+    const found = findViolations(
+      `test('x', { tag: [TAGS.bad] })`,
+      'a.ts',
+      canonical,
+    );
+    expect(found).toEqual([
+      {
+        file: 'a.ts',
+        lineNumber: 1,
+        tag: expect.stringContaining('unreadable tag value'),
+      },
+    ]);
+  });
+
   it('reports the correct line after a multi-line block comment', () => {
     const src = source(
       "import { test } from '@playwright/test';",
@@ -201,6 +218,122 @@ describe('findViolations', () => {
     expect(findViolations(src, 'a.ts', canonical)).toEqual([
       { file: 'a.ts', lineNumber: 1, tag: '@bogus' },
     ]);
+  });
+
+  it('reports violations in line order', () => {
+    const src = source(
+      `test('a', { tag: ['@bogus'] });`,
+      `test('b', { tag: TAGS.x });`,
+      `test('c', { tag: ['@other'] });`,
+    );
+    expect(
+      findViolations(src, 'a.ts', canonical).map((v) => v.lineNumber),
+    ).toEqual([1, 2, 3]);
+  });
+
+  describe('tag values that cannot be read as literals', () => {
+    // The safety property: never silently ignored. The exact wording is
+    // secondary, so these assert that a violation is raised at all.
+    const unreadable: [name: string, src: string][] = [
+      ['member expression', `test('x', { tag: TAGS.bogus })`],
+      ['bare identifier', `test.describe('x', { tag: BASE })`],
+      ['spread into an array', `test('x', { tag: [...BASE] })`],
+      [
+        'options object on its own line',
+        source(`test.describe(`, `  'x',`, `  { tag: TAGS.foo },`, `)`),
+      ],
+      [
+        'test nested in a describe',
+        source(
+          `test.describe('o', () => {`,
+          `  test('y', { tag: TAGS.bad }, async () => {});`,
+          `});`,
+        ),
+      ],
+      // A canonical literal alongside a dynamic value would otherwise clear
+      // the whole site and leave the dynamic half unchecked.
+      ['a literal mixed with a spread', `test('x', { tag: ['@smoke', ...B] })`],
+      [
+        'a literal mixed with an identifier',
+        `test('x', { tag: ['@a11y', B] })`,
+      ],
+      // A call in an earlier option must not hide the enclosing test call.
+      [
+        'a nested call in an earlier option',
+        `test('x', { annotation: [{ type: make() }], tag: TAGS.bad })`,
+      ],
+      ['a colon with surrounding space', `test('x', { tag : TAGS.bad })`],
+      ['test.only', `test.only('x', { tag: TAGS.bad })`],
+      ['test.skip', `test.skip('x', { tag: TAGS.bad })`],
+      ['test.describe.serial', `test.describe.serial('x', { tag: TAGS.bad })`],
+      [
+        'test.describe.serial.only',
+        `test.describe.serial.only('x', { tag: TAGS.bad })`,
+      ],
+    ];
+
+    for (const [name, src] of unreadable) {
+      it(`flags ${name}`, () => {
+        expect(findViolations(src, 'a.ts', canonical).length).toBeGreaterThan(
+          0,
+        );
+      });
+    }
+
+    it('names the problem when the value is not a literal at all', () => {
+      const found = findViolations(
+        `test('x', { tag: TAGS.bogus })`,
+        'a.ts',
+        canonical,
+      );
+      expect(found).toEqual([
+        {
+          file: 'a.ts',
+          lineNumber: 1,
+          tag: expect.stringContaining('unreadable tag value'),
+        },
+      ]);
+    });
+
+    const notTagSites: [name: string, src: string][] = [
+      ['a type alias', 'type Opts = { tag: string[] };'],
+      ['an interface member', source('interface O {', '  tag: string;', '}')],
+      ['a plain object outside a test call', 'const meta = { tag: SOME };'],
+      // Inside the callback body, not the options object.
+      [
+        'an object built inside the test body',
+        source(
+          `test('n', async ({ page }) => {`,
+          `  const payload = { tag: SOME };`,
+          `});`,
+        ),
+      ],
+      // `.test(` is only a word boundary away from the real thing.
+      ['a `.test()` method call', 'expect(x).test({ tag: FOO })'],
+      [
+        'a regex .test() before an object',
+        source('if (/x/.test(s)) {', '  const p = { tag: FOO };', '}'),
+      ],
+      ['an identifier ending in test', 'latest({ tag: FOO })'],
+      [
+        'a fully literal array after a nested call',
+        `test('x', { annotation: [{ type: make() }], tag: ['@smoke'] })`,
+      ],
+      // These `test.*` members take fixtures/step options, not tag details,
+      // so a key named `tag` in them is legitimate.
+      ['test.use fixtures', `test.use({ tag: OVERRIDE });`],
+      ['test.step options', `test.step('s', fn, { tag: X });`],
+      ['test.extend fixtures', `const t = test.extend({ tag: f });`],
+      // `\\btag` — a key that merely ends in "tag" is a different key.
+      ['a key ending in tag', `const o = { mytag: ['@bogus'] };`],
+      ['a dynamic key ending in tag', `const o = { mytag: [X] };`],
+    ];
+
+    for (const [name, src] of notTagSites) {
+      it(`does not flag ${name}`, () => {
+        expect(findViolations(src, 'a.ts', canonical)).toEqual([]);
+      });
+    }
   });
 });
 
