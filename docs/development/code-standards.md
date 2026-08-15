@@ -22,7 +22,10 @@ Code style, conventions, and structure expectations.
   pinned as `valid` test cases -- notably `no-known-value-widening` skips open
   key types (`Record<string, V>` and friends) because it cannot see whether the
   map is indexed by a runtime value, so a closed key set spelled
-  `Record<string, V>` goes unflagged.
+  `Record<string, V>` goes unflagged. Two more limits follow from having no
+  type information: an alias resolving to an open key (`type K = string`)
+  reads as closed and is reported, so suppress it at the site; and a finite
+  template-literal key is treated as open and skipped.
 - Rules evaluated from `dmmulroy/anti-slop` and rejected -- do not re-adopt
   without new evidence. Two contradict existing config:
   `no-conditional-empty-object-spread` (under `exactOptionalPropertyTypes`

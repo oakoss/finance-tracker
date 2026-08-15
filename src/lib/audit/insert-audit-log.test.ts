@@ -34,9 +34,7 @@ function createMockTx(mockValues: ReturnType<typeof vi.fn>) {
 
 type MockTx = Pick<ReturnType<typeof createMockTx>, 'insert'>;
 
-/** The stub implements only `insert`, so a single hop to `DbOrTx` cannot check. */
-// oxlint-disable-next-line type-evidence/no-chained-type-assertions
-const asAuditTx = (tx: MockTx) => tx as unknown as DbOrTx;
+const asAuditTx = (tx: MockTx) => tx as Pick<DbOrTx, 'insert'>;
 
 describe('insertAuditLog', () => {
   it('inserts correct values for a create action', async () => {

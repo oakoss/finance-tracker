@@ -14,7 +14,7 @@ type InsertAuditLogParams = {
 };
 
 export async function insertAuditLog(
-  tx: DbOrTx,
+  tx: Pick<DbOrTx, 'insert'>,
   params: InsertAuditLogParams,
 ): Promise<void> {
   await tx

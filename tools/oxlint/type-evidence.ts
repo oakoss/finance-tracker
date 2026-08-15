@@ -142,7 +142,7 @@ const noKnownValueWidening = defineRule({
   meta: {
     docs: {
       description:
-        'Disallow annotating an object literal with an open Record type, which discards the literal key evidence.',
+        'Disallow annotating an object literal with a closed-key Record type, which discards the literal key evidence `satisfies` would keep.',
     },
     messages: {
       widened:
