@@ -12,14 +12,20 @@ const RULE_DOC = path.join(REPO_ROOT, '.claude/rules/e2e-testing.md');
 
 // Strip line comments, block comments, and string/template literals so the
 // tag regex can't match `// tag: ['@bogus']` or `"tag: ['@x']"`.
+//
+// The template-literal branches must stay mutually exclusive on their first
+// character: letting the catch-all class match `$` too would make `${}`
+// parseable two ways, which backtracks exponentially on an unclosed literal.
 function stripCommentsAndStrings(src) {
   return src.replaceAll(
-    /\/\/[^\n]*|\/\*[\s\S]*?\*\/|'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"|`(?:\\.|\$\{[^}]*\}|[^`\\])*`/g,
+    /\/\/[^\n]*|\/\*[\s\S]*?\*\/|'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*"|`(?:\\.|\$\{[^}]*\}|\$(?!\{)|[^`\\$])*`/g,
     (match) => {
       // Preserve `'@xxx'` tokens — those are the tag literals we care about.
       if (/^'@[A-Za-z0-9_-]+'$/.test(match)) return match;
       if (/^"@[A-Za-z0-9_-]+"$/.test(match)) return match;
-      return ' '.repeat(match.length);
+      // Keep newlines so `lineNumber` stays accurate after a multi-line
+      // comment or template literal; blank everything else to preserve offsets.
+      return match.replaceAll(/[^\n]/g, ' ');
     },
   );
 }
@@ -36,10 +42,11 @@ function* walk(dir) {
   }
 }
 
-function loadCanonicalTags() {
-  const doc = readFileSync(RULE_DOC, 'utf8');
+function loadCanonicalTags(doc = readFileSync(RULE_DOC, 'utf8')) {
   const tags = new Set();
-  for (const match of doc.matchAll(/^\s+-\s+`(@[A-Za-z0-9_-]+)`/gm)) {
+  // `[ \t]` not `\s`: `\s` matches newlines, so with `m` each line start
+  // rescans across blank lines, and a bullet's indent could span them.
+  for (const match of doc.matchAll(/^[ \t]+-[ \t]+`(@[A-Za-z0-9_-]+)`/gm)) {
     tags.add(match[1]);
   }
   if (tags.size === 0) {
@@ -76,13 +83,24 @@ function findViolations(content, file, canonical) {
   return violations;
 }
 
-function main() {
+function main(root = E2E_ROOT) {
   const canonical = loadCanonicalTags();
   const violations = [];
-  for (const file of walk(E2E_ROOT)) {
+  let scanned = 0;
+  for (const file of walk(root)) {
+    scanned += 1;
     const content = readFileSync(file, 'utf8');
     const relative = path.relative(REPO_ROOT, file);
     violations.push(...findViolations(content, relative, canonical));
+  }
+
+  // Without this a moved e2e/ or an unmatched extension reports success
+  // having read nothing, which is the one outcome a gate must never fake.
+  if (scanned === 0) {
+    throw new Error(
+      `No e2e test files found under ${path.relative(REPO_ROOT, root)}. ` +
+        'Expected .ts/.tsx/.mts/.cts files.',
+    );
   }
 
   if (violations.length > 0) {
@@ -104,11 +122,25 @@ function main() {
   );
 }
 
-try {
-  main();
-} catch (error) {
-  console.error('check-e2e-tags: script error');
-  console.error(error);
-  // Exit 2 to distinguish infra errors from a real violation (exit 1).
-  process.exit(2);
+export {
+  findViolations,
+  loadCanonicalTags,
+  main,
+  stripCommentsAndStrings,
+  walk,
+};
+
+// Guarded so tests can import the helpers; an unguarded `main()` would run the
+// whole check and `process.exit` out of the test runner on import. Comparing
+// `process.argv[1]` by hand would silently skip the check when invoked through
+// a symlink, since argv[1] is not realpath-resolved but `import.meta.url` is.
+if (import.meta.main) {
+  try {
+    main();
+  } catch (error) {
+    console.error('check-e2e-tags: script error');
+    console.error(error);
+    // Exit 2 to distinguish infra errors from a real violation (exit 1).
+    process.exit(2);
+  }
 }

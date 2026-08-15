@@ -167,5 +167,8 @@
     "vite-plugin-killer-instincts": "^1.1.0",
     "vitest": "^4.1.10"
   },
+  "engines": {
+    "node": ">=24.2"
+  },
   "packageManager": "pnpm@11.21.0"
 }
