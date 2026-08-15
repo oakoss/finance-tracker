@@ -198,59 +198,104 @@ the footer's `border-t`.
 - Provide `getRowId` when selection needs stable identifiers.
 - Extract reusable controls (column header, pagination, view options) only when
   reused across multiple tables.
-- The app is on react-table v9 through its compat layer, so tables import
-  `useLegacyTable`, `legacyCreateColumnHelper` and the `get*RowModel` helpers
-  from `@tanstack/react-table/legacy` — the v9 root exports none of them, and
-  `useReactTable` no longer exists at all. When the migration off the compat
-  layer lands these become `tableFeatures()` + `useTable`, row models move into
-  feature slots (`paginatedRowModel: createPaginatedRowModel()`; core is
-  automatic), and `table.getState()` becomes `table.state`.
+- The app is on react-table v9. Tables use `tableFeatures()` + `useTable`;
+  `useReactTable` and the `get*RowModel` options no longer exist. Row models are
+  feature slots (`paginatedRowModel: createPaginatedRowModel()`) and the core
+  row model is automatic. Read state via `table.state`, not `table.getState()`.
+  Everything comes from the `@tanstack/react-table` root.
+- **Omitting a feature is a type error** — its API is simply not on the table
+  type, so the call site fails to compile. Registering a row-model slot without
+  its prerequisite feature is also a type error: the slot's type is replaced
+  with a literal error string naming the missing feature.
+- **Omitting a row-model slot is silent.** `filteredRowModel`, `sortedRowModel`,
+  `groupedRowModel`, `expandedRowModel` and `paginatedRowModel` each skip their
+  stage and pass the previous row model through, with no warning — so a missing
+  `paginatedRowModel` renders every row.
+- **Omitting a registry entry warns in development but never fails to compile.**
+  `filterFns` and `aggregationFns` resolve to nothing, so the filter or
+  aggregation is skipped while the column still reports itself as filterable.
+  `sortFns` instead falls back to `sortFn_basic`, so the column still sorts —
+  just not the way you configured.
+- Register features once at module level. `useTable` binds the feature APIs when
+  it constructs the table and caches each row model on first access, so features
+  from later renders are ignored.
+- Data grids get their feature set from `createDataGridFeatures<TData>()` and
+  their columns from `createDataGridColumnHelper<TData>()`
+  (`@/components/data-grid/features`) rather than building either by hand. The
+  hand-built feature sets below are for one-off tables outside the data grid.
 
 ### Example: controlled table state
 
 ```tsx
-const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-  [],
-);
-const [pagination, setPagination] = React.useState({
-  pageIndex: 0,
-  pageSize: 10,
+// A column with no explicit `filterFn` defaults to 'auto', which resolves
+// through `filterFns` by inferred column type — register the ones you use or
+// filtering silently does nothing.
+const features = tableFeatures({
+  columnFilteringFeature,
+  filteredRowModel: createFilteredRowModel(),
+  filterFns: { includesString: filterFn_includesString },
+  paginatedRowModel: createPaginatedRowModel(),
+  rowPaginationFeature,
 });
 
-const table = useLegacyTable({
-  columns,
-  data,
-  getCoreRowModel: getCoreRowModel(),
-  getFilteredRowModel: getFilteredRowModel(),
-  getPaginationRowModel: getPaginationRowModel(),
-  onColumnFiltersChange: setColumnFilters,
-  onPaginationChange: setPagination,
-  state: { columnFilters, pagination },
-});
+function TransactionsTable() {
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const table = useTable({
+    columns,
+    data,
+    features,
+    onColumnFiltersChange: setColumnFilters,
+    onPaginationChange: setPagination,
+    state: { columnFilters, pagination },
+  });
+}
 ```
 
 ### Example: server-side pagination + filtering
 
 ```tsx
-const [pagination, setPagination] = React.useState({
-  pageIndex: 0,
-  pageSize: 20,
+// No row-model slots — the server already applied them. Filter fns are still
+// resolved on every filter write for their `autoRemove` check, so register
+// `filterFns` to silence the dev warning or to get a fn's own autoRemove.
+const features = tableFeatures({
+  columnFilteringFeature,
+  rowPaginationFeature,
 });
-const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-  [],
-);
 
-const table = useLegacyTable({
-  columns,
-  data: serverRows,
-  getCoreRowModel: getCoreRowModel(),
-  manualPagination: true,
-  manualFiltering: true,
-  rowCount: totalRowCount,
-  onPaginationChange: setPagination,
-  onColumnFiltersChange: setColumnFilters,
-  state: { columnFilters, pagination },
-});
+function ServerTable() {
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: 20,
+  });
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+
+  const table = useTable({
+    columns,
+    data: serverRows,
+    features,
+    manualFiltering: true,
+    manualPagination: true,
+    // The auto-reset fires from row-model hooks, and there is no filtered row
+    // model here — `manualPagination` disables it anyway. Reset the page
+    // yourself or the next fetch asks for page 5 of a fresh result set.
+    onColumnFiltersChange: (updater) => {
+      setColumnFilters(updater);
+      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    },
+    onPaginationChange: setPagination,
+    rowCount: totalRowCount,
+    state: { columnFilters, pagination },
+  });
+}
 ```
 
 ## Virtual

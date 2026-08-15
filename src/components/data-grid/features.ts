@@ -44,9 +44,8 @@ export type DataGridColumnMeta<TData extends RowData> = {
  * silently renders every row instead of erroring.
  *
  * Call this at module level. `useTable` binds the feature APIs once inside its
- * `useState` initializer; later renders merge a fresh `features` object into
- * options without rebuilding the table, so a per-render call allocates a set
- * that is never consulted rather than erroring.
+ * `useState` initializer and caches each row model on first access, so a
+ * per-render call yields a set that later renders ignore rather than erroring.
  */
 export function createDataGridFeatures<TData extends RowData>() {
   return tableFeatures({
