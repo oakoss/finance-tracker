@@ -34,7 +34,12 @@ const TAG_BLOCK =
   /\btag\s*:\s*(?:\[([^\]]*)\]|'(@[A-Za-z0-9_-]+)'|"(@[A-Za-z0-9_-]+)")/g;
 const TAG_TOKEN = /['"](@[A-Za-z0-9_-]+)['"]/g;
 const TAG_SITE = /\btag\s*:/g;
-const UNREADABLE_TAG = '<unreadable tag value — use inline string literals>';
+// Both messages name what the gate needs rather than what it failed to parse.
+// A quoted literal without the `@` is blanked during stripping, so it reaches
+// here looking identical to a non-literal value or an empty array.
+const UNREADABLE_TAG =
+  "<unrecognized tag value — use an inline '@tag' string literal>";
+const NO_TAGS = "<no recognized tags — use inline '@tag' string literals>";
 // The callee of the call we are sitting inside. The lookbehind rejects a
 // method call like `expect(x).test(`, which is only a word boundary away
 // from the real thing.
@@ -143,7 +148,7 @@ function findViolations(content, file, canonical) {
     }
     if (tokens.length === 0) {
       if (!hasDynamic) {
-        violations.push({ file, lineNumber, tag: '<empty tag block>' });
+        violations.push({ file, lineNumber, tag: NO_TAGS });
       }
       continue;
     }

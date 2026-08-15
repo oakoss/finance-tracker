@@ -22,8 +22,9 @@ const SETTLE_TIMEOUT_MS = 2000;
  * Stability is measured rather than asserted as a condition: a control that is
  * still faded *and* disabled looks fine to any point-in-time check, so such a
  * check passes during hydration and leaves the race intact. Requiring several
- * unchanged frames instead spans the disabled -> enabled flip, and costs
- * nothing on pages whose controls are already static.
+ * unchanged frames instead spans the disabled -> enabled flip. A legitimately
+ * disabled control is stable from the start, so it settles in those few frames
+ * rather than waiting out the timeout.
  *
  * Waiting on `getAnimations()` — the usual remedy — does not help: under
  * `prefers-reduced-motion` the transition is effectively instant, and the frame

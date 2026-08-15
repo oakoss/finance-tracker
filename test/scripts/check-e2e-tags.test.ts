@@ -148,10 +148,14 @@ describe('findViolations', () => {
     expect(findViolations(src, 'a.ts', canonical)).toEqual([]);
   });
 
-  it('reports an empty tag block', () => {
+  it('reports an array with no usable tags', () => {
     const src = `test.describe('x', { tag: [] }, () => {});`;
     expect(findViolations(src, 'a.ts', canonical)).toEqual([
-      { file: 'a.ts', lineNumber: 1, tag: '<empty tag block>' },
+      {
+        file: 'a.ts',
+        lineNumber: 1,
+        tag: expect.stringContaining('no recognized tags'),
+      },
     ]);
   });
 
@@ -167,7 +171,7 @@ describe('findViolations', () => {
       {
         file: 'a.ts',
         lineNumber: 1,
-        tag: expect.stringContaining('unreadable tag value'),
+        tag: expect.stringContaining('unrecognized tag value'),
       },
     ]);
   });
@@ -290,7 +294,7 @@ describe('findViolations', () => {
         {
           file: 'a.ts',
           lineNumber: 1,
-          tag: expect.stringContaining('unreadable tag value'),
+          tag: expect.stringContaining('unrecognized tag value'),
         },
       ]);
     });
