@@ -20,6 +20,12 @@ export type DataGridColumnMeta<TData extends RowData> = {
   cellClassName?: string;
   expandedContent?: (row: TData) => ReactNode;
   headerClassName?: string;
+  /**
+   * Plain-string column name, for anywhere a label is needed outside the header
+   * cell — `header` returns a ReactNode and cannot be reused as text. Nothing
+   * reads it today: its consumer was the column-visibility menu, removed with
+   * the orphaned column-header control.
+   */
   headerTitle?: string;
   skeleton?: ReactNode;
 };

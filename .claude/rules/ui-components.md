@@ -63,8 +63,9 @@ A composable data grid in `src/components/data-grid/` (4 files). Do not rebuild 
 - Feature registry: `createDataGridFeatures<TData>()` in `features.ts`. v9 only
   exposes an API when its feature is registered, so a new call in `table.tsx` or
   `pagination.tsx` needs its feature added there first. Call it at module level.
-- Column meta (`headerTitle`, `cellClassName`, `skeleton`, ...) is scoped to that
-  feature set, not declared globally.
+- Column meta (`cellClassName`, `headerClassName`, `skeleton`) is scoped to that
+  feature set, not declared globally. `headerTitle` is also defined but nothing
+  reads it — see the note on the field before relying on it.
 - Columns files use `createDataGridColumnHelper<TRow>()` from `features.ts`. Do
   not call `createColumnHelper` directly — it drops the grid's feature binding.
 - Context-based: `DataGridContext` provides table instance, props, loading state.
