@@ -141,8 +141,10 @@ Answer where the comment was made. A single global PR comment covering
 every finding detaches each answer from the code it is about, and leaves
 the threads open.
 
-- Reply in the thread:
-  `gh api repos/{owner}/{repo}/pulls/{n}/comments/{id}/replies -f body='…'`
+- Reply in the thread. `gh api` expands only `{owner}` and `{repo}` — fill in
+  the PR number and comment id yourself, and use the **top-level** comment of
+  the thread, since the API rejects replies to a reply:
+  `gh api repos/{owner}/{repo}/pulls/49/comments/123456/replies -f body='…'`
 - Resolve it once addressed: GraphQL `resolveReviewThread`, with the id
   from the PR's `reviewThreads`.
 - Name the commit that fixed it. For anything declined, give the reason in
