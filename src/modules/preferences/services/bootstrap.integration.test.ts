@@ -1,17 +1,13 @@
 import { eq } from 'drizzle-orm';
 
-import type { Db } from '@/db';
-
 import { userPreferences } from '@/modules/preferences/db/schema';
 import {
   bootstrapUserPreferences,
   DEFAULT_USER_PREFERENCES,
 } from '@/modules/preferences/services/bootstrap';
-import type { Db as TestDb } from '~test/factories/base';
+import { asDb } from '~test/db';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('bootstrapUserPreferences — creates row with schema defaults', async ({
   serviceDb,

@@ -1,21 +1,19 @@
 import { eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
 import type { CreateImportInput } from '@/modules/imports/validators';
 
 import { auditLogs } from '@/db/schema';
 import { importRows } from '@/modules/imports/db/schema';
 import { computeRowFingerprint } from '@/modules/imports/lib/compute-row-fingerprint';
 import { createImportService } from '@/modules/imports/services/create-import';
+import { asDb } from '~test/db';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
-import { fakeId, type Db as TestDb } from '~test/factories/base';
+import { fakeId } from '~test/factories/base';
 import { insertImport } from '~test/factories/import.factory';
 import { insertTransaction } from '~test/factories/transaction.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 const SAMPLE_CSV = `Date,Description,Amount
 2024-01-15,Coffee Shop,-4.50

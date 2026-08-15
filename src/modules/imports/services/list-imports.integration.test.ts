@@ -1,15 +1,11 @@
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { listImportsService } from '@/modules/imports/services/list-imports';
+import { asDb } from '~test/db';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
-import type { Db as TestDb } from '~test/factories/base';
 import { insertImport, insertImportRow } from '~test/factories/import.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('list — returns only imports for the requesting user', async ({ db }) => {
   const { account: account1, user: user1 } = await insertAccountWithUser(db);

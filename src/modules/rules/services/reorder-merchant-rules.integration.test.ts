@@ -1,17 +1,14 @@
 import { and, eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { auditLogs } from '@/db/schema';
 import { merchantRules } from '@/modules/rules/db/schema';
 import { reorderMerchantRulesService } from '@/modules/rules/services/reorder-merchant-rules';
+import { asDb } from '~test/db';
 import { fakeId, type Db as TestDb } from '~test/factories/base';
 import { insertMerchantRule } from '~test/factories/merchant-rule.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 async function seedRulesInStage(serviceDb: TestDb, userId: string, count: 3) {
   const rules = await Promise.all(

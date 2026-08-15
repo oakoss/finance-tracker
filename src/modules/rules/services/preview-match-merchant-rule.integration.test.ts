@@ -1,15 +1,12 @@
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { previewMatchMerchantRuleService } from '@/modules/rules/services/preview-match-merchant-rule';
+import { asDb } from '~test/db';
 import type { Db as TestDb } from '~test/factories/base';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
 import { insertTransaction } from '~test/factories/transaction.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 async function setup(db: TestDb) {
   const user = await insertUser(db);

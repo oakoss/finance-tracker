@@ -1,18 +1,14 @@
 import { eq } from 'drizzle-orm';
 import { vi } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { deletionRequests } from '@/modules/auth/db/deletion-requests';
 import { users } from '@/modules/auth/db/schema';
 import { runPurgeExpiredAccounts } from '@/modules/auth/services/run-purge';
-import type { Db as TestDb } from '~test/factories/base';
+import { asDb } from '~test/db';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
 
 vi.mock('@/lib/email', () => ({ sendEmail: vi.fn() }));
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('runPurgeExpiredAccounts — purges only expired pending requests', async ({
   serviceDb,

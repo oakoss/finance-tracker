@@ -1,24 +1,16 @@
 import { and, eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { auditLogs } from '@/db/schema';
 import { transactionTags } from '@/modules/transactions/db/schema';
 import { createTransactionService } from '@/modules/transactions/services/create-transaction';
+import { asDb } from '~test/db';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
-import type { Db as TestDb } from '~test/factories/base';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertPayee } from '~test/factories/payee.factory';
 import { insertTag } from '~test/factories/tag.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-/**
- * Cast test Db to app Db. Safe because PgTransaction extends PgDatabase
- * at runtime — all query/mutation methods are available.
- */
-const asDb = (db: TestDb) => db as unknown as Db;
 
 // ---------------------------------------------------------------------------
 // Helpers

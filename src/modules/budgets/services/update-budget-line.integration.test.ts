@@ -1,18 +1,15 @@
 import { and, eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { auditLogs } from '@/db/schema';
 import { updateBudgetLineService } from '@/modules/budgets/services/update-budget-line';
-import { fakeId, type Db as TestDb } from '~test/factories/base';
+import { asDb } from '~test/db';
+import { fakeId } from '~test/factories/base';
 import { insertBudgetLine } from '~test/factories/budget-line.factory';
 import { insertBudgetPeriodWithUser } from '~test/factories/budget-period-with-user.factory';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('update — updates amount', async ({ serviceDb }) => {
   const { period, user } = await insertBudgetPeriodWithUser(serviceDb);

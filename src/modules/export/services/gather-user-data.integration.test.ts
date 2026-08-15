@@ -1,9 +1,7 @@
-import type { Db } from '@/db';
-
 import { transferDismissals } from '@/db/schema';
 import { gatherUserData } from '@/modules/export/services/gather-user-data';
+import { asDb } from '~test/db';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
-import type { Db as TestDb } from '~test/factories/base';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
 import { insertPayee } from '~test/factories/payee.factory';
@@ -13,8 +11,6 @@ import { insertTransaction } from '~test/factories/transaction.factory';
 import { insertTransfer } from '~test/factories/transfer.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('returns all entity types for user with data', async ({ serviceDb }) => {
   const { account, user } = await insertAccountWithUser(serviceDb);

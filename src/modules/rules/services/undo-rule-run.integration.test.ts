@@ -1,8 +1,6 @@
 import { and, eq, inArray } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { auditLogs } from '@/db/schema';
 import { ruleRuns } from '@/modules/rules/db/schema';
 import { applyMerchantRuleService } from '@/modules/rules/services/apply-merchant-rule';
@@ -11,6 +9,7 @@ import {
   transactions,
   transactionTags,
 } from '@/modules/transactions/db/schema';
+import { asDb } from '~test/db';
 import { fakeId, type Db as TestDb } from '~test/factories/base';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
@@ -21,8 +20,6 @@ import { insertTag } from '~test/factories/tag.factory';
 import { insertTransaction } from '~test/factories/transaction.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 async function setup(db: TestDb) {
   const user = await insertUser(db);

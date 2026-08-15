@@ -1,16 +1,12 @@
 import { and, eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { auditLogs } from '@/db/schema';
 import { createCategoryService } from '@/modules/categories/services/create-category';
-import type { Db as TestDb } from '~test/factories/base';
+import { asDb } from '~test/db';
 import { insertCategoryWithUser } from '~test/factories/category-with-user.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('create — inserts with required fields', async ({ serviceDb }) => {
   const user = await insertUser(serviceDb);

@@ -1,7 +1,17 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import pg from 'pg';
 
+import type { Db } from '@/db';
+
 import * as schema from '@/db/schema';
+import type { Db as TestDb } from '~test/factories/base';
+
+/**
+ * `TestDb` is the app's `Db` minus `$client`, which services never touch. The
+ * assertion stays single-hop so TypeScript still checks the two overlap — if
+ * `@/db` changes drivers, this stops compiling instead of failing at runtime.
+ */
+export const asDb = (db: TestDb) => db as Db;
 
 /**
  * Drizzle instance on a single pg.Client (not a pool).

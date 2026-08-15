@@ -2,18 +2,15 @@ import { type } from 'arktype';
 import { eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { payees } from '@/modules/payees/db/schema';
 import { createPayeeAliasService } from '@/modules/payees/services/create-payee-alias';
 import { createPayeeAliasSchema } from '@/modules/payees/validators';
 import { payeeAliases } from '@/modules/rules/db/schema';
 import { expectPgError } from '~test/assertions';
+import { asDb } from '~test/db';
 import type { Db as TestDb } from '~test/factories/base';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 async function insertPayee(db: TestDb, userId: string, name: string) {
   const [payee] = await db

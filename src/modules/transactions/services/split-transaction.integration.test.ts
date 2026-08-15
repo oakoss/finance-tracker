@@ -1,21 +1,17 @@
 import { eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { auditLogs } from '@/db/schema';
 import { splitLines, transactions } from '@/modules/transactions/db/schema';
 import { splitTransactionService } from '@/modules/transactions/services/split-transaction';
+import { asDb } from '~test/db';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
-import type { Db as TestDb } from '~test/factories/base';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
 import { insertTransaction } from '~test/factories/transaction.factory';
 import { insertTransfer } from '~test/factories/transfer.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('split — creates split lines and updates parent', async ({
   serviceDb,

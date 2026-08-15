@@ -1,17 +1,14 @@
 import { and, eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { auditLogs } from '@/db/schema';
 import { updateMerchantRuleService } from '@/modules/rules/services/update-merchant-rule';
-import { fakeId, type Db as TestDb } from '~test/factories/base';
+import { asDb } from '~test/db';
+import { fakeId } from '~test/factories/base';
 import { insertMerchantRuleWithUser } from '~test/factories/merchant-rule-with-user.factory';
 import { insertMerchantRule } from '~test/factories/merchant-rule.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('update — updates match and actions', async ({ serviceDb }) => {
   const { rule, user } = await insertMerchantRuleWithUser(serviceDb);

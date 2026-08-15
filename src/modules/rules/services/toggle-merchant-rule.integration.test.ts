@@ -1,16 +1,13 @@
 import { and, eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { auditLogs } from '@/db/schema';
 import { toggleMerchantRuleService } from '@/modules/rules/services/toggle-merchant-rule';
-import { fakeId, type Db as TestDb } from '~test/factories/base';
+import { asDb } from '~test/db';
+import { fakeId } from '~test/factories/base';
 import { insertMerchantRuleWithUser } from '~test/factories/merchant-rule-with-user.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('toggle — flips isActive true → false', async ({ serviceDb }) => {
   const { rule, user } = await insertMerchantRuleWithUser(serviceDb, {

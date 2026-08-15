@@ -1,17 +1,13 @@
 import { eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { merchantRules } from '@/modules/rules/db/schema';
 import { listMerchantRulesService } from '@/modules/rules/services/list-merchant-rules';
-import type { Db as TestDb } from '~test/factories/base';
+import { asDb } from '~test/db';
 import { insertMerchantRuleWithUser } from '~test/factories/merchant-rule-with-user.factory';
 import { insertMerchantRule } from '~test/factories/merchant-rule.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('list — returns rules ordered by (stage, priority)', async ({
   serviceDb,

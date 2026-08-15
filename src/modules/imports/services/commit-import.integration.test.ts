@@ -1,7 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
 import type { ProcessedNormalizedRow } from '@/modules/imports/lib/apply-column-mapping';
 
 import { auditLogs } from '@/db/schema';
@@ -9,14 +8,13 @@ import { importRows } from '@/modules/imports/db/schema';
 import { computeRowFingerprint } from '@/modules/imports/lib/compute-row-fingerprint';
 import { commitImportService } from '@/modules/imports/services/commit-import';
 import { transactions } from '@/modules/transactions/db/schema';
+import { asDb } from '~test/db';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
 import type { Db as TestDb } from '~test/factories/base';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertImport, insertImportRow } from '~test/factories/import.factory';
 import { insertTransaction } from '~test/factories/transaction.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 async function createReadyImport(db: TestDb, rows: ProcessedNormalizedRow[]) {
   const { account, user } = await insertAccountWithUser(db);

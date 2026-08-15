@@ -1,19 +1,15 @@
 import { and, eq } from 'drizzle-orm';
 import { vi } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { auditLogs } from '@/db/audit';
 import { sendEmail } from '@/lib/email';
 import { deletionRequests } from '@/modules/auth/db/deletion-requests';
 import { cancelDeletionService } from '@/modules/auth/services/cancel-deletion';
-import type { Db as TestDb } from '~test/factories/base';
+import { asDb } from '~test/db';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
 
 vi.mock('@/lib/email', () => ({ sendEmail: vi.fn() }));
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('cancelDeletionService — marks pending request as cancelled', async ({
   serviceDb,

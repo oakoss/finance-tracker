@@ -1,19 +1,15 @@
 import { eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { splitLines, transactions } from '@/modules/transactions/db/schema';
 import { splitTransactionService } from '@/modules/transactions/services/split-transaction';
 import { unsplitTransactionService } from '@/modules/transactions/services/unsplit-transaction';
+import { asDb } from '~test/db';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
-import type { Db as TestDb } from '~test/factories/base';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertTransaction } from '~test/factories/transaction.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('unsplit — deletes lines and restores parent', async ({ serviceDb }) => {
   const { account, user } = await insertAccountWithUser(serviceDb);

@@ -1,20 +1,16 @@
 import { eq } from 'drizzle-orm';
 import { vi } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { deletionRequests } from '@/modules/auth/db/deletion-requests';
 import { users } from '@/modules/auth/db/schema';
 import { purgeUser } from '@/modules/auth/services/purge-user';
+import { asDb } from '~test/db';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
-import type { Db as TestDb } from '~test/factories/base';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
 
 vi.mock('@/lib/email', () => ({ sendEmail: vi.fn() }));
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('purgeUser — hard-deletes user and cascades finance data', async ({
   serviceDb,
