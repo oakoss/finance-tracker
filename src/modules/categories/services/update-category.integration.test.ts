@@ -1,17 +1,14 @@
 import { and, eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { auditLogs } from '@/db/schema';
 import { updateCategoryService } from '@/modules/categories/services/update-category';
-import { fakeId, type Db as TestDb } from '~test/factories/base';
+import { asDb } from '~test/db';
+import { fakeId } from '~test/factories/base';
 import { insertCategoryWithUser } from '~test/factories/category-with-user.factory';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('update — updates fields', async ({ serviceDb }) => {
   const { category, user } = await insertCategoryWithUser(serviceDb, {

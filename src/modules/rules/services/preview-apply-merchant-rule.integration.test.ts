@@ -1,19 +1,16 @@
 import { eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { merchantRules } from '@/modules/rules/db/schema';
 import { previewApplyMerchantRuleService } from '@/modules/rules/services/preview-apply-merchant-rule';
 import { transactions } from '@/modules/transactions/db/schema';
+import { asDb } from '~test/db';
 import type { Db as TestDb } from '~test/factories/base';
 import { insertLedgerAccount } from '~test/factories/ledger-account.factory';
 import { insertMerchantRule } from '~test/factories/merchant-rule.factory';
 import { insertTransaction } from '~test/factories/transaction.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 async function setupUserWithAccount(db: TestDb) {
   const user = await insertUser(db);

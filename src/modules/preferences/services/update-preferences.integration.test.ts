@@ -1,15 +1,11 @@
 import { eq } from 'drizzle-orm';
 
-import type { Db } from '@/db';
-
 import { auditLogs } from '@/db/audit';
 import { userPreferences } from '@/modules/preferences/db/schema';
 import { updateUserPreferencesService } from '@/modules/preferences/services/update-preferences';
-import type { Db as TestDb } from '~test/factories/base';
+import { asDb } from '~test/db';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 const input = {
   defaultCurrency: 'EUR',
@@ -89,6 +85,12 @@ test('updateUserPreferencesService — writes create audit log on first upsert',
   expect(logs).toHaveLength(1);
   expect(logs[0]?.action).toBe('create');
   expect(logs[0]?.tableName).toBe('user_preferences');
+  expect(logs[0]?.afterData).toMatchObject({
+    defaultCurrency: input.defaultCurrency,
+    locale: input.locale,
+    timeZone: input.timeZone,
+    userId: user.id,
+  });
 });
 
 test('updateUserPreferencesService — writes update audit log with beforeData on second upsert', async ({
@@ -109,7 +111,10 @@ test('updateUserPreferencesService — writes update audit log with beforeData o
     .orderBy(auditLogs.id);
   expect(logs).toHaveLength(2);
   expect(logs[1]?.action).toBe('update');
-  expect(logs[1]?.beforeData).not.toBeNull();
+  expect(logs[1]?.beforeData).toMatchObject({
+    defaultCurrency: input.defaultCurrency,
+  });
+  expect(logs[1]?.afterData).toMatchObject({ defaultCurrency: 'GBP' });
 });
 
 test('updateUserPreferencesService — rejects invalid time zone', async ({

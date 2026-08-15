@@ -17,13 +17,13 @@ const statusVariant = {
   processing: 'info',
 } as const;
 
-const statusLabel: Record<keyof typeof statusVariant, () => string> = {
+const statusLabel = {
   committed: () => m['imports.status.committed'](),
   completed: () => m['imports.status.completed'](),
   failed: () => m['imports.status.failed'](),
   pending: () => m['imports.status.pending'](),
   processing: () => m['imports.status.processing'](),
-};
+} satisfies Record<keyof typeof statusVariant, () => string>;
 
 export const importColumns = columnHelper.columns([
   columnHelper.accessor('fileName', {

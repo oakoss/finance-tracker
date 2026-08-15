@@ -1,16 +1,13 @@
 import { eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { payees } from '@/modules/payees/db/schema';
 import { listPayeeAliasesService } from '@/modules/payees/services/list-payee-aliases';
 import { payeeAliases } from '@/modules/rules/db/schema';
+import { asDb } from '~test/db';
 import type { Db as TestDb } from '~test/factories/base';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 async function insertPayee(db: TestDb, userId: string, name: string) {
   const [payee] = await db

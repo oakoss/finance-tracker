@@ -34,12 +34,12 @@ const ADDABLE: AddableKind[] = [
   'setNote',
 ];
 
-const LABEL: Record<AddableKind, () => string> = {
+const LABEL = {
   setCategory: () => m['rules.form.actions.addCategory'](),
   setNote: () => m['rules.form.actions.addNote'](),
   setPayee: () => m['rules.form.actions.addPayee'](),
   setTags: () => m['rules.form.actions.addTags'](),
-};
+} satisfies Record<AddableKind, () => string>;
 
 function blankAction(kind: AddableKind): RuleAction {
   switch (kind) {

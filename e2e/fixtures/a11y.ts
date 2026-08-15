@@ -32,12 +32,16 @@ const SETTLE_TIMEOUT_MS = 2000;
  */
 export async function a11yScan(page: Page) {
   await page.evaluate(() => {
+    // The page-global __a11ySettle property is not declared on the global type.
+    // oxlint-disable-next-line type-evidence/no-chained-type-assertions
     delete (globalThis as unknown as Record<string, unknown>).__a11ySettle;
   });
 
   await page
     .waitForFunction(
       (stableFrames) => {
+        // The page-global __a11ySettle property is not declared on the global type.
+        // oxlint-disable-next-line type-evidence/no-chained-type-assertions
         const store = globalThis as unknown as {
           __a11ySettle?: { prev: string; stable: number };
         };

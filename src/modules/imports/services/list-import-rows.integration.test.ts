@@ -1,14 +1,10 @@
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { listImportRowsService } from '@/modules/imports/services/list-import-rows';
+import { asDb } from '~test/db';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
-import type { Db as TestDb } from '~test/factories/base';
 import { insertImport, insertImportRow } from '~test/factories/import.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('listImportRows — returns rows ordered by rowIndex', async ({
   serviceDb,

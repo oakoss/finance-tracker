@@ -1,19 +1,16 @@
 import { and, eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { auditLogs } from '@/db/schema';
 import { notDeleted } from '@/lib/audit/soft-delete';
 import { categories } from '@/modules/categories/db/schema';
 import { deleteCategoryService } from '@/modules/categories/services/delete-category';
-import { fakeId, type Db as TestDb } from '~test/factories/base';
+import { asDb } from '~test/db';
+import { fakeId } from '~test/factories/base';
 import { insertCategoryWithUser } from '~test/factories/category-with-user.factory';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('delete — soft-deletes category', async ({ serviceDb }) => {
   const { category, user } = await insertCategoryWithUser(serviceDb);

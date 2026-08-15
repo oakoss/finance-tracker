@@ -18,6 +18,8 @@ import {
 
 vi.mock('@/paraglide/runtime', () => ({ getLocale: vi.fn(() => 'en-US') }));
 
+// Paraglide types getLocale to the configured locales; this suite exercises others.
+// oxlint-disable-next-line type-evidence/no-chained-type-assertions
 const mockedGetLocale = getLocale as unknown as ReturnType<
   typeof vi.fn<() => string>
 >;

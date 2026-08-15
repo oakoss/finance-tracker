@@ -215,7 +215,9 @@ async function undoTransactionEntry(
     entry.before !== undefined && Object.keys(entry.before).length > 0;
 
   if (hasFieldPatch) {
-    const patch: Record<string, unknown> = { updatedById: userId };
+    const patch: Partial<
+      Pick<typeof transactions.$inferInsert, 'categoryId' | 'memo' | 'payeeId'>
+    > & { updatedById: string } = { updatedById: userId };
     if ('categoryId' in entry.before!) {
       patch.categoryId = entry.before.categoryId;
     }

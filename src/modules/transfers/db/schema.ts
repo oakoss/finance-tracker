@@ -39,8 +39,9 @@ export const transfersCheckNames = {
 } as const;
 
 // User-facing copy keyed by every constraint that can surface a 23505
-// or 23514. The Record narrows the keyspace to violation-prone names —
-// adding a new unique index or CHECK without copy fails to typecheck.
+// or 23514. The `satisfies` clause requires copy for every name listed in
+// TransfersConstraintName, which is maintained by hand — a new unique index
+// or CHECK only becomes mandatory once it is added to that union.
 // The `userIdIdx` entries on both constants are excluded deliberately:
 // plain `index()` (not `uniqueIndex()`) can never raise 23505/23514,
 // so they have no copy.
@@ -52,10 +53,7 @@ type TransfersConstraintName =
   | typeof transfersIndexNames.pairUniqueIdx
   | typeof transfersIndexNames.toTransactionIdx;
 
-export const transfersConstraintMessages: Record<
-  TransfersConstraintName,
-  string
-> = {
+export const transfersConstraintMessages = {
   [transferDismissalsIndexNames.uniquePairIdx]:
     'This transaction pair has already been dismissed.',
   [transfersCheckNames.dismissalsOrderedPair]:
@@ -68,7 +66,7 @@ export const transfersConstraintMessages: Record<
     'These transactions are already paired as a transfer.',
   [transfersIndexNames.toTransactionIdx]:
     'This transaction is already part of an active transfer.',
-};
+} satisfies Record<TransfersConstraintName, string>;
 
 export const transfers = pgTable(
   'transfers',

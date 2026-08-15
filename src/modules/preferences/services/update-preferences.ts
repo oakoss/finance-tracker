@@ -85,7 +85,7 @@ export async function updateUserPreferencesService(
 
     const baseAuditParams = {
       actorId: userId,
-      afterData: row as unknown as Record<string, unknown>,
+      afterData: { ...row },
       entityId: userId,
       tableName: 'user_preferences' as const,
     };

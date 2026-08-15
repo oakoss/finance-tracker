@@ -1,19 +1,16 @@
 import { and, eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { auditLogs } from '@/db/schema';
 import { importRows, imports } from '@/modules/imports/db/schema';
 import { createImportService } from '@/modules/imports/services/create-import';
 import { deleteImportService } from '@/modules/imports/services/delete-import';
+import { asDb } from '~test/db';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
-import { fakeId, type Db as TestDb } from '~test/factories/base';
+import { fakeId } from '~test/factories/base';
 import { insertImport, insertImportRow } from '~test/factories/import.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 const SAMPLE_CSV = `Date,Description,Amount
 2024-01-15,Coffee Shop,-4.50

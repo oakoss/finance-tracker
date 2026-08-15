@@ -1,16 +1,12 @@
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { listBudgetLinesService } from '@/modules/budgets/services/list-budget-lines';
-import type { Db as TestDb } from '~test/factories/base';
+import { asDb } from '~test/db';
 import { insertBudgetLine } from '~test/factories/budget-line.factory';
 import { insertBudgetPeriodWithUser } from '~test/factories/budget-period-with-user.factory';
 import { insertCategory } from '~test/factories/category.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('list — returns active lines for period', async ({ serviceDb }) => {
   const { period, user } = await insertBudgetPeriodWithUser(serviceDb);

@@ -25,13 +25,14 @@ vi.mock('@/lib/logging/evlog', () => ({
   createError: (opts: { message: string }) => new Error(opts.message),
 }));
 
+// trackLocaleChanges feeds back arbitrary locale strings; Paraglide types
+// getLocale to the configured set, so vi.mocked() is too narrow here.
+// oxlint-disable-next-line type-evidence/no-chained-type-assertions
 const mockedGetLocale = getLocale as unknown as ReturnType<
   typeof vi.fn<() => string>
 >;
-const mockedSetLocale = setLocale as unknown as ReturnType<
-  typeof vi.fn<(locale: string) => Promise<void>>
->;
-const mockedRender = render as unknown as ReturnType<typeof vi.fn>;
+const mockedSetLocale = vi.mocked(setLocale);
+const mockedRender = vi.mocked(render);
 
 /** Wire setLocale to update getLocale's return value, tracking calls. */
 function trackLocaleChanges() {
@@ -49,6 +50,8 @@ beforeEach(() => {
 });
 
 describe('renderEmail', () => {
+  // renderEmail must reject a null element, which its parameter type forbids.
+  // oxlint-disable-next-line type-evidence/no-chained-type-assertions
   const element = null as unknown as ReactElement;
 
   it('returns html and text', async () => {
@@ -145,6 +148,8 @@ describe('renderEmail', () => {
 
     it('falls back to baseLocale when getLocale returns undefined', async () => {
       mockedGetLocale.mockReturnValue(
+        // Exercises the baseLocale fallback for an undefined locale the type forbids.
+        // oxlint-disable-next-line type-evidence/no-chained-type-assertions
         undefined as unknown as ReturnType<typeof getLocale>,
       );
       const calls = trackLocaleChanges();

@@ -23,13 +23,13 @@ const rowStatusVariant = {
   mapped: 'info',
 } as const;
 
-const rowStatusLabel: Record<keyof typeof rowStatusVariant, () => string> = {
+const rowStatusLabel = {
   committed: () => m['imports.detail.rowStatus.committed'](),
   duplicate: () => m['imports.detail.rowStatus.duplicate'](),
   error: () => m['imports.detail.rowStatus.error'](),
   ignored: () => m['imports.detail.rowStatus.ignored'](),
   mapped: () => m['imports.detail.rowStatus.mapped'](),
-};
+} satisfies Record<keyof typeof rowStatusVariant, () => string>;
 
 function formatCents(value: string): string {
   const cents = Number(value);

@@ -1,14 +1,10 @@
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { listCategoriesService } from '@/modules/categories/services/list-categories';
-import type { Db as TestDb } from '~test/factories/base';
+import { asDb } from '~test/db';
 import { insertCategoryWithUser } from '~test/factories/category-with-user.factory';
 import { insertCategory } from '~test/factories/category.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('list — returns active categories for user', async ({ serviceDb }) => {
   const { user } = await insertCategoryWithUser(serviceDb, {

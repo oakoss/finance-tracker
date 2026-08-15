@@ -1,11 +1,10 @@
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { splitLines } from '@/db/schema';
 import { getBudgetVsActualService } from '@/modules/budgets/services/get-budget-vs-actual';
+import { asDb } from '~test/db';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
-import { fakeId, type Db as TestDb } from '~test/factories/base';
+import { fakeId } from '~test/factories/base';
 import { insertBudgetLine } from '~test/factories/budget-line.factory';
 import { insertBudgetPeriodWithUser } from '~test/factories/budget-period-with-user.factory';
 import { insertBudgetPeriod } from '~test/factories/budget-period.factory';
@@ -13,8 +12,6 @@ import { insertCategory } from '~test/factories/category.factory';
 import { insertTransaction } from '~test/factories/transaction.factory';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('vs-actual — returns budget lines with zero actuals when no transactions', async ({
   serviceDb,

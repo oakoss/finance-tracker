@@ -1,14 +1,10 @@
 import { expect } from 'vitest';
 
-import type { Db } from '@/db';
-
 import { updateImportRowDataService } from '@/modules/imports/services/update-import-row-data';
+import { asDb } from '~test/db';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
-import type { Db as TestDb } from '~test/factories/base';
 import { insertImport, insertImportRow } from '~test/factories/import.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('updateImportRowData — updates description and preserves other fields', async ({
   serviceDb,

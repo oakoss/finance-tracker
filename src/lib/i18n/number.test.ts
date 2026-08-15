@@ -9,6 +9,7 @@ import { defaultCurrency, formatCurrency, formatNumber } from './number';
 vi.mock('@/paraglide/runtime', () => ({ getLocale: vi.fn(() => 'en-US') }));
 
 // Widen to accept arbitrary locale strings (Paraglide constrains to available locales)
+// oxlint-disable-next-line type-evidence/no-chained-type-assertions
 const mockedGetLocale = getLocale as unknown as ReturnType<
   typeof vi.fn<() => string>
 >;
