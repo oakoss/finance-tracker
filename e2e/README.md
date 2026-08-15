@@ -47,7 +47,8 @@ e2e/
     import-actions.ts uploadCsv(), uniqueCsv()
     form-actions.ts selectAccount()
     field.ts      getField() — locate form field by label
-    a11y.ts       a11yScan() — axe-core WCAG scan
+    a11y.ts       a11yScan() — axe-core WCAG scan, waits for controls
+                  to settle first (see docs/research/0007)
     constants.ts  E2E_EMAIL, E2E_PASSWORD, E2E_USER_COUNT
     mailpit.ts    MailpitClient for email verification tests
     index.ts      waitForHydration()

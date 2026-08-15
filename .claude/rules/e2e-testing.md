@@ -30,6 +30,10 @@ paths:
     projects.
   - `@tablet` — adds the test to the `ipad` project.
   - `@stress` — runs in the `stress` project; otherwise excluded.
+- Write tags as inline string literals in the `test()` /
+  `test.describe()` options object. The checker reads source text, so
+  it cannot follow a value held in a variable — a hoisted options
+  object or a quoted `'tag':` key passes unverified.
 - Sign-out tests must sign in via UI (not storageState) to create
   their own session. Sign-out invalidates server sessions.
 - A11y tests use `AxeBuilder` from `@axe-core/playwright` with

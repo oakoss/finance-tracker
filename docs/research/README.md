@@ -43,3 +43,5 @@ Use `docs/research/0000-template.md` for new research docs.
   prioritized ideas
 - `0006-oss-budget-apps.md` — Actual Budget and kingfisherfox/budget
   comparison and prioritized ideas
+- `0007-a11y-scan-hydration-race.md` — axe color-contrast failures
+  from scanning a control mid-hydration
