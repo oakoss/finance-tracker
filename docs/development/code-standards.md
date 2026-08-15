@@ -23,6 +23,18 @@ Code style, conventions, and structure expectations.
   key types (`Record<string, V>` and friends) because it cannot see whether the
   map is indexed by a runtime value, so a closed key set spelled
   `Record<string, V>` goes unflagged.
+- Rules evaluated from `dmmulroy/anti-slop` and rejected -- do not re-adopt
+  without new evidence. Two contradict existing config:
+  `no-conditional-empty-object-spread` (under `exactOptionalPropertyTypes`
+  the conditional spread is the only spelling that compiles) and
+  `no-reflect-apply` (the inverse of `unicorn/prefer-reflect-apply`).
+  `no-unknown-parameters` and `no-unknown-returns` fired on 35 sites, every
+  one a legitimate error boundary or parser and none in `services/` or
+  `api/`. `no-runtime-typeof` flags the shadcn polymorphic-children idiom,
+  `no-module-mocking` targets unit tests the integration suite already covers
+  with real seams, and `require-safety-comment-for-type-assertion` fights the
+  comment policy. `no-object-parameters`, `no-unknown-type-aliases`,
+  `no-reflect-get` and `no-widen-then-assert` match nothing here.
 - `perfectionist/sort-objects`: Object keys must be alphabetically
   sorted (case-insensitive).
 
