@@ -1,16 +1,15 @@
-import {
-  getCoreRowModel,
-  getPaginationRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+import { useTable } from '@tanstack/react-table';
 import { useMemo } from 'react';
 
 import type { CategoryListItem } from '@/modules/categories/api/list-categories';
 
 import { DataGrid, DataGridContainer } from '@/components/data-grid';
+import { createDataGridFeatures } from '@/components/data-grid/features';
 import { DataGridPagination } from '@/components/data-grid/pagination';
 import { DataGridTable } from '@/components/data-grid/table';
 import { createCategoryColumns } from '@/modules/categories/components/categories-columns';
+
+const features = createDataGridFeatures<CategoryListItem>();
 
 type CategoriesDataGridProps = {
   data: CategoryListItem[];
@@ -23,14 +22,12 @@ export function CategoriesDataGrid({
 }: CategoriesDataGridProps) {
   const columns = useMemo(() => createCategoryColumns(data), [data]);
 
-  // oxlint-disable-next-line react-compiler/incompatible-library -- TanStack Table API is Compiler-incompatible by design
-  const table = useReactTable({
+  const table = useTable({
     columns,
     data,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    features,
     initialState: {
-      columnPinning: { left: ['name'], right: ['actions'] },
+      columnPinning: { end: ['actions'], start: ['name'] },
       pagination: { pageIndex: 0, pageSize: 25 },
     },
   });

@@ -1,14 +1,13 @@
-import { createColumnHelper } from '@tanstack/react-table';
-
 import type { ImportListItem } from '@/modules/imports/api/list-imports';
 
+import { createDataGridColumnHelper } from '@/components/data-grid/features';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Timestamp } from '@/components/ui/timestamp';
 import { ImportRowActions } from '@/modules/imports/components/import-row-actions';
 import { m } from '@/paraglide/messages';
 
-const columnHelper = createColumnHelper<ImportListItem>();
+const columnHelper = createDataGridColumnHelper<ImportListItem>();
 
 const statusVariant = {
   committed: 'success',
@@ -26,7 +25,7 @@ const statusLabel: Record<keyof typeof statusVariant, () => string> = {
   processing: () => m['imports.status.processing'](),
 };
 
-export const importColumns = [
+export const importColumns = columnHelper.columns([
   columnHelper.accessor('fileName', {
     cell: ({ getValue }) => <span className="font-medium">{getValue()}</span>,
     header: () => m['imports.columns.file'](),
@@ -98,4 +97,4 @@ export const importColumns = [
     },
     size: 60,
   }),
-];
+]);

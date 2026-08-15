@@ -1,7 +1,6 @@
-import { createColumnHelper } from '@tanstack/react-table';
-
 import type { AccountListItem } from '@/modules/accounts/api/list-accounts';
 
+import { createDataGridColumnHelper } from '@/components/data-grid/features';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCurrency } from '@/lib/i18n/number';
@@ -9,9 +8,9 @@ import { AccountRowActions } from '@/modules/accounts/components/account-row-act
 import { AccountTypeBadge } from '@/modules/accounts/components/account-type-badge';
 import { m } from '@/paraglide/messages';
 
-const columnHelper = createColumnHelper<AccountListItem>();
+const columnHelper = createDataGridColumnHelper<AccountListItem>();
 
-export const accountColumns = [
+export const accountColumns = columnHelper.columns([
   columnHelper.accessor('account.name', {
     cell: ({ getValue }) => <span className="font-medium">{getValue()}</span>,
     header: () => m['accounts.columns.name'](),
@@ -95,4 +94,4 @@ export const accountColumns = [
     },
     size: 60,
   }),
-];
+]);

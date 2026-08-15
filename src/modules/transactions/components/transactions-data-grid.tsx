@@ -1,16 +1,15 @@
-import {
-  getCoreRowModel,
-  getPaginationRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+import { useTable } from '@tanstack/react-table';
 import { useMemo } from 'react';
 
 import type { TransactionListItem } from '@/modules/transactions/api/list-transactions';
 
 import { DataGrid, DataGridContainer } from '@/components/data-grid';
+import { createDataGridFeatures } from '@/components/data-grid/features';
 import { DataGridPagination } from '@/components/data-grid/pagination';
 import { DataGridTable } from '@/components/data-grid/table';
 import { createTransactionColumns } from '@/modules/transactions/components/transactions-columns';
+
+const features = createDataGridFeatures<TransactionListItem>();
 
 type TransactionsDataGridProps = {
   data: TransactionListItem[];
@@ -23,14 +22,12 @@ export function TransactionsDataGrid({
 }: TransactionsDataGridProps) {
   const columns = useMemo(() => createTransactionColumns(), []);
 
-  // oxlint-disable-next-line react-compiler/incompatible-library -- TanStack Table API is Compiler-incompatible by design
-  const table = useReactTable({
+  const table = useTable({
     columns,
     data,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    features,
     initialState: {
-      columnPinning: { left: ['description'], right: ['actions'] },
+      columnPinning: { end: ['actions'], start: ['description'] },
       pagination: { pageIndex: 0, pageSize: 25 },
     },
   });

@@ -1,8 +1,7 @@
-import { createColumnHelper } from '@tanstack/react-table';
-
 import type { ImportRowItem } from '@/modules/imports/api/list-import-rows';
 import type { ProcessedNormalizedRow } from '@/modules/imports/lib/apply-column-mapping';
 
+import { createDataGridColumnHelper } from '@/components/data-grid/features';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -14,7 +13,7 @@ export type ImportRowTableMeta = {
   onUpdateData: (rowId: string, data: Partial<ProcessedNormalizedRow>) => void;
 };
 
-const columnHelper = createColumnHelper<ImportRowItem>();
+const columnHelper = createDataGridColumnHelper<ImportRowItem>();
 
 const rowStatusVariant = {
   committed: 'success',
@@ -45,7 +44,7 @@ function parseDollars(value: string): number | null {
   return Math.round(dollars * 100);
 }
 
-export const importRowColumns = [
+export const importRowColumns = columnHelper.columns([
   columnHelper.accessor('rowIndex', {
     cell: ({ getValue }) => (
       <span className="text-muted-foreground">{getValue() + 1}</span>
@@ -223,4 +222,4 @@ export const importRowColumns = [
     },
     size: 80,
   }),
-];
+]);

@@ -58,11 +58,23 @@ A full filter UI in `src/components/filters/` (split across 10 files). Do not re
 
 ## Data grid system
 
-A composable data grid in `src/components/data-grid/` (8 files). Do not rebuild — use it:
+A composable data grid in `src/components/data-grid/` (4 files). Do not rebuild — use it:
 
+- Feature registry: `createDataGridFeatures<TData>()` in `features.ts`. v9 only
+  exposes an API when its feature is registered, so a new call in `table.tsx` or
+  `pagination.tsx` needs its feature added there first. Call it at module level.
+- Column meta (`cellClassName`, `headerClassName`, `skeleton`) is scoped to that
+  feature set, not declared globally. `headerTitle` is also defined but nothing
+  reads it — see the note on the field before relying on it.
+- Columns files use `createDataGridColumnHelper<TRow>()` from `features.ts`. Do
+  not call `createColumnHelper` directly — it drops the grid's feature binding.
 - Context-based: `DataGridContext` provides table instance, props, loading state.
-- Composed table: `DataGridTable` assembles head/body/rows; DnD variants for columns and rows.
-- Column header: sorting, pinning, moving, visibility controls via dropdown menu.
+- Composed table: `DataGridTable` assembles head/body/rows, with skeleton and
+  spinner loading. `table.tsx` also exports its head/body/row/cell parts so new
+  table variants can be composed from them rather than forked.
+- `tableLayout` flags control borders, density, stripes, column resizing, sticky
+  header, width mode and column pinning. Every flag is defaulted in `DataGrid`
+  and no consumer currently overrides them.
 - Pagination: page size selector, page buttons, ellipsis grouping.
 - Helpers: `getColumnMeta()`, `DataGridContainer`.
 - Import from `@/components/data-grid` (context/provider/types) or individual modules.

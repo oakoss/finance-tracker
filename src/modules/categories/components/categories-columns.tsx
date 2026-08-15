@@ -1,16 +1,15 @@
-import { createColumnHelper } from '@tanstack/react-table';
-
 import type { CategoryListItem } from '@/modules/categories/api/list-categories';
 
+import { createDataGridColumnHelper } from '@/components/data-grid/features';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CategoryRowActions } from '@/modules/categories/components/category-row-actions';
 import { CategoryTypeBadge } from '@/modules/categories/components/category-type-badge';
 import { m } from '@/paraglide/messages';
 
-const columnHelper = createColumnHelper<CategoryListItem>();
+const columnHelper = createDataGridColumnHelper<CategoryListItem>();
 
 export function createCategoryColumns(categories: CategoryListItem[]) {
-  return [
+  return columnHelper.columns([
     columnHelper.accessor('name', {
       cell: ({ getValue }) => <span className="font-medium">{getValue()}</span>,
       header: () => m['categories.columns.name'](),
@@ -70,5 +69,5 @@ export function createCategoryColumns(categories: CategoryListItem[]) {
       },
       size: 60,
     }),
-  ];
+  ]);
 }

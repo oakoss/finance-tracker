@@ -1,12 +1,9 @@
-import {
-  getCoreRowModel,
-  getPaginationRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+import { useTable } from '@tanstack/react-table';
 
 import type { ImportRowItem } from '@/modules/imports/api/list-import-rows';
 
 import { DataGrid, DataGridContainer } from '@/components/data-grid';
+import { createDataGridFeatures } from '@/components/data-grid/features';
 import { DataGridPagination } from '@/components/data-grid/pagination';
 import { DataGridTable } from '@/components/data-grid/table';
 import {
@@ -17,6 +14,8 @@ import {
   useUpdateImportRowData,
   useUpdateImportRowStatus,
 } from '@/modules/imports/hooks/use-imports';
+
+const features = createDataGridFeatures<ImportRowItem>();
 
 type ImportRowsDataGridProps = { data: ImportRowItem[] };
 
@@ -31,12 +30,10 @@ export function ImportRowsDataGrid({ data }: ImportRowsDataGridProps) {
       dataMutation.mutate({ id: rowId, normalizedData }),
   };
 
-  // oxlint-disable-next-line react-compiler/incompatible-library -- TanStack Table API is Compiler-incompatible by design
-  const table = useReactTable({
+  const table = useTable({
     columns: importRowColumns,
     data,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    features,
     getRowId: (row) => row.id,
     initialState: { pagination: { pageIndex: 0, pageSize: 50 } },
     meta,
