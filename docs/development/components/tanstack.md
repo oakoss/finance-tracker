@@ -261,9 +261,10 @@ function TransactionsTable() {
 ### Example: server-side pagination + filtering
 
 ```tsx
-// No row-model slots — the server already applied them. Filter fns are still
-// resolved on every filter write for their `autoRemove` check, so register
-// `filterFns` to silence the dev warning or to get a fn's own autoRemove.
+// No row-model slots — the server already applied them. This example also
+// omits `filterFns`, so every filter write logs a dev warning: fns are still
+// resolved for their `autoRemove` check even with `manualFiltering`. Register
+// the ones your columns use to silence it and to get each fn's own autoRemove.
 const features = tableFeatures({
   columnFilteringFeature,
   rowPaginationFeature,
