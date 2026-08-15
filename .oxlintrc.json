@@ -11,7 +11,8 @@
     { "name": "unicorn-js", "specifier": "eslint-plugin-unicorn" },
     { "name": "vitest-js", "specifier": "@vitest/eslint-plugin" },
     { "name": "import-x-js", "specifier": "eslint-plugin-import-x" },
-    { "name": "tailwind", "specifier": "eslint-plugin-better-tailwindcss" }
+    { "name": "tailwind", "specifier": "eslint-plugin-better-tailwindcss" },
+    { "name": "type-evidence", "specifier": "./tools/oxlint/type-evidence.ts" }
   ],
   "categories": { "correctness": "error" },
   "ignorePatterns": [
@@ -298,7 +299,10 @@
     "unicorn-js/template-indent": "error",
     "tailwind/enforce-shorthand-classes": "warn",
     "tailwind/no-deprecated-classes": "warn",
-    "tailwind/no-duplicate-classes": "warn"
+    "tailwind/no-duplicate-classes": "warn",
+    "type-evidence/no-chained-type-assertions": "error",
+    "type-evidence/no-known-value-widening": "error",
+    "type-evidence/no-shape-in-type-names": "error"
   },
   "overrides": [
     {

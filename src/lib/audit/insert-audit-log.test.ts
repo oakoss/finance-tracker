@@ -2,6 +2,8 @@
 
 import { vi } from 'vitest';
 
+import type { DbOrTx } from '@/db';
+
 vi.mock('@/db', () => ({}));
 
 vi.mock('@/lib/logging/evlog', () => ({
@@ -30,22 +32,25 @@ function createMockTx(mockValues: ReturnType<typeof vi.fn>) {
   return { insert: mockInsert, mockInsert };
 }
 
+type MockTx = Pick<ReturnType<typeof createMockTx>, 'insert'>;
+
+/** The stub implements only `insert`, so a single hop to `DbOrTx` cannot check. */
+// oxlint-disable-next-line type-evidence/no-chained-type-assertions
+const asAuditTx = (tx: MockTx) => tx as unknown as DbOrTx;
+
 describe('insertAuditLog', () => {
   it('inserts correct values for a create action', async () => {
     const { auditLogs, insertAuditLog } = await importModule();
     const mockValues = vi.fn().mockImplementation(() => Promise.resolve());
     const { mockInsert, ...tx } = createMockTx(mockValues);
 
-    await insertAuditLog(
-      tx as unknown as Parameters<typeof insertAuditLog>[0],
-      {
-        action: 'create',
-        actorId: 'actor-1',
-        afterData: { name: 'New Account' },
-        entityId: 'record-1',
-        tableName: 'ledger_accounts',
-      },
-    );
+    await insertAuditLog(asAuditTx(tx), {
+      action: 'create',
+      actorId: 'actor-1',
+      afterData: { name: 'New Account' },
+      entityId: 'record-1',
+      tableName: 'ledger_accounts',
+    });
 
     expect(mockInsert).toHaveBeenCalledWith(auditLogs);
     const calledWith = mockValues.mock.calls[0]?.[0] as Record<string, unknown>;
@@ -62,17 +67,14 @@ describe('insertAuditLog', () => {
     const mockValues = vi.fn().mockImplementation(() => Promise.resolve());
     const tx = createMockTx(mockValues);
 
-    await insertAuditLog(
-      tx as unknown as Parameters<typeof insertAuditLog>[0],
-      {
-        action: 'update',
-        actorId: 'actor-2',
-        afterData: { name: 'Updated' },
-        beforeData: { name: 'Original' },
-        entityId: 'record-2',
-        tableName: 'ledger_accounts',
-      },
-    );
+    await insertAuditLog(asAuditTx(tx), {
+      action: 'update',
+      actorId: 'actor-2',
+      afterData: { name: 'Updated' },
+      beforeData: { name: 'Original' },
+      entityId: 'record-2',
+      tableName: 'ledger_accounts',
+    });
 
     const calledWith = mockValues.mock.calls[0]?.[0] as Record<string, unknown>;
     expect(calledWith.action).toBe('update');
@@ -85,16 +87,13 @@ describe('insertAuditLog', () => {
     const mockValues = vi.fn().mockImplementation(() => Promise.resolve());
     const tx = createMockTx(mockValues);
 
-    await insertAuditLog(
-      tx as unknown as Parameters<typeof insertAuditLog>[0],
-      {
-        action: 'delete',
-        actorId: 'actor-3',
-        beforeData: { name: 'Deleted Account' },
-        entityId: 'record-3',
-        tableName: 'ledger_accounts',
-      },
-    );
+    await insertAuditLog(asAuditTx(tx), {
+      action: 'delete',
+      actorId: 'actor-3',
+      beforeData: { name: 'Deleted Account' },
+      entityId: 'record-3',
+      tableName: 'ledger_accounts',
+    });
 
     const calledWith = mockValues.mock.calls[0]?.[0] as Record<string, unknown>;
     expect(calledWith.action).toBe('delete');
@@ -107,15 +106,12 @@ describe('insertAuditLog', () => {
     const mockValues = vi.fn().mockImplementation(() => Promise.resolve());
     const tx = createMockTx(mockValues);
 
-    await insertAuditLog(
-      tx as unknown as Parameters<typeof insertAuditLog>[0],
-      {
-        action: 'create',
-        actorId: 'actor-4',
-        entityId: 'record-4',
-        tableName: 'categories',
-      },
-    );
+    await insertAuditLog(asAuditTx(tx), {
+      action: 'create',
+      actorId: 'actor-4',
+      entityId: 'record-4',
+      tableName: 'categories',
+    });
 
     const calledWith = mockValues.mock.calls[0]?.[0] as Record<string, unknown>;
     expect(calledWith.beforeData).toBeUndefined();
@@ -127,15 +123,12 @@ describe('insertAuditLog', () => {
     const mockValues = vi.fn().mockImplementation(() => Promise.resolve());
     const tx = createMockTx(mockValues);
 
-    await insertAuditLog(
-      tx as unknown as Parameters<typeof insertAuditLog>[0],
-      {
-        action: 'create',
-        actorId: 'actor-5',
-        entityId: 'record-5',
-        tableName: 'ledger_accounts',
-      },
-    );
+    await insertAuditLog(asAuditTx(tx), {
+      action: 'create',
+      actorId: 'actor-5',
+      entityId: 'record-5',
+      tableName: 'ledger_accounts',
+    });
 
     expect(logInfo).toHaveBeenCalledWith({
       action: 'ledger_accounts.create',
@@ -156,7 +149,7 @@ describe('insertAuditLog', () => {
     const tx = createMockTx(mockValues);
 
     await expect(
-      insertAuditLog(tx as unknown as Parameters<typeof insertAuditLog>[0], {
+      insertAuditLog(asAuditTx(tx), {
         action: 'create',
         actorId: 'actor-1',
         entityId: 'record-1',
@@ -177,7 +170,7 @@ describe('insertAuditLog', () => {
     });
 
     await expect(
-      insertAuditLog(tx as unknown as Parameters<typeof insertAuditLog>[0], {
+      insertAuditLog(asAuditTx(tx), {
         action: 'create',
         actorId: 'actor-1',
         entityId: 'record-1',

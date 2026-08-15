@@ -77,10 +77,9 @@ export function Scrollspy({
       scrollElement = viewport;
     }
 
-    const globalWindow = globalThis as unknown as Window;
     const scrollTop =
       scrollElement === document.documentElement
-        ? (globalWindow.scrollY ?? document.documentElement.scrollTop)
+        ? (globalThis.scrollY ?? document.documentElement.scrollTop)
         : scrollElement.scrollTop;
 
     // Find the anchor whose section is closest to but not past the top
@@ -140,6 +139,10 @@ export function Scrollspy({
       );
       if (!sectionElement) return;
 
+      // scrollTo needs a Window receiver, and `unicorn/prefer-global-this`
+      // forbids `window`. `typeof globalThis` lacks `name`, so TS rejects a
+      // single-hop assertion and demands the `unknown` hop.
+      // oxlint-disable-next-line type-evidence/no-chained-type-assertions
       const globalWindow = globalThis as unknown as Window;
       let scrollToElement: HTMLElement | Window | null =
         targetRef?.current === document

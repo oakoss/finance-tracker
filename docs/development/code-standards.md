@@ -11,6 +11,18 @@ Code style, conventions, and structure expectations.
   fully removed, add `--report-unused-disable-directives-severity error`
   to the oxlint command to catch stale disable comments.
 - Markdown lint (`pnpm lint:md`).
+- Local oxlint plugin (`tools/oxlint/type-evidence.ts`): rejects TypeScript
+  patterns that claim type safety without evidence for it --
+  `no-chained-type-assertions`, `no-known-value-widening`,
+  `no-shape-in-type-names`. Rules are covered by `tools/oxlint/type-evidence.test.ts`
+  (oxlint's `RuleTester`, run by the node-environment `tools` vitest project,
+  which `pnpm test:unit` and `pnpm test:coverage` both include). Add a rule only when it
+  earns its place: verify against the whole codebase first, since an AST-only
+  rule cannot tell a lazy pattern from a deliberate boundary. Known limits are
+  pinned as `valid` test cases -- notably `no-known-value-widening` skips open
+  key types (`Record<string, V>` and friends) because it cannot see whether the
+  map is indexed by a runtime value, so a closed key set spelled
+  `Record<string, V>` goes unflagged.
 - `perfectionist/sort-objects`: Object keys must be alphabetically
   sorted (case-insensitive).
 

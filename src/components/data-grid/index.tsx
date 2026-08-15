@@ -111,6 +111,7 @@ function DataGridProvider<
         // invariant in TData, and inside the generic an unresolved TFeatures
         // erases the table's feature APIs. Removing either half of the
         // reasoning is not enough to drop it — re-test before touching.
+        // oxlint-disable-next-line type-evidence/no-chained-type-assertions
         table: table as unknown as ReactTable<DataGridFeatures<any>, any>,
       }}
     >

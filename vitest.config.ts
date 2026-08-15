@@ -71,6 +71,16 @@ export default defineConfig({
           testTimeout: 30_000,
         },
       },
+      // Repo tooling (oxlint plugin rules, codegen) — plain node, no app setup
+      {
+        extends: true,
+        test: {
+          environment: 'node',
+          globals: true,
+          include: ['tools/**/*.{test,spec}.{ts,tsx}'],
+          name: 'tools',
+        },
+      },
     ],
   },
 });

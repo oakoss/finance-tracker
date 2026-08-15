@@ -32,12 +32,16 @@ const SETTLE_TIMEOUT_MS = 2000;
  */
 export async function a11yScan(page: Page) {
   await page.evaluate(() => {
+    // Scan bookkeeping lives on the page global, which globalThis is not typed for.
+    // oxlint-disable-next-line type-evidence/no-chained-type-assertions
     delete (globalThis as unknown as Record<string, unknown>).__a11ySettle;
   });
 
   await page
     .waitForFunction(
       (stableFrames) => {
+        // Scan bookkeeping lives on the page global, which globalThis is not typed for.
+        // oxlint-disable-next-line type-evidence/no-chained-type-assertions
         const store = globalThis as unknown as {
           __a11ySettle?: { prev: string; stable: number };
         };

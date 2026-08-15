@@ -4,11 +4,9 @@ import type { Db } from '@/db';
 
 import { DEFAULT_USER_PREFERENCES } from '@/modules/preferences/services/bootstrap';
 import { fetchUserPreferences } from '@/modules/preferences/services/fetch-preferences';
-import type { Db as TestDb } from '~test/factories/base';
+import { asDb } from '~test/db';
 import { insertUser } from '~test/factories/user.factory';
 import { test } from '~test/integration-setup';
-
-const asDb = (db: TestDb) => db as unknown as Db;
 
 test('fetchUserPreferences — happy path returns persisted row with isDefault: false', async ({
   serviceDb,
@@ -25,6 +23,8 @@ test('fetchUserPreferences — happy path returns persisted row with isDefault: 
 });
 
 test('fetchUserPreferences — returns in-memory defaults with isDefault: true when bootstrap fails', async () => {
+  // Stub implements only `insert`/`query`, so a single hop to `Db` cannot check.
+  // oxlint-disable-next-line type-evidence/no-chained-type-assertions
   const throwingDb = {
     insert: () => {
       throw new Error('simulated connection failure');
