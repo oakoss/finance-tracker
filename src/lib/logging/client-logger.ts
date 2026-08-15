@@ -4,12 +4,12 @@ import { ENV } from 'varlock/env';
 
 type LogLevel = 'debug' | 'error' | 'info' | 'warn';
 
-const LOG_LEVEL_PRIORITY: Record<LogLevel, number> = {
+const LOG_LEVEL_PRIORITY = {
   debug: 0,
   error: 3,
   info: 1,
   warn: 2,
-};
+} satisfies Record<LogLevel, number>;
 
 const minLevel: LogLevel = ENV.CLIENT_LOG_LEVEL ?? 'warn';
 

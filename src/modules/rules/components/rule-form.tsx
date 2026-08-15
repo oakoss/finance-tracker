@@ -23,11 +23,11 @@ import { m } from '@/paraglide/messages';
 
 type Stage = (typeof ruleStageEnum.enumValues)[number];
 
-const STAGE_LABEL: Record<Stage, () => string> = {
+const STAGE_LABEL = {
   default: () => m['rules.stage.default'](),
   post: () => m['rules.stage.post'](),
   pre: () => m['rules.stage.pre'](),
-};
+} satisfies Record<Stage, () => string>;
 
 export type RuleFormValues = {
   actions: RuleAction[];

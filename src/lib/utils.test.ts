@@ -61,8 +61,8 @@ describe('omit', () => {
   });
 
   it('removes the key from the result, not just sets it to undefined', () => {
-    type Shape = { id: string; note?: string; tag?: string };
-    const input: Shape = { id: '1', note: 'hi', tag: 't1' };
+    type OmitTarget = { id: string; note?: string; tag?: string };
+    const input: OmitTarget = { id: '1', note: 'hi', tag: 't1' };
     const result = omit(input, 'note');
     expect(result).toEqual({ id: '1', tag: 't1' });
     expect('note' in result).toBe(false);

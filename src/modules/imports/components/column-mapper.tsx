@@ -27,7 +27,7 @@ type ColumnMapperProps = {
   value: ColumnMapping;
 };
 
-const FIELD_LABELS: Record<TargetField, () => string> = {
+const FIELD_LABELS = {
   amount: () => m['imports.upload.field.amount'](),
   categoryName: () => m['imports.upload.field.categoryName'](),
   creditAmount: () => m['imports.upload.field.creditAmount'](),
@@ -37,7 +37,7 @@ const FIELD_LABELS: Record<TargetField, () => string> = {
   payeeName: () => m['imports.upload.field.payeeName'](),
   skip: () => m['imports.upload.field.skip'](),
   transactionAt: () => m['imports.upload.field.transactionAt'](),
-};
+} satisfies Record<TargetField, () => string>;
 
 export function getFieldLabel(field: TargetField): string {
   return FIELD_LABELS[field]();
