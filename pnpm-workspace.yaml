@@ -7,10 +7,11 @@ allowBuilds:
   msw: false
   protobufjs: true
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - body-parser@2.3.0
 overrides:
+  body-parser@>=2.0.0 <2.3.0: ^2.3.0
   # drizzle-kit -> @esbuild-kit pins esbuild 0.18.x, which has the
-  # dev-server CORS vulnerability fixed in 0.25.0
+  # dev-server CORS vulnerability (GHSA-67mh-4wv8-2f99) fixed in 0.25.0.
+  # `pnpm audit --fix` rewrites this to ^0.24.3, a version npm never published.
   esbuild@<=0.24.2: '>=0.28.1'
-  # kysely 0.29 removed DEFAULT_MIGRATION_(LOCK_)TABLE exports that
-  # @better-auth/kysely-adapter still imports, breaking the SSR build
-  kysely: ^0.28.17
