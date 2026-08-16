@@ -13,6 +13,7 @@
   "schedule": ["before 6am on the first day of the month"],
   "timezone": "America/Chicago",
   "labels": ["dependencies"],
+  "minimumReleaseAge": "3 days",
   "packageRules": [
     { "matchUpdateTypes": ["major"], "automerge": false },
     {
@@ -34,11 +35,26 @@
       ],
       "groupName": "oxlint"
     },
-    { "matchDepTypes": ["peerDependencies"], "rangeStrategy": "widen" }
+    { "matchDepTypes": ["peerDependencies"], "rangeStrategy": "widen" },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "github-actions",
+      "separateMajorMinor": false
+    },
+    {
+      "matchPackageNames": ["node", "pnpm", "docker/dockerfile"],
+      "groupName": "toolchain"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    }
   ],
   "vulnerabilityAlerts": {
     "labels": ["security"],
-    "schedule": ["at any time"]
+    "schedule": ["at any time"],
+    "minimumReleaseAge": null
   },
   "lockFileMaintenance": {
     "enabled": true,
