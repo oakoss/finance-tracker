@@ -21,7 +21,10 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  # Only supersede a PR's own earlier run. Pushes to main share one group, so
+  # cancelling there kills the run for a newly merged commit, which skips its
+  # deploy and leaves it with no CI record.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   static-analysis:
