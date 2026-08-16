@@ -20,10 +20,12 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  # Only supersede a PR's own earlier run. Pushes to main share one group, so
-  # cancelling there kills the run for a newly merged commit, which skips its
-  # deploy and leaves it with no CI record.
+  # Keyed per PR so a new push supersedes that PR's earlier run, and per commit
+  # otherwise. Sharing a group across pushes to main meant a merge cancelled the
+  # run for the commit before it — and even without cancellation a group holds
+  # only one running plus one pending run, so a third merge evicts the pending
+  # one. Either way a merged commit ends up with no CI record and no deploy.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:

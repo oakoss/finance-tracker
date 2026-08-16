@@ -18,9 +18,9 @@ permissions:
   security-events: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  # Pushes to main share one group; cancelling there drops the scan for a
-  # newly merged commit. See ci.yml.
+  # Per PR, then per commit — a shared group drops the scan for a merged
+  # commit, by cancellation or by pending eviction. See ci.yml.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
