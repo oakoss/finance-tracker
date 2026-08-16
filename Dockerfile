@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.10
+# syntax=docker/dockerfile:1.26
 
 # --- varlock binary ---
 # Keep version in sync with the `varlock` entry in package.json.
