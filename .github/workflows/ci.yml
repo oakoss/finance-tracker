@@ -237,6 +237,10 @@ jobs:
 
   e2e-full-report:
     runs-on: ubuntu-latest
+    # Report bookkeeping only. Its failure would otherwise make the whole run
+    # conclude `failure`, and deploy.yml gates on that conclusion — so a flaky
+    # artifact merge would silently skip a deploy that CI Summary had passed.
+    continue-on-error: true
     if: ${{ !cancelled() && needs.e2e-full.result != 'failure' && (github.event_name == 'push' || github.event_name == 'merge_group') }}
     needs: [e2e-full]
     steps:
