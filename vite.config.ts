@@ -217,10 +217,9 @@ export default defineConfig({
   nitro: {
     // Replace `varlock/env` in the server bundle with our
     // process.env-backed shim. See src/lib/varlock-env-shim.ts for
-    // the full reasoning. The client bundle is unaffected because
-    // this alias only applies to the Nitro server build; on the
-    // client the varlock vite plugin still statically inlines
-    // `@public` values at build time.
+    // the full reasoning. It only covers reads that survive to
+    // runtime — the varlock vite plugin inlines `@public` values into
+    // every bundle, server included, unless the item is `@dynamic`.
     alias: {
       'varlock/env': path.resolve(projectDir, 'src/lib/varlock-env-shim.ts'),
     },

@@ -21,8 +21,9 @@ COPY . .
 ENV APP_ENV=test
 # The build RUN needs two kinds of env vars:
 #   1. Every @public var in .env.schema, because varlock's vite
-#      plugin inlines them into the client bundle during
-#      `pnpm build` (POSTHOG_KEY, BETTER_AUTH_URL, etc.).
+#      plugin inlines them into the build output, client and server,
+#      during `pnpm build` (POSTHOG_KEY, CLIENT_LOG_LEVEL, etc.).
+#      `@dynamic` vars are exempt — they resolve at runtime.
 #   2. POSTHOG_PERSONAL_API_KEY + POSTHOG_PROJECT_ID for the
 #      sourcemap upload plugin in vite.config.ts.
 #

@@ -27,18 +27,24 @@ Use the `ENV` import everywhere — server and client:
 ```ts
 import { ENV } from 'varlock/env';
 
-const url = ENV.BETTER_AUTH_URL;
+const level = ENV.CLIENT_LOG_LEVEL;
 const key = ENV.POSTHOG_KEY;
 ```
 
 No `VITE_` prefix needed. The `@sensitive` / `@public` decorators in
-`.env.schema` control what gets bundled into the client.
+`.env.schema` control both what reaches the client and what gets
+inlined at build time.
 
 ## Sensitivity
 
 - `@defaultSensitive=true` — all vars are sensitive (server-only)
   unless explicitly marked `@public`.
-- `@public` vars are replaced at build time in client code.
+- `@public` vars are replaced at build time in every bundle, server
+  included. A runtime override of a `@public` var is ignored unless the
+  var is also `@dynamic`.
+- `@public @dynamic` vars are server-read-only. They resolve at
+  runtime, but the server emits no client hydration payload, so a
+  client-side read throws — and neither typecheck nor lint catches it.
 - `@sensitive` vars are never bundled — only available server-side
   via `process.env`.
 - `@preventLeaks` (production only via `forEnv(production)`) scans
@@ -54,8 +60,8 @@ No `VITE_` prefix needed. The `@sensitive` / `@public` decorators in
 # @sensitive @required=forEnv(production)
 BREVO_API_KEY=
 
-# @sensitive @required=forEnv(development, test)
-SMTP_HOST=localhost
+# @public @dynamic @optional @type=string
+SMTP_HOST=if(forEnv(development, test), localhost)
 ```
 
 `APP_ENV` falls back to `NODE_ENV` via
@@ -97,14 +103,27 @@ action generates varlock types and compiles Paraglide.
 
 ### Production (Coolify)
 
-Set env vars in the Coolify UI. Set `APP_ENV=production` to
-activate `forEnv(production)` requirements.
+Set env vars in the Coolify UI. `forEnv(production)` requirements
+activate off `APP_ENV`, which the Dockerfile already satisfies via
+`NODE_ENV=production`.
+
+Scope each variable to match its decorators, because the two are
+opposites and both fail silently:
+
+- `@public` without `@dynamic` is inlined at build time, so it must
+  be marked **Buildtime**. Runtime alone is ignored.
+- `@public @dynamic` is never inlined, so it must be marked
+  **Runtime**. Buildtime alone is ignored.
+
+`TRUSTED_ORIGINS` defaults to `BETTER_AUTH_URL`, so a single-origin
+deploy needs only the latter. Set it explicitly to allow more.
 
 ## Adding a new variable
 
 1. Add the key + decorators to `.env.schema`.
 2. Add the real value to 1Password / `.env.local` (local) and Coolify
-   (production).
+   (production), scoping it Buildtime or Runtime to match its
+   decorators — see Production (Coolify) above.
 3. Types regenerate automatically on next dev/build.
 
 ## Docker Compose variables
