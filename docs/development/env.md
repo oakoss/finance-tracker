@@ -104,16 +104,25 @@ action generates varlock types and compiles Paraglide.
 ### Production (Coolify)
 
 Set env vars in the Coolify UI. `forEnv(production)` requirements
-activate off `APP_ENV`, which the Dockerfile already satisfies via
-`NODE_ENV=production`.
+activate off `APP_ENV`, which resolves to `production` at runtime from
+the Dockerfile's `NODE_ENV=production`.
 
-Scope each variable to match its decorators, because the two are
-opposites and both fail silently:
+The build stage is not production: it runs `APP_ENV=test`. Vars scoped
+Buildtime in Coolify still inline their real values, but anything else
+resolves its test branch — schema defaults and `forEnv()` conditionals
+alike. `ENV.APP_ENV` reads fold to `test` in the shipped bundle, and no
+runtime value can change them.
 
-- `@public` without `@dynamic` is inlined at build time, so it must
-  be marked **Buildtime**. Runtime alone is ignored.
+Scope each variable to match its decorators — the two mismatches fail
+in opposite ways:
+
+- `@public` without `@dynamic` is inlined at build time, so it must be
+  marked **Buildtime**. Runtime alone is ignored silently: the bundle
+  keeps whatever the `APP_ENV=test` build resolved.
 - `@public @dynamic` is never inlined, so it must be marked
-  **Runtime**. Buildtime alone is ignored.
+  **Runtime**. Buildtime alone leaves it missing at runtime, and a
+  required one such as `BETTER_AUTH_URL` makes `varlock run` exit
+  before the server starts.
 
 `TRUSTED_ORIGINS` defaults to `BETTER_AUTH_URL`, so a single-origin
 deploy needs only the latter. Set it explicitly to allow more.
