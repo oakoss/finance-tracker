@@ -32,11 +32,11 @@ export function parseTrustedOrigins(raw: string): string[] {
   });
 }
 
-// Process-lifetime cache. Module-scope eager parsing leaks `ENV.TRUSTED_ORIGINS`
-// into the client bundle (varlock returns `undefined`, crashing hydration on
-// `.split(',')`). Runtime env changes require a process restart. Failures are
-// cached too — a misconfigured deploy emits `csrf.misconfigured` once instead
-// of once per request.
+// Process-lifetime cache, kept lazy: parseTrustedOrigins throws, and start.ts
+// is bundled isomorphically, so a module-scope call would fail app boot
+// instead of a single server-fn request. Runtime env changes require a
+// process restart. Failures are cached too — a misconfigured deploy emits
+// `csrf.misconfigured` once instead of once per request.
 type OriginsCache =
   | { kind: 'ok'; origins: string[] }
   | { error: unknown; kind: 'err' };
@@ -81,7 +81,7 @@ function getAllowedOrigins(): string[] {
 
 // `Extract<..., (...args: never[]) => unknown>` constrains each option to its
 // function arm. Regressing `origin` to an eager `string[]` (the original
-// client-bundle bug) or `failureResponse` to a static `Response` fails at
+// eager-evaluation bug) or `failureResponse` to a static `Response` fails at
 // compile time instead of at runtime.
 type CsrfOptionsBoundary = CsrfMiddlewareOptions & {
   failureResponse: Extract<
