@@ -49,7 +49,11 @@ type PgLogFields = {
 // compile time in the module. This aggregator composes them.
 // ---------------------------------------------------------------------------
 
-const CONSTRAINT_MESSAGES: Record<string, string> = {
+// `string | undefined` because this is a partial map over an open key: the
+// driver hands back any constraint name the database raises, including ones
+// no module registers copy for. Typing it total would make the `??` fallbacks
+// below look dead to the checker when they are the live path.
+const CONSTRAINT_MESSAGES: Record<string, string | undefined> = {
   ...accountsConstraintMessages,
   ...budgetsConstraintMessages,
   ...categoriesConstraintMessages,
@@ -123,7 +127,7 @@ export function throwIfConstraintViolation(
   // Unique violation (23505)
   if (pg.code === PG_ERROR_CODES.UNIQUE_VIOLATION) {
     const fix =
-      (pg.constraint && CONSTRAINT_MESSAGES[pg.constraint]) ??
+      (pg.constraint ? CONSTRAINT_MESSAGES[pg.constraint] : undefined) ??
       'A record with these values already exists.';
     log.warn({
       action,
@@ -162,7 +166,7 @@ export function throwIfConstraintViolation(
   // fix when available.
   if (pg.code === PG_ERROR_CODES.CHECK_VIOLATION) {
     const fix =
-      (pg.constraint && CONSTRAINT_MESSAGES[pg.constraint]) ??
+      (pg.constraint ? CONSTRAINT_MESSAGES[pg.constraint] : undefined) ??
       'The submitted values violate a domain rule.';
     log.warn({
       action,
