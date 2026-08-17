@@ -21,12 +21,20 @@ export const budgetLinesIndexNames = {
   periodCategoryIdx: 'budget_lines_period_category_idx',
 } as const;
 
+// Derived from the constants' values rather than restated, so adding an
+// entry to either constant fails the `satisfies` below until it has copy.
+// Plain indexes are declared inline as bare strings and never enter the
+// constants, so they cannot reach this union.
+type BudgetsConstraintName =
+  | (typeof budgetLinesIndexNames)[keyof typeof budgetLinesIndexNames]
+  | (typeof budgetPeriodsIndexNames)[keyof typeof budgetPeriodsIndexNames];
+
 export const budgetsConstraintMessages = {
   [budgetLinesIndexNames.periodCategoryIdx]:
     'This category already has a budget line in this period.',
   [budgetPeriodsIndexNames.userYearMonthIdx]:
     'A budget period for this month already exists.',
-} as const;
+} as const satisfies Record<BudgetsConstraintName, string>;
 
 export const budgetPeriods = pgTable(
   'budget_periods',

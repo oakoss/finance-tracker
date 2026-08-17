@@ -1,7 +1,14 @@
 import { eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import { payees, transactions, transactionTags } from '@/db/schema';
+import {
+  payees,
+  payeesIndexNames,
+  tagsIndexNames,
+  transactions,
+  transactionTags,
+  transactionTagsIndexNames,
+} from '@/db/schema';
 import { expectPgError } from '~test/assertions';
 import { insertAccountWithUser } from '~test/factories/account-with-user.factory';
 import { insertCategory } from '~test/factories/category.factory';
@@ -21,7 +28,7 @@ test('payees — rejects duplicate (userId, name)', async ({ db }) => {
 
   await expectPgError(
     () => insertPayee(db, { name: 'Unique Payee', userId: user.id }),
-    { code: '23505', constraint: 'payees_user_name_idx' },
+    { code: '23505', constraint: payeesIndexNames.userNameIdx },
   );
 });
 
@@ -56,7 +63,7 @@ test('tags — rejects duplicate (userId, name)', async ({ db }) => {
 
   await expectPgError(
     () => insertTag(db, { name: 'unique-tag', userId: user.id }),
-    { code: '23505', constraint: 'tags_user_name_idx' },
+    { code: '23505', constraint: tagsIndexNames.userNameIdx },
   );
 });
 
@@ -94,7 +101,7 @@ test('transactionTags — rejects duplicate (transactionId, tagId)', async ({
       db
         .insert(transactionTags)
         .values({ tagId: tag.id, transactionId: txn.id }),
-    { code: '23505', constraint: 'transaction_tags_unique_idx' },
+    { code: '23505', constraint: transactionTagsIndexNames.uniqueIdx },
   );
 });
 

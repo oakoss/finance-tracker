@@ -21,16 +21,16 @@ export const transferConfidenceEnum = pgEnum('transfer_confidence', [
   'low',
 ]);
 
+// Only names that can raise a 23505/23514 belong here — plain indexes are
+// declared inline as bare strings, so they cannot reach the union below.
 export const transfersIndexNames = {
   fromTransactionIdx: 'transfers_from_transaction_id_idx',
   pairUniqueIdx: 'transfers_pair_unique_idx',
   toTransactionIdx: 'transfers_to_transaction_id_idx',
-  userIdIdx: 'transfers_user_id_idx',
 } as const;
 
 export const transferDismissalsIndexNames = {
   uniquePairIdx: 'transfer_dismissals_user_pair_unique_idx',
-  userIdIdx: 'transfer_dismissals_user_id_idx',
 } as const;
 
 export const transfersCheckNames = {
@@ -38,20 +38,13 @@ export const transfersCheckNames = {
   pairDistinct: 'transfers_pair_distinct_check',
 } as const;
 
-// User-facing copy keyed by every constraint that can surface a 23505
-// or 23514. The `satisfies` clause requires copy for every name listed in
-// TransfersConstraintName, which is maintained by hand — a new unique index
-// or CHECK only becomes mandatory once it is added to that union.
-// The `userIdIdx` entries on both constants are excluded deliberately:
-// plain `index()` (not `uniqueIndex()`) can never raise 23505/23514,
-// so they have no copy.
+// User-facing copy keyed by every constraint that can surface a 23505 or
+// 23514. Derived from the constants' values rather than restated, so a new
+// unique index or CHECK fails the `satisfies` below until it has copy.
 type TransfersConstraintName =
-  | typeof transferDismissalsIndexNames.uniquePairIdx
-  | typeof transfersCheckNames.dismissalsOrderedPair
-  | typeof transfersCheckNames.pairDistinct
-  | typeof transfersIndexNames.fromTransactionIdx
-  | typeof transfersIndexNames.pairUniqueIdx
-  | typeof transfersIndexNames.toTransactionIdx;
+  | (typeof transferDismissalsIndexNames)[keyof typeof transferDismissalsIndexNames]
+  | (typeof transfersCheckNames)[keyof typeof transfersCheckNames]
+  | (typeof transfersIndexNames)[keyof typeof transfersIndexNames];
 
 export const transfersConstraintMessages = {
   [transferDismissalsIndexNames.uniquePairIdx]:
@@ -66,7 +59,7 @@ export const transfersConstraintMessages = {
     'These transactions are already paired as a transfer.',
   [transfersIndexNames.toTransactionIdx]:
     'This transaction is already part of an active transfer.',
-} satisfies Record<TransfersConstraintName, string>;
+} as const satisfies Record<TransfersConstraintName, string>;
 
 export const transfers = pgTable(
   'transfers',
@@ -90,7 +83,7 @@ export const transfers = pgTable(
     ...auditFields,
   },
   (table) => [
-    index(transfersIndexNames.userIdIdx).on(table.userId),
+    index('transfers_user_id_idx').on(table.userId),
     // Partial unique — a transaction can appear on at most one active
     // transfer's `from` (or `to`) side. Soft-deleted rows don't block
     // re-pairing. Cross-column duplicates (same txn as `from` of one
@@ -137,7 +130,7 @@ export const transferDismissals = pgTable(
     ...auditFields,
   },
   (table) => [
-    index(transferDismissalsIndexNames.userIdIdx).on(table.userId),
+    index('transfer_dismissals_user_id_idx').on(table.userId),
     uniqueIndex(transferDismissalsIndexNames.uniquePairIdx)
       .on(table.userId, table.txnAId, table.txnBId)
       .where(sql`${table.deletedAt} is null`),

@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import { categories } from '@/db/schema';
+import { categories, categoriesIndexNames } from '@/db/schema';
 import { expectPgError } from '~test/assertions';
 import { insertCategoryWithUser } from '~test/factories/category-with-user.factory';
 import { test } from '~test/integration-setup';
@@ -25,7 +25,7 @@ test('categories — rejects duplicate name for same user', async ({ db }) => {
           type: 'expense',
           userId: user.id,
         }),
-    { code: '23505', constraint: 'categories_user_name_idx' },
+    { code: '23505', constraint: categoriesIndexNames.userNameIdx },
   );
 });
 

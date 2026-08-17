@@ -97,10 +97,19 @@ export const accountTermsIndexNames = {
   accountIdIdx: 'account_terms_account_id_idx',
 } as const;
 
+// Derived from the constant's values rather than restated, so adding an
+// entry to accountTermsIndexNames fails the `satisfies` below until it has
+// copy. `credit_card_catalog_issuer_name_idx` stays a bare string and so
+// stays out of this union: the catalog is seeded reference data with no
+// user-facing write path, making a violation there a seed bug rather than
+// something to explain to a user.
+type AccountsConstraintName =
+  (typeof accountTermsIndexNames)[keyof typeof accountTermsIndexNames];
+
 export const accountsConstraintMessages = {
   [accountTermsIndexNames.accountIdIdx]:
     'This account already has terms. Edit existing terms.',
-} as const;
+} as const satisfies Record<AccountsConstraintName, string>;
 
 export const accountTerms = pgTable(
   'account_terms',

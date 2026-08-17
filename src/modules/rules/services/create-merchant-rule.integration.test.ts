@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 import { expect } from 'vitest';
 
-import { auditLogs } from '@/db/schema';
+import { auditLogs, rulesCheckNames } from '@/db/schema';
 import { createMerchantRuleService } from '@/modules/rules/services/create-merchant-rule';
 import { expectPgError } from '~test/assertions';
 import { asDb } from '~test/db';
@@ -126,7 +126,7 @@ test('create — rejects empty actions via DB CHECK', async ({ serviceDb }) => {
         actions: [] as never,
         match: { kind: 'contains', value: 'amazon' },
       }),
-    { code: '23514', constraint: 'merchant_rules_actions_nonempty_check' },
+    { code: '23514', constraint: rulesCheckNames.merchantRulesActionsNonempty },
   );
 });
 

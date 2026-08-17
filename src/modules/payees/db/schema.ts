@@ -8,9 +8,16 @@ export const payeesIndexNames = {
   userNameIdx: 'payees_user_name_idx',
 } as const;
 
+// Derived from the constant's values rather than restated, so adding an
+// entry to payeesIndexNames fails the `satisfies` below until it has copy.
+// Plain indexes are declared inline as bare strings and never enter the
+// constant, so they cannot reach this union.
+type PayeesConstraintName =
+  (typeof payeesIndexNames)[keyof typeof payeesIndexNames];
+
 export const payeesConstraintMessages = {
   [payeesIndexNames.userNameIdx]: 'A payee with this name already exists.',
-} as const;
+} as const satisfies Record<PayeesConstraintName, string>;
 
 export const payees = pgTable(
   'payees',
