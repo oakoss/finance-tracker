@@ -39,7 +39,8 @@ full details.
 
 - `BETTER_AUTH_URL` (prod: `https://finance.oakoss.dev`, local: `http://localhost:3000`)
 - `BETTER_AUTH_SECRET` (min 32 chars)
-- `TRUSTED_ORIGINS` (comma-separated allowed origins)
+- `TRUSTED_ORIGINS` (comma-separated allowed origins; defaults to
+  `BETTER_AUTH_URL`)
 - Password minimum length: 8 characters (configured in `appConfig.passwordMinLength`)
 
 ### Database

@@ -1,9 +1,10 @@
 // Server-side replacement for `varlock/env`.
 //
 // Aliased into the Nitro server bundle via `nitro.alias` in
-// `vite.config.ts`. The client bundle is NOT affected: the varlock
-// vite plugin's build-time static replacer inlines `@public` values
-// there at build time, so the browser never reaches this shim.
+// `vite.config.ts`. Only reads that survive to runtime reach it: the
+// varlock vite plugin inlines `@public` values into every bundle,
+// server included, so a `@public` item is replaced with a literal and
+// never gets here unless it is also `@dynamic`.
 //
 // Why this exists:
 //
@@ -27,8 +28,7 @@
 // This shim bypasses the broken varlock runtime entirely for the
 // server bundle. At runtime, `varlock run --` has already exported
 // all resolved env values into `process.env` before execing node
-// (see `fullInjectedEnv` in
-// `node_modules/varlock/dist/chunk-P4WZ2JXY.js`), and Coolify
+// (varlock's `fullInjectedEnv`), and Coolify
 // layers its own runtime env vars on top. Reading from
 // `process.env` is therefore equivalent to reading from varlock's
 // ENV proxy for all non-transforming access.

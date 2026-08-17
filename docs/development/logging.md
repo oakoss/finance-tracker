@@ -267,8 +267,8 @@ PostHog handles all error tracking — no Sentry needed.
   Coolify's rewriter skips any RUN that already has one (the check is in
   `coollabsio/coolify` at `app/Jobs/ApplicationDeploymentJob.php`, a
   literal substring match on `--mount=type=secret`), which would starve
-  the step of the other build vars (`POSTHOG_KEY`, `BETTER_AUTH_URL`,
-  etc.) that varlock inlines into the client bundle. The Playwright build steps in
+  the step of the other build vars (`POSTHOG_KEY`, `CLIENT_LOG_LEVEL`,
+  etc.) that varlock inlines into the build output. The Playwright build steps in
   `.github/workflows/ci.yml` intentionally skip the upload, so Coolify
   stays the single source of truth. Upload failures are non-fatal:
   `nonFatalWriteBundle` in `vite.config.ts` catches `writeBundle` errors,

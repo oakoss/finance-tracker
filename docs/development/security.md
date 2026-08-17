@@ -39,8 +39,9 @@ settings (configured in `src/lib/auth/server.ts`):
 
 ### Trusted origins
 
-`TRUSTED_ORIGINS` env var (comma-separated). Required for CSRF
-protection on cross-origin requests.
+`TRUSTED_ORIGINS` env var (comma-separated). Defaults to
+`BETTER_AUTH_URL`, so a single-origin deploy needs no value of its
+own. Set it explicitly to allow more than one origin.
 
 ## Route protection
 

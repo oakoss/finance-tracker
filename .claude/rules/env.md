@@ -6,8 +6,8 @@ paths:
 # Environment Variable Rules
 
 - Schema is defined in `.env.schema` using [varlock](https://varlock.dev) decorators.
-- Access env vars via `import { ENV } from 'varlock/env'` — works on both server and client.
-- `@sensitive` vars are server-only; `@public` vars get baked into the client bundle at build time.
+- Access env vars via `import { ENV } from 'varlock/env'` — works on both server and client, except `@public @dynamic` vars, which are server-read-only: no client hydration payload is emitted, so a client-side read throws at runtime and neither typecheck nor lint catches it.
+- `@sensitive` vars are server-only; `@public` vars are inlined at build time into every bundle, server included, unless also marked `@dynamic`.
 - No `VITE_` prefix needed — sensitivity is controlled by decorators, not naming.
 - Optional vars use `@optional`; defaults are inline values in the schema.
 - `@currentEnv=$APP_ENV` with `fallback($NODE_ENV, development)` drives `forEnv()` conditionals.
