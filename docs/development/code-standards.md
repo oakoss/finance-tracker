@@ -104,6 +104,22 @@ type(scope): subject
   format. Auto-fixes staged files via `stage_fixed: true`.
 - **`commit-msg`**: commitlint validates the message format.
 
+## GitHub prose
+
+Commit messages, PR titles, PR descriptions, review comments and issue
+comments all render on GitHub, which linkifies a bare `@word` and
+notifies that account.
+
+Use `@` only when you actually mean to tag someone. Backtick technical
+sigils everywhere else, or drop the sigil and name the thing in prose.
+
+Six varlock decorators this repo uses are also real GitHub accounts:
+`@sensitive`, `@public`, `@required`, `@optional`, `@type` (users) and
+`@dynamic` (an organization). Seven others are not. Don't check first —
+backtick every one. A bare mention can't be recalled: editing the text
+kills the link, but the notification already went out, and a commit
+message on `main` can't be fixed without rewriting shared history.
+
 ## Generated Files
 
 Do not edit these files manually:
