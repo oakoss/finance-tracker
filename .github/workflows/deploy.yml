@@ -25,7 +25,10 @@ jobs:
     steps:
       - name: Trigger Coolify deployment
         run: |
+          # Coolify's deploy endpoint is POST-only (GET returns 405); uuid and
+          # force stay query params — the API declares no request body.
           response=$(curl -sS --connect-timeout 10 --max-time 30 \
+            -X POST \
             -w "\n%{http_code}" \
             -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
             -H "CF-Access-Client-Id: ${{ secrets.CF_ACCESS_CLIENT_ID }}" \
