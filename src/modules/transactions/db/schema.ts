@@ -33,6 +33,15 @@ export const transactionTagsIndexNames = {
   uniqueIdx: 'transaction_tags_unique_idx',
 } as const;
 
+// Derived from the constants' values rather than restated, so adding an
+// entry to any of them fails the `satisfies` below until it has copy.
+// Plain indexes are declared inline as bare strings and never enter the
+// constants, so they cannot reach this union.
+type TransactionsConstraintName =
+  | (typeof tagsIndexNames)[keyof typeof tagsIndexNames]
+  | (typeof transactionsIndexNames)[keyof typeof transactionsIndexNames]
+  | (typeof transactionTagsIndexNames)[keyof typeof transactionTagsIndexNames];
+
 export const transactionsConstraintMessages = {
   [tagsIndexNames.userNameIdx]: 'A tag with this name already exists.',
   [transactionsIndexNames.externalIdIdx]:
@@ -41,7 +50,7 @@ export const transactionsConstraintMessages = {
     'This transaction has already been imported.',
   [transactionTagsIndexNames.uniqueIdx]:
     'This tag is already attached to the transaction.',
-} as const;
+} as const satisfies Record<TransactionsConstraintName, string>;
 
 export const tags = pgTable(
   'tags',

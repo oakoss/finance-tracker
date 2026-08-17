@@ -137,6 +137,20 @@ describe('throwIfConstraintViolation', () => {
     expect(err.fix).toBe('A record with these values already exists.');
   });
 
+  // The constraint name is whatever the driver reports. An object-backed
+  // lookup would resolve these to inherited functions, skipping the `??`
+  // fallback and putting a function in `fix`.
+  it.for(['toString', 'constructor', '__proto__', 'hasOwnProperty'])(
+    'falls back to generic copy for inherited property name %s',
+    (constraint) => {
+      const unique = catchConstraintError({ code: '23505', constraint });
+      expect(unique.fix).toBe('A record with these values already exists.');
+
+      const check = catchConstraintError({ code: '23514', constraint });
+      expect(check.fix).toBe('The submitted values violate a domain rule.');
+    },
+  );
+
   it('throws 409 for account_terms_account_id_idx', () => {
     const err = catchConstraintError({
       code: '23505',

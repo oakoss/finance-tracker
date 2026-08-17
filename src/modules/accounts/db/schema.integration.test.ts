@@ -1,4 +1,4 @@
-import { accountTerms } from '@/db/schema';
+import { accountTerms, accountTermsIndexNames } from '@/db/schema';
 import { expectPgError } from '~test/assertions';
 import { insertAccountTermsWithAccount } from '~test/factories/account-terms-with-account.factory';
 import { test } from '~test/integration-setup';
@@ -23,6 +23,6 @@ test('accountTerms — rejects duplicate for same account', async ({ db }) => {
           dueDay: 1,
           statementDay: 15,
         }),
-    { code: '23505', constraint: 'account_terms_account_id_idx' },
+    { code: '23505', constraint: accountTermsIndexNames.accountIdIdx },
   );
 });

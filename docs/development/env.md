@@ -110,8 +110,11 @@ activate `forEnv(production)` requirements.
 ## Docker Compose variables
 
 These variables are used by `docker-compose.yml` with inline defaults.
-They are not managed by varlock. Override via `.env` or
-`docker compose --env-file .env.local up`:
+Override via `.env` or `docker compose --env-file .env.local up`.
+
+All are compose-only except `POSTGRES_PORT`, which is declared in
+`.env.schema` with `@auditIgnore` since compose reads it directly and
+`varlock audit` never sees the usage:
 
 | Variable            | Default                    |
 | ------------------- | -------------------------- |

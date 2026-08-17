@@ -5,7 +5,7 @@ import { expect } from 'vitest';
 import { payees } from '@/modules/payees/db/schema';
 import { createPayeeAliasService } from '@/modules/payees/services/create-payee-alias';
 import { createPayeeAliasSchema } from '@/modules/payees/validators';
-import { payeeAliases } from '@/modules/rules/db/schema';
+import { payeeAliases, rulesCheckNames } from '@/modules/rules/db/schema';
 import { expectPgError } from '~test/assertions';
 import { asDb } from '~test/db';
 import type { Db as TestDb } from '~test/factories/base';
@@ -194,7 +194,7 @@ test.for(['AMAZON.COM', 'Amazon.com'])(
         db
           .insert(payeeAliases)
           .values({ alias, createdById: user.id, payeeId: payee.id }),
-      { code: '23514', constraint: 'payee_aliases_alias_lowercase_check' },
+      { code: '23514', constraint: rulesCheckNames.payeeAliasLowercase },
     );
   },
 );
@@ -210,7 +210,7 @@ test.for(['  acme', 'acme  ', ' acme '])(
         db
           .insert(payeeAliases)
           .values({ alias, createdById: user.id, payeeId: payee.id }),
-      { code: '23514', constraint: 'payee_aliases_alias_trimmed_check' },
+      { code: '23514', constraint: rulesCheckNames.payeeAliasTrimmed },
     );
   },
 );

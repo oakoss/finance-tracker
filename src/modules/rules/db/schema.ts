@@ -49,23 +49,40 @@ export const ruleRunsIndexNames = {
   ruleRunAtIdx: 'rule_runs_rule_run_at_idx',
 } as const;
 
+// Only names that can raise a 23505/23514 belong here — plain indexes are
+// declared inline as bare strings, so they cannot reach the union below.
 export const payeeAliasesIndexNames = {
   payeeAliasIdx: 'payee_aliases_payee_alias_idx',
-  payeeIdIdx: 'payee_aliases_payee_id_idx',
 } as const;
 
-export const rulesConstraintMessages = {
-  merchant_rules_actions_nonempty_check:
-    'A merchant rule must have at least one action.',
-  payee_aliases_alias_length_check:
-    'Alias must be between 1 and 200 characters.',
-  payee_aliases_alias_lowercase_check: 'Alias must be lowercase.',
-  payee_aliases_alias_trimmed_check:
-    'Alias must not start or end with whitespace.',
-  [payeeAliasesIndexNames.payeeAliasIdx]: 'This payee already has this alias.',
-  rule_runs_undo_data_shape_check:
-    'Rule-run undo data must be an object containing a transactions array.',
+export const rulesCheckNames = {
+  merchantRulesActionsNonempty: 'merchant_rules_actions_nonempty_check',
+  payeeAliasLength: 'payee_aliases_alias_length_check',
+  payeeAliasLowercase: 'payee_aliases_alias_lowercase_check',
+  payeeAliasTrimmed: 'payee_aliases_alias_trimmed_check',
+  ruleRunsUndoDataShape: 'rule_runs_undo_data_shape_check',
 } as const;
+
+// Derived from the constants' values rather than restated, so adding a unique
+// index or CHECK fails the `satisfies` below until it has copy.
+// merchantRulesIndexNames and ruleRunsIndexNames hold only plain indexes,
+// which cannot raise 23505/23514, so they are not part of this union.
+type RulesConstraintName =
+  | (typeof payeeAliasesIndexNames)[keyof typeof payeeAliasesIndexNames]
+  | (typeof rulesCheckNames)[keyof typeof rulesCheckNames];
+
+export const rulesConstraintMessages = {
+  [payeeAliasesIndexNames.payeeAliasIdx]: 'This payee already has this alias.',
+  [rulesCheckNames.merchantRulesActionsNonempty]:
+    'A merchant rule must have at least one action.',
+  [rulesCheckNames.payeeAliasLength]:
+    'Alias must be between 1 and 200 characters.',
+  [rulesCheckNames.payeeAliasLowercase]: 'Alias must be lowercase.',
+  [rulesCheckNames.payeeAliasTrimmed]:
+    'Alias must not start or end with whitespace.',
+  [rulesCheckNames.ruleRunsUndoDataShape]:
+    'Rule-run undo data must be an object containing a transactions array.',
+} as const satisfies Record<RulesConstraintName, string>;
 
 export const payeeAliases = pgTable(
   'payee_aliases',
@@ -80,7 +97,7 @@ export const payeeAliases = pgTable(
     ...auditFields,
   },
   (table) => [
-    index(payeeAliasesIndexNames.payeeIdIdx).on(table.payeeId),
+    index('payee_aliases_payee_id_idx').on(table.payeeId),
     // Partial so a soft-deleted alias can be re-created with the same
     // value (matches the `payees`/`categories` unique-index pattern).
     uniqueIndex(payeeAliasesIndexNames.payeeAliasIdx)
@@ -90,18 +107,18 @@ export const payeeAliases = pgTable(
     // inserts (backfill, future import job) can't bypass normalization
     // and silently break the unique index above.
     check(
-      'payee_aliases_alias_trimmed_check',
+      rulesCheckNames.payeeAliasTrimmed,
       sql`${table.alias} = btrim(${table.alias})`,
     ),
     check(
-      'payee_aliases_alias_lowercase_check',
+      rulesCheckNames.payeeAliasLowercase,
       sql`${table.alias} = lower(${table.alias})`,
     ),
     // Mirrors `createPayeeAliasSchema` ("a non-blank alias up to 200
     // chars" after trim). The trimmed check above guarantees the stored
     // value is already trimmed.
     check(
-      'payee_aliases_alias_length_check',
+      rulesCheckNames.payeeAliasLength,
       sql`char_length(${table.alias}) BETWEEN 1 AND 200`,
     ),
   ],
@@ -161,7 +178,7 @@ export const merchantRules = pgTable(
     // Mirrors `ruleActionsSchema.atLeastLength(1)` in models.ts — keep
     // the non-empty invariant in sync across both layers.
     check(
-      'merchant_rules_actions_nonempty_check',
+      rulesCheckNames.merchantRulesActionsNonempty,
       sql`jsonb_typeof(${table.actions}) = 'array' AND jsonb_array_length(${table.actions}) > 0`,
     ),
   ],
@@ -204,7 +221,7 @@ export const ruleRuns = pgTable(
     // check when the key is missing (otherwise `jsonb_typeof(NULL)` is
     // NULL, which CHECK treats as passing).
     check(
-      'rule_runs_undo_data_shape_check',
+      rulesCheckNames.ruleRunsUndoDataShape,
       sql`jsonb_typeof(${table.undoData}) = 'object' AND ${table.undoData} ? 'transactions' AND jsonb_typeof(${table.undoData}->'transactions') = 'array'`,
     ),
   ],

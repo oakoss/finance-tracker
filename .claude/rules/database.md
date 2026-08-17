@@ -51,8 +51,12 @@ paths:
 Unique index names and their user-facing violation copy live alongside the table in `db/schema.ts`:
 
 - Export `*IndexNames` (e.g., `payeesIndexNames`) as `{ [camelCaseKey]: 'snake_case_index_name' } as const`. Pass the constant to `uniqueIndex(...)` instead of a bare string.
+- Export `*CheckNames` the same way for `check(...)` constraints, and reference the constant from both the `check()` call and the message map.
 - Export `*ConstraintMessages` (one per module, e.g., `payeesConstraintMessages`, `transactionsConstraintMessages`) keyed by computed values from the index-name constants.
-- `src/lib/db/pg-error.ts` spreads all `*ConstraintMessages` into the `CONSTRAINT_MESSAGES` lookup; register modules that expose user-facing unique-violation copy there.
+- Constrain each map with `satisfies Record<<Module>ConstraintName, string>`, where the union is **derived** from the constants' values — `(typeof payeesIndexNames)[keyof typeof payeesIndexNames]` — not restated member by member. A hand-listed union only fails when copy goes stale; a derived one also fails when a new constraint ships without copy, which is the direction that matters.
+- Keep `*IndexNames` limited to names that can actually raise a 23505/23514. Declare plain `index()` names inline as bare strings so they never enter the union — a constant that mixes both kinds forces `Exclude<...>` subtractions that grow with every new plain index.
+- `src/lib/db/pg-error.ts` spreads all `*ConstraintMessages` into the `CONSTRAINT_MESSAGES` lookup; register modules that expose user-facing unique-violation copy there. That lookup is typed `Record<string, string | undefined>` — it is a partial map over an open key, and the `??` fallbacks are the live path for unregistered constraints.
+- Integration tests asserting a violation should reference the constant (`rulesCheckNames.payeeAliasLowercase`), not the literal. `expectPgError` reads the name from a live Postgres error, so the constant is what ties the schema to what the database actually raises.
 
 Race-condition catch blocks that re-read on `23505` must narrow both the error code AND the specific index name, using `PG_ERROR_CODES.UNIQUE_VIOLATION` and the matching `*IndexNames` entry. Re-throw on any unexpected constraint.
 

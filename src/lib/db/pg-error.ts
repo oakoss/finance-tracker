@@ -49,15 +49,23 @@ type PgLogFields = {
 // compile time in the module. This aggregator composes them.
 // ---------------------------------------------------------------------------
 
-const CONSTRAINT_MESSAGES: Record<string, string> = {
-  ...accountsConstraintMessages,
-  ...budgetsConstraintMessages,
-  ...categoriesConstraintMessages,
-  ...payeesConstraintMessages,
-  ...rulesConstraintMessages,
-  ...transactionsConstraintMessages,
-  ...transfersConstraintMessages,
-};
+// A Map, not an object: the key is whatever constraint name the driver hands
+// back, so an object lookup would resolve inherited members — a constraint
+// named `toString` would yield a function, the `??` fallbacks below would not
+// fire, and `fix` would ship a function where a string is declared. `.get()`
+// also returns `string | undefined` on its own, which is the honest shape for
+// a partial map over an open key.
+const CONSTRAINT_MESSAGES = new Map<string, string>(
+  Object.entries({
+    ...accountsConstraintMessages,
+    ...budgetsConstraintMessages,
+    ...categoriesConstraintMessages,
+    ...payeesConstraintMessages,
+    ...rulesConstraintMessages,
+    ...transactionsConstraintMessages,
+    ...transfersConstraintMessages,
+  }),
+);
 
 const CONSTRAINT_CODES = new Set<string>(Object.values(PG_ERROR_CODES));
 
@@ -123,7 +131,7 @@ export function throwIfConstraintViolation(
   // Unique violation (23505)
   if (pg.code === PG_ERROR_CODES.UNIQUE_VIOLATION) {
     const fix =
-      (pg.constraint && CONSTRAINT_MESSAGES[pg.constraint]) ??
+      (pg.constraint ? CONSTRAINT_MESSAGES.get(pg.constraint) : undefined) ??
       'A record with these values already exists.';
     log.warn({
       action,
@@ -162,7 +170,7 @@ export function throwIfConstraintViolation(
   // fix when available.
   if (pg.code === PG_ERROR_CODES.CHECK_VIOLATION) {
     const fix =
-      (pg.constraint && CONSTRAINT_MESSAGES[pg.constraint]) ??
+      (pg.constraint ? CONSTRAINT_MESSAGES.get(pg.constraint) : undefined) ??
       'The submitted values violate a domain rule.';
     log.warn({
       action,
