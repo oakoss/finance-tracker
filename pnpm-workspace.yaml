@@ -8,7 +8,7 @@ allowBuilds:
   protobufjs: true
   unrs-resolver: true
 overrides:
-  body-parser@>=2.0.0 <2.3.0: ^2.3.0
+  body-parser@>=2.0.0 <2.3.0: ^2.4.0
   # drizzle-kit -> @esbuild-kit pins esbuild 0.18.x; the dev-server CORS
   # vulnerability (GHSA-67mh-4wv8-2f99) is fixed in 0.25.0, floor tracks latest.
   # `pnpm audit --fix` rewrites this to ^0.24.3, which npm never published.
